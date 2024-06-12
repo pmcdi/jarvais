@@ -1,0 +1,12 @@
+[project]
+name = "AutoML"
+version = "0.1.0"
+description = "Add a short description here"
+authors = ["JoshuaSiraj <joshua.siraj@ryerson.ca>"]
+channels = ["conda-forge"]
+platforms = ["linux-64"]
+
+[tasks]
+
+[dependencies]
+python = ">=3.12.3,<3.13"
