@@ -1,6 +1,6 @@
-import bruh
+import pandas as pd
 
-def feature_engineering_imaging(data):
+def feature_engineering_imaging(data: pd.DataFrame):
     """
     Function to perform feature engineering on imaging data using PyRadiomics.
     
@@ -11,9 +11,9 @@ def feature_engineering_imaging(data):
     - radiomics_features (DataFrame): DataFrame containing radiomics features.
     """
     
-    pass
+    raise NotImplementedError
 
-def feature_engineering_clinical(data, function_file):
+def feature_engineering_clinical(data: pd.DataFrame, function_file: str):
     """
     Function to perform feature engineering on clinical data using custom functions.
     
@@ -25,4 +25,4 @@ def feature_engineering_clinical(data, function_file):
     - clinical_features (DataFrame): DataFrame containing clinical features.
     """
     
-    pass
+    raise NotImplementedError

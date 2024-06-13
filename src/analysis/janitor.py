@@ -1,6 +1,6 @@
-import bruh
+import pandas as pd
 
-def standardize_data_with_mapping(data, mapping_file):
+def standardize_data_with_mapping(data: pd.DataFrame, mapping_file: str):
     """
     Function to standardize categorical variables using a mapping file.
     
@@ -11,3 +11,5 @@ def standardize_data_with_mapping(data, mapping_file):
     Returns:
     - standardized_data (DataFrame): The standardized data.
     """
+
+    raise NotImplementedError
