@@ -1,6 +1,6 @@
-import bruh
+import pandas as pd
 
-def analyze_demographics_and_data_statistics(data):
+def analyze_demographics_and_data_statistics(data: pd.DataFrame):
     """
     Function to analyze demographics and data statistics.
     
@@ -8,9 +8,9 @@ def analyze_demographics_and_data_statistics(data):
     - data (DataFrame): The input data.
     """
 
-    pass
+    raise NotImplementedError
 
-def _missingness(data):
+def _missingness(data: pd.DataFrame):
     """
     Function to conduct missingness analysis.
     
@@ -18,9 +18,9 @@ def _missingness(data):
     - data (DataFrame): The input data.
     """
 
-    pass
+    raise NotImplementedError
 
-def _min_median_max(data):
+def _min_median_max(data: pd.DataFrame):
     """
     Function to find min, median, and max.
     
@@ -28,9 +28,9 @@ def _min_median_max(data):
     - data (DataFrame): The input data.
     """
 
-    pass
+    raise NotImplementedError
 
-def _count_percentage(data):
+def _count_percentage(data: pd.DataFrame):
     """
     Function to count percentage of total.
     
@@ -38,6 +38,6 @@ def _count_percentage(data):
     - data (DataFrame): The input data.
     """
 
-    pass
+    raise NotImplementedError
 
 

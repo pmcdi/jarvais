@@ -1,4 +1,4 @@
-import bruh
+import numpy as np
 
 """
 
@@ -6,7 +6,7 @@ SEGMENTATION METRICS
 
 """
 
-def segmentation_metrics(segmentation, ground_truth, spacing=None):
+def segmentation_metrics(segmentation: np.ndarray, ground_truth: np.ndarray, spacing: None | tuple = None) -> dict:
     """
     Calculate segmentation evaluation metrics.
     
@@ -19,10 +19,10 @@ def segmentation_metrics(segmentation, ground_truth, spacing=None):
     - metrics (dict): Dictionary containing segmentation evaluation metrics.
     """
 
-    pass
+    raise NotImplementedError
 
 
-def _volumetric_dice(segmentation, ground_truth):
+def _volumetric_dice(segmentation: np.ndarray, ground_truth: np.ndarray) -> float:
     """
     Calculate Volumetric Dice coefficient.
     
@@ -34,9 +34,9 @@ def _volumetric_dice(segmentation, ground_truth):
     - dice (float): Volumetric Dice coefficient.
     """
     
-    pass
+    raise NotImplementedError
 
-def _surface_dice(segmentation, ground_truth):
+def _surface_dice(segmentation: np.ndarray, ground_truth: np.ndarray) -> float:
     """
     Calculate Surface Dice coefficient.
     
@@ -48,9 +48,9 @@ def _surface_dice(segmentation, ground_truth):
     - dice (float): Surface Dice coefficient.
     """
     
-    pass
+    raise NotImplementedError
 
-def _hd95(segmentation, ground_truth, spacing=None):
+def _hd95(segmentation: np.ndarray, ground_truth: np.ndarray, spacing: None | tuple = None) -> float:
     """
     Calculate HD95 (Hausdorff distance 95th percentile).
     
@@ -63,9 +63,9 @@ def _hd95(segmentation, ground_truth, spacing=None):
     - hd95_distance (float): HD95 distance.
     """
     
-    pass
+    raise NotImplementedError
 
-def _clinical_acceptability_surrogate(segmentation, ground_truth, threshold=None):
+def _clinical_acceptability_surrogate(segmentation: np.ndarray, ground_truth: np.ndarray, threshold: None | float = None) -> bool:
     """
     Calculate Clinical Acceptability Surrogate.
     
@@ -78,7 +78,7 @@ def _clinical_acceptability_surrogate(segmentation, ground_truth, threshold=None
     - acceptability (bool): True if within threshold, False otherwise.
     """
     
-    pass
+    raise NotImplementedError
 
 """
 
@@ -86,7 +86,7 @@ TIME TO EVENT METRICS
 
 """
 
-def time_to_event_metrics(time, event):
+def time_to_event_metrics(time: np.ndarray, event: np.ndarray) -> dict:
     """
     Calculate multiple metrics for time-to-event data.
     
@@ -98,9 +98,9 @@ def time_to_event_metrics(time, event):
     - metrics (dict): Dictionary containing time-to-event metrics.
     """
 
-    pass
+    raise NotImplementedError
 
-def _calculate_event_rates(time, event):
+def _calculate_event_rates(time: np.ndarray, event: np.ndarray) -> float:
     """
     Calculate Event Rates for time-to-event data.
     
@@ -112,9 +112,9 @@ def _calculate_event_rates(time, event):
     - event_rates (float): Event rates at different time points.
     """
 
-    pass
+    raise NotImplementedError
 
-def _calculate_ci_(time, event, confidence_level=0.95):
+def _calculate_ci_(time: np.ndarray, event: np.ndarray, confidence_level: float = 0.95) -> tuple:
     """
     Calculate Confidence Interval for time-to-event data.
     
@@ -127,7 +127,7 @@ def _calculate_ci_(time, event, confidence_level=0.95):
     - ci (tuple): Tuple containing lower and upper bounds of the CI.
     """
 
-    pass
+    raise NotImplementedError
 
 """
 
@@ -135,7 +135,9 @@ MULTI-CLASS METRICS
 
 """
 
-def multi_class_metrics(y_true, y_pred_prob, threshold=0.5):
+# CHAT GPT CODE!!!
+
+def multi_class_metrics(y_true: np.ndarray, y_pred_prob: np.ndarray, threshold: float = 0.5) -> dict:
     """
     Calculate multiple metrics for multi-class classification.
     
@@ -174,7 +176,7 @@ def multi_class_metrics(y_true, y_pred_prob, threshold=0.5):
     
     return metrics
 
-def _sensitivity_specificity_at_thresholds(y_true, y_pred_prob):
+def _sensitivity_specificity_at_thresholds(y_true: np.ndarray, y_pred_prob: np.ndarray) -> dict:
     """
     Calculate sensitivity and specificity at various thresholds.
     
