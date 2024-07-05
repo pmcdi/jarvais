@@ -10,3 +10,11 @@ platforms = ["linux-64"]
 
 [dependencies]
 python = ">=3.12.3,<3.13"
+scikit-learn = ">=1.5.0,<1.6"
+xgboost = ">=2.0.3,<2.1"
+pyyaml = ">=6.0.1,<6.1"
+pandas = ">=2.2.2,<2.3"
+tableone = ">=0.9.1,<0.10"
+
+[system-requirements]
+linux= "5.4.0"
