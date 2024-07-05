@@ -1,5 +1,8 @@
 import pandas as pd
 
+# IF YOU HAVE THE MAPPING: For example mastro csv
+# IF YOU DON'T HAVE MAPPING: find all unique values in a yaml and allow you to make a new mapping file
+
 def standardize_data_with_mapping(data: pd.DataFrame, mapping_file: str):
     """
     Function to standardize categorical variables using a mapping file.
