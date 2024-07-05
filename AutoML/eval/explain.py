@@ -9,6 +9,8 @@ from sklearn.metrics import brier_score_loss
 from typing import Union, Tuple
 import pandas as pd
 
+# Seems redundant abstraction make into one big thing
+
 class ModelExplainability:
     def __init__(self, model: str, X_train: np.ndarray | pd.DataFrame) -> None:
         """

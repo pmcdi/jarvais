@@ -1,0 +1,143 @@
+classifier:
+  models:
+    logr: LogisticRegression
+    logr_pen: LogisticRegression
+    boost_c: GradientBoostingClassifier
+    rf_c: RandomForestClassifier
+    tree_c: DecisionTreeClassifier
+    svc: SVC
+    mlp_c: MLPClassifier
+    knn_c: KNeighborsClassifier
+  metrics: ['accuracy', 'average_precision', 'recall', 'f1', 'roc_auc']
+  hparams:
+    logr:
+      C: [0.0001, 0.001, 0.01, 0.1, 1.0]
+      class_weight: [null, 'balanced']
+      solver: ['newton-cg', 'lbfgs', 'saga']
+    logr_pen:
+      - penalty: ['l1']
+        C: [0.0001, 0.001, 0.01, 0.1, 1.0]
+        solver: ['saga']
+      - penalty: ['l2']
+        C: [0.0001, 0.001, 0.01, 0.1, 1.0]
+        solver: ['newton-cg', 'lbfgs', 'saga']
+    boost_c:
+      loss: ['exponential']
+      learning_rate: [0.001, 0.01, 0.1]
+      n_estimators: [5, 25, 125, 625, 3125]
+      subsample: [0.5, 0.75, 1.0]
+      criterion: ['friedman_mse', 'squared_error']
+      min_samples_split: [2, 4, 6, 8]
+      min_samples_leaf: [2, 3, 4, 5]
+      max_depth: [3, 5, 7]
+      max_features: ['sqrt', 'log2']
+    rf_c:
+      n_estimators: [1024, 2048, 4096, 8192, 16384, 32768, 65536]
+      criterion: ['gini', 'entropy']
+      min_samples_split: [2, 4, 8]
+      min_samples_leaf: [2, 3, 4, 5, 6]
+      max_depth: [3, 5, 7]
+      max_features: ['sqrt', 'log2']
+      bootstrap: [True]
+      oob_score: [True]
+      class_weight: ['balanced', 'balanced_subsample']
+    tree_c:
+      criterion: ['gini', 'entropy']
+      min_samples_split: [2, 4, 6, 8, 10]
+      min_samples_leaf: [1, 2, 3, 4, 5, 6]
+      max_depth: [2, 3, 4, 5, 6, 7, 8, 9]
+      max_features: ['sqrt', 'log2']
+      class_weight: ['balanced', null]
+    svc:
+      C: [0.0001, 0.001, 0.01, 0.1, 1.0]
+      kernel: ['linear', 'poly', 'rbf', 'sigmoid']
+      gamma: ['scale', 'auto']
+      probability: [True]
+      class_weight: ['balanced', null]
+    mlp_c:
+      hidden_layer_sizes: [[128], [128, 64], [128, 64, 16]]
+      activation: ['relu', 'tanh']
+      solver: ['sgd', 'adam']
+      alpha: [0.1, 0.01, 0.001, 0.0001]
+      learning_rate: ['constant', 'invscaling', 'adaptive']
+      learning_rate_init: [0.01, 0.001, 0.0001, 0.00001]
+    knn_c:
+      n_neighbors: [3, 5, 9, 17, 31]
+      weights: ['uniform', 'distance']
+      p: [1, 2, 3]
+
+regression:
+  models:
+    linr: LinearRegression
+    linr_pen: LinearRegression
+    boost_r: GradientBoostingRegressor
+    rf_r: RandomForestRegressor
+    tree_r: DecisionTreeRegressor
+    svr: SVR
+    knn_r: KNeighborsRegressor
+  metrics: ['neg_mean_squared_error', 'r2']
+  hparams:
+    linr:
+      fit_intercept: [True, False]
+      normalize: [True, False]
+    linr_pen:
+      fit_intercept: [True, False]
+      normalize: [True, False]
+      alpha: [0.0001, 0.001, 0.01, 0.1, 1.0]
+    boost_r:
+      loss: ['ls', 'lad', 'huber', 'quantile']
+      learning_rate: [0.001, 0.01, 0.1]
+      n_estimators: [5, 25, 125, 625, 3125]
+      subsample: [0.5, 0.75, 1.0]
+      criterion: ['friedman_mse', 'mse', 'mae']
+      min_samples_split: [2, 4, 6, 8]
+      min_samples_leaf: [1, 2, 3, 4]
+      max_depth: [3, 5, 7]
+      max_features: ['sqrt', 'log2']
+    rf_r:
+      n_estimators: [8, 16, 32, 64, 128, 256, 512, 1024, 2048, 4096, 8192, 16384, 32768, 65536]
+      criterion: ['mse', 'mae']
+      min_samples_split: [2, 4, 8]
+      min_samples_leaf: [1, 2, 3, 4, 5]
+      max_depth: [3, 5, 7]
+      max_features: ['sqrt', 'log2']
+      bootstrap: [True]
+      oob_score: [True]
+    tree_r:
+      criterion: ['mse', 'mae']
+      min_samples_split: [2, 4, 6, 8, 10]
+      min_samples_leaf: [1, 2, 3, 4, 5, 6]
+      max_depth: [2, 3, 4, 5, 6, 7, 8, 9]
+      max_features: ['sqrt', 'log2']
+    svr:
+      C: [0.0001, 0.001, 0.01, 0.1, 1.0]
+      kernel: ['linear', 'poly', 'rbf', 'sigmoid']
+      gamma: ['scale', 'auto']
+    knn_r:
+      n_neighbors: [2, 4, 8, 16, 32]
+      weights: ['uniform', 'distance']
+      p: [1, 2, 3]
+
+cluster:
+  models:
+    km: KMeans
+    ap: AffinityPropagation
+    sc: SpectralClustering
+  metrics: ['silhouette', 'adjusted_rand_score', 'adjusted_mutual_info_score']
+  hparams:
+    km:
+      n_clusters: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+      init: ['k-means++', 'random']
+      n_init: [10, 20, 30]
+      max_iter: [300, 600, 900]
+      tol: [1e-4, 1e-3, 1e-2]
+    ap:
+      damping: [0.5, 0.6, 0.7, 0.8, 0.9]
+      max_iter: [200, 400, 600]
+      convergence_iter: [15, 30, 45]
+      preference: [-50, -10, 0, 10, 50]
+    sc:
+      n_clusters: [2, 3, 4, 5, 6, 7, 8, 9, 10]
+      eigen_solver: ['arpack', 'lobpcg', 'amg']
+      affinity: ['nearest_neighbors', 'rbf']
+
