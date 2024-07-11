@@ -1,1 +1,1 @@
-from .trainer import AutoMLTrainer
+from .trainer import AutoMLSupervised
