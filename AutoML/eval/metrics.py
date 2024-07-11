@@ -1,202 +1,162 @@
+import matplotlib.pyplot as plt
+import seaborn as sns
 import numpy as np
+from sklearn.decomposition import PCA
+from sklearn.metrics import silhouette_samples, silhouette_score, confusion_matrix, roc_curve, auc
 
-"""
+# [ ] Precision Recall curve for classification
 
-SEGMENTATION METRICS
-
-"""
-
-def segmentation_metrics(segmentation: np.ndarray, ground_truth: np.ndarray, spacing: None | tuple = None) -> dict:
+def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray):
     """
-    Calculate segmentation evaluation metrics.
-    
+    Generates diagnostic plots for a clustering model.
+
     Parameters:
-    - segmentation (ndarray): Segmented volume.
-    - ground_truth (ndarray): Ground truth volume.
-    - spacing (tuple): Spacing in each dimension (optional).
-    
-    Returns:
-    - metrics (dict): Dictionary containing segmentation evaluation metrics.
+    -----------
+    model: Fitted clustering model
+        The clustering model to evaluate.
+    X: np.ndarray
+        Feature matrix.
+    cluster_labels: np.ndarray
+        Cluster labels assigned by the clustering model.
     """
-
-    raise NotImplementedError
-
-
-def _volumetric_dice(segmentation: np.ndarray, ground_truth: np.ndarray) -> float:
-    """
-    Calculate Volumetric Dice coefficient.
     
+    def plot_pca_clusters(X, cluster_labels):
+        pca = PCA(n_components=2)
+        components = pca.fit_transform(X)
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(x=components[:, 0], y=components[:, 1], hue=cluster_labels, palette='viridis')
+        plt.title('PCA of Clusters')
+        plt.xlabel('Principal Component 1')
+        plt.ylabel('Principal Component 2')
+        plt.show()
+
+    def plot_silhouette_analysis(X, cluster_labels):
+        silhouette_avg = silhouette_score(X, cluster_labels)
+        sample_silhouette_values = silhouette_samples(X, cluster_labels)
+        
+        plt.figure(figsize=(10, 6))
+        y_lower = 10
+        for i in range(len(np.unique(cluster_labels))):
+            ith_cluster_silhouette_values = sample_silhouette_values[cluster_labels == i]
+            ith_cluster_silhouette_values.sort()
+            size_cluster_i = ith_cluster_silhouette_values.shape[0]
+            y_upper = y_lower + size_cluster_i
+
+            plt.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_cluster_silhouette_values)
+            plt.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
+            y_lower = y_upper + 10
+        
+        plt.axvline(x=silhouette_avg, color="red", linestyle="--")
+        plt.xlabel("Silhouette Coefficient Values")
+        plt.ylabel("Cluster")
+        plt.title("Silhouette Analysis")
+        plt.show()
+
+    plot_pca_clusters(X, cluster_labels)
+    plot_silhouette_analysis(X, cluster_labels)
+
+def plot_classification_diagnostics(model, X_test, y_test, data_columns):
+    """
+    Generates diagnostic plots for a classification model.
+
     Parameters:
-    - segmentation (ndarray): Segmented volume.
-    - ground_truth (ndarray): Ground truth volume.
-    
-    Returns:
-    - dice (float): Volumetric Dice coefficient.
+    -----------
+    model: Fitted classification model
+        The classification model to evaluate.
+    X: np.ndarray
+        Feature matrix.
+    y_true: np.ndarray
+        True labels.
     """
-    
-    raise NotImplementedError
 
-def _surface_dice(segmentation: np.ndarray, ground_truth: np.ndarray) -> float:
+    def plot_confusion_matrix(model):
+        y_pred = model.predict(X_test)
+
+        conf_matrix = confusion_matrix(y_test, y_pred)
+
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+        plt.xlabel('Predicted')
+        plt.ylabel('Actual')
+        plt.title('Confusion Matrix')
+        plt.show()
+
+
+    def plot_roc_auc(model):
+        y_pred_proba = model.predict_proba(X_test)[:, 1] 
+
+        # ROC Curve for best subset
+        fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
+        roc_auc = auc(fpr, tpr)
+        plt.figure(figsize=(8, 6))
+        plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
+        plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate', fontsize=12)
+        plt.ylabel('True Positive Rate', fontsize=12)
+        plt.title(f'{model}:\n Area Under the Receiver Operating Characteristic (AUROC)', fontsize=15)
+        plt.legend(loc="lower right")
+        plt.show()
+
+    plot_confusion_matrix(model)
+    plot_roc_auc(model)
+
+    def plot_feature_importance(model, feature_names):
+        importance = model.feature_importances_
+        indices = np.argsort(importance)
+
+        plt.figure(figsize=(10, 6))
+        plt.title('Feature Importance')
+        plt.barh(range(len(indices)), importance[indices], color='b', align='center')
+        plt.yticks(range(len(indices)), [feature_names[i] for i in indices])
+        plt.xlabel('Relative Importance')
+        plt.show()
+
+    if hasattr(model, 'feature_importances_'):
+        plot_feature_importance(model, data_columns)
+
+def plot_regression_diagnostics(model, X_test, y_test, data_columns):
     """
-    Calculate Surface Dice coefficient.
-    
+    Generates diagnostic plots for a regression model.
+
     Parameters:
-    - segmentation (ndarray): Segmented volume.
-    - ground_truth (ndarray): Ground truth volume.
-    
-    Returns:
-    - dice (float): Surface Dice coefficient.
+    -----------
+    model: Fitted regression model
+        The regression model to evaluate.
     """
     
-    raise NotImplementedError
+    # Predict the target values
+    y_pred = model.predict(X_test)
+    residuals = y_test - y_pred
 
-def _hd95(segmentation: np.ndarray, ground_truth: np.ndarray, spacing: None | tuple = None) -> float:
-    """
-    Calculate HD95 (Hausdorff distance 95th percentile).
-    
-    Parameters:
-    - segmentation (ndarray): Segmented volume.
-    - ground_truth (ndarray): Ground truth volume.
-    - spacing (tuple): Spacing in each dimension (optional).
-    
-    Returns:
-    - hd95_distance (float): HD95 distance.
-    """
-    
-    raise NotImplementedError
+    def plot_regression_line(y_true, y_pred, xlabel='True Values', ylabel='Predictions', title='True vs Predicted Values'):
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
+        sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.title(title)
+        plt.show()
 
-def _clinical_acceptability_surrogate(segmentation: np.ndarray, ground_truth: np.ndarray, threshold: None | float = None) -> bool:
-    """
-    Calculate Clinical Acceptability Surrogate.
-    
-    Parameters:
-    - segmentation (ndarray): Segmented volume.
-    - ground_truth (ndarray): Ground truth volume.
-    - threshold (float): Threshold value for acceptability (optional).
-    
-    Returns:
-    - acceptability (bool): True if within threshold, False otherwise.
-    """
-    
-    raise NotImplementedError
+    def plot_residuals(y_true, y_pred, title='Residual Plot'):
+        residuals = y_true - y_pred
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
+        plt.axhline(0, color='red', linestyle='--')
+        plt.xlabel('Fitted Values')
+        plt.ylabel('Residuals')
+        plt.title(title)
+        plt.show()
 
-"""
+    def plot_residual_histogram(residuals, title='Histogram of Residuals'):
+        plt.figure(figsize=(10, 6))
+        sns.histplot(residuals, kde=True, bins=30)
+        plt.xlabel('Residuals')
+        plt.title(title)
+        plt.show()
 
-TIME TO EVENT METRICS
-
-"""
-
-def time_to_event_metrics(time: np.ndarray, event: np.ndarray) -> dict:
-    """
-    Calculate multiple metrics for time-to-event data.
-    
-    Parameters:
-    - time (array-like): Time variable for each event.
-    - event (array-like): Binary variable indicating whether event occurred.
-    
-    Returns:
-    - metrics (dict): Dictionary containing time-to-event metrics.
-    """
-
-    raise NotImplementedError
-
-def _calculate_event_rates(time: np.ndarray, event: np.ndarray) -> float:
-    """
-    Calculate Event Rates for time-to-event data.
-    
-    Parameters:
-    - time (array-like): Time variable for each event.
-    - event (array-like): Binary variable indicating whether event occurred.
-    
-    Returns:
-    - event_rates (float): Event rates at different time points.
-    """
-
-    raise NotImplementedError
-
-def _calculate_ci_(time: np.ndarray, event: np.ndarray, confidence_level: float = 0.95) -> tuple:
-    """
-    Calculate Confidence Interval for time-to-event data.
-    
-    Parameters:
-    - time (array-like): Time variable for each event.
-    - event (array-like): Binary variable indicating whether event occurred.
-    - confidence_level (float): Confidence level for CI (default: 0.95).
-    
-    Returns:
-    - ci (tuple): Tuple containing lower and upper bounds of the CI.
-    """
-
-    raise NotImplementedError
-
-"""
-
-MULTI-CLASS METRICS
-
-"""
-
-# CHAT GPT CODE!!!
-
-def multi_class_metrics(y_true: np.ndarray, y_pred_prob: np.ndarray, threshold: float = 0.5) -> dict:
-    """
-    Calculate multiple metrics for multi-class classification.
-    
-    Parameters:
-    - y_true (array-like): True labels.
-    - y_pred_prob (array-like): Predicted probabilities for each class.
-    - threshold (float): Threshold for converting probabilities to binary predictions (default: 0.5).
-    
-    Returns:
-    - metrics (dict): Dictionary containing multi-class metrics.
-    """
-    metrics = {}
-    
-    # Convert probabilities to binary predictions
-    y_pred = (y_pred_prob >= threshold).astype(int)
-    
-    # Calculate AUC
-    auc = roc_auc_score(y_true, y_pred_prob, multi_class='ovr')
-    metrics['AUC'] = auc
-    
-    # Calculate Precision
-    precision = precision_score(y_true, y_pred, average='weighted')
-    metrics['Precision'] = precision
-    
-    # Calculate Recall
-    recall = recall_score(y_true, y_pred, average='weighted')
-    metrics['Recall'] = recall
-    
-    # Calculate Sensitivity and Specificity at various thresholds
-    sensitivity_specificity = sensitivity_specificity_at_thresholds(y_true, y_pred_prob)
-    metrics.update(sensitivity_specificity)
-    
-    # Calculate Confusion Matrix
-    cm = confusion_matrix(y_true, y_pred)
-    metrics['Confusion Matrix'] = cm
-    
-    return metrics
-
-def _sensitivity_specificity_at_thresholds(y_true: np.ndarray, y_pred_prob: np.ndarray) -> dict:
-    """
-    Calculate sensitivity and specificity at various thresholds.
-    
-    Parameters:
-    - y_true (array-like): True labels.
-    - y_pred_prob (array-like): Predicted probabilities for each class.
-    
-    Returns:
-    - sensitivity_specificity (dict): Dictionary containing sensitivity and specificity at various thresholds.
-    """
-    sensitivity_specificity = {}
-    
-    thresholds = np.linspace(0, 1, num=100)
-    for threshold in thresholds:
-        y_pred = (y_pred_prob >= threshold).astype(int)
-        tn, fp, fn, tp = confusion_matrix(y_true, y_pred).ravel()
-        sensitivity = tp / (tp + fn)
-        specificity = tn / (tn + fp)
-        sensitivity_specificity[threshold] = {'Sensitivity': sensitivity, 'Specificity': specificity}
-    
-    return sensitivity_specificity
-
-
+    # Call all the plotting functions
+    plot_regression_line(y_test, y_pred)
+    plot_residuals(y_test, y_pred)
+    plot_residual_histogram(residuals)
