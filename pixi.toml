@@ -15,6 +15,8 @@ xgboost = ">=2.0.3,<2.1"
 pyyaml = ">=6.0.1,<6.1"
 pandas = ">=2.2.2,<2.3"
 tableone = ">=0.9.1,<0.10"
+yellowbrick = ">=1.5,<2"
+fpdf2 = ">=2.7.9,<2.8"
 
 [system-requirements]
 linux= "5.4.0"

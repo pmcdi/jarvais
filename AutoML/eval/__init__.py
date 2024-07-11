@@ -1,1 +1,1 @@
-from .metrics import segmentation_metrics, time_to_event_metrics, multi_class_metrics
+from .metrics import plot_classification_diagnostics, plot_clustering_diagnostics, plot_regression_diagnostics
