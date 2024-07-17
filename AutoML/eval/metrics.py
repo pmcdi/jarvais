@@ -83,7 +83,7 @@ def plot_classification_diagnostics(model, X_test, y_test, data_columns):
 
 
     def plot_roc_auc(model):
-        y_pred_proba = model.predict_proba(X_test)[:, 1] 
+        y_pred_proba = model.predict_proba(X_test, as_pandas=False)[:, 1] # as_pandas argument needed for autogluon predictor to have it return numpy array
 
         # ROC Curve for best subset
         fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
@@ -95,7 +95,8 @@ def plot_classification_diagnostics(model, X_test, y_test, data_columns):
         plt.ylim([0.0, 1.05])
         plt.xlabel('False Positive Rate', fontsize=12)
         plt.ylabel('True Positive Rate', fontsize=12)
-        plt.title(f'{model}:\n Area Under the Receiver Operating Characteristic (AUROC)', fontsize=15)
+        plt.title(f'{model.model_best}:\n Area Under the Receiver Operating Characteristic (AUROC)', fontsize=15)
+        # model_best returns the best model for Autogluon
         plt.legend(loc="lower right")
         plt.show()
 
