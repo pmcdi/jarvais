@@ -1,10 +1,11 @@
-import os, warnings
+import os, warnings, yaml
 
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from tableone import TableOne
 import numpy as np
+from datetime import datetime
 
 from pandas.api.types import is_numeric_dtype
 
@@ -18,8 +19,7 @@ class AutoMLAnalyzer():
     def __init__(self,
                  data: pd.DataFrame, 
                  target_variable: Union[str, None] = None,
-                 categorical: Union[list, None] = None,
-                 mapping_file: Union[str, os.PathLike, None] = None,
+                 config_file: Union[str, os.PathLike, None] = None,
                  output_dir: Union[str, os.PathLike] = '.'):
         """
 
@@ -32,11 +32,8 @@ class AutoMLAnalyzer():
             The input data to analyze.
         target_variable : str, optional
             The target variable in the dataset. Default is None.
-        categorical: Union[list, None], optional 
-            Categorical columns in data. Default is None, and categorical and numerical columns will be infered. 
-            If provided remaining columns are infered as numerical.
-        mapping_file : Union[str, os.PathLike, None], optional
-            Path to a CSV file that contains mappings for data cleaning. Default is None.
+        config_file : Union[str, os.PathLike, None], optional
+            Path to a yaml file that contains settings for janitor. Default is None where janitor will produce one automaticaly.
         output_dir: Union[str, os.PathLike], optional
             Output directory for analysis. Default is current directory.
 
@@ -50,30 +47,23 @@ class AutoMLAnalyzer():
         self.data = data
         self.target_variable = target_variable
 
-        if os.path.exists(output_dir):
-            if output_dir == '.':
-                print('Using current directory as output directory\n')
-            self.output_dir = output_dir
-        else:
-            raise ValueError('Output path not found')
+        if not os.path.exists(output_dir):
+            os.mkdir(output_dir)
+        if output_dir == '.':
+            print('Using current directory as output directory\n')
+            
+        self.output_dir = output_dir
 
-        if mapping_file is not None:
-            if os.path.isfile(mapping_file):
-                self.mapping_file = pd.read_csv(mapping_file, header=None) # Ignore headers assume 1st column -> 2nd column
+        if config_file is not None:
+            if os.path.isfile(config_file):
+                with open(config_file, 'r') as file:
+                    self.config = yaml.safe_load(file)
             else:
                 raise ValueError('Mapping file does not exist')
         else:
-            self.mapping_file = mapping_file
+            self.config = None
 
-        if categorical is None:
-            self._infer_types()
-            warnings.warn(f'Categorical columns not defined, used a heuristic to define categorical and continuous columns. Please review!\nCategorical: {self.categorical_columns}\nContinuous: {self.continuous_columns}')
-        else:
-            self.categorical_columns = categorical
-            self.continuous_columns = list(set(self.data.columns) - set(categorical))
-            self.data[self.continuous_columns] = self.data[self.continuous_columns].applymap(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
-
-        self.outlier_analysis = '' # Used later to write to PDF
+        self.outlier_analysis = '' # Used later when writing to PDF
 
     def _infer_types(self):
         # adapted from https://github.com/tompollard/tableone/blob/main/tableone/preprocessors.py
@@ -85,25 +75,66 @@ class AutoMLAnalyzer():
         likely_cat = list(likely_cat - date_cols)
 
         # check proportion of unique values if numerical
-        for var in self.data._get_numeric_data().columns:
-            likely_flag = 1.0 * self.data[var].nunique()/self.data[var].count() < 0.01
+        for var in numeric_cols:
+            likely_flag = 1.0 * self.data[var].nunique()/self.data[var].count() < 0.025
             if likely_flag:
                 likely_cat.append(var)
 
-        self.continuous_columns = list(set(self.data.columns) - set(likely_cat))
+        likely_cat = [cat for cat in likely_cat if self.data[cat].nunique()/self.data[cat].count() < 0.2] # Heuristic targeted at detecting ID columns
         self.categorical_columns = likely_cat
-
+        self.continuous_columns = list(set(self.data.columns) - set(likely_cat) - date_cols)
+        
     def _run_janitor(self):
-        
-        # Cleans the data by either checking for outliers in categorical variables or applying mappings from the provided file.
-        
-        if self.mapping_file is None:
-            print('Mapping file not found checking for outliers in categorical variables...')
+
+        if self.config is None:
+            self.config = {}
+            columns = {}
+            
+            # Detect dates
+            columns['date'] = []
+            for col in self.data.columns:
+                if self.data[col].dtype == 'object':
+                    try:
+                        self.data[col] = pd.to_datetime(self.data[col])
+                        columns['date'].append(col)
+                    except ValueError:
+                        pass
+            
+            # Find categorical vs continous 
+            self._infer_types()
+            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].applymap(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
+            
+            nan_ = self.data.apply(lambda col: col.isna().all())
+            nan_columns = nan_[nan_].index.tolist()
+            if len(nan_columns) > 0:
+                print("Columns that are all NaN(probably ID columns) dropping...: ", nan_columns)
+                self.continuous_columns = list(set(self.continuous_columns) - set(nan_columns))
+
+            print(f'Config file not found, used a heuristic to define categorical and continuous columns. Please review!\nCategorical: {self.categorical_columns}\n\nContinuous: {self.continuous_columns}\n')
+
+            columns['categorical'] = self.categorical_columns
+            columns['continuous'] = self.continuous_columns
+            columns['other'] = nan_columns
+
+            self.config['columns'] = columns
+
+            # Cleans the data by either checking for outliers in categorical variables or applying mappings from the provided file.
+            print('Config file not found, checking for outliers in categorical variables...')
+
+            mapping = {} # Make a mapping file based on heuristic to be updated later
 
             for cat in self.categorical_columns:
                 category_counts = self.data[cat].value_counts()
-                threshold = int(category_counts.mean()*.05)
+                threshold = int(len(self.data)*.01)
                 outliers = category_counts[category_counts < threshold].index.tolist()
+
+                mapping[cat] = {}
+
+                for _cat in self.data[cat].unique():
+                    if _cat in outliers:
+                        mapping[cat][f'{_cat}'] = 'Other'
+                    else:
+                        mapping[cat][f'{_cat}'] = ''
 
                 if len(outliers) > 0:
                     outliers = [f'{o}: {category_counts[o]} out of {self.data[cat].count()}' for o in outliers]
@@ -112,16 +143,24 @@ class AutoMLAnalyzer():
                 else:
                     print(f'  - No Outliers found in {cat}')
                     self.outlier_analysis += f'  - No Outliers found in {cat}\n'
+
+            self.config['mapping'] = mapping
+
+            with open(os.path.join(self.output_dir, 'config.yaml'), 'w') as f:
+                yaml.dump(self.config, f)
         else:
-            print('Applying changes from mapping file...\n')
+            self.continuous_columns = self.config['columns']['continuous']
+            self.categorical_columns = self.config['columns']['categorical']
+            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].applymap(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
 
-            self.mapping_file.columns = ['original', 'standard']
-            self.mapping_file = self.mapping_file.dropna(subset=['original'])
-            self.mapping_file = self.mapping_file[self.mapping_file['standard'] != '']
+        
+        print('Applying changes from config file...\n')
 
-            key_value_pairs = dict(zip(self.mapping_file['original'], self.mapping_file['standard']))
+        for key in self.config['mapping'].keys():
+            assert key in self.data.columns, f"{key} in mapping file not found data"
 
-            self.data = self.data.replace(key_value_pairs)
+            to_replace = {k: v for k, v in self.config['mapping'][key].items() if v != ''}
+            self.data.loc[:, [key]] = self.data.loc[:, key].replace(to_replace)
 
     def _create_multiplots(self):
 
@@ -166,8 +205,7 @@ class AutoMLAnalyzer():
             
             fontsize = calculate_fontsize(num_categories)
 
-            cont_columns = [cont for cont in self.data.columns if cont not in self.categorical_columns]
-            n = len(cont_columns)
+            n = len(self.continuous_columns)
 
             rows = int(np.ceil(np.sqrt(n)))
             cols = int(np.ceil((n) / rows))
@@ -182,28 +220,12 @@ class AutoMLAnalyzer():
                         textprops={'fontsize': fontsize},
                         colors=plt.cm.Set2.colors) # 90 = 12 o'clock, 0 = 3 o'clock, 180 = 9 o'clock
 
-            ax[0].set_title(f"{var} Distribution")
+            ax[0].set_title(f"{var} Distribution. N: {self.data[var].count()}")
             
             for i in range(1, n):
-
-                # # calculate medians and number of observations
-                # medians = self.data.groupby(var)[cont_columns[i]].mean().values
-                # nobs = self.data[var].value_counts().values
-                # nobs = [str(x) for x in nobs.tolist()]
-                # nobs = ["n: " + i for i in nobs]
-            
-                sns.violinplot(x=var, y=cont_columns[i], data=self.data, ax=ax[i], inner="point")
+                sns.violinplot(x=var, y=self.continuous_columns[i], data=self.data, ax=ax[i], inner="point")
                 ax[i].tick_params(axis='x', labelrotation=67.5)
-                ax[i].set_title(f"{var} vs {cont_columns[i]}")
-
-                # # Add text to the figure
-                # pos = range(len(nobs))
-                # for tick in pos:
-                #     ax[i].text(pos[tick], medians[tick], nobs[tick],
-                #                 horizontalalignment='center',
-                #                 size='small',
-                #                 color='black')
-
+                ax[i].set_title(f"{var} vs {self.continuous_columns[i]}")
             
             # Hide any empty subplots
             for j in range(n, len(ax)):
@@ -233,7 +255,7 @@ class AutoMLAnalyzer():
         pdf.set_font('dejavu-sans', '', 24)  
         pdf.write(5, "Analysis Report\n\n")
 
-        if self.mapping_file is None:
+        if self.outlier_analysis != '':
             pdf.set_font('dejavu-sans', '', 12)  
             pdf.write(5, f"Outlier Analysis:\n")
             pdf.set_font('dejavu-sans', '', 10) 
@@ -247,7 +269,7 @@ class AutoMLAnalyzer():
 
         for plot in self.multiplots:
             pdf.add_page()
-            pdf.image(plot, Align.C, w=pdf.epw-20, h=pdf.eph)
+            pdf.image(plot, keep_aspect_ratio=True, w=pdf.epw-20, h=pdf.eph)
 
         pdf.add_page()
         pdf.set_font('dejavu-sans', 'b', 14)  
@@ -265,14 +287,14 @@ class AutoMLAnalyzer():
 
         # Create plots
 
-        self.mytable = TableOne(self.data, categorical=self.categorical_columns, pval=False)
+        self.mytable = TableOne(self.data[self.continuous_columns + self.categorical_columns], categorical=self.categorical_columns, pval=False)
         print(self.mytable.tabulate(tablefmt = "fancy_grid"))
         self.mytable.to_csv(os.path.join(self.output_dir, 'tableone.csv'))
         
         if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
-            g = sns.pairplot(self.data, hue=self.target_variable)
+            g = sns.pairplot(self.data[self.continuous_columns + self.categorical_columns], hue=self.target_variable)
         else:
-            g= sns.pairplot(self.data)   
+            g= sns.pairplot(self.data[self.continuous_columns + self.categorical_columns])   
         g.figure.suptitle("Pair Plot", y=1.08)  
 
         figure_path = os.path.join(self.output_dir, 'pairplot.png')

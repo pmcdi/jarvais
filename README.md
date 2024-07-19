@@ -1,3 +1,5 @@
 # AutoML
 
-Check tutorials/notebooks/example.ipynb for example usage
+- Run: pixi run example
+- Navigate to tutorials/notebooks/example.ipynb for example usage
+

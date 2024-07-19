@@ -4,17 +4,21 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = ["JoshuaSiraj <joshua.siraj@ryerson.ca>"]
 channels = ["conda-forge"]
-platforms = ["linux-64"]
+platforms = ["linux-64", "osx-arm64", "osx-64"]
 
 [tasks]
+example = "jupyter lab"
 
 [dependencies]
-python = ">=3.12.3,<3.13"
-scikit-learn = ">=1.5.0,<1.6"
+python = ">=3.10,<3.12"
 pyyaml = ">=6.0.1,<6.1"
 pandas = ">=2.2.2,<2.3"
 tableone = ">=0.9.1,<0.10"
 fpdf2 = ">=2.7.9,<2.8"
+jupyterlab = ">=4.2.4,<4.3"
+"autogluon.tabular" = ">=1.1.1,<1.2"
+scikit-learn = ">=1.4.2,<1.5"
+seaborn = ">=0.13.2,<0.14"
 
 [system-requirements]
 linux= "5.4.0"

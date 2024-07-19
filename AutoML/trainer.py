@@ -67,7 +67,7 @@ class AutoMLSupervised():
 
     def run(self, data, target_variable,
             test_size: float = 0.2,
-            exclude: list = [], stratify_on=''):
+            exclude: list = [], stratify_on=None):
         
             exclude.append(target_variable)
             X = data.drop(columns=exclude) 
