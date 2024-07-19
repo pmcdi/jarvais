@@ -103,20 +103,6 @@ def plot_classification_diagnostics(model, X_test, y_test, data_columns):
     plot_confusion_matrix(model)
     plot_roc_auc(model)
 
-    def plot_feature_importance(model, feature_names):
-        importance = model.feature_importances_
-        indices = np.argsort(importance)
-
-        plt.figure(figsize=(10, 6))
-        plt.title('Feature Importance')
-        plt.barh(range(len(indices)), importance[indices], color='b', align='center')
-        plt.yticks(range(len(indices)), [feature_names[i] for i in indices])
-        plt.xlabel('Relative Importance')
-        plt.show()
-
-    if hasattr(model, 'feature_importances_'):
-        plot_feature_importance(model, data_columns)
-
 def plot_regression_diagnostics(model, X_test, y_test, data_columns):
     """
     Generates diagnostic plots for a regression model.
