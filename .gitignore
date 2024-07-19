@@ -1,3 +1,4 @@
 .pixi/
 *cpython*
 __pycache__
+test.ipynb
