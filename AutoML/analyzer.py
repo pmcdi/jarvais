@@ -102,7 +102,7 @@ class AutoMLAnalyzer():
             
             # Find categorical vs continous 
             self._infer_types()
-            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].applymap(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
+            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].map(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
             
             nan_ = self.data.apply(lambda col: col.isna().all())
             nan_columns = nan_[nan_].index.tolist()
@@ -151,7 +151,7 @@ class AutoMLAnalyzer():
         else:
             self.continuous_columns = self.config['columns']['continuous']
             self.categorical_columns = self.config['columns']['categorical']
-            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].applymap(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
+            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].map(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
 
         
         print('Applying changes from config file...\n')
