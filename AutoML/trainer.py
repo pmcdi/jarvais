@@ -3,10 +3,13 @@ import os
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+from tabulate import tabulate
 
 from typing import Union
 
 from sklearn.model_selection import train_test_split
+from sklearn.feature_selection import SelectKBest, VarianceThreshold, chi2 ,f_classif, f_regression
+from mrmr import mrmr_classif, mrmr_regression
 
 from autogluon.tabular import TabularPredictor
 
@@ -14,24 +17,35 @@ from .eval import plot_classification_diagnostics, plot_regression_diagnostics
 
 class AutoMLSupervised():
     def __init__(self, 
-                 task: Union[str, None] = None,
-                 output_dir: Union[str, os.PathLike] = '.'
+                 task: str,
+                 reduction_method: Union[str, None] = None,
+                 keep_k: int = 2,
+                 output_dir: Union[str, os.PathLike] = '.',
                 ):
         """
         Initialize the AutoMLTrainer class with specified configurations.
 
         Parameters
         ----------
-        task : str, default=None
-            The type of task to handle. Options are 'binary', 'multiclass', 'regression', 'quantile'. By default infered by Autogluon
+        task : str,
+            The type of task to handle. Options are 'binary', 'multiclass', 'regression', 'quantile'.
+        reduction_method : str, default=None
+            The feature reduction method to apply. Options are 'mrmr', 'variance_threshold', 'corr', 'chi2'. By default no feature reduction applied.
+        keep_k : int, default=2
+            Number of features to keep, if a reduction method is defined. By default 2.
 
         Raises
         ------
         ValueError
             If the task parameter is not one of the specified options.
         """
-        self.output_dir = output_dir
         self.task = task
+        self.output_dir = output_dir
+        self.reduction_method = reduction_method
+        self.keep_k = keep_k
+
+        if self.reduction_method == 'mrmr':
+            raise ValueError('The mrmr package is brokie, working on fix')
 
         if task not in ['binary', 'multiclass', 'regression', 'quantile', None]:
             raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression', 'quantile'. Or provide nothing and let Autogluon infer the task.")
@@ -65,6 +79,26 @@ class AutoMLSupervised():
         plt.tight_layout()
         plt.show()
 
+    def _feature_reduction(self, X, y):
+        
+        if self.reduction_method == 'mrmr':
+            mrmr_method = mrmr_classif if self.task in ['binary', 'multiclass'] else mrmr_regression
+            selected_features = mrmr_method(X=X, y=y, K=self.keep_k)
+        if self.reduction_method == 'variance_threshold':
+            selector = VarianceThreshold()
+        elif self.reduction_method == 'corr':
+            f_method = f_classif if self.task in ['binary', 'multiclass'] else f_regression
+            selector = SelectKBest(score_func=f_method, k=self.keep_k)
+        elif self.reduction_method == 'chi2':
+            if self.task in ['binary', 'multiclass']:
+                selector = SelectKBest(score_func=chi2, k=self.keep_k)
+            else:
+                raise ValueError('chi-squared reduction can only be done with classification tasks')
+
+        _ = selector.fit_transform(X, y)
+        selected_features = X.columns[selector.get_support(indices=True)]
+        return X[selected_features]
+
     def run(self, data, target_variable,
             test_size: float = 0.2,
             exclude: list = [], stratify_on=None):
@@ -73,7 +107,10 @@ class AutoMLSupervised():
             X = data.drop(columns=exclude) 
             y = data[target_variable]
 
-            self.data_columns = X.columns
+            if self.reduction_method is not None:
+                print(f'Applying {self.reduction_method} for feature reduction')
+                X = self._feature_reduction(X, y)
+                print(f'Features kept: {X.columns.values}')
 
             if y.value_counts().min() > 1: # Meaning it can be used to stratify, if this condition is not met train_test_split produces - ValueError: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
                 if stratify_on is not None:
@@ -100,14 +137,13 @@ class AutoMLSupervised():
                                          ).fit(pd.concat([self.X_train, self.y_train], axis=1))
 
             print('\nModel Leaderbord\n')
-            print(self.predictor.leaderboard()[['model', 'score_val', 'eval_metric']])
+            print(tabulate(self.predictor.leaderboard(), tablefmt = "fancy_grid", headers="keys"))
 
             if self.predictor.problem_type == 'binary':
-                plot_classification_diagnostics(self.predictor, self.X_test, self.y_test, self.data_columns)
+                plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test, as_pandas=False)[:, 1])
             elif self.predictor.problem_type == 'regression':
-                plot_regression_diagnostics(self.predictor, self.X_test, self.y_test, self.data_columns)
+                plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
    
-
             self._plot_feature_importance()
 
     

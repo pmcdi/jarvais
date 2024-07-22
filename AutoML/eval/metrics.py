@@ -4,6 +4,8 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_samples, silhouette_score, confusion_matrix, roc_curve, auc
 
+from .utils import calculate_bin_stats, calculate_eval_ci, evaluation
+
 # [ ] Precision Recall curve for classification
 
 def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray):
@@ -55,7 +57,7 @@ def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray
     plot_pca_clusters(X, cluster_labels)
     plot_silhouette_analysis(X, cluster_labels)
 
-def plot_classification_diagnostics(model, X_test, y_test, data_columns):
+def plot_classification_diagnostics(y_true, y_pred):
     """
     Generates diagnostic plots for a classification model.
 
@@ -69,41 +71,18 @@ def plot_classification_diagnostics(model, X_test, y_test, data_columns):
         True labels.
     """
 
-    def plot_confusion_matrix(model):
-        y_pred = model.predict(X_test)
+    stats = calculate_bin_stats(y_true, y_pred)
+    ci_data = calculate_eval_ci(stats,y_true,y_pred)
+    fig = evaluation(
+        stats,
+        ci_data,
+        y_true,
+        y_pred
+    )
 
-        conf_matrix = confusion_matrix(y_test, y_pred)
+    plt.show()
 
-        plt.figure(figsize=(8, 6))
-        sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
-        plt.xlabel('Predicted')
-        plt.ylabel('Actual')
-        plt.title('Confusion Matrix')
-        plt.show()
-
-
-    def plot_roc_auc(model):
-        y_pred_proba = model.predict_proba(X_test, as_pandas=False)[:, 1] # as_pandas argument needed for autogluon predictor to have it return numpy array
-
-        # ROC Curve for best subset
-        fpr, tpr, _ = roc_curve(y_test, y_pred_proba)
-        roc_auc = auc(fpr, tpr)
-        plt.figure(figsize=(8, 6))
-        plt.plot(fpr, tpr, color='darkorange', lw=2, label='ROC curve (area = %0.2f)' % roc_auc)
-        plt.plot([0, 1], [0, 1], color='navy', lw=2, linestyle='--')
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate', fontsize=12)
-        plt.ylabel('True Positive Rate', fontsize=12)
-        plt.title(f'{model.model_best}:\n Area Under the Receiver Operating Characteristic (AUROC)', fontsize=15)
-        # model_best returns the best model for Autogluon
-        plt.legend(loc="lower right")
-        plt.show()
-
-    plot_confusion_matrix(model)
-    plot_roc_auc(model)
-
-def plot_regression_diagnostics(model, X_test, y_test, data_columns):
+def plot_regression_diagnostics(y_true, y_pred):
     """
     Generates diagnostic plots for a regression model.
 
@@ -114,8 +93,7 @@ def plot_regression_diagnostics(model, X_test, y_test, data_columns):
     """
     
     # Predict the target values
-    y_pred = model.predict(X_test)
-    residuals = y_test - y_pred
+    residuals = y_true - y_pred
 
     def plot_regression_line(y_true, y_pred, xlabel='True Values', ylabel='Predictions', title='True vs Predicted Values'):
         plt.figure(figsize=(10, 6))
@@ -144,6 +122,6 @@ def plot_regression_diagnostics(model, X_test, y_test, data_columns):
         plt.show()
 
     # Call all the plotting functions
-    plot_regression_line(y_test, y_pred)
-    plot_residuals(y_test, y_pred)
+    plot_regression_line(y_true, y_pred)
+    plot_residuals(y_true, y_pred)
     plot_residual_histogram(residuals)
