@@ -287,14 +287,16 @@ class AutoMLAnalyzer():
 
         # Create plots
 
-        self.mytable = TableOne(self.data[self.continuous_columns + self.categorical_columns], categorical=self.categorical_columns, pval=False)
+        df_keep = self.data[self.continuous_columns + self.categorical_columns]
+
+        self.mytable = TableOne(df_keep, categorical=self.categorical_columns, pval=False)
         print(self.mytable.tabulate(tablefmt = "fancy_grid"))
         self.mytable.to_csv(os.path.join(self.output_dir, 'tableone.csv'))
         
         if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
-            g = sns.pairplot(self.data[self.continuous_columns + self.categorical_columns], hue=self.target_variable)
+            g = sns.pairplot(df_keep, hue=self.target_variable)
         else:
-            g= sns.pairplot(self.data[self.continuous_columns + self.categorical_columns])   
+            g= sns.pairplot(df_keep)   
         g.figure.suptitle("Pair Plot", y=1.08)  
 
         figure_path = os.path.join(self.output_dir, 'pairplot.png')
