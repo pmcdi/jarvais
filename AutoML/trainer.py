@@ -44,9 +44,6 @@ class AutoMLSupervised():
         self.reduction_method = reduction_method
         self.keep_k = keep_k
 
-        if self.reduction_method == 'mrmr':
-            raise ValueError('The mrmr package is brokie, working on fix')
-
         if task not in ['binary', 'multiclass', 'regression', 'quantile', None]:
             raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression', 'quantile'. Or provide nothing and let Autogluon infer the task.")
         
@@ -83,7 +80,9 @@ class AutoMLSupervised():
         
         if self.reduction_method == 'mrmr':
             mrmr_method = mrmr_classif if self.task in ['binary', 'multiclass'] else mrmr_regression
-            selected_features = mrmr_method(X=X, y=y, K=self.keep_k)
+            selected_features = mrmr_method(X=X, y=y, K=self.keep_k, n_jobs=1)
+            return X[selected_features]
+        
         if self.reduction_method == 'variance_threshold':
             selector = VarianceThreshold()
         elif self.reduction_method == 'corr':
@@ -136,8 +135,8 @@ class AutoMLSupervised():
                                          eval_metric=eval_metric,
                                          ).fit(pd.concat([self.X_train, self.y_train], axis=1))
 
-            print('\nModel Leaderbord\n')
-            print(tabulate(self.predictor.leaderboard(), tablefmt = "fancy_grid", headers="keys"))
+            print('\nModel Leaderbord\n----------------')
+            print(tabulate(self.predictor.leaderboard()[['model', 'score_val', 'eval_metric']], tablefmt = "fancy_grid", headers="keys"))
 
             if self.predictor.problem_type == 'binary':
                 plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test, as_pandas=False)[:, 1])
