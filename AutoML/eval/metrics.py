@@ -4,9 +4,10 @@ import numpy as np
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_samples, silhouette_score, confusion_matrix, roc_curve, auc
 
-from .utils import calculate_bin_stats, calculate_eval_ci, evaluation
+# from .utils import calculate_bin_stats, calculate_eval_ci, evaluation
+from seismometer.data.performance import calculate_bin_stats, calculate_eval_ci
+from seismometer.plot.mpl import evaluation
 
-# [ ] Precision Recall curve for classification
 
 def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray):
     """
@@ -61,26 +62,23 @@ def plot_classification_diagnostics(y_true, y_pred):
     """
     Generates diagnostic plots for a classification model.
 
-    Parameters:
-    -----------
-    model: Fitted classification model
-        The classification model to evaluate.
-    X: np.ndarray
-        Feature matrix.
-    y_true: np.ndarray
-        True labels.
     """
 
     stats = calculate_bin_stats(y_true, y_pred)
     ci_data = calculate_eval_ci(stats,y_true,y_pred)
     fig = evaluation(
         stats,
-        ci_data,
-        y_true,
-        y_pred
+        ci_data=ci_data,
+        truth=y_true,
+        output=y_pred
     )
 
-    plt.show()
+    # Specify the file path where you want to save the SVG
+    file_path = 'output.svg'
+
+    # Write the SVG data to the file
+    with open(file_path, 'w') as file:
+        file.write(fig.data)
 
 def plot_regression_diagnostics(y_true, y_pred):
     """
