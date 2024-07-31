@@ -24,7 +24,6 @@ class AutoMLAnalyzer():
         """
 
         Initializes the AutoMLAnalyzer with the provided data and target variable.
-        Optionally, a mapping file can be provided for data cleaning.
 
         Parameters:
         -----------
@@ -36,11 +35,6 @@ class AutoMLAnalyzer():
             Path to a yaml file that contains settings for janitor. Default is None where janitor will produce one automaticaly.
         output_dir: Union[str, os.PathLike], optional
             Output directory for analysis. Default is current directory.
-
-        Raises:
-        -------
-        ValueError
-            If the provided mapping file does not exist.
 
         """
 
@@ -59,7 +53,7 @@ class AutoMLAnalyzer():
                 with open(config_file, 'r') as file:
                     self.config = yaml.safe_load(file)
             else:
-                raise ValueError('Mapping file does not exist')
+                raise ValueError('Config file does not exist')
         else:
             self.config = None
 
@@ -70,6 +64,7 @@ class AutoMLAnalyzer():
 
         # assume all non-numerical and date columns are categorical
         numeric_cols = set([col for col in self.data.columns if is_numeric_dtype(self.data[col])])
+        numeric_cols = set([col for col in numeric_cols if self.data[col].dtype != bool]) # Filter out boolean 
         date_cols = set(self.data.select_dtypes(include=[np.datetime64]).columns)
         likely_cat = set(self.data.columns) - numeric_cols
         likely_cat = list(likely_cat - date_cols)
@@ -134,7 +129,7 @@ class AutoMLAnalyzer():
                     if _cat in outliers:
                         mapping[cat][f'{_cat}'] = 'Other'
                     else:
-                        mapping[cat][f'{_cat}'] = ''
+                        mapping[cat][f'{_cat}'] = f'{_cat}'
 
                 if len(outliers) > 0:
                     outliers = [f'{o}: {category_counts[o]} out of {self.data[cat].count()}' for o in outliers]
@@ -153,14 +148,15 @@ class AutoMLAnalyzer():
             self.categorical_columns = self.config['columns']['categorical']
             self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].map(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
 
-        
+        self.data[self.categorical_columns].astype('category')
+
         print('Applying changes from config file...\n')
 
         for key in self.config['mapping'].keys():
             assert key in self.data.columns, f"{key} in mapping file not found data"
-
-            to_replace = {k: v for k, v in self.config['mapping'][key].items() if v != ''}
-            self.data.loc[:, [key]] = self.data.loc[:, key].replace(to_replace)
+            self.data.loc[:, [key]] = self.data.loc[:, key].replace(self.config['mapping'][key])
+        
+        self.data.to_csv(os.path.join(self.output_dir, 'updated_data.csv'))
 
     def _create_multiplots(self):
 

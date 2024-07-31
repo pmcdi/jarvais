@@ -139,7 +139,7 @@ class AutoMLSupervised():
             print(tabulate(self.predictor.leaderboard()[['model', 'score_val', 'eval_metric']], tablefmt = "fancy_grid", headers="keys"))
 
             if self.predictor.problem_type == 'binary':
-                plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test, as_pandas=False)[:, 1])
+                plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1])
             elif self.predictor.problem_type == 'regression':
                 plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
    
