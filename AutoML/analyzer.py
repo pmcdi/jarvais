@@ -14,6 +14,9 @@ from typing import Union
 from fpdf import FPDF
 from fpdf.enums import Align
 
+from sklearn.impute import KNNImputer
+from sklearn.preprocessing import MinMaxScaler
+
 class AutoMLAnalyzer():
     
     def __init__(self,
@@ -23,7 +26,7 @@ class AutoMLAnalyzer():
                  output_dir: Union[str, os.PathLike] = '.'):
         """
 
-        Initializes the AutoMLAnalyzer with the provided data and target variable.
+        Initializes the AutoMLAnalyzer with the provided data.
 
         Parameters:
         -----------
@@ -58,16 +61,118 @@ class AutoMLAnalyzer():
             self.config = None
 
         self.outlier_analysis = '' # Used later when writing to PDF
+    
+    def _knn_impute_categorical(self, data, columns):
+        """
+        Perform KNN imputation on categorical columns. 
+        From https://www.kaggle.com/discussions/questions-and-answers/153147
+
+        Args:
+            data (DataFrame): The data containing categorical columns.
+            columns (list): List of categorical column names.
+
+        Returns:
+            DataFrame: Data with imputed categorical columns.
+        """
+        mm = MinMaxScaler()
+        mappin = {}
+
+        def find_category_mappings(df, variable):
+            return {k: i for i, k in enumerate(df[variable].dropna().unique(), 0)}
+
+        def integer_encode(df, variable, ordinal_mapping):
+            df[variable] = df[variable].map(ordinal_mapping)
+
+        df = data.copy()
+        for variable in columns:
+            mappings = find_category_mappings(df, variable)
+            mappin[variable] = mappings
+
+        for variable in columns:
+            integer_encode(df, variable, mappin[variable])
+
+        scaled_data = mm.fit_transform(df)
+        knn_imputer = KNNImputer()
+        knn_imputed = knn_imputer.fit_transform(scaled_data)
+        df.iloc[:, :] = mm.inverse_transform(knn_imputed)
+        for col in df.columns:
+            df[col] = round(df[col]).astype('int')
+
+        for col in columns:
+            inv_map = {v: k for k, v in mappin[col].items()}
+            df[col] = df[col].map(inv_map)
+
+        return df
+
+    
+    def _replace_missing(self):
+        """
+        Replace missing values in the dataset based on specified strategies.
+
+        This method handles missing values in both continuous and categorical columns.
+        The strategies for handling missing values are specified in the configuration.
+
+        Continuous columns:
+            - 'median': Replace missing values with the median of the column.
+            - 'mean': Replace missing values with the mean of the column.
+            - 'mode': Replace missing values with the mode of the column.
+            - If an unknown strategy is specified, the median is used by default.
+
+        Categorical columns:
+            - A specified string from the configuration is used to replace missing values.
+            - If 'knn' is specified, KNN imputation is used to fill missing values.
+
+        Note:
+            KNN imputation for categorical variables is performed using integer encoding and
+            inverse transformation. This can be computationally expensive for large datasets.
+        """
+
+        for cont in self.continuous_columns: 
+            strategy = self.config['missingness_strategy']['continuous'][cont]
+            if strategy.lower() == 'median':
+                replace_with = self.data[cont].median()
+            elif strategy.lower() == 'mean':
+                replace_with = self.data[cont].mean()
+            elif strategy.lower() == 'mode':
+                replace_with = self.data[cont].mode()
+            else:
+                print(f'Unknown value {strategy} provided to replace {cont}. Using median')
+                replace_with = self.data[cont].median()
+            self.data[cont] = self.data[cont].fillna(replace_with)
+
+        for cat in self.categorical_columns: # For categorical var, replaces with string provided in config(default Unknown)
+            if self.config['missingness_strategy']['categorical'][cat].lower() != 'knn':
+                self.data[cat] = self.data[cat].fillna(self.config['missingness_strategy']['categorical'][cat])
+
+        data_to_use = self.data[self.categorical_columns + self.continuous_columns]
+        for cat in self.categorical_columns:
+            if self.config['missingness_strategy']['categorical'][cat].lower() == 'knn':
+                print(f'Using KNN to fill missing values in {cat}, this may take a while...\n')
+                self.data[cat] = self._knn_impute_categorical(data_to_use, self.categorical_columns)[cat]                
 
     def _infer_types(self):
-        # adapted from https://github.com/tompollard/tableone/blob/main/tableone/preprocessors.py
+        """
+        Infer and categorize column data types in the dataset.
+        Adapted from https://github.com/tompollard/tableone/blob/main/tableone/preprocessors.py
+
+        This method analyzes the dataset to categorize columns as either 
+        continuous or categorical based on their data types and unique value proportions.
+
+        Assumptions:
+            - All non-numerical and non-date columns are considered categorical.
+            - Boolean columns are not considered numerical but categorical.
+            - Numerical columns with a unique value proportion below a threshold are 
+            considered categorical.
+
+        The method also applies a heuristic to detect and classify ID columns 
+        as categorical if they have a low proportion of unique values.
+        """
 
         # assume all non-numerical and date columns are categorical
         numeric_cols = set([col for col in self.data.columns if is_numeric_dtype(self.data[col])])
         numeric_cols = set([col for col in numeric_cols if self.data[col].dtype != bool]) # Filter out boolean 
-        date_cols = set(self.data.select_dtypes(include=[np.datetime64]).columns)
         likely_cat = set(self.data.columns) - numeric_cols
-        likely_cat = list(likely_cat - date_cols)
+        likely_cat = list(likely_cat - set(self.date_columns))
 
         # check proportion of unique values if numerical
         for var in numeric_cols:
@@ -77,24 +182,43 @@ class AutoMLAnalyzer():
 
         likely_cat = [cat for cat in likely_cat if self.data[cat].nunique()/self.data[cat].count() < 0.2] # Heuristic targeted at detecting ID columns
         self.categorical_columns = likely_cat
-        self.continuous_columns = list(set(self.data.columns) - set(likely_cat) - date_cols)
+        self.continuous_columns = list(set(self.data.columns) - set(likely_cat) - set(self.date_columns))
         
     def _run_janitor(self):
+        """
+        Perform data cleaning and type inference on the dataset.
+
+        This method checks for a configuration file. If none exists, it uses heuristics to 
+        infer data types and clean the dataset by identifying date columns, differentiating
+        between categorical and continuous columns, and detecting outliers in categorical columns.
+
+        The process includes:
+            - Detecting date columns by attempting to convert string columns to datetime.
+            - Inferring types of columns as categorical or continuous.
+            - Converting non-numeric values in continuous columns to NaN.
+            - Identifying columns with all NaN values, likely indicating ID columns.
+            - Detecting outliers in categorical columns, which are values occurring in 
+            less than 1% of the dataset, and mapping them to 'Other'.
+            - Storing the results in a configuration dictionary for further use.
+
+        If a configuration file is present, it applies mappings from the file to clean the dataset.
+        """
 
         if self.config is None:
             self.config = {}
             columns = {}
             
             # Detect dates
-            columns['date'] = []
+            self.date_columns = []
             for col in self.data.columns:
                 if self.data[col].dtype == 'object':
                     try:
                         self.data[col] = pd.to_datetime(self.data[col])
-                        columns['date'].append(col)
+                        self.date_columns.append(col)
                     except ValueError:
                         pass
-            
+            columns['date'] = self.date_columns
+
             # Find categorical vs continous 
             self._infer_types()
             self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].map(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
@@ -140,9 +264,6 @@ class AutoMLAnalyzer():
                     self.outlier_analysis += f'  - No Outliers found in {cat}\n'
 
             self.config['mapping'] = mapping
-
-            with open(os.path.join(self.output_dir, 'config.yaml'), 'w') as f:
-                yaml.dump(self.config, f)
         else:
             self.continuous_columns = self.config['columns']['continuous']
             self.categorical_columns = self.config['columns']['categorical']
@@ -155,10 +276,24 @@ class AutoMLAnalyzer():
         for key in self.config['mapping'].keys():
             assert key in self.data.columns, f"{key} in mapping file not found data"
             self.data.loc[:, [key]] = self.data.loc[:, key].replace(self.config['mapping'][key])
-        
-        self.data.to_csv(os.path.join(self.output_dir, 'updated_data.csv'))
 
     def _create_multiplots(self):
+        """
+        Generate and save multiplots for categorical and continuous variables.
+
+        This method creates multiplots for each categorical variable against all continuous variables. 
+        It saves the plots as PNG files in a specified output directory. The multiplots consist of a 
+        pie chart showing the distribution of the categorical variable and violin plots showing the 
+        relationship between the categorical and each continuous variable.
+
+        Steps:
+            - Create a directory for saving multiplots if it does not exist.
+            - Prepare data for pie chart plotting by grouping and sorting values.
+            - Generate a pie chart for each categorical variable to show distribution.
+            - Generate violin plots for each continuous variable against the categorical variable.
+            - Adjust font size based on the number of categories.
+            - Save plots to files and store file paths in the multiplots list.
+        """
 
         self.multiplots = [] # Used to save in PDF later
 
@@ -229,12 +364,26 @@ class AutoMLAnalyzer():
 
             plt.tight_layout()
             
-            # plt.show()
             plt.savefig(os.path.join(self.output_dir, 'multiplots', f'{var}_multiplots.png'))
             self.multiplots.append(os.path.join(self.output_dir, 'multiplots', f'{var}_multiplots.png'))
             plt.close()
 
     def _create_output_pdf(self):
+        """
+        Generate a PDF report of the analysis with plots and tables.
+
+        This method creates a PDF report containing various analysis results, 
+        including outlier analysis, correlation plots, multiplots, and a summary table.
+
+        The report is structured as follows:
+            - Cover page with the report title.
+            - Outlier analysis text.
+            - Pair plot, Pearson correlation, and Spearman correlation plots.
+            - Multiplots for categorical vs. continuous variable relationships.
+            - A tabular summary of the analysis results.
+
+        The PDF uses custom fonts and is saved in the specified output directory.
+        """
 
         pdf = FPDF()
 
@@ -281,13 +430,29 @@ class AutoMLAnalyzer():
 
         self._run_janitor()
 
-        # Create plots
+        # Create Table One
 
         df_keep = self.data[self.continuous_columns + self.categorical_columns]
 
         self.mytable = TableOne(df_keep, categorical=self.categorical_columns, pval=False)
         print(self.mytable.tabulate(tablefmt = "fancy_grid"))
         self.mytable.to_csv(os.path.join(self.output_dir, 'tableone.csv'))
+
+        # Apply missingness replacement and save updated data
+
+        if not 'missingness_strategy' in self.config.keys():
+            print('Applying default missingness to of unknown and median, change strategy in config file and run again if needed...\n')
+            self.config['missingness_strategy'] = {}
+            self.config['missingness_strategy']['categorical'] = {cat :'Unknown' for cat in self.categorical_columns} # Defining default replacement for each missing categorical variable
+            self.config['missingness_strategy']['continuous'] = {cont :'median' for cont in self.continuous_columns} # Defining default replacement for each missing continuous variable
+
+            with open(os.path.join(self.output_dir, 'config.yaml'), 'w') as f:
+                yaml.dump(self.config, f)
+
+        self._replace_missing()
+        self.data.to_csv(os.path.join(self.output_dir, 'updated_data.csv'))
+
+        # Create Plots
         
         if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
             g = sns.pairplot(df_keep, hue=self.target_variable)
@@ -327,6 +492,7 @@ class AutoMLAnalyzer():
 
         self._create_multiplots()
 
+        # Create Output PDF
         self._create_output_pdf()
 
 

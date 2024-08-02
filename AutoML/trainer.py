@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 from tabulate import tabulate
 
-from typing import Union
+from typing import Union, List
 
 from sklearn.model_selection import train_test_split
 from sklearn.feature_selection import SelectKBest, VarianceThreshold, chi2 ,f_classif, f_regression
@@ -16,23 +16,24 @@ from autogluon.tabular import TabularPredictor
 from .eval import plot_classification_diagnostics, plot_regression_diagnostics
 
 class AutoMLSupervised():
-    def __init__(self, 
+    def __init__(self,
                  task: str,
                  reduction_method: Union[str, None] = None,
                  keep_k: int = 2,
-                 output_dir: Union[str, os.PathLike] = '.',
-                ):
+                 output_dir: Union[str, os.PathLike] = '.'):
         """
         Initialize the AutoMLTrainer class with specified configurations.
 
         Parameters
         ----------
-        task : str,
+        task : str
             The type of task to handle. Options are 'binary', 'multiclass', 'regression', 'quantile'.
         reduction_method : str, default=None
-            The feature reduction method to apply. Options are 'mrmr', 'variance_threshold', 'corr', 'chi2'. By default no feature reduction applied.
+            The feature reduction method to apply. Options are 'mrmr', 'variance_threshold', 'corr', 'chi2'.
         keep_k : int, default=2
-            Number of features to keep, if a reduction method is defined. By default 2.
+            Number of features to keep, if a reduction method is defined.
+        output_dir : str or os.PathLike, default='.'
+            The directory where output files will be saved.
 
         Raises
         ------
@@ -46,14 +47,18 @@ class AutoMLSupervised():
 
         if task not in ['binary', 'multiclass', 'regression', 'quantile', None]:
             raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression', 'quantile'. Or provide nothing and let Autogluon infer the task.")
+
+        # Create output directory if it doesn't exist
+        os.makedirs(self.output_dir, exist_ok=True)
         
     def _plot_feature_importance(self):
-        
+        """
+        Plots the feature importance with standard deviation and p-value significance.
+        """
         df = self.predictor.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
 
-        
         # Plotting
-        fig, ax = plt.subplots(figsize=(10, 6))
+        fig, ax = plt.subplots(figsize=(20, 12))
 
         # Adding bar plot with error bars
         bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
@@ -77,6 +82,21 @@ class AutoMLSupervised():
         plt.show()
 
     def _feature_reduction(self, X, y):
+        """
+        Reduces features based on the specified reduction method.
+
+        Parameters
+        ----------
+        X : pd.DataFrame
+            The input feature data.
+        y : pd.Series
+            The target variable.
+
+        Returns
+        -------
+        pd.DataFrame
+            The reduced feature set.
+        """
         
         if self.reduction_method == 'mrmr':
             mrmr_method = mrmr_classif if self.task in ['binary', 'multiclass'] else mrmr_regression
@@ -98,9 +118,28 @@ class AutoMLSupervised():
         selected_features = X.columns[selector.get_support(indices=True)]
         return X[selected_features]
 
-    def run(self, data, target_variable,
+    def run(self,
+            data: pd.DataFrame,
+            target_variable: str,
             test_size: float = 0.2,
-            exclude: list = [], stratify_on=None):
+            exclude: List[str] = [],
+            stratify_on: Union[str, None] = None):
+            """
+            Runs the AutoML pipeline with the specified data and target variable.
+
+            Parameters
+            ----------
+            data : pd.DataFrame
+                The input data for training and testing.
+            target_variable : str
+                The name of the target variable in the dataset.
+            test_size : float, default=0.2
+                The proportion of the dataset to include in the test split.
+            exclude : list, default=[]
+                A list of columns to exclude from the feature set.
+            stratify_on : str, optional
+                The column to use for stratification, if any.
+            """
         
             exclude.append(target_variable)
             X = data.drop(columns=exclude) 
@@ -111,16 +150,16 @@ class AutoMLSupervised():
                 X = self._feature_reduction(X, y)
                 print(f'Features kept: {X.columns.values}')
 
-            if y.value_counts().min() > 1: # Meaning it can be used to stratify, if this condition is not met train_test_split produces - ValueError: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
-                if stratify_on is not None:
-                    stratify_col = y.astype(str) + '_' + data[stratify_on].astype(str) 
-                else:
-                    stratify_col = y                
-            else:
+            if self.task in ['binary', 'multiclass']:
+                if y.value_counts().min() > 1: # Meaning it can be used to stratify, if this condition is not met train_test_split produces - ValueError: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
                     if stratify_on is not None:
-                        stratify_col = data[stratify_on]
+                        stratify_col = y.astype(str) + '_' + data[stratify_on].astype(str) 
                     else:
-                        stratify_col = None
+                        stratify_col = y                
+                else:
+                    raise ValueError('Least populated class has only one entry')
+            else:
+                stratify_col = None
 
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=test_size, stratify=stratify_col, random_state=42)
 
@@ -138,11 +177,19 @@ class AutoMLSupervised():
             print('\nModel Leaderbord\n----------------')
             print(tabulate(self.predictor.leaderboard()[['model', 'score_val', 'eval_metric']], tablefmt = "fancy_grid", headers="keys"))
 
-            if self.predictor.problem_type == 'binary':
-                plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1])
-            elif self.predictor.problem_type == 'regression':
-                plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
-   
-            self._plot_feature_importance()
+            # Plot diagnostics
+            try:
+                if self.predictor.problem_type == 'binary':
+                    plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1])
+                elif self.predictor.problem_type == 'regression':
+                    plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
+            except Exception as e:
+                print(f"Error in plotting diagnostics: {e}")
+
+            # Plot feature importance
+            try:
+                self._plot_feature_importance()
+            except Exception as e:
+                print(f"Error in plotting feature importance: {e}")
 
     
