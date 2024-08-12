@@ -341,7 +341,10 @@ class AutoMLAnalyzer():
             rows = int(np.ceil(np.sqrt(n)))
             cols = int(np.ceil((n) / rows))
             fig, ax = plt.subplots(rows, cols, figsize=(24, 18)) 
-            ax = ax.flatten() 
+            if isinstance(ax, np.ndarray):
+                ax = ax.flatten() 
+            else:
+                ax = np.array([ax])
 
             ax[0].pie(values, 
                         labels=labels, 
