@@ -340,11 +340,8 @@ class AutoMLAnalyzer():
 
             rows = int(np.ceil(np.sqrt(n)))
             cols = int(np.ceil((n) / rows))
-            fig, ax = plt.subplots(rows, cols, figsize=(24, 18)) 
-            if isinstance(ax, np.ndarray):
-                ax = ax.flatten() 
-            else:
-                ax = np.array([ax])
+            fig, ax = plt.subplots(rows, cols, figsize=(rows*3, cols*3)) 
+            ax = ax.flatten() 
 
             ax[0].pie(values, 
                         labels=labels, 
@@ -455,21 +452,12 @@ class AutoMLAnalyzer():
         self._replace_missing()
         self.data.to_csv(os.path.join(self.output_dir, 'updated_data.csv'))
 
-        # Create Plots
-        
-        if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
-            g = sns.pairplot(df_keep, hue=self.target_variable)
-        else:
-            g= sns.pairplot(df_keep)   
-        g.figure.suptitle("Pair Plot", y=1.08)  
-
-        figure_path = os.path.join(self.output_dir, 'pairplot.png')
-        plt.savefig(figure_path)
-        plt.close()
+        # Create Plots 
 
         pearson_correlation = self.data[self.continuous_columns].corr(method='pearson')
 
-        plt.figure(figsize=(16,12))
+        size = len(self.continuous_columns)*1.5
+        plt.figure(figsize=(size, size))
         mask = np.triu(np.ones_like(pearson_correlation, dtype=bool)) # Keep only lower triangle
         np.fill_diagonal(mask, False)
         g = sns.heatmap(pearson_correlation, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f")
@@ -482,7 +470,7 @@ class AutoMLAnalyzer():
 
         spearman_correlation = self.data[self.continuous_columns].corr(method='spearman')
 
-        plt.figure(figsize=(16,12))
+        plt.figure(figsize=(size, size))
         mask = np.triu(np.ones_like(spearman_correlation, dtype=bool)) # Keep only lower triangle
         np.fill_diagonal(mask, False)
         g = sns.heatmap(spearman_correlation, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f")
@@ -490,6 +478,24 @@ class AutoMLAnalyzer():
         plt.tight_layout()
 
         figure_path = os.path.join(self.output_dir, 'spearman_correlation.png')
+        plt.savefig(figure_path)
+        plt.close()
+
+        if len(self.continuous_columns) > 10: # Keep only the top ten correlated pairs in the pair plot
+            corr_pairs = spearman_correlation.abs().unstack().sort_values(kind="quicksort", ascending=False).drop_duplicates()
+            top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
+            columns_to_plot = list(set([index for pair in top_10_pairs.index for index in pair]))
+            print(columns_to_plot)
+        else:
+            columns_to_plot = self.continuous_columns
+
+        if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
+            g = sns.pairplot(self.data[columns_to_plot + [self.target_variable]], hue=self.target_variable)
+        else:
+            g= sns.pairplot(self.data[columns_to_plot])   
+        g.figure.suptitle("Pair Plot", y=1.08)  
+
+        figure_path = os.path.join(self.output_dir, 'pairplot.png')
         plt.savefig(figure_path)
         plt.close()
 
