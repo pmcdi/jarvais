@@ -18,13 +18,14 @@ seaborn = ">=0.13.2,<0.14"
 "autogluon.tabular" = ">=0.8.0,<1.2"
 pandas = ">=1.5.3,<2.3"
 scikit-learn = ">=1.2.2,<1.5"
+openpyxl = ">=3.1.5,<3.2"
+shap = ">=0.45.1,<0.46"
 
 [system-requirements]
 linux= "5.4.0"
 
 [pypi-dependencies]
 seismometer = "*"
-pygraphviz = "*"
 mrmr-selection = "*"
 tableone = "*"
 borb = "*"
