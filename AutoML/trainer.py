@@ -180,7 +180,7 @@ class AutoMLSupervised():
             # Plot diagnostics
             try:
                 if self.predictor.problem_type == 'binary':
-                    plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1])
+                    plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.output_dir)
                 elif self.predictor.problem_type == 'regression':
                     plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
             except Exception as e:
