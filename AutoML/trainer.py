@@ -181,6 +181,6 @@ class AutoMLSupervised():
             print('\nModel Leaderbord\n----------------')
             print(tabulate(self.predictor.leaderboard()[['model', 'score_val', 'eval_metric']], tablefmt = "fancy_grid", headers="keys"))
 
-            explainer = AutoMLExplainer(self.predictor, self.X_test, self.y_test, self.output_dir)
+            explainer = AutoMLExplainer(self, self.X_test, self.y_test, self.output_dir)
             explainer.run()
     
