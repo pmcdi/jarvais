@@ -29,12 +29,17 @@ class ModelWrapper:
 
 class AutoMLExplainer():
     def __init__(self, 
-                 predictor, 
+                 trainer,
+                 X_train,
                  X_test,
                  y_test,
                  output_dir='.'):
         
-        self.predictor = predictor
+        self.trainer = trainer
+        self.predictor = ModelWrapper(trainer.predictor, 
+                                      trainer.feature_names,
+                                      trainer.target_variable)
+        self.X_train = X_train
         self.X_test = X_test
         self.y_test = y_test
         self.output_dir = output_dir
@@ -43,7 +48,7 @@ class AutoMLExplainer():
         """
         Plots the feature importance with standard deviation and p-value significance.
         """
-        df = self.predictor.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
+        df = self.trainer.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
 
         # Plotting
         fig, ax = plt.subplots(figsize=(10, 6))
@@ -70,27 +75,26 @@ class AutoMLExplainer():
         plt.show()
 
     def shap_values(self):
-
-        print(type(self.X_test))
-        shap_exp = shap.KernelExplainer(self.predictor.predict_proba, pd.DataFrame(self.X_test))
+        shap.initjs()
+        shap_exp = shap.KernelExplainer(self.predictor.predict_proba, pd.DataFrame(self.X_train))
+        self.shap_values = shap_exp.shap_values(self.X_test)
         
-        NSHAP_SAMPLES = 100 
-
-        self.shap_values = shap_exp.shap_values(self.X_test, nsamples=NSHAP_SAMPLES)
         shap.summary_plot(self.shap_values, self.X_test)
-        shap.dependence_plot("Education-Num", self.shap_values, self.X_test)
+        plt.show()
+        shap.force_plot(self.shap_values, self.X_test)
+        plt.show()
+        shap.dependence_plot("APL", self.shap_values, self.X_test)
         plt.show()
 
     def lime_values(self):
         pass
 
     def run(self):
-            
         # Plot diagnostics
             try:
-                if self.predictor.problem_type == 'binary':
+                if self.trainer.problem_type == 'binary':
                     plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.output_dir)
-                elif self.predictor.problem_type == 'regression':
+                elif self.trainer.problem_type == 'regression':
                     plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
             except Exception as e:
                 print(f"Error in plotting diagnostics: {e}")
@@ -106,5 +110,5 @@ class AutoMLExplainer():
 
     @classmethod
     def from_trainer(cls, trainer):
-        return cls(trainer, trainer.X_test, trainer.y_test, trainer.output_dir)
-    
+        return cls(trainer, trainer.X_train, trainer.X_test, trainer.y_test, trainer.output_dir)
+
