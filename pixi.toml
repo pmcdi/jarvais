@@ -24,7 +24,6 @@ linux= "5.4.0"
 
 [pypi-dependencies]
 seismometer = "*"
-pygraphviz = "*"
 mrmr-selection = "*"
 tableone = "*"
 borb = "*"
