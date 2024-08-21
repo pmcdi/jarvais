@@ -1,11 +1,11 @@
-import os, warnings, yaml
+import os, yaml
 
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 from tableone import TableOne
 import numpy as np
-from datetime import datetime
+from scipy.stats import f_oneway, ttest_ind
 
 from pandas.api.types import is_numeric_dtype
 
@@ -358,15 +358,32 @@ class AutoMLAnalyzer():
             if self.data[var].nunique() > 5: # Puts legend under plot if there are too many categories
                 ax[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
 
-            # create violin plot per continuous variable
-            for i in range(2, n):
-                sns.violinplot(x=var, y=self.continuous_columns[i-1], data=self.data, ax=ax[i], inner="point")
-                ax[i].tick_params(axis='x', labelrotation=67.5)
-                ax[i].set_title(f"{var} vs {self.continuous_columns[i-1]}")
-            
-            # Hide any empty subplots
-            for j in range(n, len(ax)):
-                ax[j].axis('off')
+            p_values = {}
+
+            # Calculate p-values
+            for col in self.continuous_columns:
+                unique_values = self.data[var].unique()
+                
+                # If binary classification, use t-test
+                if len(unique_values) == 2:
+                    group1 = self.data[self.data[var] == unique_values[0]][col]
+                    group2 = self.data[self.data[var] == unique_values[1]][col]
+                    _, p_value = ttest_ind(group1, group2, equal_var=False)
+                
+                # For more than two categories, use ANOVA
+                else:
+                    groups = [self.data[self.data[var] == value][col] for value in unique_values]
+                    _, p_value = f_oneway(*groups)
+                
+                p_values[col] = p_value
+
+            # Sort the continuous columns by p-value (ascending order)
+            sorted_columns = sorted(p_values, key=p_values.get)
+
+            for i, col in enumerate(sorted_columns):
+                sns.violinplot(x=var, y=col, data=self.data, ax=ax[i+2], inner="point")
+                ax[i+2].tick_params(axis='x', labelrotation=67.5)
+                ax[i+2].set_title(f"{var} vs {col} (p-value: {p_values[col]:.4f})")
 
             plt.tight_layout()
             
@@ -428,9 +445,18 @@ class AutoMLAnalyzer():
             pdf.add_page()
             pdf.image(plot, keep_aspect_ratio=True, w=pdf.epw-20, h=pdf.eph)
 
+        csv_df = pd.read_csv(os.path.join(self.output_dir, 'tableone.csv'), na_filter=False).astype(str)
+        headers = csv_df.columns.tolist()
+        headers = [f'' if 'Unnamed:' in header else header for header in headers] # Keep empty header entries
+        data = [headers] + csv_df.values.tolist()
+
         pdf.add_page()
-        pdf.set_font('dejavu-sans', 'b', 14)  
-        pdf.write_html(self.mytable.tabulate(tablefmt = "html"), table_line_separators=True)
+        pdf.set_font('dejavu-sans', '', 10)  
+        with pdf.table() as table:
+            for data_row in data:
+                row = table.row()
+                for datum in data_row:
+                    row.cell(datum)
 
         pdf.output(os.path.join(self.output_dir, 'analysis_report.pdf'))
 

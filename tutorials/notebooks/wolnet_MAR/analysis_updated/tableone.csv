@@ -1,13 +1,12 @@
 ,,Missing,Overall
 n,,,380
+"APL, mean (SD)",,0,1995.0 (1895.1)
 "FNPL, mean (SD)",,0,675.6 (861.7)
-"MAR, mean (SD)",,0,3.7 (0.7)
 "95HD, mean (SD)",,0,6.2 (21.9)
-"JaccardIndex, mean (SD)",,0,0.7 (0.2)
+"SurfDist, mean (SD)",,0,1.3 (1.9)
 "VolDice, mean (SD)",,0,0.8 (0.1)
 "FNV, mean (SD)",,0,793.0 (1199.9)
-"APL, mean (SD)",,0,1995.0 (1895.1)
-"SurfDist, mean (SD)",,0,1.3 (1.9)
+"JaccardIndex, mean (SD)",,0,0.7 (0.2)
 "OAR, n (%)",Acoustic_L,,20 (5.3)
 "OAR, n (%)",Acoustic_R,,20 (5.3)
 "OAR, n (%)",BrachialPlex_L,,20 (5.3)
