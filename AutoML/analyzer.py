@@ -355,6 +355,8 @@ class AutoMLAnalyzer():
             # UMAP colored by variable
             sns.scatterplot(x=self.umap_data[:,0], y=self.umap_data[:,1], hue=self.data[var], alpha=.7, ax=ax[1])
             ax[1].set_title(f'UMAP of Continuous Variables with {var}')
+            if self.data[var].nunique() > 5: # Puts legend under plot if there are too many categories
+                ax[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
 
             # create violin plot per continuous variable
             for i in range(2, n):
