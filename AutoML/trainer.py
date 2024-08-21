@@ -13,7 +13,7 @@ from mrmr import mrmr_classif, mrmr_regression
 
 from autogluon.tabular import TabularPredictor
 
-from .eval import plot_classification_diagnostics, plot_regression_diagnostics
+from .explainer import AutoMLExplainer
 
 class AutoMLSupervised():
     def __init__(self,
@@ -145,10 +145,14 @@ class AutoMLSupervised():
             X = data.drop(columns=exclude) 
             y = data[target_variable]
 
+            self.target_variable = target_variable
+
             if self.reduction_method is not None:
                 print(f'Applying {self.reduction_method} for feature reduction')
                 X = self._feature_reduction(X, y)
                 print(f'Features kept: {X.columns.values}')
+
+            self.feature_names = list(X.columns)
 
             if self.task in ['binary', 'multiclass']:
                 if y.value_counts().min() > 1: # Meaning it can be used to stratify, if this condition is not met train_test_split produces - ValueError: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
@@ -177,19 +181,6 @@ class AutoMLSupervised():
             print('\nModel Leaderbord\n----------------')
             print(tabulate(self.predictor.leaderboard()[['model', 'score_val', 'eval_metric']], tablefmt = "fancy_grid", headers="keys"))
 
-            # Plot diagnostics
-            try:
-                if self.predictor.problem_type == 'binary':
-                    plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.output_dir)
-                elif self.predictor.problem_type == 'regression':
-                    plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
-            except Exception as e:
-                print(f"Error in plotting diagnostics: {e}")
-
-            # Plot feature importance
-            try:
-                self._plot_feature_importance()
-            except Exception as e:
-                print(f"Error in plotting feature importance: {e}")
-
+            explainer = AutoMLExplainer.from_trainer(self)
+            explainer.run()
     
