@@ -89,7 +89,8 @@ def plot_classification_diagnostics(y_true, y_pred, output_dir):
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     plt.title('Confusion Matrix')
-    plt.show()
+    plt.savefig(os.path.join(output_dir, 'confusion_matrix.png'))
+    plt.close()
 
 def plot_regression_diagnostics(y_true, y_pred):
     """
