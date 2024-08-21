@@ -21,6 +21,7 @@ scikit-learn = ">=1.2.2,<1.5"
 openpyxl = ">=3.1.5,<3.2"
 shap = ">=0.45.1,<0.46"
 htmlmin = "==0.1.12"
+scipy = ">=1.11.4,<1.13"
 
 [system-requirements]
 linux= "5.4.0"
