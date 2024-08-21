@@ -4,7 +4,7 @@ version = "0.1.0"
 description = "Add a short description here"
 authors = ["JoshuaSiraj <joshua.siraj@ryerson.ca>"]
 channels = ["conda-forge"]
-platforms = ["linux-64", "osx-arm64", "osx-64", "win-64"]
+platforms = ["linux-64", "win-64"]
 
 [tasks]
 example = "jupyter lab"
@@ -15,15 +15,18 @@ pyyaml = ">=6.0.1,<6.1"
 fpdf2 = ">=2.7.9,<2.8"
 jupyterlab = ">=4.2.4,<4.3"
 seaborn = ">=0.13.2,<0.14"
-"autogluon.tabular" = ">=0.8.0,<1.2"
+"autogluon.tabular" = ">=0.8.0,<1.2" 
 pandas = ">=1.5.3,<2.3"
 scikit-learn = ">=1.2.2,<1.5"
+openpyxl = ">=3.1.5,<3.2"
+shap = ">=0.45.1,<0.46"
+htmlmin = "==0.1.12"
 
 [system-requirements]
 linux= "5.4.0"
 
 [pypi-dependencies]
-seismometer = "*"
 mrmr-selection = "*"
 tableone = "*"
 borb = "*"
+seismometer = ">=0.2.1, <0.3"

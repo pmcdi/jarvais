@@ -17,8 +17,9 @@ from fpdf.enums import Align
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import MinMaxScaler
 
+from joblib import Parallel, delayed
+
 class AutoMLAnalyzer():
-    
     def __init__(self,
                  data: pd.DataFrame, 
                  target_variable: Union[str, None] = None,
@@ -221,7 +222,7 @@ class AutoMLAnalyzer():
 
             # Find categorical vs continous 
             self._infer_types()
-            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].map(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
+            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].apply(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
             
             nan_ = self.data.apply(lambda col: col.isna().all())
             nan_columns = nan_[nan_].index.tolist()
@@ -311,23 +312,17 @@ class AutoMLAnalyzer():
             
             return labels, values
 
-        df_counts = pd.DataFrame(columns=["counts"])
-        for var in self.categorical_columns:
-
+        # for var in self.categorical_columns:
+        
+        def plot_one_multiplot(var):
             num_categories = len(self.data[var].unique())
 
             sns.set_theme(style="white")
             labels, values = prep_for_pie(self.data, var)
 
-            # save counts to dataframe
-            df_counts = pd.concat([df_counts, 
-                                pd.DataFrame(index=["", var], data=["", ""], columns=["counts"]), 
-                                pd.DataFrame(index=labels, data=values, columns=["counts"])])
-
             # only write % if big enough
             def autopct(pct):
                 return ('%1.1f%%' % pct) if pct > 3.5 else ''
-
 
             def calculate_fontsize(num_categories):
                 base_fontsize = 16
@@ -336,23 +331,27 @@ class AutoMLAnalyzer():
             
             fontsize = calculate_fontsize(num_categories)
 
+            # setting number of rows/columns for subplots
             n = len(self.continuous_columns)
-
             rows = int(np.ceil(np.sqrt(n)))
             cols = int(np.ceil((n) / rows))
-            fig, ax = plt.subplots(rows, cols, figsize=(rows*3, cols*3)) 
+            scaler = 6
+
+            # create subplot grid
+            fig, ax = plt.subplots(rows, cols, figsize=(rows*scaler, cols*scaler)) 
             ax = ax.flatten() 
 
             ax[0].pie(values, 
-                        labels=labels, 
-                        autopct=autopct, 
-                        startangle=90,
-                        counterclock=False,
-                        textprops={'fontsize': fontsize},
-                        colors=plt.cm.Set2.colors) # 90 = 12 o'clock, 0 = 3 o'clock, 180 = 9 o'clock
+                      labels=labels, 
+                      autopct=autopct, 
+                      startangle=90,
+                      counterclock=False,
+                      textprops={'fontsize': fontsize},
+                      colors=plt.cm.Set2.colors) # 90 = 12 o'clock, 0 = 3 o'clock, 180 = 9 o'clock
 
             ax[0].set_title(f"{var} Distribution. N: {self.data[var].count()}")
             
+            # create violin plot per continuous variable
             for i in range(1, n):
                 sns.violinplot(x=var, y=self.continuous_columns[i], data=self.data, ax=ax[i], inner="point")
                 ax[i].tick_params(axis='x', labelrotation=67.5)
@@ -364,9 +363,15 @@ class AutoMLAnalyzer():
 
             plt.tight_layout()
             
-            plt.savefig(os.path.join(self.output_dir, 'multiplots', f'{var}_multiplots.png'))
-            self.multiplots.append(os.path.join(self.output_dir, 'multiplots', f'{var}_multiplots.png'))
+            # save multiplot
+            multiplot_path = os.path.join(self.output_dir, 'multiplots', f'{var}_multiplots.png')
+            plt.savefig(multiplot_path)
             plt.close()
+            
+            # return path to figure for PDF
+            return multiplot_path
+        
+        self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(var) for var in self.categorical_columns)
 
     def _create_output_pdf(self):
         """
