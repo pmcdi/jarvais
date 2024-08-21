@@ -16,6 +16,7 @@ from fpdf.enums import Align
 
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import MinMaxScaler
+from umap import UMAP
 
 from joblib import Parallel, delayed
 
@@ -332,7 +333,7 @@ class AutoMLAnalyzer():
             fontsize = calculate_fontsize(num_categories)
 
             # setting number of rows/columns for subplots
-            n = len(self.continuous_columns)
+            n = len(self.continuous_columns) + 1
             rows = int(np.ceil(np.sqrt(n)))
             cols = int(np.ceil((n) / rows))
             scaler = 6
@@ -341,6 +342,7 @@ class AutoMLAnalyzer():
             fig, ax = plt.subplots(rows, cols, figsize=(rows*scaler, cols*scaler)) 
             ax = ax.flatten() 
 
+            # Pie plot of categorical variable
             ax[0].pie(values, 
                       labels=labels, 
                       autopct=autopct, 
@@ -348,14 +350,17 @@ class AutoMLAnalyzer():
                       counterclock=False,
                       textprops={'fontsize': fontsize},
                       colors=plt.cm.Set2.colors) # 90 = 12 o'clock, 0 = 3 o'clock, 180 = 9 o'clock
-
             ax[0].set_title(f"{var} Distribution. N: {self.data[var].count()}")
             
+            # UMAP colored by variable
+            sns.scatterplot(x=self.umap_data[:,0], y=self.umap_data[:,1], hue=self.data[var], alpha=.7, ax=ax[1])
+            ax[1].set_title(f'UMAP of Continuous Variables with {var}')
+
             # create violin plot per continuous variable
-            for i in range(1, n):
-                sns.violinplot(x=var, y=self.continuous_columns[i], data=self.data, ax=ax[i], inner="point")
+            for i in range(2, n):
+                sns.violinplot(x=var, y=self.continuous_columns[i-1], data=self.data, ax=ax[i], inner="point")
                 ax[i].tick_params(axis='x', labelrotation=67.5)
-                ax[i].set_title(f"{var} vs {self.continuous_columns[i]}")
+                ax[i].set_title(f"{var} vs {self.continuous_columns[i-1]}")
             
             # Hide any empty subplots
             for j in range(n, len(ax)):
@@ -458,10 +463,11 @@ class AutoMLAnalyzer():
         self.data.to_csv(os.path.join(self.output_dir, 'updated_data.csv'))
 
         # Create Plots 
+        size = len(self.continuous_columns)*1.5
 
+        # Pearson Correlation + Plots
         pearson_correlation = self.data[self.continuous_columns].corr(method='pearson')
 
-        size = len(self.continuous_columns)*1.5
         plt.figure(figsize=(size, size))
         mask = np.triu(np.ones_like(pearson_correlation, dtype=bool)) # Keep only lower triangle
         np.fill_diagonal(mask, False)
@@ -473,6 +479,7 @@ class AutoMLAnalyzer():
         plt.savefig(figure_path)
         plt.close()
 
+        # Spearman Correlation + Plots
         spearman_correlation = self.data[self.continuous_columns].corr(method='spearman')
 
         plt.figure(figsize=(size, size))
@@ -483,6 +490,17 @@ class AutoMLAnalyzer():
         plt.tight_layout()
 
         figure_path = os.path.join(self.output_dir, 'spearman_correlation.png')
+        plt.savefig(figure_path)
+        plt.close()
+
+        # UMAP reduced data + Plots
+        self.umap_data = UMAP(n_components=2).fit_transform(self.data[self.continuous_columns])
+
+        plt.figure(figsize=(8, 8))
+        g = sns.scatterplot(x=self.umap_data[:,0], y=self.umap_data[:,1], alpha=.7)
+        plt.title(f'UMAP of Continuous Variables')
+
+        figure_path = os.path.join(self.output_dir, 'umap_continuous_data.png')
         plt.savefig(figure_path)
         plt.close()
 
