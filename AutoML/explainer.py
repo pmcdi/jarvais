@@ -22,10 +22,11 @@ class ModelWrapper:
         if not isinstance(X, pd.DataFrame):
             X = pd.DataFrame(X, columns=self.feature_names)
         preds = self.ag_model.predict_proba(X)
-        if self.ag_model.problem_type == "regression" or self.target_variable is None:
-            return preds
-        else:
-            return preds[self.target_variable]    
+        return preds
+        # if self.ag_model.problem_type == "regression" or self.target_variable is None:
+        #     return preds
+        # else:
+        #     return preds[self.target_variable]riable]    
 
 class AutoMLExplainer():
     def __init__(self, 
@@ -48,7 +49,7 @@ class AutoMLExplainer():
         """
         Plots the feature importance with standard deviation and p-value significance.
         """
-        df = self.trainer.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
+        df = self.predictor.ag_model.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
 
         # Plotting
         fig, ax = plt.subplots(figsize=(10, 6))
@@ -72,19 +73,22 @@ class AutoMLExplainer():
 
         # Show plot
         plt.tight_layout()
-        plt.show()
+        plt.savefig(os.path.join(self.output_dir, 'feature_importance.png'))
+        plt.close()
 
     def shap_values(self):
         shap.initjs()
-        shap_exp = shap.KernelExplainer(self.predictor.predict_proba, pd.DataFrame(self.X_train))
+        shap_exp = shap.KernelExplainer(self.predictor.predict_proba, self.X_train)
         self.shap_values = shap_exp.shap_values(self.X_test)
         
-        shap.summary_plot(self.shap_values, self.X_test)
-        plt.show()
-        shap.force_plot(self.shap_values, self.X_test)
-        plt.show()
-        shap.dependence_plot("APL", self.shap_values, self.X_test)
-        plt.show()
+        shap.summary_plot(self.shap_values, self.X_test, show=False)
+        plt.savefig(os.path.join(self.output_dir, 'shap_summary.png'))
+        plt.close()
+
+        # shap.plots.force(shap_exp.expected_value[0], self.shap_values[..., 0])
+        # plt.show()
+        # shap.dependence_plot("APL", self.shap_values, self.X_test)
+        # plt.show()
 
     def lime_values(self):
         pass
@@ -92,9 +96,9 @@ class AutoMLExplainer():
     def run(self):
         # Plot diagnostics
             try:
-                if self.trainer.problem_type == 'binary':
+                if self.predictor.ag_model.problem_type == 'binary':
                     plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.output_dir)
-                elif self.trainer.problem_type == 'regression':
+                elif self.predictor.ag_model.problem_type == 'regression':
                     plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
             except Exception as e:
                 print(f"Error in plotting diagnostics: {e}")
@@ -107,8 +111,6 @@ class AutoMLExplainer():
 
             self.shap_values()
 
-
     @classmethod
     def from_trainer(cls, trainer):
         return cls(trainer, trainer.X_train, trainer.X_test, trainer.y_test, trainer.output_dir)
-

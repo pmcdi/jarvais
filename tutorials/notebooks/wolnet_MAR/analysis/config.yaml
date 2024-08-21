@@ -1,0 +1,53 @@
+columns:
+  categorical:
+  - OAR
+  - Targ
+  continuous:
+  - FNPL
+  - MAR
+  - 95HD
+  - JaccardIndex
+  - VolDice
+  - FNV
+  - APL
+  - SurfDist
+  date: []
+  other:
+  - patient
+mapping:
+  OAR:
+    Acoustic_L: Acoustic_L
+    Acoustic_R: Acoustic_R
+    BrachialPlex_L: BrachialPlex_L
+    BrachialPlex_R: BrachialPlex_R
+    Brainstem: Brainstem
+    Esophagus: Esophagus
+    Eye_L: Eye_L
+    Eye_R: Eye_R
+    Larynx: Larynx
+    Lens_L: Lens_L
+    Lens_R: Lens_R
+    Lips: Lips
+    Mandible_Bone: Mandible_Bone
+    Nrv_Optic_L: Nrv_Optic_L
+    Nrv_Optic_R: Nrv_Optic_R
+    OpticChiasm: OpticChiasm
+    Parotid_L: Parotid_L
+    Parotid_R: Parotid_R
+    SpinalCord: SpinalCord
+  Targ:
+    'False': 'False'
+    'True': 'True'
+missingness_strategy:
+  categorical:
+    OAR: Unknown
+    Targ: Unknown
+  continuous:
+    95HD: median
+    APL: median
+    FNPL: median
+    FNV: median
+    JaccardIndex: median
+    MAR: median
+    SurfDist: median
+    VolDice: median
