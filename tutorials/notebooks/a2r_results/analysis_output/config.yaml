@@ -7,7 +7,6 @@ columns:
   - gender
   continuous:
   - glucose
-  - mrn
   - neutrophil
   - lactate_dehydrogenase
   - hemoglobin
@@ -131,10 +130,16 @@ missingness_strategy:
     regimen: Unknown
   continuous:
     age: median
+    alanine_aminotransferase: median
     albumin: median
+    alkaline_phosphatase: median
+    aspartate_aminotransferase: median
     bicarbonate: median
+    body_surface_area: median
     chloride: median
+    creatinine: median
     cycle_number: median
+    eosinophil: median
     esas_anxiety: median
     esas_appetite: median
     esas_depression: median
@@ -144,21 +149,12 @@ missingness_strategy:
     esas_shortness_of_breath: median
     esas_tiredness: median
     esas_well_being: median
-    height: median
-    line_of_therapy: median
-    patient_ecog: median
-    potassium: median
-    sodium: median
-    alanine_aminotransferase: median
-    alkaline_phosphatase: median
-    aspartate_aminotransferase: median
-    body_surface_area: median
-    creatinine: median
-    eosinophil: median
     glucose: median
+    height: median
     hematocrit: median
     hemoglobin: median
     lactate_dehydrogenase: median
+    line_of_therapy: median
     lymphocyte: median
     magnesium: median
     mean_corpuscular_hemoglobin: median
@@ -168,10 +164,13 @@ missingness_strategy:
     monocyte: median
     mrn: median
     neutrophil: median
+    patient_ecog: median
     phosphate: median
     platelet: median
+    potassium: median
     red_blood_cell: median
     red_cell_distribution_width: median
+    sodium: median
     total_bilirubin: median
     weight: median
     white_blood_cell: median
