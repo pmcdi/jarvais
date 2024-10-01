@@ -4,7 +4,6 @@ pixi.lock
 *cpython*
 __pycache__
 
-test.ipynb
 .ipynb_checkpoints
 
 analysis_*

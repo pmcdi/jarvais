@@ -69,7 +69,7 @@ class AutoMLExplainer():
         ax.set_title('Feature Importance with Standard Deviation and p-value Significance')
         ax.axhline(0, color='grey', linewidth=0.8)
         ax.set_xticks(np.arange(len(df.index.values)))
-        ax.set_xticklabels(df.index.values, rotation=45)
+        ax.set_xticklabels(df.index.values, rotation=90)
 
         # Show plot
         plt.tight_layout()
@@ -77,18 +77,26 @@ class AutoMLExplainer():
         plt.close()
 
     def shap_values(self):
-        shap.initjs()
-        shap_exp = shap.KernelExplainer(self.predictor.predict_proba, self.X_train)
-        self.shap_values = shap_exp.shap_values(self.X_test)
+        # try:
+
+        background_data = shap.sample(self.X_train, 100)  # For instance, use 100 samples
+
+        # Create the SHAP explainer with the summarized background data
+        shap_exp = shap.KernelExplainer(self.predictor.predict_proba, background_data)
         
-        shap.summary_plot(self.shap_values, self.X_test, show=False)
+        test_data = shap.sample(self.X_test, 20) 
+
+        # Compute SHAP values for the test set
+        self.shap_values = shap_exp.shap_values(test_data)
+        
+        # Generate and save the SHAP summary plot
+        shap.summary_plot(self.shap_values, test_data, show=False)
         plt.savefig(os.path.join(self.output_dir, 'shap_summary.png'))
         plt.close()
-
-        # shap.plots.force(shap_exp.expected_value[0], self.shap_values[..., 0])
-        # plt.show()
-        # shap.dependence_plot("APL", self.shap_values, self.X_test)
-        # plt.show()
+            
+        # except Exception as e:
+        #     # Log or print the error for debugging purposes
+        #     print(f"Error in SHAP analysis: {e}")
 
     def lime_values(self):
         pass
