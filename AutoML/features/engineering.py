@@ -33,7 +33,7 @@ lab_cols = [
     'albumin',
     'alkaline_phosphatase',
     'aspartate_aminotransferase',
-    'basophil',
+    #'basophil',
     'bicarbonate',
     'chloride',
     'creatinine',
@@ -190,7 +190,9 @@ def feature_engineering_clinical(data: pd.DataFrame, cfg): #, function: Callable
     ######### Process feature engineering ##########
     data['treatment_date'] = pd.to_datetime(data['treatment_date'], errors='coerce')
     data['first_treatment_date'] = pd.to_datetime(data['first_treatment_date'], errors='coerce')
-
+    
+    data = get_change_since_prev_session(data)
+    data = get_missingness_features(data)
     data = get_visit_month_feature(data, col=main_date_col)
     data['line_of_therapy'] = data.groupby('mrn', group_keys=False).apply(get_line_of_therapy)
     data['days_since_starting_treatment'] = (data[main_date_col] - data['first_treatment_date']).dt.days
