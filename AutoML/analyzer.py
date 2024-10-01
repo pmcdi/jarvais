@@ -130,7 +130,7 @@ class AutoMLAnalyzer():
         """
 
         for cont in self.continuous_columns: 
-            strategy = self.config['missingness_strategy']['continuous'][cont]
+            strategy = 'median' if cont not in self.config['missingness_strategy']['continuous'].keys() else self.config['missingness_strategy']['continuous'][cont]
             if strategy.lower() == 'median':
                 replace_with = self.data[cont].median()
             elif strategy.lower() == 'mean':
@@ -143,8 +143,9 @@ class AutoMLAnalyzer():
             self.data[cont] = self.data[cont].fillna(replace_with)
 
         for cat in self.categorical_columns: # For categorical var, replaces with string provided in config(default Unknown)
+            filler = 'Unknown' if cat not in self.config['missingness_strategy']['categorical'].keys() else self.config['missingness_strategy']['categorical'][cat]
             if self.config['missingness_strategy']['categorical'][cat].lower() != 'knn':
-                self.data[cat] = self.data[cat].fillna(self.config['missingness_strategy']['categorical'][cat])
+                self.data[cat] = self.data[cat].fillna(filler)
 
         data_to_use = self.data[self.categorical_columns + self.continuous_columns]
         for cat in self.categorical_columns:
@@ -333,7 +334,7 @@ class AutoMLAnalyzer():
             fontsize = calculate_fontsize(num_categories)
 
             # setting number of rows/columns for subplots
-            n = len(self.continuous_columns) + 1
+            n = len(self.continuous_columns) + 2
             rows = int(np.ceil(np.sqrt(n)))
             cols = int(np.ceil((n) / rows))
             scaler = 6
@@ -384,6 +385,10 @@ class AutoMLAnalyzer():
                 sns.violinplot(x=var, y=col, data=self.data, ax=ax[i+2], inner="point")
                 ax[i+2].tick_params(axis='x', labelrotation=67.5)
                 ax[i+2].set_title(f"{var} vs {col} (p-value: {p_values[col]:.4f})")
+
+            # Turn off unused axes
+            for j in range(n, len(ax)):
+                fig.delaxes(ax[j])  # Turn off unused axes
 
             plt.tight_layout()
             
@@ -441,9 +446,19 @@ class AutoMLAnalyzer():
         pdf.image(os.path.join(self.output_dir, 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
         pdf.image(os.path.join(self.output_dir, 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
 
-        for plot in self.multiplots:
+        for plot, cat in zip(self.multiplots, self.categorical_columns):
             pdf.add_page()
-            pdf.image(plot, keep_aspect_ratio=True, w=pdf.epw-20, h=pdf.eph)
+            
+            pdf.set_font('dejavu-sans', '', 12)
+            pdf.write(5, f"{cat.title()} Multiplots\n")
+            
+            current_y = pdf.get_y()
+            
+            img_width = pdf.epw - 20  
+            img_height = pdf.eph - current_y - 20
+            
+            pdf.image(plot, x=10, y=current_y + 5, w=img_width, h=img_height, keep_aspect_ratio=True)
+
 
         csv_df = pd.read_csv(os.path.join(self.output_dir, 'tableone.csv'), na_filter=False).astype(str)
         headers = csv_df.columns.tolist()
@@ -536,7 +551,6 @@ class AutoMLAnalyzer():
             corr_pairs = spearman_correlation.abs().unstack().sort_values(kind="quicksort", ascending=False).drop_duplicates()
             top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
             columns_to_plot = list(set([index for pair in top_10_pairs.index for index in pair]))
-            print(columns_to_plot)
         else:
             columns_to_plot = self.continuous_columns
 
