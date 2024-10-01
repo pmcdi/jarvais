@@ -15,7 +15,55 @@ def feature_engineering_imaging(data: pd.DataFrame):
     
     raise NotImplementedError
 
-def feature_engineering_clinical(data: pd.DataFrame): #, function: Callable
+
+symp_cols = [
+    'esas_pain',
+    'esas_tiredness',
+    'esas_nausea',
+    'esas_depression',
+    'esas_anxiety',
+    'esas_drowsiness',
+    'esas_appetite',
+    'esas_well_being',
+    'esas_shortness_of_breath',
+    'patient_ecog',
+]
+lab_cols = [
+    'alanine_aminotransferase',
+    'albumin',
+    'alkaline_phosphatase',
+    'aspartate_aminotransferase',
+    #'basophil',
+    'bicarbonate',
+    'chloride',
+    'creatinine',
+    'eosinophil',
+    'glucose',
+    'hematocrit',
+    'hemoglobin',
+    'lactate_dehydrogenase',
+    'lymphocyte',
+    'magnesium',
+    'mean_corpuscular_hemoglobin',
+    'mean_corpuscular_hemoglobin_concentration',
+    'mean_corpuscular_volume',
+    'mean_platelet_volume',
+    'monocyte',
+    'neutrophil',
+    'phosphate',
+    'platelet',
+    'potassium',
+    'red_blood_cell',
+    'red_cell_distribution_width',
+    'sodium',
+    'total_bilirubin',
+    'white_blood_cell',
+]
+symp_change_cols = [f'{col}_change' for col in symp_cols]
+lab_change_cols = [f'{col}_change' for col in lab_cols]
+
+
+def feature_engineering_clinical(data: pd.DataFrame, cfg): #, function: Callable
     """
     Function to perform feature engineering on clinical data using custom functions.
     
@@ -28,11 +76,11 @@ def feature_engineering_clinical(data: pd.DataFrame): #, function: Callable
     """
     import numpy as np
     from functools import partial
-    import yaml
-    from constants import lab_cols, lab_change_cols, symp_cols, symp_change_cols
+    # import yaml
+    # from constants import lab_cols, lab_change_cols, symp_cols, symp_change_cols
 
-    with open('config.yaml') as file:
-        cfg = yaml.safe_load(file)
+    # with open('config.yaml') as file:
+    #     cfg = yaml.safe_load(file)
         
     # align_on = cfg['align_on'] 
     main_date_col = cfg['main_date_col'] 
@@ -138,7 +186,13 @@ def feature_engineering_clinical(data: pd.DataFrame): #, function: Callable
     def get_creatinine_clearance(data):
         return (140 - data['age']) * data['weight'] * 1.23 * data['female'].replace({True: 0.85, False: 1}) / data['creatinine']
     
-
+    
+    ######### Process feature engineering ##########
+    data['treatment_date'] = pd.to_datetime(data['treatment_date'], errors='coerce')
+    data['first_treatment_date'] = pd.to_datetime(data['first_treatment_date'], errors='coerce')
+    
+    data = get_change_since_prev_session(data)
+    data = get_missingness_features(data)
     data = get_visit_month_feature(data, col=main_date_col)
     data['line_of_therapy'] = data.groupby('mrn', group_keys=False).apply(get_line_of_therapy)
     data['days_since_starting_treatment'] = (data[main_date_col] - data['first_treatment_date']).dt.days
