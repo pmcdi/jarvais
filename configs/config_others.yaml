@@ -1,0 +1,6 @@
+# The lookback window prior to visit date for each feature category. Records taken within this time window are valid.
+lab_lookback_window: 5 # days
+symp_lookback_window: 30 # days
+ed_visit_lookback_window: 5 # years
+align_on: 'treatment-dates' 
+main_date_col: 'treatment_date'
