@@ -6,8 +6,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import shap
 
-from .eval import plot_classification_diagnostics, plot_regression_diagnostics
-from .utils import plot_feature_importance, plot_shap_values
+from .utils import plot_feature_importance, plot_shap_values, plot_classification_diagnostics, plot_regression_diagnostics
 
 class Explainer():
     def __init__(self, 
