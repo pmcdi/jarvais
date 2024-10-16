@@ -13,9 +13,10 @@ from mrmr import mrmr_classif, mrmr_regression
 
 from autogluon.tabular import TabularPredictor
 
-from .explainer import AutoMLExplainer
+from .explainer import Explainer
+from .models import CustomLogisticRegressionModel
 
-class AutoMLSupervised():
+class TrainerSupervised():
     def __init__(self,
                  task: str,
                  reduction_method: Union[str, None] = None,
@@ -50,36 +51,6 @@ class AutoMLSupervised():
 
         # Create output directory if it doesn't exist
         os.makedirs(self.output_dir, exist_ok=True)
-        
-    def _plot_feature_importance(self):
-        """
-        Plots the feature importance with standard deviation and p-value significance.
-        """
-        df = self.predictor.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
-
-        # Plotting
-        fig, ax = plt.subplots(figsize=(20, 12))
-
-        # Adding bar plot with error bars
-        bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
-
-        # Adding p_value significance indication
-        for i, (bar, p_value) in enumerate(zip(bars, df['p_value'])):
-            height = bar.get_height()
-            significance = '*' if p_value < 0.05 else ''
-            ax.text(bar.get_x() + bar.get_width() / 2.0, height, significance, ha='center', va='bottom', fontsize=12, color='red')
-
-        # Labels and title
-        ax.set_xlabel('Feature')
-        ax.set_ylabel('Importance')
-        ax.set_title('Feature Importance with Standard Deviation and p-value Significance')
-        ax.axhline(0, color='grey', linewidth=0.8)
-        ax.set_xticks(np.arange(len(df.index.values)))
-        ax.set_xticklabels(df.index.values, rotation=45)
-
-        # Show plot
-        plt.tight_layout()
-        plt.show()
 
     def _feature_reduction(self, X, y):
         """
@@ -123,7 +94,9 @@ class AutoMLSupervised():
             target_variable: str,
             test_size: float = 0.2,
             exclude: List[str] = [],
-            stratify_on: Union[str, None] = None):
+            stratify_on: Union[str, None] = None,
+            explain: bool = False,
+            save_data: bool = True):
             """
             Runs the AutoML pipeline with the specified data and target variable.
 
@@ -166,6 +139,11 @@ class AutoMLSupervised():
                 stratify_col = None
 
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=test_size, stratify=stratify_col, random_state=42)
+            if save_data:
+                self.X_train.to_csv(os.path.join(self.output_dir, 'data', 'X_train.csv'), index=False)
+                self.X_test.to_csv(os.path.join(self.output_dir, 'data', 'X_test.csv'), index=False)
+                self.y_train.to_csv(os.path.join(self.output_dir, 'data', 'y_train.csv'), index=False)
+                self.y_test.to_csv(os.path.join(self.output_dir, 'data', 'y_test.csv'), index=False)
 
             if self.task == 'binary':
                 eval_metric = 'roc_auc'
@@ -173,9 +151,9 @@ class AutoMLSupervised():
                 eval_metric = None # Let it infer
 
             self.predictor = TabularPredictor(label=target_variable,
-                                         problem_type=self.task,
-                                         eval_metric=eval_metric,
-                                         ).fit(pd.concat([self.X_train, self.y_train], axis=1))
+                                              problem_type=self.task,
+                                              eval_metric=eval_metric,
+                                              path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1))
             
             extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else None # Need to update for regression
             show_leaderboard = ['model', 'score_test', 'score_val', 'eval_metric', 'f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['model', 'score_test', 'score_val', 'eval_metric']
@@ -187,100 +165,36 @@ class AutoMLSupervised():
             print('\nSimple Logistic Model\n---------------------')
 
             simple_predictor = TabularPredictor(label=target_variable,
-                                         problem_type=self.task,
-                                         eval_metric=eval_metric,
-                                         ).fit(pd.concat([self.X_train, self.y_train], axis=1), hyperparameters={CustomLogisticRegressionModel: {}} )
+                                                problem_type=self.task,
+                                                eval_metric=eval_metric,
+                                                path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1), hyperparameters={CustomLogisticRegressionModel: {}} )
             
             leaderboard = simple_predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
             print(tabulate(leaderboard.iloc[[0]][show_leaderboard], tablefmt="fancy_grid", headers="keys"))
+            
+            if explain:
+                explainer = Explainer.from_trainer(self)
+                explainer.run()
 
-            explainer = AutoMLExplainer.from_trainer(self)
-            explainer.run()
+    @classmethod
+    def load_model(cls, 
+                   model_dir: str = None,
+                   project_dir: str = None,
+                   data_dir: str = None):
+        """
+        Load a trained model from the specified directory.
 
-from autogluon.core.models import AbstractModel
-from autogluon.features.generators import LabelEncoderFeatureGenerator
+        Parameters
+        ----------
+        model_dir : str
+            The directory where the model is saved.
 
-class CustomLogisticRegressionModel(AbstractModel):
-    def __init__(self, **kwargs):
-        # Simply pass along kwargs to parent, and init our internal `_feature_generator` variable to None
-        super().__init__(**kwargs)
-        self._feature_generator = None
+        Returns
+        -------
+        TrainerSupervised
+            The loaded model.
+        """
+        trainer = cls()
+        trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
 
-    # The `_preprocess` method takes the input data and transforms it to the internal representation usable by the model.
-    # `_preprocess` is called by `preprocess` and is used during model fit and model inference.
-    def _preprocess(self, X: pd.DataFrame, is_train=False, **kwargs) -> np.ndarray:
-        # print(f'Entering the `_preprocess` method: {len(X)} rows of data (is_train={is_train})')
-        X = super()._preprocess(X, **kwargs)
-
-        if is_train:
-            # X will be the training data.
-            self._feature_generator = LabelEncoderFeatureGenerator(verbosity=0)
-            self._feature_generator.fit(X=X)
-        if self._feature_generator.features_in:
-            # This converts categorical features to numeric via stateful label encoding.
-            X = X.copy()
-            X[self._feature_generator.features_in] = self._feature_generator.transform(X=X)
         
-        # Add a fillna call to handle missing values.
-        return X.fillna(0).to_numpy(dtype=np.float32)
-
-    # The `_fit` method takes the input training data (and optionally the validation data) and trains the model.
-    def _fit(self,
-            X: pd.DataFrame,  # training data
-            y: pd.Series,  # training labels
-            **kwargs):  
-        # print('Entering the `_fit` method')
-
-        # Import the Logistic Regression model from sklearn
-        from sklearn.linear_model import LogisticRegression
-
-        # Store the feature names before transforming to numpy
-        feature_names = X.columns if isinstance(X, pd.DataFrame) else range(X.shape[1])
-
-        # Make sure to call preprocess on X near the start of `_fit`.
-        X = self.preprocess(X, is_train=True)
-
-        # This fetches the user-specified (and default) hyperparameters for the model.
-        params = self._get_model_params()
-
-        # Set self.model to Logistic Regression with the desired hyperparameters.
-        self.model = LogisticRegression(**params)
-        self.model.fit(X, y)
-
-        # Print the coefficients and the intercept after training
-        coefs = self.model.coef_.flatten()  # flatten the array if it's multi-dimensional (for binary classification)
-        intercept = self.model.intercept_[0]  # assuming binary classification (single intercept)
-
-        # Create a DataFrame to display feature names with their corresponding coefficients
-        coef_df = pd.DataFrame({
-            'Feature': feature_names,
-            'Coefficient': coefs
-        })
-
-        # Print the coefficients along with their corresponding features
-        print("\nSimple Logistic Model Coefficients:")
-        print(coef_df.sort_values(by='Coefficient', key=abs, ascending=False).to_string(index=False))  # sort by coefficient value for better readability
-        
-        # Print the intercept separately
-        print(f"\nSimple Logistic Model Intercept: {intercept}")
-        
-        # print('Exiting the `_fit` method')
-
-    # The `_set_default_params` method defines the default hyperparameters of the model.
-    def _set_default_params(self):
-        default_params = {
-            'solver': 'lbfgs',  # Solver to use in the optimization problem
-            'max_iter': 1000,    # Maximum number of iterations for convergence
-            'random_state': 0,   # Set the random seed
-        }
-        for param, val in default_params.items():
-            self._set_default_param_value(param, val)
-
-    # The `_get_default_auxiliary_params` method defines model-agnostic parameters such as maximum memory usage and valid input column dtypes.
-    def _get_default_auxiliary_params(self) -> dict:
-        default_auxiliary_params = super()._get_default_auxiliary_params()
-        extra_auxiliary_params = dict(
-            valid_raw_types=['int', 'float', 'category'],
-        )
-        default_auxiliary_params.update(extra_auxiliary_params)
-        return default_auxiliary_params
