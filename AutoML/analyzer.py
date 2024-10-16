@@ -5,22 +5,23 @@ import seaborn as sns
 import matplotlib.pyplot as plt
 from tableone import TableOne
 import numpy as np
-from scipy.stats import f_oneway, ttest_ind
-
 from pandas.api.types import is_numeric_dtype
+
+from .utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap
+from .utils.functional import knn_impute_categorical, get_outliers
+from .utils.pdf import add_outlier_analysis, add_multiplots, add_table
 
 from typing import Union
 
 from fpdf import FPDF
 from fpdf.enums import Align
 
-from sklearn.impute import KNNImputer
-from sklearn.preprocessing import MinMaxScaler
+
 from umap import UMAP
 
 from joblib import Parallel, delayed
 
-class AutoMLAnalyzer():
+class Analyzer():
     def __init__(self,
                  data: pd.DataFrame, 
                  target_variable: Union[str, None] = None,
@@ -28,7 +29,7 @@ class AutoMLAnalyzer():
                  output_dir: Union[str, os.PathLike] = '.'):
         """
 
-        Initializes the AutoMLAnalyzer with the provided data.
+        Initializes the Analyzer with the provided data.
 
         Parameters:
         -----------
@@ -63,49 +64,6 @@ class AutoMLAnalyzer():
             self.config = None
 
         self.outlier_analysis = '' # Used later when writing to PDF
-    
-    def _knn_impute_categorical(self, data, columns):
-        """
-        Perform KNN imputation on categorical columns. 
-        From https://www.kaggle.com/discussions/questions-and-answers/153147
-
-        Args:
-            data (DataFrame): The data containing categorical columns.
-            columns (list): List of categorical column names.
-
-        Returns:
-            DataFrame: Data with imputed categorical columns.
-        """
-        mm = MinMaxScaler()
-        mappin = {}
-
-        def find_category_mappings(df, variable):
-            return {k: i for i, k in enumerate(df[variable].dropna().unique(), 0)}
-
-        def integer_encode(df, variable, ordinal_mapping):
-            df[variable] = df[variable].map(ordinal_mapping)
-
-        df = data.copy()
-        for variable in columns:
-            mappings = find_category_mappings(df, variable)
-            mappin[variable] = mappings
-
-        for variable in columns:
-            integer_encode(df, variable, mappin[variable])
-
-        scaled_data = mm.fit_transform(df)
-        knn_imputer = KNNImputer()
-        knn_imputed = knn_imputer.fit_transform(scaled_data)
-        df.iloc[:, :] = mm.inverse_transform(knn_imputed)
-        for col in df.columns:
-            df[col] = round(df[col]).astype('int')
-
-        for col in columns:
-            inv_map = {v: k for k, v in mappin[col].items()}
-            df[col] = df[col].map(inv_map)
-
-        return df
-
     
     def _replace_missing(self):
         """
@@ -151,7 +109,7 @@ class AutoMLAnalyzer():
         for cat in self.categorical_columns:
             if self.config['missingness_strategy']['categorical'][cat].lower() == 'knn':
                 print(f'Using KNN to fill missing values in {cat}, this may take a while...\n')
-                self.data[cat] = self._knn_impute_categorical(data_to_use, self.categorical_columns)[cat]                
+                self.data[cat] = knn_impute_categorical(data_to_use, self.categorical_columns)[cat]                
 
     def _infer_types(self):
         """
@@ -243,29 +201,9 @@ class AutoMLAnalyzer():
             # Cleans the data by either checking for outliers in categorical variables or applying mappings from the provided file.
             print('Config file not found, checking for outliers in categorical variables...')
 
-            mapping = {} # Make a mapping file based on heuristic to be updated later
-
-            for cat in self.categorical_columns:
-                category_counts = self.data[cat].value_counts()
-                threshold = int(len(self.data)*.01)
-                outliers = category_counts[category_counts < threshold].index.tolist()
-
-                mapping[cat] = {}
-
-                for _cat in self.data[cat].unique():
-                    if _cat in outliers:
-                        mapping[cat][f'{_cat}'] = 'Other'
-                    else:
-                        mapping[cat][f'{_cat}'] = f'{_cat}'
-
-                if len(outliers) > 0:
-                    outliers = [f'{o}: {category_counts[o]} out of {self.data[cat].count()}' for o in outliers]
-                    print(f'  - Outliers found in {cat}: {outliers}')
-                    self.outlier_analysis += f'  - Outliers found in {cat}: {outliers}\n'
-                else:
-                    print(f'  - No Outliers found in {cat}')
-                    self.outlier_analysis += f'  - No Outliers found in {cat}\n'
-
+            outlier_analysis, mapping = get_outliers(self.data, self.categorical_columns)
+            
+            self.outlier_analysis += outlier_analysis
             self.config['mapping'] = mapping
         else:
             self.continuous_columns = self.config['columns']['continuous']
@@ -303,106 +241,9 @@ class AutoMLAnalyzer():
         if not os.path.exists(os.path.join(self.output_dir, 'multiplots')): # To save multiplots
             os.mkdir(os.path.join(self.output_dir, 'multiplots'))
 
-        def prep_for_pie(df, label):
+        self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(self.data, self.umap_data, var, self.continuous_columns, self.output_dir) for var in self.categorical_columns)
 
-            # Prepares data for pie plotting by grouping and sorting values.
-
-            data = df.groupby(label).size().sort_values(ascending=False)
-
-            labels = data.index.tolist()
-            values = data.values.tolist()
-            
-            return labels, values
-
-        # for var in self.categorical_columns:
-        
-        def plot_one_multiplot(var):
-            num_categories = len(self.data[var].unique())
-
-            sns.set_theme(style="white")
-            labels, values = prep_for_pie(self.data, var)
-
-            # only write % if big enough
-            def autopct(pct):
-                return ('%1.1f%%' % pct) if pct > 3.5 else ''
-
-            def calculate_fontsize(num_categories):
-                base_fontsize = 16
-                min_fontsize = 8
-                return max(base_fontsize - num_categories * 1.5, min_fontsize)
-            
-            fontsize = calculate_fontsize(num_categories)
-
-            # setting number of rows/columns for subplots
-            n = len(self.continuous_columns) + 2
-            rows = int(np.ceil(np.sqrt(n)))
-            cols = int(np.ceil((n) / rows))
-            scaler = 6
-
-            # create subplot grid
-            fig, ax = plt.subplots(rows, cols, figsize=(rows*scaler, cols*scaler)) 
-            ax = ax.flatten() 
-
-            # Pie plot of categorical variable
-            ax[0].pie(values, 
-                      labels=labels, 
-                      autopct=autopct, 
-                      startangle=90,
-                      counterclock=False,
-                      textprops={'fontsize': fontsize},
-                      colors=plt.cm.Set2.colors) # 90 = 12 o'clock, 0 = 3 o'clock, 180 = 9 o'clock
-            ax[0].set_title(f"{var} Distribution. N: {self.data[var].count()}")
-            
-            # UMAP colored by variable
-            sns.scatterplot(x=self.umap_data[:,0], y=self.umap_data[:,1], hue=self.data[var], alpha=.7, ax=ax[1])
-            ax[1].set_title(f'UMAP of Continuous Variables with {var}')
-            if self.data[var].nunique() > 5: # Puts legend under plot if there are too many categories
-                ax[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
-
-            p_values = {}
-
-            # Calculate p-values
-            for col in self.continuous_columns:
-                unique_values = self.data[var].unique()
-                
-                # If binary classification, use t-test
-                if len(unique_values) == 2:
-                    group1 = self.data[self.data[var] == unique_values[0]][col]
-                    group2 = self.data[self.data[var] == unique_values[1]][col]
-                    _, p_value = ttest_ind(group1, group2, equal_var=False)
-                
-                # For more than two categories, use ANOVA
-                else:
-                    groups = [self.data[self.data[var] == value][col] for value in unique_values]
-                    _, p_value = f_oneway(*groups)
-                
-                p_values[col] = p_value
-
-            # Sort the continuous columns by p-value (ascending order)
-            sorted_columns = sorted(p_values, key=p_values.get)
-
-            for i, col in enumerate(sorted_columns):
-                sns.violinplot(x=var, y=col, data=self.data, ax=ax[i+2], inner="point")
-                ax[i+2].tick_params(axis='x', labelrotation=67.5)
-                ax[i+2].set_title(f"{var} vs {col} (p-value: {p_values[col]:.4f})")
-
-            # Turn off unused axes
-            for j in range(n, len(ax)):
-                fig.delaxes(ax[j])  # Turn off unused axes
-
-            plt.tight_layout()
-            
-            # save multiplot
-            multiplot_path = os.path.join(self.output_dir, 'multiplots', f'{var}_multiplots.png')
-            plt.savefig(multiplot_path)
-            plt.close()
-            
-            # return path to figure for PDF
-            return multiplot_path
-        
-        self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(var) for var in self.categorical_columns)
-
-    def _create_output_pdf(self):
+    def _save_pdf(self):
         """
         Generate a PDF report of the analysis with plots and tables.
 
@@ -419,60 +260,40 @@ class AutoMLAnalyzer():
         The PDF uses custom fonts and is saved in the specified output directory.
         """
 
+        # Instantiate PDF
         pdf = FPDF()
-
         pdf.add_page()
-        
         script_dir = os.path.dirname(os.path.abspath(__file__))
         
+        # Adding unicode fonts
         font_path = os.path.join(script_dir, 'fonts/DejaVuSans.ttf')
         pdf.add_font("dejavu-sans", style="", fname=font_path)
-        
         font_path = os.path.join(script_dir, 'fonts/DejaVuSans-Bold.ttf')
         pdf.add_font("dejavu-sans", style="b", fname=font_path)
-
         pdf.set_font('dejavu-sans', '', 24)  
+
+        # Title
         pdf.write(5, "Analysis Report\n\n")
 
-        if self.outlier_analysis != '':
-            pdf.set_font('dejavu-sans', '', 12)  
-            pdf.write(5, f"Outlier Analysis:\n")
-            pdf.set_font('dejavu-sans', '', 10) 
-            pdf.write(5, self.outlier_analysis)
+        # Add outlier analysis
+        pdf = add_outlier_analysis(pdf, self.outlier_analysis)
         
+        # Add page-wide pairplots
         pdf.image(os.path.join(self.output_dir, 'pairplot.png'), Align.C, w=pdf.epw-20)
-
         pdf.add_page()
+
+        # Add correlation plots
         pdf.image(os.path.join(self.output_dir, 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
         pdf.image(os.path.join(self.output_dir, 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
 
-        for plot, cat in zip(self.multiplots, self.categorical_columns):
-            pdf.add_page()
-            
-            pdf.set_font('dejavu-sans', '', 12)
-            pdf.write(5, f"{cat.title()} Multiplots\n")
-            
-            current_y = pdf.get_y()
-            
-            img_width = pdf.epw - 20  
-            img_height = pdf.eph - current_y - 20
-            
-            pdf.image(plot, x=10, y=current_y + 5, w=img_width, h=img_height, keep_aspect_ratio=True)
+        # Add multiplots
+        pdf = add_multiplots(pdf, self.multiplots, self.categorical_columns)
 
-
+        # Add demographic breakdown "table one"
         csv_df = pd.read_csv(os.path.join(self.output_dir, 'tableone.csv'), na_filter=False).astype(str)
-        headers = csv_df.columns.tolist()
-        headers = [f'' if 'Unnamed:' in header else header for header in headers] # Keep empty header entries
-        data = [headers] + csv_df.values.tolist()
-
-        pdf.add_page()
-        pdf.set_font('dejavu-sans', '', 10)  
-        with pdf.table() as table:
-            for data_row in data:
-                row = table.row()
-                for datum in data_row:
-                    row.cell(datum)
-
+        pdf = add_table(pdf, csv_df)
+        
+        # Save PDF
         pdf.output(os.path.join(self.output_dir, 'analysis_report.pdf'))
 
     def run(self):
@@ -484,7 +305,6 @@ class AutoMLAnalyzer():
         self._run_janitor()
 
         # Create Table One
-
         df_keep = self.data[self.continuous_columns + self.categorical_columns]
 
         self.mytable = TableOne(df_keep, categorical=self.categorical_columns, pval=False)
@@ -492,7 +312,6 @@ class AutoMLAnalyzer():
         self.mytable.to_csv(os.path.join(self.output_dir, 'tableone.csv'))
 
         # Apply missingness replacement and save updated data
-
         if not 'missingness_strategy' in self.config.keys():
             print('Applying default missingness to of unknown and median, change strategy in config file and run again if needed...\n')
             self.config['missingness_strategy'] = {}
@@ -502,72 +321,41 @@ class AutoMLAnalyzer():
             with open(os.path.join(self.output_dir, 'config.yaml'), 'w') as f:
                 yaml.dump(self.config, f)
 
+        # Clean it up
         self._replace_missing()
         self.data.to_csv(os.path.join(self.output_dir, 'updated_data.csv'))
 
         # Create Plots 
         size = len(self.continuous_columns)*1.5
 
-        # Pearson Correlation + Plots
-        pearson_correlation = self.data[self.continuous_columns].corr(method='pearson')
-
-        plt.figure(figsize=(size, size))
-        mask = np.triu(np.ones_like(pearson_correlation, dtype=bool)) # Keep only lower triangle
-        np.fill_diagonal(mask, False)
-        g = sns.heatmap(pearson_correlation, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f")
-        plt.title(f'Pearson Correlation Matrix')
-        plt.tight_layout()
-
-        figure_path = os.path.join(self.output_dir, 'pearson_correlation.png')
-        plt.savefig(figure_path)
-        plt.close()
-
-        # Spearman Correlation + Plots
-        spearman_correlation = self.data[self.continuous_columns].corr(method='spearman')
-
-        plt.figure(figsize=(size, size))
-        mask = np.triu(np.ones_like(spearman_correlation, dtype=bool)) # Keep only lower triangle
-        np.fill_diagonal(mask, False)
-        g = sns.heatmap(spearman_correlation, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f")
-        plt.title(f'Spearman Correlation Matrix')
-        plt.tight_layout()
-
-        figure_path = os.path.join(self.output_dir, 'spearman_correlation.png')
-        plt.savefig(figure_path)
-        plt.close()
+        # Correlation Plots
+        p_corr = self.data[self.continuous_columns].corr(method="pearson")
+        s_corr = self.data[self.continuous_columns].corr(method="spearman")
+        plot_corr(p_corr, size, file_name='pearson_correlation.png', output_dir=self.output_dir)
+        plot_corr(s_corr, size, file_name='spearman_correlation.png', output_dir=self.output_dir)
 
         # UMAP reduced data + Plots
         self.umap_data = UMAP(n_components=2).fit_transform(self.data[self.continuous_columns])
+        plot_umap(self.umap_data, output_dir=self.output_dir)
 
-        plt.figure(figsize=(8, 8))
-        g = sns.scatterplot(x=self.umap_data[:,0], y=self.umap_data[:,1], alpha=.7)
-        plt.title(f'UMAP of Continuous Variables')
-
-        figure_path = os.path.join(self.output_dir, 'umap_continuous_data.png')
-        plt.savefig(figure_path)
-        plt.close()
-
+        # plot pairplot
         if len(self.continuous_columns) > 10: # Keep only the top ten correlated pairs in the pair plot
-            corr_pairs = spearman_correlation.abs().unstack().sort_values(kind="quicksort", ascending=False).drop_duplicates()
+            corr_pairs = s_corr.abs().unstack().sort_values(kind="quicksort", ascending=False).drop_duplicates()
             top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
             columns_to_plot = list(set([index for pair in top_10_pairs.index for index in pair]))
         else:
             columns_to_plot = self.continuous_columns
 
         if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
-            g = sns.pairplot(self.data[columns_to_plot + [self.target_variable]], hue=self.target_variable)
+            plot_pairplot(self.data, columns_to_plot, output_dir=self.output_dir, target_variable=self.target_variable)     
         else:
-            g= sns.pairplot(self.data[columns_to_plot])   
-        g.figure.suptitle("Pair Plot", y=1.08)  
+            plot_pairplot(self.data, columns_to_plot, output_dir=self.output_dir)         
 
-        figure_path = os.path.join(self.output_dir, 'pairplot.png')
-        plt.savefig(figure_path)
-        plt.close()
-
+        # Create Multiplots
         self._create_multiplots()
 
         # Create Output PDF
-        self._create_output_pdf()
+        self._save_pdf()
 
 
   
