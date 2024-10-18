@@ -75,7 +75,7 @@ def plot_shap_values(predictor, X_train, X_test,
 
     # Compute SHAP values for the test set
     shap_values = shap_exp(test_data)
-
+    print(shap_values[...,1])
     # Generate and save the SHAP explanation plots
     
     # this is commented out as beeswarm is missing `ax` parameter
