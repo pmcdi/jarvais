@@ -8,13 +8,11 @@ import numpy as np
 from pandas.api.types import is_numeric_dtype
 
 from .utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap
-from .utils.functional import knn_impute_categorical, get_outliers
-from .utils.pdf import add_outlier_analysis, add_multiplots, add_table
+from .utils.functional import knn_impute_categorical, get_outliers, generate_report_pdf
 
 from typing import Union
 
-from fpdf import FPDF
-from fpdf.enums import Align
+
 
 
 from umap import UMAP
@@ -243,59 +241,6 @@ class Analyzer():
 
         self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(self.data, self.umap_data, var, self.continuous_columns, self.output_dir) for var in self.categorical_columns)
 
-    def _save_pdf(self):
-        """
-        Generate a PDF report of the analysis with plots and tables.
-
-        This method creates a PDF report containing various analysis results, 
-        including outlier analysis, correlation plots, multiplots, and a summary table.
-
-        The report is structured as follows:
-            - Cover page with the report title.
-            - Outlier analysis text.
-            - Pair plot, Pearson correlation, and Spearman correlation plots.
-            - Multiplots for categorical vs. continuous variable relationships.
-            - A tabular summary of the analysis results.
-
-        The PDF uses custom fonts and is saved in the specified output directory.
-        """
-
-        # Instantiate PDF
-        pdf = FPDF()
-        pdf.add_page()
-        script_dir = os.path.dirname(os.path.abspath(__file__))
-        
-        # Adding unicode fonts
-        font_path = os.path.join(script_dir, 'fonts/DejaVuSans.ttf')
-        pdf.add_font("dejavu-sans", style="", fname=font_path)
-        font_path = os.path.join(script_dir, 'fonts/DejaVuSans-Bold.ttf')
-        pdf.add_font("dejavu-sans", style="b", fname=font_path)
-        pdf.set_font('dejavu-sans', '', 24)  
-
-        # Title
-        pdf.write(5, "Analysis Report\n\n")
-
-        # Add outlier analysis
-        pdf = add_outlier_analysis(pdf, self.outlier_analysis)
-        
-        # Add page-wide pairplots
-        pdf.image(os.path.join(self.output_dir, 'pairplot.png'), Align.C, w=pdf.epw-20)
-        pdf.add_page()
-
-        # Add correlation plots
-        pdf.image(os.path.join(self.output_dir, 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
-        pdf.image(os.path.join(self.output_dir, 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
-
-        # Add multiplots
-        pdf = add_multiplots(pdf, self.multiplots, self.categorical_columns)
-
-        # Add demographic breakdown "table one"
-        csv_df = pd.read_csv(os.path.join(self.output_dir, 'tableone.csv'), na_filter=False).astype(str)
-        pdf = add_table(pdf, csv_df)
-        
-        # Save PDF
-        pdf.output(os.path.join(self.output_dir, 'analysis_report.pdf'))
-
     def run(self):
 
         """
@@ -355,7 +300,8 @@ class Analyzer():
         self._create_multiplots()
 
         # Create Output PDF
-        self._save_pdf()
+        generate_report_pdf(outlier_analysis=self.outlier_analysis, 
+                            multiplots=self.multiplots, 
+                            categorical_columns=self.categorical_columns, 
+                            output_dir=self.output_dir)
 
-
-  

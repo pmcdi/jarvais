@@ -8,13 +8,12 @@ from tabulate import tabulate
 from typing import Union, List
 
 from sklearn.model_selection import train_test_split
-from sklearn.feature_selection import SelectKBest, VarianceThreshold, chi2 ,f_classif, f_regression
-from mrmr import mrmr_classif, mrmr_regression
 
 from autogluon.tabular import TabularPredictor
 
 from .explainer import Explainer
 from .models import CustomLogisticRegressionModel
+from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction
 
 class TrainerSupervised():
     def __init__(self,
@@ -68,27 +67,17 @@ class TrainerSupervised():
         pd.DataFrame
             The reduced feature set.
         """
-        
         if self.reduction_method == 'mrmr':
-            mrmr_method = mrmr_classif if self.task in ['binary', 'multiclass'] else mrmr_regression
-            selected_features = mrmr_method(X=X, y=y, K=self.keep_k, n_jobs=1)
-            return X[selected_features]
-        
+            return mrmr_reduction(self.task, X, y, self.keep_k)
         if self.reduction_method == 'variance_threshold':
-            selector = VarianceThreshold()
+            return var_reduction(X, y)
         elif self.reduction_method == 'corr':
-            f_method = f_classif if self.task in ['binary', 'multiclass'] else f_regression
-            selector = SelectKBest(score_func=f_method, k=self.keep_k)
+            return kbest_reduction(self.task, X, y, self.keep_k)
         elif self.reduction_method == 'chi2':
-            if self.task in ['binary', 'multiclass']:
-                selector = SelectKBest(score_func=chi2, k=self.keep_k)
-            else:
+            if self.task not in ['binary', 'multiclass']:
                 raise ValueError('chi-squared reduction can only be done with classification tasks')
-
-        _ = selector.fit_transform(X, y)
-        selected_features = X.columns[selector.get_support(indices=True)]
-        return X[selected_features]
-
+            return chi2_reduction(X, y, self.keep_k)
+        
     def run(self,
             data: pd.DataFrame,
             target_variable: str,
@@ -137,13 +126,16 @@ class TrainerSupervised():
                     raise ValueError('Least populated class has only one entry')
             else:
                 stratify_col = None
-
+            
+            
             self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=test_size, stratify=stratify_col, random_state=42)
             if save_data:
-                self.X_train.to_csv(os.path.join(self.output_dir, 'data', 'X_train.csv'), index=False)
-                self.X_test.to_csv(os.path.join(self.output_dir, 'data', 'X_test.csv'), index=False)
-                self.y_train.to_csv(os.path.join(self.output_dir, 'data', 'y_train.csv'), index=False)
-                self.y_test.to_csv(os.path.join(self.output_dir, 'data', 'y_test.csv'), index=False)
+                self.data_dir = os.path.join(self.output_dir, 'data')
+                os.makedirs(self.data_dir, exist_ok=True)
+                self.X_train.to_csv(os.path.join(self.data_dir, 'X_train.csv'), index=False)
+                self.X_test.to_csv(os.path.join(self.data_dir, 'X_test.csv'), index=False)
+                self.y_train.to_csv(os.path.join(self.data_dir, 'y_train.csv'), index=False)
+                self.y_test.to_csv(os.path.join(self.data_dir, 'y_test.csv'), index=False)
 
             if self.task == 'binary':
                 eval_metric = 'roc_auc'
@@ -179,8 +171,7 @@ class TrainerSupervised():
     @classmethod
     def load_model(cls, 
                    model_dir: str = None,
-                   project_dir: str = None,
-                   data_dir: str = None):
+                   project_dir: str = None):
         """
         Load a trained model from the specified directory.
 
@@ -194,7 +185,14 @@ class TrainerSupervised():
         TrainerSupervised
             The loaded model.
         """
+        if model_dir is None and project_dir is not None:
+            all_model_dir = os.path.join(project_dir, 'AutogluonModels')
+            all_models = os.listdir(all_model_dir)
+            # latest model directory
+            model_dir = os.path.join(all_model_dir, all_models[-1])
+
         trainer = cls()
         trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
 
-        
+        return trainer
+

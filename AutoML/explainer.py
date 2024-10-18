@@ -23,9 +23,6 @@ class Explainer():
         self.y_test = y_test
         self.output_dir = output_dir
 
-    def lime_values(self):
-        pass
-
     def run(self):
         # Plot diagnostics
             try:
@@ -38,11 +35,11 @@ class Explainer():
 
             # Plot feature importance
             try:
-                plot_feature_importance(self.predictor, self.X_test, self.y_test, self.output_dir)
+                plot_feature_importance(self.predictor, self.X_test, self.y_test, output_dir=self.output_dir)
             except Exception as e:
                 print(f"Error in plotting feature importance: {e}")
 
-            plot_shap_values(self.predictor, self.X_train, self.X_test, self.output_dir)
+            plot_shap_values(self.predictor, self.X_train, self.X_test, output_dir=self.output_dir)
 
     @classmethod
     def from_trainer(cls, trainer):

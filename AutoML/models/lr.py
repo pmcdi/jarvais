@@ -5,6 +5,11 @@ import pandas as pd
 from numpy import ndarray, float32
 
 class CustomLogisticRegressionModel(AbstractModel):
+    """
+    A simple logistic regression model wrapped in an AutoGluon model class.
+    It can handle `binary` or `multiclass` classification tasks.
+    However, it cannot handle multinomial/ordinal classification as AutoGluon's feature generator is unpredictable.
+    """
     def __init__(self, **kwargs):
         # Simply pass along kwargs to parent, and init our internal `_feature_generator` variable to None
         super().__init__(**kwargs)
