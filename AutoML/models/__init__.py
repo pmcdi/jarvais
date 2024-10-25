@@ -1,1 +1,1 @@
-from .lr import CustomLogisticRegressionModel
+from .lr import SimpleRegressionModel
