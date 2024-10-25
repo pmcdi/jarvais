@@ -12,7 +12,7 @@ from sklearn.model_selection import train_test_split
 from autogluon.tabular import TabularPredictor
 
 from .explainer import Explainer
-from .models import CustomLogisticRegressionModel
+from .models import SimpleRegressionModel
 from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction
 
 class TrainerSupervised():
@@ -159,7 +159,7 @@ class TrainerSupervised():
             simple_predictor = TabularPredictor(label=target_variable,
                                                 problem_type=self.task,
                                                 eval_metric=eval_metric,
-                                                path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1), hyperparameters={CustomLogisticRegressionModel: {}} )
+                                                path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1), hyperparameters={SimpleRegressionModel: {}} )
             
             leaderboard = simple_predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
             print(tabulate(leaderboard.iloc[[0]][show_leaderboard], tablefmt="fancy_grid", headers="keys"))

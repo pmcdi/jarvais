@@ -4,7 +4,7 @@ from autogluon.features.generators import LabelEncoderFeatureGenerator
 import pandas as pd
 from numpy import ndarray, float32
 
-class CustomLogisticRegressionModel(AbstractModel):
+class SimpleRegressionModel(AbstractModel):
     """
     A simple logistic regression model wrapped in an AutoGluon model class.
     It can handle `binary` or `multiclass` classification tasks.
@@ -41,24 +41,26 @@ class CustomLogisticRegressionModel(AbstractModel):
         # print('Entering the `_fit` method')
 
         # Import the Logistic Regression model from sklearn
-        from sklearn.linear_model import LogisticRegression
+        from sklearn.linear_model import LogisticRegression, LinearRegression
+
+        # Store the feature names before transforming to numpy
+        feature_names = X.columns if isinstance(X, pd.DataFrame) else range(X.shape[1])
         
         # Make sure to call preprocess on X near the start of `_fit`.
         X = self.preprocess(X, is_train=True)
-    
-        # Store the feature names before transforming to numpy
-        feature_names = X.columns if isinstance(X, pd.DataFrame) else range(X.shape[1])
 
         # This fetches the user-specified (and default) hyperparameters for the model.
         params = self._get_model_params()
-
-        # Set self.model to Logistic Regression with the desired hyperparameters.
-        self.model = LogisticRegression(**params)
+        
+        if self.problem_type == 'regression':
+            self.model = LinearRegression()
+        else:
+            self.model = LogisticRegression(**params)
         self.model.fit(X, y)
 
         # Print the coefficients and the intercept after training
-        coefs = self.model.coef_.flatten()  # flatten the array if it's multi-dimensional (for binary classification)
-        intercept = self.model.intercept_[0]  # assuming binary classification (single intercept)
+        coefs = self.model.coef_.flatten()  
+        intercept = self.model.intercept_ if self.problem_type == 'regression' else self.model.intercept_[0] 
 
         # Create a DataFrame to display feature names with their corresponding coefficients
         coef_df = pd.DataFrame({
@@ -67,11 +69,11 @@ class CustomLogisticRegressionModel(AbstractModel):
         })
 
         # Print the coefficients along with their corresponding features
-        print("\nSimple Logistic Model Coefficients:")
+        print("\nSimple Regression Model Coefficients:")
         print(coef_df.sort_values(by='Coefficient', key=abs, ascending=False).to_string(index=False))  # sort by coefficient value for better readability
         
         # Print the intercept separately
-        print(f"\nSimple Logistic Model Intercept: {intercept}")
+        print(f"\nSimple Regression Model Intercept: {intercept}")
         
         # print('Exiting the `_fit` method')
 
