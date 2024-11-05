@@ -1,0 +1,197 @@
+name: CI tests
+
+# only run on pushes to main or pull requests
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["*"]
+
+jobs:
+  ################################################################################################
+  # Unit-Tests: Run unit tests using pytest
+  ################################################################################################
+  Unit-Tests:
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15 # Consider increasing timeout
+    strategy:
+      matrix:
+        os: [ubuntu-latest, macos-latest, macos-14, windows-latest]
+        env: ["py310", "py311", "py312"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          environments: ${{ matrix.env }}
+          pixi-version: v0.33.0
+          cache: true
+          locked: false # wont be the same because of the tag
+
+      - name: Run pytest
+        run: |
+          pixi run -e ${{ matrix.env }} test
+
+      - name: Upload coverage report artifact to be used by Codecov
+        # only upload if matrix.os is ubuntu-latest and matrix.python-version is 3.12
+        if: matrix.os == 'ubuntu-latest' && matrix.env == 'py312'
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage-report
+
+  ################################################################################################
+  # Codecov: Run codecov to check coverage
+  ################################################################################################
+  # Code-Coverage:
+  #   needs: Unit-Tests
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - name: Checkout code
+  #       uses: actions/checkout@v4
+
+  #     - name: Download coverage.xml artifact
+  #       uses: actions/download-artifact@v4
+  #       with:
+  #         name: coverage-report
+  #         path: coverage-report
+
+  #     - name: Use Codecov to track coverage
+  #       uses: codecov/codecov-action@v3
+  #       with:
+  #         token: ${{ secrets.CODECOV_TOKEN }}
+  #         files: ./coverage-report/coverage.xml
+  #         fail_ci_if_error: true
+  #         verbose: true
+  #         name: codecov-umbrella
+
+  ################################################################################################
+  # Ruff: Run ruff linter
+  ################################################################################################
+  Ruff:
+    runs-on: ubuntu-latest
+    env:
+      PIXI_ENV: "dev"
+    strategy:
+      matrix:
+        os: [ubuntu-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Pixi
+        uses: prefix-dev/setup-pixi@v0.8.1
+        with:
+          environments: ${{ env.PIXI_ENV }}
+          pixi-version: v0.33.0
+          cache: true
+          locked: false
+
+      - name: Run Ruff
+        run: pixi run lint
+
+  ################################################################################################
+  # Semantic-Release: Run semantic-release to automate versioning and publishing
+  ################################################################################################
+  # Semantic-Release:
+  #   permissions:
+  #     # Read releases read-all
+  #     contents: write
+  #     packages: write
+  #     issues: write
+  #     pull-requests: write
+
+  #   needs: [Unit-Tests, Ruff]
+
+  #   # if pulling to main, deploy to PyPI
+  #   if: github.ref == 'refs/heads/main'
+
+  #   env:
+  #     PIXI_ENV: "publish"
+
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest]
+  #       python-version: ["3.12"]
+
+  #   # Set up operating system
+  #   runs-on: ${{ matrix.os }}
+
+  #   # Concurrency is for preventing multiple runs of the same workflow
+  #   concurrency: release
+
+  #   outputs:
+  #     released: ${{ steps.release.outputs.released }}
+  #     version: ${{ steps.release.outputs.version }}
+  #     tag: ${{ steps.release.outputs.tag }}
+
+  #   # Define job steps
+  #   steps:
+  #     - name: Check-out repository
+  #       uses: actions/checkout@v3
+  #       with:
+  #         fetch-depth: 0
+
+  #     - name: Install Pixi
+  #       uses: prefix-dev/setup-pixi@v0.8.1
+  #       env:
+  #         RUNNER_DEBUG: true
+  #       with:
+  #         environments: ${{ env.PIXI_ENV }}
+  #         pixi-version: v0.33.0
+  #         cache: true
+  #         locked: false
+  #         # cache-key: pixi-ENV_${{ env.PIXI_ENV }}-
+
+  #     - name: Print Semver
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       run: pixi run semver
+
+  #     - name: Run semantic-release
+  #       env:
+  #         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+  #       id: release
+  #       run: pixi run release
+
+  #     - name: Test Outputs of semantic release step
+  #       run: |
+  #         echo "${{ steps.release.outputs.released }}"
+  #         echo "${{ steps.release.outputs.version }}"
+  #         echo "${{ steps.release.outputs.tag }}"
+
+  # ###############################################################################################
+  # # Publish-To-PyPi & Test-PyPi-Installation: Publish to PyPI and test installation
+  # ###############################################################################################
+  # Publish-To-PyPi:
+  #   needs: Semantic-Release
+  #   env:
+  #     PIXI_ENV: "publish"
+  #   if: needs.Semantic-Release.outputs.released == 'true'
+  #   strategy:
+  #     matrix:
+  #       os: [ubuntu-latest]
+
+  #   runs-on: ${{ matrix.os }}
+  #   steps:
+  #     - name: Checkout the code with tag ${{ needs.Semantic-Release.outputs.tag }}
+  #       uses: actions/checkout@v4
+  #       with:
+  #         ref: ${{ needs.Semantic-Release.outputs.tag }}
+
+  #     - name: Install Pixi
+  #       uses: prefix-dev/setup-pixi@v0.8.1
+  #       with:
+  #         environments: ${{ env.PIXI_ENV }}
+  #         pixi-version: v0.33.0
+  #         cache: true
+  #         locked: false # wont be the same because of the tag
+
+  #     - name: Publish to PyPI
+  #       env:
+  #         HATCH_INDEX_USER: __token__
+  #         HATCH_INDEX_AUTH: ${{ secrets.PYPI_API_TOKEN }}
+  #         HATCH_INDEX_REPO: https://upload.pypi.org/legacy/
+  #       run: |
+  #         pixi run publish-pypi

@@ -12,9 +12,6 @@ from .utils.functional import knn_impute_categorical, get_outliers, generate_rep
 
 from typing import Union
 
-
-
-
 from umap import UMAP
 
 from joblib import Parallel, delayed

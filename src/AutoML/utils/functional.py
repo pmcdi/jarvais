@@ -66,6 +66,8 @@ def get_outliers(data, categorical_columns):
         else:
             print(f'  - No Outliers found in {cat}')
             return f'  - No Outliers found in {cat}\n', mapping
+    
+    return "No outliers found\n", mapping
 
 def mrmr_reduction(task, X, y, k):
     from mrmr import mrmr_classif, mrmr_regression

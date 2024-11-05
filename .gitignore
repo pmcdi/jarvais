@@ -1,8 +1,11 @@
 .pixi/
 pixi.lock
 pixi.toml
-tutorials/*
+./tutorials
+./data
 data/
+tutorials/
+tests/tmp
 
 *cpython*
 __pycache__
@@ -10,4 +13,6 @@ __pycache__
 .ipynb_checkpoints
 
 #analysis_*
-AutogluonModels
+AutogluonModels# pixi environments
+.pixi
+*.egg-info
