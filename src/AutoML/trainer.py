@@ -17,7 +17,7 @@ from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reductio
 
 class TrainerSupervised():
     def __init__(self,
-                 task: str,
+                 task: str = None,
                  reduction_method: Union[str, None] = None,
                  keep_k: int = 2,
                  output_dir: Union[str, os.PathLike] = '.'):
