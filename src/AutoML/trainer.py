@@ -145,12 +145,17 @@ class TrainerSupervised():
             self.predictor = TabularPredictor(label=target_variable,
                                               problem_type=self.task,
                                               eval_metric=eval_metric,
-                                              path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1), num_bag_folds=10)
+                                              path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1))
             
             extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else None # Need to update for regression
-            show_leaderboard = ['model', 'score_test', 'score_val', 'eval_metric', 'f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['model', 'score_test', 'score_val', 'eval_metric']
+            show_leaderboard = ['model', 'score_test', 'score_val', 'score_train', 'eval_metric', 'f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['model', 'score_test', 'score_val', 'eval_metric']
 
             leaderboard = self.predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
+
+            train_metrics = self.predictor.leaderboard(pd.concat([self.X_train, self.y_train], axis=1))[['model', 'score_test']]
+            train_metrics = train_metrics.rename(columns={'score_test': 'score_train'})
+            leaderboard = leaderboard.merge(train_metrics, on='model')
+            
             print('\nModel Leaderbord\n----------------')
             print(tabulate(leaderboard[show_leaderboard], tablefmt = "fancy_grid", headers="keys"))
 
@@ -162,6 +167,11 @@ class TrainerSupervised():
                                                 path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1), hyperparameters={SimpleRegressionModel: {}})
             
             leaderboard = simple_predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
+
+            train_metrics = simple_predictor.leaderboard(pd.concat([self.X_train, self.y_train], axis=1))[['model', 'score_test']]
+            train_metrics = train_metrics.rename(columns={'score_test': 'score_train'})
+            leaderboard = leaderboard.merge(train_metrics, on='model')
+
             print(tabulate(leaderboard.iloc[[0]][show_leaderboard], tablefmt="fancy_grid", headers="keys"))
             
             if explain:
