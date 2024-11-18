@@ -20,6 +20,7 @@ class Explainer():
         self.X_train = X_train
         self.X_test = X_test
         self.y_test = y_test
+        self.categorical_columns = trainer.categorical_columns
         self.output_dir = output_dir
 
     def run(self):
