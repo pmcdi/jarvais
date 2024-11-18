@@ -1,12 +1,11 @@
-import os
-import yaml
+import os, pickle
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import shap
 
-from .utils import plot_feature_importance, plot_shap_values, plot_classification_diagnostics, plot_regression_diagnostics
+from .utils import plot_feature_importance, plot_shap_values, plot_classification_diagnostics, plot_regression_diagnostics, plot_epic_binary_plot
 
 class Explainer():
     def __init__(self, 
@@ -28,6 +27,15 @@ class Explainer():
             try:
                 if self.predictor.ag_model.problem_type == 'binary':
                     plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.output_dir)
+
+                    if os.path.exists(os.path.join(self.output_dir, 'utils')): # Make plot for validation as well
+                        with open(os.path.join(self.output_dir, 'utils', 'data', 'X_val.pkl'), 'rb') as file:
+                            X_val = pickle.load(file)
+
+                        with open(os.path.join(self.output_dir, 'utils', 'data', 'y_val.pkl'), 'rb') as file:
+                            y_val = pickle.load(file)
+
+                        plot_epic_binary_plot(y_val, self.predictor.predict_proba(X_val).iloc[:, 1], self.output_dir, file_name='model_evaluation_val.png')
                 elif self.predictor.ag_model.problem_type == 'regression':
                     plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
             except Exception as e:
