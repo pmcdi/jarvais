@@ -279,11 +279,7 @@ def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray
     plot_pca_clusters(X, cluster_labels)
     plot_silhouette_analysis(X, cluster_labels)
 
-def plot_classification_diagnostics(y_true, y_pred, output_dir):
-    """
-    Generates diagnostic plots for a classification model.
-
-    """
+def plot_epic_binary_plot(y_true, y_pred, output_dir, file_name='model_evaluation_test.svg'):
 
     stats = calculate_bin_stats(y_true, y_pred)
     ci_data = calculate_eval_ci(stats,y_true,y_pred)
@@ -295,11 +291,19 @@ def plot_classification_diagnostics(y_true, y_pred, output_dir):
     )
 
     # Specify the file path where you want to save the SVG
-    file_path = os.path.join(output_dir, 'model_evaluation.svg')
+    file_path = os.path.join(output_dir, file_name)
 
     # Write the SVG data to the file
     with open(file_path, 'w') as file:
         file.write(fig.data)
+
+def plot_classification_diagnostics(y_true, y_pred, output_dir):
+    """
+    Generates diagnostic plots for a classification model.
+
+    """
+
+    plot_epic_binary_plot(y_true, y_pred, output_dir)
 
     conf_matrix = confusion_matrix(y_true, y_pred.apply(lambda x: 1 if x >= 0.5 else 0))
 
