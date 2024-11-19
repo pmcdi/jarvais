@@ -53,7 +53,8 @@ class TrainerSupervised():
 
     def _feature_reduction(self, X, y):
         """
-        Reduces features based on the specified reduction method.
+        Reduces features based on the specified reduction method, with one-hot encoding applied before reduction
+        and reverted afterward.
 
         Parameters
         ----------
@@ -67,17 +68,45 @@ class TrainerSupervised():
         pd.DataFrame
             The reduced feature set.
         """
+        # Step 1: Identify categorical columns
+        categorical_columns = X.select_dtypes(include=['object', 'category']).columns.tolist()
+
+        mappin = {}
+
+        def find_category_mappings(df, variable):
+            return {k: i for i, k in enumerate(df[variable].dropna().unique(), 0)}
+
+        def integer_encode(df, variable, ordinal_mapping):
+            df[variable] = df[variable].map(ordinal_mapping)
+
+        for variable in categorical_columns:
+            mappings = find_category_mappings(X, variable)
+            mappin[variable] = mappings
+
+        for variable in categorical_columns:
+            integer_encode(X, variable, mappin[variable])
+
+        # Step 3: Perform feature reduction
         if self.reduction_method == 'mrmr':
-            return mrmr_reduction(self.task, X, y, self.keep_k)
-        if self.reduction_method == 'variance_threshold':
-            return var_reduction(X, y)
+            X_reduced = mrmr_reduction(self.task, X, y, self.keep_k)
+        elif self.reduction_method == 'variance_threshold':
+            X_reduced = var_reduction(X, y)
         elif self.reduction_method == 'corr':
-            return kbest_reduction(self.task, X, y, self.keep_k)
+            X_reduced = kbest_reduction(self.task, X, y, self.keep_k)
         elif self.reduction_method == 'chi2':
             if self.task not in ['binary', 'multiclass']:
                 raise ValueError('chi-squared reduction can only be done with classification tasks')
-            return chi2_reduction(X, y, self.keep_k)
-        
+            X_reduced = chi2_reduction(X, y, self.keep_k)
+        else:
+            raise ValueError('Unsupported reduction method: {}'.format(self.reduction_method))
+
+        for col in categorical_columns:
+            if col in X_reduced.columns:
+                inv_map = {v: k for k, v in mappin[col].items()}
+                X_reduced[col] = X_reduced[col].map(inv_map)
+
+        return X_reduced
+
     def run(self,
             data: pd.DataFrame,
             target_variable: str,
@@ -145,7 +174,7 @@ class TrainerSupervised():
             self.predictor = TabularPredictor(label=target_variable,
                                               problem_type=self.task,
                                               eval_metric=eval_metric,
-                                              path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1))
+                                              path=os.path.join(self.output_dir, 'autogluon_models')).fit(pd.concat([self.X_train, self.y_train], axis=1))
             
             extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else None # Need to update for regression
             show_leaderboard = ['model', 'score_test', 'score_val', 'score_train', 'eval_metric', 'f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['model', 'score_test', 'score_val', 'eval_metric']
@@ -161,14 +190,14 @@ class TrainerSupervised():
 
             print('\nSimple Logistic Model\n---------------------')
 
-            simple_predictor = TabularPredictor(label=target_variable,
+            self.simple_predictor = TabularPredictor(label=target_variable,
                                                 problem_type=self.task,
                                                 eval_metric=eval_metric,
-                                                path=self.output_dir).fit(pd.concat([self.X_train, self.y_train], axis=1), hyperparameters={SimpleRegressionModel: {}})
+                                                path=os.path.join(self.output_dir, 'simple_regression_model')).fit(pd.concat([self.X_train, self.y_train], axis=1), hyperparameters={SimpleRegressionModel: {}})
             
-            leaderboard = simple_predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
+            leaderboard = self.simple_predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
 
-            train_metrics = simple_predictor.leaderboard(pd.concat([self.X_train, self.y_train], axis=1))[['model', 'score_test']]
+            train_metrics = self.simple_predictor.leaderboard(pd.concat([self.X_train, self.y_train], axis=1))[['model', 'score_test']]
             train_metrics = train_metrics.rename(columns={'score_test': 'score_train'})
             leaderboard = leaderboard.merge(train_metrics, on='model')
 

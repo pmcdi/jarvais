@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import shap
 
-from .utils import plot_feature_importance, plot_shap_values, plot_classification_diagnostics, plot_regression_diagnostics, plot_epic_binary_plot
+from .utils import plot_feature_importance, plot_shap_values, plot_classification_diagnostics, plot_regression_diagnostics
 
 class Explainer():
     def __init__(self, 
@@ -20,24 +20,14 @@ class Explainer():
         self.X_train = X_train
         self.X_test = X_test
         self.y_test = y_test
-        self.categorical_columns = trainer.categorical_columns
         self.output_dir = output_dir
 
     def run(self):
         # Plot diagnostics
             try:
-                if self.predictor.ag_model.problem_type == 'binary':
+                if self.predictor.problem_type == 'binary':
                     plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.output_dir)
-
-                    if os.path.exists(os.path.join(self.output_dir, 'utils')): # Make plot for validation as well
-                        with open(os.path.join(self.output_dir, 'utils', 'data', 'X_val.pkl'), 'rb') as file:
-                            X_val = pickle.load(file)
-
-                        with open(os.path.join(self.output_dir, 'utils', 'data', 'y_val.pkl'), 'rb') as file:
-                            y_val = pickle.load(file)
-
-                        plot_epic_binary_plot(y_val, self.predictor.predict_proba(X_val).iloc[:, 1], self.output_dir, file_name='model_evaluation_val.png')
-                elif self.predictor.ag_model.problem_type == 'regression':
+                elif self.predictor.problem_type == 'regression':
                     plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False))
             except Exception as e:
                 print(f"Error in plotting diagnostics: {e}")

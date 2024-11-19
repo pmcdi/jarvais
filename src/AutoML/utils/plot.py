@@ -8,8 +8,10 @@ import os
 
 from seismometer.data.performance import calculate_bin_stats, calculate_eval_ci
 from seismometer.plot.mpl import evaluation
+
 from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_samples, silhouette_score, confusion_matrix, roc_curve, auc
+from sklearn.metrics import silhouette_samples, silhouette_score, confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, average_precision_score
+from sklearn.calibration import calibration_curve
 
 class ModelWrapper:
     def __init__(self, predictor, feature_names, target_variable=None):
@@ -44,19 +46,29 @@ def plot_feature_importance(predictor, X_test, y_test,
         for i, (bar, p_value) in enumerate(zip(bars, df['p_value'])):
             height = bar.get_height()
             significance = '*' if p_value < 0.05 else ''
-            ax.text(bar.get_x() + bar.get_width() / 2.0, height, significance, ha='center', va='bottom', fontsize=12, color='red')
+            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance, 
+                    ha='center', va='bottom', fontsize=10, color='red')
 
         # Labels and title
-        ax.set_xlabel('Feature')
-        ax.set_ylabel('Importance')
-        ax.set_title('Feature Importance with Standard Deviation and p-value Significance')
+        ax.set_xlabel('Feature', fontsize=14)
+        ax.set_ylabel('Importance', fontsize=14)
+        ax.set_title('Feature Importance with Standard Deviation and p-value Significance', fontsize=16)
         ax.axhline(0, color='grey', linewidth=0.8)
-        ax.set_xticks(np.arange(len(df.index.values)))
-        ax.set_xticklabels(df.index.values, rotation=45)
 
-        # Save plot
+        # Customize x-axis
+        ax.set_xticks(np.arange(len(df.index.values)))
+        ax.set_xticklabels(df.index.values, rotation=60, ha='right', fontsize=10)
+
+        # Add gridlines
+        ax.grid(axis='y', linestyle='--', alpha=0.7)
+
+        # Add legend for significance at the top right
+        significance_patch = plt.Line2D([0], [0], color='red', marker='*', linestyle='None', markersize=10, label='p < 0.05')
+        ax.legend(handles=[significance_patch], loc='upper right', fontsize=12)
+
+        # Adjust layout and save
         plt.tight_layout()
-        fig.savefig(os.path.join(output_dir, 'feature_importance.png'))
+        fig.savefig(os.path.join(output_dir, 'feature_importance_improved.png'))
         plt.show()
 
 def plot_shap_values(predictor, X_train, X_test, 
@@ -279,6 +291,96 @@ def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray
     plot_pca_clusters(X, cluster_labels)
     plot_silhouette_analysis(X, cluster_labels)
 
+def plot_epic_copy(y_test, y_pred, output_dir):
+
+    # Compute metrics
+    fpr, tpr, thresholds_roc = roc_curve(y_test, y_pred)
+    roc_auc = roc_auc_score(y_test, y_pred)
+
+    precision, recall, thresholds_pr = precision_recall_curve(y_test, y_pred)
+    average_precision = average_precision_score(y_test, y_pred)
+
+    prob_true, prob_pred = calibration_curve(y_test, y_pred, n_bins=10, strategy='uniform')
+
+    # Bootstrap for confidence intervals
+    n_bootstraps = 1000
+    rng = np.random.RandomState(42)
+    bootstrapped_aucs = []
+
+    for i in range(n_bootstraps):
+        indices = rng.randint(0, len(y_pred), len(y_pred))
+        if len(np.unique(y_test[indices])) < 2:
+            continue
+        bootstrapped_aucs.append(roc_auc_score(y_test[indices], y_pred[indices]))
+
+    auc_lower = np.percentile(bootstrapped_aucs, 2.5)
+    auc_upper = np.percentile(bootstrapped_aucs, 97.5)
+
+    # Set Seaborn style
+    sns.set_theme(style="whitegrid")
+
+    plt.figure(figsize=(15, 10))
+
+    # 1. ROC Curve
+    plt.subplot(2, 3, 1)
+    sns.lineplot(x=fpr, y=tpr, label=f"AUROC = {roc_auc:.2f} ({auc_lower:.2f}, {auc_upper:.2f})", color="blue")
+    plt.fill_between(fpr, tpr, alpha=0.2, color='blue')
+    plt.xlabel("1 - Specificity")
+    plt.ylabel("Sensitivity")
+    plt.title("ROC Curve")
+    plt.legend()
+
+    # 2. Precision-Recall Curve
+    plt.subplot(2, 3, 2)
+    sns.lineplot(x=recall, y=precision, label=f"AUC-PR = {average_precision:.2f}", color="blue")
+    plt.fill_between(recall, precision, alpha=0.2, color='blue')
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall Curve")
+    plt.legend()
+
+    # 3. Calibration Curve
+    plt.subplot(2, 3, 3)
+    sns.lineplot(x=prob_pred, y=prob_true, label="Calibration Curve", color="blue", marker='o')
+    sns.lineplot(x=[0, 1], y=[0, 1], linestyle="--", label="Perfect Calibration", color="gray")
+    plt.xlabel("Predicted Probability")
+    plt.ylabel("Observed Probability")
+    plt.title("Calibration Curve")
+    plt.legend()
+
+    # 4. PPV vs Sensitivity (Precision vs Recall tradeoff)
+    plt.subplot(2, 3, 4)
+    sns.lineplot(x=recall, y=precision, color="blue")
+    plt.xlabel("Sensitivity")
+    plt.ylabel("Positive Predictive Value (PPV)")
+    plt.title("PPV vs Sensitivity")
+
+    # 5. Sensitivity, Specificity, PPV by Threshold
+    sensitivity = tpr
+    specificity = 1 - fpr
+    ppv = precision[:-1]  # Align with thresholds (PR doesn't return 1 fewer threshold)
+    plt.subplot(2, 3, 5)
+    sns.lineplot(x=thresholds_roc, y=sensitivity, label="Sensitivity", color="blue")
+    sns.lineplot(x=thresholds_roc, y=specificity, label="Specificity", color="green")
+    sns.lineplot(x=thresholds_pr, y=ppv, label="PPV", color="magenta")
+    plt.xlabel("Threshold")
+    plt.ylabel("Metric")
+    plt.title("Metrics by Threshold")
+    plt.legend()
+
+    # 6. Histogram of Predicted Probabilities
+    plt.subplot(2, 3, 6)
+    sns.histplot(y_pred[y_test == 0], bins=20, alpha=0.7, label="Actual False", color='blue', kde=False)
+    sns.histplot(y_pred[y_test == 1], bins=20, alpha=0.7, label="Actual True", color='magenta', kde=False)
+    plt.xlabel("Predicted Probability")
+    plt.ylabel("Count")
+    plt.title("Histogram of Predicted Probabilities")
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'model_evaluation.png'))
+    plt.close()
+
 def plot_epic_binary_plot(y_true, y_pred, output_dir, file_name='model_evaluation_test.svg'):
 
     stats = calculate_bin_stats(y_true, y_pred)
@@ -297,13 +399,15 @@ def plot_epic_binary_plot(y_true, y_pred, output_dir, file_name='model_evaluatio
     with open(file_path, 'w') as file:
         file.write(fig.data)
 
+
 def plot_classification_diagnostics(y_true, y_pred, output_dir):
     """
     Generates diagnostic plots for a classification model.
 
     """
 
-    plot_epic_binary_plot(y_true, y_pred, output_dir)
+    # plot_epic_binary_plot(y_true, y_pred, output_dir)
+    plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), output_dir)
 
     conf_matrix = confusion_matrix(y_true, y_pred.apply(lambda x: 1 if x >= 0.5 else 0))
 
