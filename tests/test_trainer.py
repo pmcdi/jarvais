@@ -55,11 +55,10 @@ def test_run_method(sample_data, tmpdir):
     assert hasattr(trainer, 'X_train')
     assert hasattr(trainer, 'X_test')
 
-def test_load_model(tmpdir):
-    X = pd.DataFrame({'feature': np.random.rand(10)})
-    y = pd.Series(np.random.randint(0, 2, 10), name='target')
+def test_load_model(sample_data, tmpdir):
+    X, y = sample_data
     data = pd.concat([X, y], axis=1)
     trainer = TrainerSupervised(task='binary', output_dir=str(tmpdir))
     trainer.run(data=data, target_variable='target', save_data=True)
-    loaded_trainer = TrainerSupervised.load_model(model_dir=str(tmpdir))
+    loaded_trainer = TrainerSupervised.load_model(project_dir=str(tmpdir))
     assert loaded_trainer.predictor is not None

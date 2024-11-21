@@ -26,7 +26,11 @@ class ModelWrapper:
             X = X.values.reshape(1,-1)
         if not isinstance(X, pd.DataFrame):
             X = pd.DataFrame(X, columns=self.feature_names)
-        preds = self.ag_model.predict_proba(X)
+
+        if self.ag_model.can_predict_proba:
+            preds = self.ag_model.predict_proba(X)
+        else:
+            preds = self.ag_model.predict(X)
         return preds
     
 def plot_feature_importance(predictor, X_test, y_test, 
@@ -68,8 +72,8 @@ def plot_feature_importance(predictor, X_test, y_test,
 
         # Adjust layout and save
         plt.tight_layout()
-        fig.savefig(os.path.join(output_dir, 'feature_importance_improved.png'))
-        plt.show()
+        fig.savefig(os.path.join(output_dir, 'feature_importance.png'))
+        plt.close()
 
 def plot_shap_values(predictor, X_train, X_test, 
                      max_display: int = 10,
@@ -87,14 +91,8 @@ def plot_shap_values(predictor, X_train, X_test,
 
     # Compute SHAP values for the test set
     shap_values = shap_exp(test_data)
-    print(shap_values[...,1])
+    # print(shap_values[...,1])
     # Generate and save the SHAP explanation plots
-    
-    # this is commented out as beeswarm is missing `ax` parameter
-    # fig, ax = plt.subplots(figsize=(20, 12), dpi=300)    
-    # shap.plots.beeswarm(shap_values[...,1], max_display=max_display, show=False, ax=ax)
-    # fig.savefig(os.path.join(output_dir, 'shap_beeswarm.png'))
-    # plt.close()
 
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
     shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=True, ax=ax)
@@ -381,6 +379,113 @@ def plot_epic_copy(y_test, y_pred, output_dir):
     plt.savefig(os.path.join(output_dir, 'model_evaluation.png'))
     plt.close()
 
+def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
+    # Compute test metrics
+    fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
+    roc_auc_test = roc_auc_score(y_test, y_pred)
+    precision_test, recall_test, thresholds_pr_test = precision_recall_curve(y_test, y_pred)
+    average_precision_test = average_precision_score(y_test, y_pred)
+    prob_true_test, prob_pred_test = calibration_curve(y_test, y_pred, n_bins=10, strategy='uniform')
+
+    # Compute validation metrics
+    fpr_val, tpr_val, thresholds_roc_val = roc_curve(y_val, y_val_pred)
+    roc_auc_val = roc_auc_score(y_val, y_val_pred)
+    precision_val, recall_val, thresholds_pr_val = precision_recall_curve(y_val, y_val_pred)
+    average_precision_val = average_precision_score(y_val, y_val_pred)
+    prob_true_val, prob_pred_val = calibration_curve(y_val, y_val_pred, n_bins=10, strategy='uniform')
+
+    # Set Seaborn style
+    sns.set_theme(style="whitegrid")
+
+    plt.figure(figsize=(10, 20))
+
+    # 1. ROC Curve
+    plt.subplot(4, 2, 1)
+    sns.lineplot(x=fpr_test, y=tpr_test, label=f"Test AUROC = {roc_auc_test:.2f}", color="blue")
+    sns.lineplot(x=fpr_val, y=tpr_val, label=f"Validation AUROC = {roc_auc_val:.2f}", color="orange")
+    plt.fill_between(fpr_test, tpr_test, alpha=0.2, color='blue')
+    plt.fill_between(fpr_val, tpr_val, alpha=0.2, color='orange')
+    plt.xlabel("1 - Specificity")
+    plt.ylabel("Sensitivity")
+    plt.title("ROC Curve")
+    plt.legend()
+
+    # 2. Precision-Recall Curve
+    plt.subplot(4, 2, 2)
+    sns.lineplot(x=recall_test, y=precision_test, label=f"Test AUC-PR = {average_precision_test:.2f}", color="blue")
+    sns.lineplot(x=recall_val, y=precision_val, label=f"Validation AUC-PR = {average_precision_val:.2f}", color="orange")
+    plt.fill_between(recall_test, precision_test, alpha=0.2, color='blue')
+    plt.fill_between(recall_val, precision_val, alpha=0.2, color='orange')
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall Curve")
+    plt.legend()
+
+    # 3. Calibration Curve
+    plt.subplot(4, 2, 3)
+    sns.lineplot(x=prob_pred_test, y=prob_true_test, label="Test Calibration Curve", color="blue", marker='o')
+    sns.lineplot(x=prob_pred_val, y=prob_true_val, label="Validation Calibration Curve", color="orange", marker='o')
+    sns.lineplot(x=[0, 1], y=[0, 1], linestyle="--", label="Perfect Calibration", color="gray")
+    plt.xlabel("Predicted Probability")
+    plt.ylabel("Observed Probability")
+    plt.title("Calibration Curve")
+    plt.legend()
+
+    # 4. PPV vs Sensitivity (Precision vs Recall tradeoff)
+    plt.subplot(4, 2, 4)
+    sns.lineplot(x=recall_test, y=precision_test, label="Test", color="blue")
+    sns.lineplot(x=recall_val, y=precision_val, label="Validation", color="orange")
+    plt.xlabel("Sensitivity")
+    plt.ylabel("Positive Predictive Value (PPV)")
+    plt.title("PPV vs Sensitivity")
+    plt.legend()
+
+    # 5. Sensitivity, Specificity, PPV by Threshold
+    sensitivity_test = tpr_test
+    specificity_test = 1 - fpr_test
+    ppv_test = precision_test[:-1]
+    sensitivity_val = tpr_val
+    specificity_val = 1 - fpr_val
+    ppv_val = precision_val[:-1]
+    plt.subplot(4, 2, 5)
+    sns.lineplot(x=thresholds_roc_test, y=sensitivity_test, label="Test Sensitivity", color="blue")
+    sns.lineplot(x=thresholds_roc_test, y=specificity_test, label="Test Specificity", color="green")
+    sns.lineplot(x=thresholds_pr_test, y=ppv_test, label="Test PPV", color="magenta")
+    plt.xlabel("Threshold")
+    plt.ylabel("Metric")
+    plt.title("Metrics by Threshold")
+    plt.legend()
+
+    plt.subplot(4, 2, 6)
+    sns.lineplot(x=thresholds_roc_val, y=sensitivity_val, label="Validation Sensitivity", linestyle="--", color="orange")
+    sns.lineplot(x=thresholds_roc_val, y=specificity_val, label="Validation Specificity", linestyle="--", color="darkgreen")
+    sns.lineplot(x=thresholds_pr_val, y=ppv_val, label="Validation PPV", linestyle="--", color="pink")
+    plt.xlabel("Threshold")
+    plt.ylabel("Metric")
+    plt.title("Metrics by Threshold")
+    plt.legend()
+
+    # 6. Histogram of Predicted Probabilities
+    plt.subplot(4, 2, 7)
+    sns.histplot(y_pred[y_test == 0], bins=20, alpha=0.7, label="Test Actual False", color='blue', kde=False)
+    sns.histplot(y_pred[y_test == 1], bins=20, alpha=0.7, label="Test Actual True", color='magenta', kde=False)
+    plt.xlabel("Predicted Probability")
+    plt.ylabel("Count")
+    plt.title("Histogram of Predicted Probabilities")
+    plt.legend()
+
+    plt.subplot(4, 2, 8)
+    sns.histplot(y_val_pred[y_val == 0], bins=20, alpha=0.5, label="Validation Actual False", color='orange', kde=False)
+    sns.histplot(y_val_pred[y_val == 1], bins=20, alpha=0.5, label="Validation Actual True", color='pink', kde=False)
+    plt.xlabel("Predicted Probability")
+    plt.ylabel("Count")
+    plt.title("Histogram of Predicted Probabilities")
+    plt.legend()
+
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'model_evaluation_with_validation.png'))
+    plt.close()
+
 def plot_epic_binary_plot(y_true, y_pred, output_dir, file_name='model_evaluation_test.svg'):
 
     stats = calculate_bin_stats(y_true, y_pred)
@@ -400,7 +505,7 @@ def plot_epic_binary_plot(y_true, y_pred, output_dir, file_name='model_evaluatio
         file.write(fig.data)
 
 
-def plot_classification_diagnostics(y_true, y_pred, output_dir):
+def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, output_dir):
     """
     Generates diagnostic plots for a classification model.
 
@@ -408,6 +513,7 @@ def plot_classification_diagnostics(y_true, y_pred, output_dir):
 
     # plot_epic_binary_plot(y_true, y_pred, output_dir)
     plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), output_dir)
+    plot_epic_with_validation(y_true.to_numpy(), y_pred.to_numpy(), y_val.to_numpy(), y_val_pred.to_numpy(), output_dir)
 
     conf_matrix = confusion_matrix(y_true, y_pred.apply(lambda x: 1 if x >= 0.5 else 0))
 
@@ -419,7 +525,7 @@ def plot_classification_diagnostics(y_true, y_pred, output_dir):
     plt.savefig(os.path.join(output_dir, 'confusion_matrix.png'))
     plt.close()
 
-def plot_regression_diagnostics(y_true, y_pred):
+def plot_regression_diagnostics(y_true, y_pred, output_dir):
     """
     Generates diagnostic plots for a regression model.
 
@@ -439,7 +545,8 @@ def plot_regression_diagnostics(y_true, y_pred):
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.title(title)
-        plt.show()
+        plt.savefig(os.path.join(output_dir, 'true_vs_predicted.png'))
+        plt.close()
 
     def plot_residuals(y_true, y_pred, title='Residual Plot'):
         residuals = y_true - y_pred
@@ -449,14 +556,15 @@ def plot_regression_diagnostics(y_true, y_pred):
         plt.xlabel('Fitted Values')
         plt.ylabel('Residuals')
         plt.title(title)
-        plt.show()
-
+        plt.savefig(os.path.join(output_dir, 'residual_plot.png'))
+        plt.close()
     def plot_residual_histogram(residuals, title='Histogram of Residuals'):
         plt.figure(figsize=(10, 6))
         sns.histplot(residuals, kde=True, bins=30)
         plt.xlabel('Residuals')
         plt.title(title)
-        plt.show()
+        plt.savefig(os.path.join(output_dir, 'residual_hist.png'))
+        plt.close()
 
     # Call all the plotting functions
     plot_regression_line(y_true, y_pred)
