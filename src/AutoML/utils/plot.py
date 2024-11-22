@@ -289,6 +289,97 @@ def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray
     plot_pca_clusters(X, cluster_labels)
     plot_silhouette_analysis(X, cluster_labels)
 
+def plot_regression_diagnostics(y_true, y_pred, output_dir):
+    """
+    Generates diagnostic plots for a regression model.
+
+    Parameters:
+    -----------
+    model: Fitted regression model
+        The regression model to evaluate.
+    """
+    
+    # Predict the target values
+    residuals = y_true - y_pred
+
+    def plot_regression_line(y_true, y_pred, xlabel='True Values', ylabel='Predictions', title='True vs Predicted Values'):
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
+        sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
+        plt.xlabel(xlabel)
+        plt.ylabel(ylabel)
+        plt.title(title)
+        plt.savefig(os.path.join(output_dir, 'true_vs_predicted.png'))
+        plt.close()
+
+    def plot_residuals(y_true, y_pred, title='Residual Plot'):
+        residuals = y_true - y_pred
+        plt.figure(figsize=(10, 6))
+        sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
+        plt.axhline(0, color='red', linestyle='--')
+        plt.xlabel('Fitted Values')
+        plt.ylabel('Residuals')
+        plt.title(title)
+        plt.savefig(os.path.join(output_dir, 'residual_plot.png'))
+        plt.close()
+    def plot_residual_histogram(residuals, title='Histogram of Residuals'):
+        plt.figure(figsize=(10, 6))
+        sns.histplot(residuals, kde=True, bins=30)
+        plt.xlabel('Residuals')
+        plt.title(title)
+        plt.savefig(os.path.join(output_dir, 'residual_hist.png'))
+        plt.close()
+
+    # Call all the plotting functions
+    plot_regression_line(y_true, y_pred)
+    plot_residuals(y_true, y_pred)
+    plot_residual_histogram(residuals)
+
+def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, output_dir):
+    """
+    Generates diagnostic plots for a classification model.
+
+    """
+
+    plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), y_val.to_numpy(), y_val_pred.to_numpy(), output_dir)
+
+    conf_matrix = confusion_matrix(y_true, y_pred.apply(lambda x: 1 if x >= 0.5 else 0))
+
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title('Confusion Matrix')
+    plt.savefig(os.path.join(output_dir, 'confusion_matrix.png'))
+    plt.close()
+
+### MODEL EVALUATION COPY OF EPIC PLOTS
+
+def _bootstrap(y_test, y_pred, f, nsamples=100):
+        values = []
+        for _ in range(nsamples):
+            idx = np.random.randint(len(y_test), size=len(y_test))
+            pred_sample = y_pred[idx]
+            y_test_sample = y_test[idx]
+            val = f(y_test_sample.ravel(), pred_sample.ravel())
+            values.append(val)
+        return (round(val, 2) for val in np.percentile(values, (2.5, 97.5)))
+
+def _bin_class_curve(y_true, y_pred):
+        sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]
+        y_true = np.array(y_true)[sort_ix]
+        y_pred = np.array(y_pred)[sort_ix]
+    
+        # Find where the threshold changes
+        distinct_ix = np.where(np.diff(y_pred))[0]
+        threshold_idxs = np.r_[distinct_ix, y_true.size - 1]
+    
+        # Add up the true positives and infer false ones
+        tps = np.cumsum(y_true)[threshold_idxs]
+        fps = 1 + threshold_idxs - tps
+    
+        return fps, tps, y_pred[threshold_idxs]
+
 def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
     # Compute test metrics
     fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
@@ -303,7 +394,12 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
     precision_val, recall_val, thresholds_pr_val = precision_recall_curve(y_val, y_val_pred)
     average_precision_val = average_precision_score(y_val, y_val_pred)
     prob_true_val, prob_pred_val = calibration_curve(y_val, y_val_pred, n_bins=10, strategy='uniform')
-
+    
+    roc_conf_test = _bootstrap(y_test, y_pred, roc_auc_score)
+    roc_conf_val = _bootstrap(y_val, y_val_pred, roc_auc_score)
+    precision_conf_test = _bootstrap(y_test, y_pred, average_precision_score)
+    precision_conf_val = _bootstrap(y_val, y_val_pred, average_precision_score)
+    
     # Set Seaborn style
     sns.set_theme(style="whitegrid")
 
@@ -311,10 +407,10 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
 
     # 1. ROC Curve
     plt.subplot(2, 4, 1)
-    sns.lineplot(x=fpr_test, y=tpr_test, label=f"Test AUROC = {roc_auc_test:.2f}", color="blue")
-    sns.lineplot(x=fpr_val, y=tpr_val, label=f"Validation AUROC = {roc_auc_val:.2f}", color="orange")
-    plt.fill_between(fpr_test, tpr_test, alpha=0.2, color='blue')
-    plt.fill_between(fpr_val, tpr_val, alpha=0.2, color='orange')
+    sns.lineplot(x=fpr_test, y=tpr_test, label=f"Test AUROC = {roc_auc_test:.2f} {roc_conf_test}", color="blue")
+    sns.lineplot(x=fpr_val, y=tpr_val, label=f"Validation AUROC = {roc_auc_val:.2f} {roc_conf_val}", color="orange")
+    plt.fill_between(fpr_test, tpr_test - (roc_conf_test[1] - roc_auc_test), tpr_test + (roc_conf_test[1] - roc_auc_test), color='blue', alpha=0.2)
+    plt.fill_between(fpr_val, tpr_val - (roc_conf_val[1] - roc_auc_val), tpr_val + (roc_conf_val[1] - roc_auc_val), alpha=0.2, color='orange')
     plt.xlabel("1 - Specificity")
     plt.ylabel("Sensitivity")
     plt.title("ROC Curve")
@@ -322,10 +418,10 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
 
     # 2. Precision-Recall Curve
     plt.subplot(2, 4, 2)
-    sns.lineplot(x=recall_test, y=precision_test, label=f"Test AUC-PR = {average_precision_test:.2f}", color="blue")
-    sns.lineplot(x=recall_val, y=precision_val, label=f"Validation AUC-PR = {average_precision_val:.2f}", color="orange")
-    plt.fill_between(recall_test, precision_test, alpha=0.2, color='blue')
-    plt.fill_between(recall_val, precision_val, alpha=0.2, color='orange')
+    sns.lineplot(x=recall_test, y=precision_test, label=f"Test AUC-PR = {average_precision_test:.2f} {precision_conf_test}", color="blue")
+    sns.lineplot(x=recall_val, y=precision_val, label=f"Validation AUC-PR = {average_precision_val:.2f} {precision_conf_test}", color="orange")
+    plt.fill_between(recall_test, precision_test - (precision_conf_test[1] - average_precision_test), precision_test + (precision_conf_test[1] - average_precision_test), color='blue', alpha=0.2)
+    plt.fill_between(recall_val, precision_val - (precision_conf_val[1] - average_precision_val), precision_val + (precision_conf_val[1] - average_precision_val), color='orange', alpha=0.2)
     plt.xlabel("Recall")
     plt.ylabel("Precision")
     plt.title("Precision-Recall Curve")
@@ -342,26 +438,11 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.legend()
 
     # 4. Sensitivity vs Flag Rate
-    def _bin_class_curve(y_true, y_pred):
-        sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]
-        y_true = np.array(y_true)[sort_ix]
-        y_pred = np.array(y_pred)[sort_ix]
-    
-        # Find where the threshold changes
-        distinct_ix = np.where(np.diff(y_pred))[0]
-        threshold_idxs = np.r_[distinct_ix, y_true.size - 1]
-    
-        # Add up the true positives and infer false ones
-        tps = np.cumsum(y_true)[threshold_idxs]
-        fps = 1 + threshold_idxs - tps
-    
-        return fps, tps, y_pred[threshold_idxs]
-            
-    fps, tps, thresholds = _bin_class_curve(y_test, y_pred)
+    fps, tps, _ = _bin_class_curve(y_test, y_pred)
     sens_test = tps / sum(y_test)
     flag_rate_test = (tps + fps) / len(y_test)
 
-    fps, tps, thresholds = _bin_class_curve(y_val, y_val_pred)
+    fps, tps, _ = _bin_class_curve(y_val, y_val_pred)
     sens_val = tps / sum(y_val)
     flag_rate_val = (tps + fps) / len(y_val)
 
@@ -433,67 +514,3 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.tight_layout()
     plt.savefig(os.path.join(output_dir, 'model_evaluation.png'))
     plt.close()
-
-def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, output_dir):
-    """
-    Generates diagnostic plots for a classification model.
-
-    """
-
-    plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), y_val.to_numpy(), y_val_pred.to_numpy(), output_dir)
-
-    conf_matrix = confusion_matrix(y_true, y_pred.apply(lambda x: 1 if x >= 0.5 else 0))
-
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
-    plt.xlabel('Predicted')
-    plt.ylabel('Actual')
-    plt.title('Confusion Matrix')
-    plt.savefig(os.path.join(output_dir, 'confusion_matrix.png'))
-    plt.close()
-
-def plot_regression_diagnostics(y_true, y_pred, output_dir):
-    """
-    Generates diagnostic plots for a regression model.
-
-    Parameters:
-    -----------
-    model: Fitted regression model
-        The regression model to evaluate.
-    """
-    
-    # Predict the target values
-    residuals = y_true - y_pred
-
-    def plot_regression_line(y_true, y_pred, xlabel='True Values', ylabel='Predictions', title='True vs Predicted Values'):
-        plt.figure(figsize=(10, 6))
-        sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
-        sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-        plt.title(title)
-        plt.savefig(os.path.join(output_dir, 'true_vs_predicted.png'))
-        plt.close()
-
-    def plot_residuals(y_true, y_pred, title='Residual Plot'):
-        residuals = y_true - y_pred
-        plt.figure(figsize=(10, 6))
-        sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
-        plt.axhline(0, color='red', linestyle='--')
-        plt.xlabel('Fitted Values')
-        plt.ylabel('Residuals')
-        plt.title(title)
-        plt.savefig(os.path.join(output_dir, 'residual_plot.png'))
-        plt.close()
-    def plot_residual_histogram(residuals, title='Histogram of Residuals'):
-        plt.figure(figsize=(10, 6))
-        sns.histplot(residuals, kde=True, bins=30)
-        plt.xlabel('Residuals')
-        plt.title(title)
-        plt.savefig(os.path.join(output_dir, 'residual_hist.png'))
-        plt.close()
-
-    # Call all the plotting functions
-    plot_regression_line(y_true, y_pred)
-    plot_residuals(y_true, y_pred)
-    plot_residual_histogram(residuals)
