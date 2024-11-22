@@ -289,96 +289,6 @@ def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray
     plot_pca_clusters(X, cluster_labels)
     plot_silhouette_analysis(X, cluster_labels)
 
-def plot_epic_copy(y_test, y_pred, output_dir):
-
-    # Compute metrics
-    fpr, tpr, thresholds_roc = roc_curve(y_test, y_pred)
-    roc_auc = roc_auc_score(y_test, y_pred)
-
-    precision, recall, thresholds_pr = precision_recall_curve(y_test, y_pred)
-    average_precision = average_precision_score(y_test, y_pred)
-
-    prob_true, prob_pred = calibration_curve(y_test, y_pred, n_bins=10, strategy='uniform')
-
-    # Bootstrap for confidence intervals
-    n_bootstraps = 1000
-    rng = np.random.RandomState(42)
-    bootstrapped_aucs = []
-
-    for i in range(n_bootstraps):
-        indices = rng.randint(0, len(y_pred), len(y_pred))
-        if len(np.unique(y_test[indices])) < 2:
-            continue
-        bootstrapped_aucs.append(roc_auc_score(y_test[indices], y_pred[indices]))
-
-    auc_lower = np.percentile(bootstrapped_aucs, 2.5)
-    auc_upper = np.percentile(bootstrapped_aucs, 97.5)
-
-    # Set Seaborn style
-    sns.set_theme(style="whitegrid")
-
-    plt.figure(figsize=(15, 10))
-
-    # 1. ROC Curve
-    plt.subplot(2, 3, 1)
-    sns.lineplot(x=fpr, y=tpr, label=f"AUROC = {roc_auc:.2f} ({auc_lower:.2f}, {auc_upper:.2f})", color="blue")
-    plt.fill_between(fpr, tpr, alpha=0.2, color='blue')
-    plt.xlabel("1 - Specificity")
-    plt.ylabel("Sensitivity")
-    plt.title("ROC Curve")
-    plt.legend()
-
-    # 2. Precision-Recall Curve
-    plt.subplot(2, 3, 2)
-    sns.lineplot(x=recall, y=precision, label=f"AUC-PR = {average_precision:.2f}", color="blue")
-    plt.fill_between(recall, precision, alpha=0.2, color='blue')
-    plt.xlabel("Recall")
-    plt.ylabel("Precision")
-    plt.title("Precision-Recall Curve")
-    plt.legend()
-
-    # 3. Calibration Curve
-    plt.subplot(2, 3, 3)
-    sns.lineplot(x=prob_pred, y=prob_true, label="Calibration Curve", color="blue", marker='o')
-    sns.lineplot(x=[0, 1], y=[0, 1], linestyle="--", label="Perfect Calibration", color="gray")
-    plt.xlabel("Predicted Probability")
-    plt.ylabel("Observed Probability")
-    plt.title("Calibration Curve")
-    plt.legend()
-
-    # 4. PPV vs Sensitivity (Precision vs Recall tradeoff)
-    plt.subplot(2, 3, 4)
-    sns.lineplot(x=recall, y=precision, color="blue")
-    plt.xlabel("Sensitivity")
-    plt.ylabel("Positive Predictive Value (PPV)")
-    plt.title("PPV vs Sensitivity")
-
-    # 5. Sensitivity, Specificity, PPV by Threshold
-    sensitivity = tpr
-    specificity = 1 - fpr
-    ppv = precision[:-1]  # Align with thresholds (PR doesn't return 1 fewer threshold)
-    plt.subplot(2, 3, 5)
-    sns.lineplot(x=thresholds_roc, y=sensitivity, label="Sensitivity", color="blue")
-    sns.lineplot(x=thresholds_roc, y=specificity, label="Specificity", color="green")
-    sns.lineplot(x=thresholds_pr, y=ppv, label="PPV", color="magenta")
-    plt.xlabel("Threshold")
-    plt.ylabel("Metric")
-    plt.title("Metrics by Threshold")
-    plt.legend()
-
-    # 6. Histogram of Predicted Probabilities
-    plt.subplot(2, 3, 6)
-    sns.histplot(y_pred[y_test == 0], bins=20, alpha=0.7, label="Actual False", color='blue', kde=False)
-    sns.histplot(y_pred[y_test == 1], bins=20, alpha=0.7, label="Actual True", color='magenta', kde=False)
-    plt.xlabel("Predicted Probability")
-    plt.ylabel("Count")
-    plt.title("Histogram of Predicted Probabilities")
-    plt.legend()
-
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'model_evaluation.png'))
-    plt.close()
-
 def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     # Compute test metrics
     fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
@@ -397,10 +307,10 @@ def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     # Set Seaborn style
     sns.set_theme(style="whitegrid")
 
-    plt.figure(figsize=(10, 20))
+    plt.figure(figsize=(20, 10))
 
     # 1. ROC Curve
-    plt.subplot(4, 2, 1)
+    plt.subplot(2, 4, 1)
     sns.lineplot(x=fpr_test, y=tpr_test, label=f"Test AUROC = {roc_auc_test:.2f}", color="blue")
     sns.lineplot(x=fpr_val, y=tpr_val, label=f"Validation AUROC = {roc_auc_val:.2f}", color="orange")
     plt.fill_between(fpr_test, tpr_test, alpha=0.2, color='blue')
@@ -411,7 +321,7 @@ def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.legend()
 
     # 2. Precision-Recall Curve
-    plt.subplot(4, 2, 2)
+    plt.subplot(2, 4, 2)
     sns.lineplot(x=recall_test, y=precision_test, label=f"Test AUC-PR = {average_precision_test:.2f}", color="blue")
     sns.lineplot(x=recall_val, y=precision_val, label=f"Validation AUC-PR = {average_precision_val:.2f}", color="orange")
     plt.fill_between(recall_test, precision_test, alpha=0.2, color='blue')
@@ -422,7 +332,7 @@ def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.legend()
 
     # 3. Calibration Curve
-    plt.subplot(4, 2, 3)
+    plt.subplot(2, 4, 3)
     sns.lineplot(x=prob_pred_test, y=prob_true_test, label="Test Calibration Curve", color="blue", marker='o')
     sns.lineplot(x=prob_pred_val, y=prob_true_val, label="Validation Calibration Curve", color="orange", marker='o')
     sns.lineplot(x=[0, 1], y=[0, 1], linestyle="--", label="Perfect Calibration", color="gray")
@@ -431,13 +341,36 @@ def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.title("Calibration Curve")
     plt.legend()
 
-    # 4. PPV vs Sensitivity (Precision vs Recall tradeoff)
-    plt.subplot(4, 2, 4)
-    sns.lineplot(x=recall_test, y=precision_test, label="Test", color="blue")
-    sns.lineplot(x=recall_val, y=precision_val, label="Validation", color="orange")
-    plt.xlabel("Sensitivity")
-    plt.ylabel("Positive Predictive Value (PPV)")
-    plt.title("PPV vs Sensitivity")
+    # 4. Sensitivity vs Flag Rate
+    def _bin_class_curve(y_true, y_pred):
+        sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]
+        y_true = np.array(y_true)[sort_ix]
+        y_pred = np.array(y_pred)[sort_ix]
+    
+        # Find where the threshold changes
+        distinct_ix = np.where(np.diff(y_pred))[0]
+        threshold_idxs = np.r_[distinct_ix, y_true.size - 1]
+    
+        # Add up the true positives and infer false ones
+        tps = np.cumsum(y_true)[threshold_idxs]
+        fps = 1 + threshold_idxs - tps
+    
+        return fps, tps, y_pred[threshold_idxs]
+            
+    fps, tps, thresholds = _bin_class_curve(y_test, y_pred)
+    sens_test = tps / sum(y_test)
+    flag_rate_test = (tps + fps) / len(y_test)
+
+    fps, tps, thresholds = _bin_class_curve(y_val, y_val_pred)
+    sens_val = tps / sum(y_val)
+    flag_rate_val = (tps + fps) / len(y_val)
+
+    plt.subplot(2, 4, 4)
+    sns.lineplot(x=flag_rate_test, y=sens_test, label="Test", color="blue")
+    sns.lineplot(x=flag_rate_val, y=sens_val, label="Validation", color="orange")
+    plt.xlabel('Flag Rate')
+    plt.ylabel('Sensitivity')
+    plt.title('Sensitivity/Flag Curve')
     plt.legend()
 
     # 5. Sensitivity, Specificity, PPV by Threshold
@@ -447,7 +380,7 @@ def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     sensitivity_val = tpr_val
     specificity_val = 1 - fpr_val
     ppv_val = precision_val[:-1]
-    plt.subplot(4, 2, 5)
+    plt.subplot(2, 4, 5)
     sns.lineplot(x=thresholds_roc_test, y=sensitivity_test, label="Test Sensitivity", color="blue")
     sns.lineplot(x=thresholds_roc_test, y=specificity_test, label="Test Specificity", color="green")
     sns.lineplot(x=thresholds_pr_test, y=ppv_test, label="Test PPV", color="magenta")
@@ -456,7 +389,7 @@ def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.title("Metrics by Threshold")
     plt.legend()
 
-    plt.subplot(4, 2, 6)
+    plt.subplot(2, 4, 6)
     sns.lineplot(x=thresholds_roc_val, y=sensitivity_val, label="Validation Sensitivity", linestyle="--", color="orange")
     sns.lineplot(x=thresholds_roc_val, y=specificity_val, label="Validation Specificity", linestyle="--", color="darkgreen")
     sns.lineplot(x=thresholds_pr_val, y=ppv_val, label="Validation PPV", linestyle="--", color="pink")
@@ -466,24 +399,39 @@ def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.legend()
 
     # 6. Histogram of Predicted Probabilities
-    plt.subplot(4, 2, 7)
+    def _get_highest_bin_count(values, bins):
+        counts, _ = np.histogram(values, bins=bins)
+        return counts.max()
+
+    # Example for y_pred and y_val_pred
+    highest_bin_count = max(
+        _get_highest_bin_count(y_pred[y_test == 0], bins=20),
+        _get_highest_bin_count(y_pred[y_test == 1], bins=20),
+        _get_highest_bin_count(y_val_pred[y_val == 0], bins=20),
+        _get_highest_bin_count(y_val_pred[y_val == 1], bins=20)
+    )
+    highest_bin_count += highest_bin_count//20
+    
+    plt.subplot(2, 4, 7)
     sns.histplot(y_pred[y_test == 0], bins=20, alpha=0.7, label="Test Actual False", color='blue', kde=False)
     sns.histplot(y_pred[y_test == 1], bins=20, alpha=0.7, label="Test Actual True", color='magenta', kde=False)
     plt.xlabel("Predicted Probability")
     plt.ylabel("Count")
     plt.title("Histogram of Predicted Probabilities")
+    plt.ylim(0, highest_bin_count)
     plt.legend()
 
-    plt.subplot(4, 2, 8)
+    plt.subplot(2, 4, 8)
     sns.histplot(y_val_pred[y_val == 0], bins=20, alpha=0.5, label="Validation Actual False", color='orange', kde=False)
     sns.histplot(y_val_pred[y_val == 1], bins=20, alpha=0.5, label="Validation Actual True", color='pink', kde=False)
     plt.xlabel("Predicted Probability")
     plt.ylabel("Count")
     plt.title("Histogram of Predicted Probabilities")
+    plt.ylim(0, highest_bin_count)
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'model_evaluation_with_validation.png'))
+    plt.savefig(os.path.join(output_dir, 'model_evaluation.png'))
     plt.close()
 
 def plot_epic_binary_plot(y_true, y_pred, output_dir, file_name='model_evaluation_test.svg'):

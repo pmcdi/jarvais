@@ -24,14 +24,14 @@ class Explainer():
 
     def run(self):
         # Plot diagnostics
-            # try:
-            if self.predictor.problem_type == 'binary':
-                plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.trainer.y_val, self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], self.output_dir)
-                plot_shap_values(self.predictor, self.X_train, self.X_test, output_dir=self.output_dir)
-            elif self.predictor.problem_type == 'regression':
-                plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False), self.output_dir)
-            # except Exception as e:
-            #     print(f"Error in plotting diagnostics: {e}")
+            try:
+                if self.predictor.problem_type in ['binary', 'multiclass']:
+                    plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.trainer.y_val, self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], self.output_dir)
+                    plot_shap_values(self.predictor, self.X_train, self.X_test, output_dir=self.output_dir)
+                elif self.predictor.problem_type == 'regression':
+                    plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False), self.output_dir)
+            except Exception as e:
+                print(f"Error in plotting diagnostics: {e}")
 
             # Plot feature importance
             try:
