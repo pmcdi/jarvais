@@ -12,7 +12,7 @@ from autogluon.tabular import TabularPredictor
 
 from .explainer import Explainer
 from .models import SimpleRegressionModel
-from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction
+from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction, train_with_cv
 
 class TrainerSupervised():
     def __init__(self,
@@ -111,68 +111,6 @@ class TrainerSupervised():
 
         return X_reduced
     
-    def train_with_cv(self, target_variable, eval_metric='accuracy', num_folds=5):
-        """
-        Trains a TabularPredictor using manual cross-validation without bagging and consolidates the leaderboards.
-
-        Parameters:
-        - target_variable (str): Name of the target column.
-        - eval_metric (str): Evaluation metric to optimize (default: 'accuracy').
-        - num_folds (int): Number of cross-validation folds (default: 5).
-
-        Returns:
-        - predictors: A list of trained predictors (one per fold).
-        - final_leaderboard: A single DataFrame containing all models across folds.
-        """
-        data = pd.concat([self.X_train, self.y_train], axis=1)
-        kf = KFold(n_splits=num_folds, shuffle=True, random_state=42)
-
-        predictors, cv_scores, leaderboards, val_indices = [], [], [], []
-
-        for fold, (train_idx, val_idx) in enumerate(kf.split(data)):
-            print(f"Training fold {fold + 1}/{num_folds}...")
-            
-            train_data, val_data = data.iloc[train_idx], data.iloc[val_idx]
-            val_indices.append(val_idx)
-
-            predictor = TabularPredictor(
-                label=target_variable, problem_type=self.task, eval_metric=eval_metric,
-                path=os.path.join(self.output_dir, f'autogluon_models_fold_{fold + 1}'),
-                verbosity=0, log_to_file=False,
-            ).fit(train_data, tuning_data=val_data, **self.predictor_fit_kwargs)
-
-            score = predictor.evaluate(val_data)[eval_metric]
-            print(f"Fold {fold + 1} score: {score}")
-
-            predictors.append(predictor)
-            cv_scores.append(score)
-
-            extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
-            leaderboard = predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
-            train_metrics = predictor.leaderboard(train_data)[['model', 'score_test']].rename(columns={'score_test': 'score_train'})
-            leaderboard = leaderboard.merge(train_metrics, on='model')
-            leaderboards.append(leaderboard)
-
-        consolidated_leaderboard = pd.concat(leaderboards, ignore_index=True)
-        to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test', 'score_val', 'score_train'] + extra_metrics}
-
-        aggregated_leaderboard = consolidated_leaderboard.groupby('model').agg(to_agg)
-        final_leaderboard = pd.DataFrame({'model': consolidated_leaderboard['model'].unique()})
-        
-        for col in to_agg.keys():
-            final_leaderboard[col] = [
-                f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]' for row in aggregated_leaderboard[col].values
-            ]
-        
-        final_leaderboard['eval_metric'] = eval_metric
-
-        self.best_fold = cv_scores.index(max(cv_scores))
-        self.X_val, self.y_val = self.X_train.iloc[val_indices[self.best_fold]], self.y_train.iloc[val_indices[self.best_fold]]
-        shutil.copytree(os.path.join(self.output_dir, f'autogluon_models_fold_{self.best_fold + 1}'), 
-                        os.path.join(self.output_dir, f'autogluon_models_best_fold'), dirs_exist_ok=True)
-
-        return predictors, final_leaderboard
-    
     def run(self,
             data: pd.DataFrame,
             target_variable: str,
@@ -231,7 +169,16 @@ class TrainerSupervised():
             elif self.task == 'regression':
                 eval_metric = 'r2'
                 
-            self.predictors, consolidated_leaderboard = self.train_with_cv(target_variable, eval_metric=eval_metric, num_folds=k_folds)
+            self.predictors, leaderboard, self.best_fold, self.X_val, self.y_val = train_with_cv(
+                pd.concat([self.X_train, self.y_train], axis=1),
+                pd.concat([self.X_test, self.y_test], axis=1), 
+                target_variable=target_variable, 
+                task=self.task, 
+                eval_metric=eval_metric, 
+                num_folds=k_folds,
+                predictor_fit_kwargs=self.predictor_fit_kwargs,
+                output_dir=self.output_dir)
+            
             self.predictor = self.predictors[self.best_fold]
          
             extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error'] # Need to update for regression
@@ -239,7 +186,7 @@ class TrainerSupervised():
 
             print('\nModel Leaderbord\n----------------')
             print(tabulate(
-                consolidated_leaderboard.sort_values(by='score_val', ascending=False)[show_leaderboard],
+                leaderboard.sort_values(by='score_val', ascending=False)[show_leaderboard],
                 tablefmt = "fancy_grid", 
                 headers="keys",
                 showindex=False))
