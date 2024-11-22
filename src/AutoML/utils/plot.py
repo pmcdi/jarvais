@@ -289,7 +289,7 @@ def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray
     plot_pca_clusters(X, cluster_labels)
     plot_silhouette_analysis(X, cluster_labels)
 
-def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
+def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
     # Compute test metrics
     fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
     roc_auc_test = roc_auc_score(y_test, y_pred)
@@ -434,34 +434,13 @@ def plot_epic_with_validation(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.savefig(os.path.join(output_dir, 'model_evaluation.png'))
     plt.close()
 
-def plot_epic_binary_plot(y_true, y_pred, output_dir, file_name='model_evaluation_test.svg'):
-
-    stats = calculate_bin_stats(y_true, y_pred)
-    ci_data = calculate_eval_ci(stats,y_true,y_pred)
-    fig = evaluation(
-        stats,
-        ci_data=ci_data,
-        truth=y_true,
-        output=y_pred
-    )
-
-    # Specify the file path where you want to save the SVG
-    file_path = os.path.join(output_dir, file_name)
-
-    # Write the SVG data to the file
-    with open(file_path, 'w') as file:
-        file.write(fig.data)
-
-
 def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, output_dir):
     """
     Generates diagnostic plots for a classification model.
 
     """
 
-    # plot_epic_binary_plot(y_true, y_pred, output_dir)
-    plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), output_dir)
-    plot_epic_with_validation(y_true.to_numpy(), y_pred.to_numpy(), y_val.to_numpy(), y_val_pred.to_numpy(), output_dir)
+    plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), y_val.to_numpy(), y_val_pred.to_numpy(), output_dir)
 
     conf_matrix = confusion_matrix(y_true, y_pred.apply(lambda x: 1 if x >= 0.5 else 0))
 
