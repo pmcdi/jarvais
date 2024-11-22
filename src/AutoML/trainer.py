@@ -165,25 +165,43 @@ class TrainerSupervised():
             cv_scores.append(score)
             
             # Get leaderboard for this predictor
-            extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else None # Need to update for regression
+            extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error'] # Need to update for regression
             leaderboard = predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
             train_metrics = predictor.leaderboard(train_data)[['model', 'score_test']]
             train_metrics = train_metrics.rename(columns={'score_test': 'score_train'})
             leaderboard = leaderboard.merge(train_metrics, on='model')
-            leaderboard['model'] = leaderboard['model'] + f"_fold_{fold + 1}"
+            # leaderboard['model'] = leaderboard['model'] + f"_fold_{fold + 1}"
             leaderboards.append(leaderboard)
 
         # Consolidate all leaderboards into a single DataFrame
         consolidated_leaderboard = pd.concat(leaderboards, ignore_index=True)
 
+        to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test', 'score_val', 'score_train'] + extra_metrics}
+
+        # Compute average, min, and max metrics for each model
+        aggregated_leaderboard = (
+            consolidated_leaderboard
+            .groupby('model')
+            .agg(to_agg)
+        )
+
+        final_leaderboard = pd.DataFrame({'model': consolidated_leaderboard['model'].unique()})
+
+        # Apply the format function to each relevant column
+        for col in to_agg.keys():
+            series = aggregated_leaderboard[col]
+            final_leaderboard[col] =  [f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]' for row in series.values]
+        
+        final_leaderboard['eval_metric'] = eval_metric
+
         self.best_fold = cv_scores.index(max(cv_scores))
         self.X_val = self.X_train.iloc[val_indices[self.best_fold]] 
         self.y_val = self.y_train.iloc[val_indices[self.best_fold]] 
 
-        shutil.copytree(os.path.join(self.output_dir, f'autogluon_models_fold_{self.best_fold + 1}'), os.path.join(os.path.join(self.output_dir, f'autogluon_models_best_fold'))) # copy to be used later
+        shutil.copytree(os.path.join(self.output_dir, f'autogluon_models_fold_{self.best_fold + 1}'), os.path.join(os.path.join(self.output_dir, f'autogluon_models_best_fold')), dirs_exist_ok=True) # copy to be used later
 
         # Return all predictors, scores, and consolidated leaderboard
-        return predictors, consolidated_leaderboard
+        return predictors, final_leaderboard
 
     def run(self,
             data: pd.DataFrame,
