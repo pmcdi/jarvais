@@ -6,9 +6,6 @@ import seaborn as sns
 
 import os
 
-from seismometer.data.performance import calculate_bin_stats, calculate_eval_ci
-from seismometer.plot.mpl import evaluation
-
 from sklearn.decomposition import PCA
 from sklearn.metrics import silhouette_samples, silhouette_score, confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, average_precision_score
 from sklearn.calibration import calibration_curve
@@ -363,7 +360,7 @@ def _bootstrap(y_test, y_pred, f, nsamples=100):
             y_test_sample = y_test[idx]
             val = f(y_test_sample.ravel(), pred_sample.ravel())
             values.append(val)
-        return (round(val, 2) for val in np.percentile(values, (2.5, 97.5)))
+        return [round(val, 2) for val in np.percentile(values, (2.5, 97.5))]
 
 def _bin_class_curve(y_true, y_pred):
         sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]

@@ -1,5 +1,13 @@
+
+import os
+import shutil
+import pandas as pd
+
+from sklearn.model_selection import KFold
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import MinMaxScaler
+
+from autogluon.tabular import TabularPredictor
 
 def knn_impute_categorical(data, columns):
     """
@@ -170,3 +178,73 @@ def generate_report_pdf(outlier_analysis=None,
 
     # Save PDF
     pdf.output(os.path.join(output_dir, 'analysis_report.pdf'))
+
+def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kwargs, 
+                  output_dir, eval_metric='accuracy', num_folds=5):
+    """
+    Trains a TabularPredictor using manual cross-validation without bagging and consolidates the leaderboards.
+
+    Parameters:
+    - data_train (DataFrame): Combined training data (features + target).
+    - data_test (DataFrame): Combined test data (features + target).
+    - target_variable (str): Name of the target column.
+    - task (str): Problem type (e.g., 'binary', 'multiclass', 'regression').
+    - predictor_fit_kwargs (dict): Additional arguments to pass to TabularPredictor's fit method.
+    - output_dir (str): Directory to save model files.
+    - eval_metric (str): Evaluation metric to optimize (default: 'accuracy').
+    - num_folds (int): Number of cross-validation folds (default: 5).
+
+    Returns:
+    - predictors: A list of trained predictors (one per fold).
+    - final_leaderboard: A single DataFrame containing all models across folds.
+    """
+    kf = KFold(n_splits=num_folds, shuffle=True, random_state=42)
+
+    predictors, cv_scores, leaderboards, val_indices = [], [], [], []
+
+    for fold, (train_idx, val_idx) in enumerate(kf.split(data_train)):
+        print(f"Training fold {fold + 1}/{num_folds}...")
+        
+        train_data, val_data = data_train.iloc[train_idx], data_train.iloc[val_idx]
+        val_indices.append(val_idx)
+
+        predictor = TabularPredictor(
+            label=target_variable, problem_type=task, eval_metric=eval_metric,
+            path=os.path.join(output_dir, f'autogluon_models_fold_{fold + 1}'),
+            verbosity=0, log_to_file=False,
+        ).fit(train_data, tuning_data=val_data, **predictor_fit_kwargs)
+
+        score = predictor.evaluate(val_data)[eval_metric]
+        print(f"Fold {fold + 1} score: {score}")
+
+        predictors.append(predictor)
+        cv_scores.append(score)
+
+        extra_metrics = ['f1', 'average_precision'] if task in ['binary', 'multiclass'] else ['root_mean_squared_error']
+        leaderboard = predictor.leaderboard(data_test, extra_metrics=extra_metrics)
+        train_metrics = predictor.leaderboard(train_data)[['model', 'score_test']].rename(columns={'score_test': 'score_train'})
+        leaderboard = leaderboard.merge(train_metrics, on='model')
+        leaderboards.append(leaderboard)
+
+    consolidated_leaderboard = pd.concat(leaderboards, ignore_index=True)
+    to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test', 'score_val', 'score_train'] + extra_metrics}
+
+    aggregated_leaderboard = consolidated_leaderboard.groupby('model').agg(to_agg)
+    final_leaderboard = pd.DataFrame({'model': consolidated_leaderboard['model'].unique()})
+    
+    for col in to_agg.keys():
+        final_leaderboard[col] = [
+            f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]' for row in aggregated_leaderboard[col].values
+        ]
+    
+    final_leaderboard['eval_metric'] = eval_metric
+
+    best_fold = cv_scores.index(max(cv_scores))
+    val_indices_best = val_indices[best_fold]
+    X_val, y_val = data_train.iloc[val_indices_best].drop(columns=target_variable), data_train.iloc[val_indices_best][target_variable]
+
+    shutil.copytree(os.path.join(output_dir, f'autogluon_models_fold_{best_fold + 1}'), 
+                    os.path.join(output_dir, f'autogluon_models_best_fold'), dirs_exist_ok=True)
+
+    return predictors, final_leaderboard, best_fold, X_val, y_val
+
