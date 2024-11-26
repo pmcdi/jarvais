@@ -1,10 +1,8 @@
 .pixi/
 pixi.lock
 pixi.toml
-./tutorials
 ./data
 data/
-tutorials/
 tests/tmp
 
 *cpython*
