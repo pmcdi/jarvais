@@ -6,7 +6,7 @@ import seaborn as sns
 
 import os
 
-from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, average_precision_score, r2_score
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, average_precision_score, r2_score, root_mean_squared_error
 from sklearn.calibration import calibration_curve
 
 class ModelWrapper:
@@ -237,7 +237,9 @@ def plot_umap(umap_data, output_dir: str = "./"):
     plt.close()
 
 def bootstrap_metric(y_test, y_pred, f, nsamples=100):
+    np.random.seed(0)
     values = []
+    
     for _ in range(nsamples):
         idx = np.random.randint(len(y_test), size=len(y_test))
         pred_sample = y_pred[idx]
@@ -246,54 +248,77 @@ def bootstrap_metric(y_test, y_pred, f, nsamples=100):
         values.append(val)
     return values 
 
-def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test):
+def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, output_dir):
         
+    # Define metrics based on the problem type
     if predictor.problem_type == 'regression':
-        metrics = [('R2', r2_score)]
+        metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
     else:
         metrics = [('ROC-AUC', roc_auc_score), ('Precision', average_precision_score)]
 
-    for metric_name, metric_func in metrics:
-        models = []
-        values_list = []
+    # Prepare lists for DataFrame
+    results = []
 
-        for model in predictor.model_names():
-            # Get predicted probabilities for the positive class
-            y_pred = predictor.predict_proba(X_test, model=model).iloc[:, 1]
-            
-            # Bootstrap the metric
-            values = bootstrap_metric(y_test.to_numpy(), y_pred.to_numpy(), metric_func)
-            
-            # Append to lists
-            models += len(values) * [model]
-            values_list += values
+    # Loop through models and metrics to compute bootstrapped values
+    for model_name in predictor.model_names():
+        for metric_name, metric_func in metrics:
+            # Compute bootstrapped metrics for the test set
+            y_pred_test = predictor.predict(X_test, model=model_name)
+            test_values = bootstrap_metric(y_test.to_numpy(), y_pred_test.to_numpy(), metric_func)
+            results.extend([(model_name, metric_name, 'Test', val) for val in test_values])
 
-        # Create a results DataFrame
-        result_df = pd.DataFrame({'model': models, 'value': values_list})
+            # Compute bootstrapped metrics for the validation set
+            y_pred_val = predictor.predict(X_val, model=model_name)
+            val_values = bootstrap_metric(y_val.to_numpy(), y_pred_val.to_numpy(), metric_func)
+            results.extend([(model_name, metric_name, 'Validation', val) for val in val_values])
 
-        sns.set_theme(style="whitegrid")
+    # Create a results DataFrame
+    result_df = pd.DataFrame(results, columns=['model', 'metric', 'data_split', 'value'])
 
-        # Create the violin plot
-        plt.figure(figsize=(10, 6))  # Adjust the figure size
+    # Sort models by median metric value within each combination of metric and data_split
+    model_order = (
+        result_df.groupby(['metric', 'data_split', 'model'])['value']
+        .median()
+        .reset_index()
+        .sort_values(by=['metric', 'data_split', 'value'], ascending=[True, True, False])
+        .groupby(['metric', 'data_split'])['model']
+        .apply(list)
+        .to_dict()
+    )
 
-        sns.violinplot(
-            data=result_df, 
-            x='value', 
-            y='model', 
-        )
+    # Plot settings
+    sns.set_theme(style="whitegrid")
+    g = sns.FacetGrid(
+        result_df,
+        row="metric",
+        col="data_split",
+        margin_titles=True,
+        height=4,
+        aspect=1.5,
+        sharex=False
+    )
 
-        # Add titles and labels
-        plt.title(f"Model Comparison via Bootstrapped {metric_name}", fontsize=16, weight='bold')
-        plt.xlabel(f"{metric_name} Values", fontsize=14)
-        plt.ylabel("Model", fontsize=14)
+    # Create violin plots with sorted models
+    def violin_plot(data, **kwargs):
+        metric, data_split = data.iloc[0][['metric', 'data_split']]
+        order = model_order.get((metric, data_split), None)
+        sns.violinplot(data=data, x="value", y="model", order=order, linewidth=1, **kwargs)
 
-        # Improve layout and readability
-        plt.xticks(fontsize=12)
-        plt.yticks(fontsize=12)
-        plt.tight_layout()
+    g.map_dataframe(violin_plot)
 
-        # Show the plot
-        plt.show()
+    # Adjust the titles and axis labels
+    g.set_titles(row_template="{row_name}", col_template="{col_name} Data")
+    g.set_axis_labels("Metric Value", "Model")
+
+    # Add overall title and adjust layout
+    plt.subplots_adjust(top=0.9)
+    g.figure.suptitle("Violin Plot of Bootstrapped Metrics", fontsize=16)
+    g.tight_layout(w_pad=0.5, h_pad=1)
+    
+    # Save the plot
+    output_path = os.path.join(output_dir, 'bootstrapped_metrics.png')
+    plt.savefig(output_path, dpi=300)
+    plt.close()
 
 def plot_regression_diagnostics(y_true, y_pred, output_dir):
     """

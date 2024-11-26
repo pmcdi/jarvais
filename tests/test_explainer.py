@@ -58,11 +58,17 @@ def test_explainer_run_binary_classification(explainer_instance):
     explainer = explainer_instance
     explainer.run()
     # Check if diagnostic plots are saved
-    assert os.path.exists(os.path.join(explainer.output_dir, 'confusion_matrix.png'))
-    assert os.path.exists(os.path.join(explainer.output_dir, 'feature_importance.png'))
-    assert os.path.exists(os.path.join(explainer.output_dir, 'model_evaluation.png'))
-    assert os.path.exists(os.path.join(explainer.output_dir, 'shap_heatmap.png'))
-    assert os.path.exists(os.path.join(explainer.output_dir, 'shap_barplot.png'))
+    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'confusion_matrix.png')), \
+    "Error: Confusion matrix figure is missing. Check if the confusion_matrix.png file was correctly generated and saved."
+    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'feature_importance.png')), \
+        "Error: Feature importance figure is missing. Ensure that the feature_importance.png file was generated and saved to the correct directory."
+    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'model_evaluation.png')), \
+        "Error: Model evaluation figure is missing. Verify that the model_evaluation.png file was created and stored in the specified directory."
+    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'shap_heatmap.png')), \
+        "Error: SHAP heatmap figure is missing. Confirm that the shap_heatmap.png file was generated and saved properly."
+    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'shap_barplot.png')), \
+        "Error: SHAP bar plot figure is missing. Check if the shap_barplot.png file was successfully created and saved."
+
 
 def test_explainer_from_trainer(trained_binary_model, tmpdir):
     trainer = trained_binary_model
@@ -92,6 +98,6 @@ def test_explainer_run_regression(trained_regression_model, tmpdir):
     explainer = Explainer.from_trainer(trainer)
     explainer.run()
     # Check if regression diagnostic plots are saved
-    assert os.path.exists(os.path.join(explainer.output_dir, 'residual_plot.png'))
-    assert os.path.exists(os.path.join(explainer.output_dir, 'true_vs_predicted.png'))
-    assert os.path.exists(os.path.join(explainer.output_dir, 'feature_importance.png'))
+    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'residual_plot.png'))
+    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'true_vs_predicted.png'))
+    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'feature_importance.png'))

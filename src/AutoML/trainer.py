@@ -54,6 +54,7 @@ class TrainerSupervised():
 
         # Create output directory if it doesn't exist
         os.makedirs(self.output_dir, exist_ok=True)
+        os.makedirs(os.path.join(self.output_dir, 'autogluon_models'), exist_ok=True)
 
     def _feature_reduction(self, X, y):
         """
@@ -177,7 +178,7 @@ class TrainerSupervised():
                 eval_metric=eval_metric, 
                 num_folds=k_folds,
                 predictor_fit_kwargs=self.predictor_fit_kwargs,
-                output_dir=self.output_dir)
+                output_dir=os.path.join(self.output_dir, 'autogluon_models'))
             
             # Update train data to remove validation
             self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
@@ -238,7 +239,7 @@ class TrainerSupervised():
             raise ValueError('model_dir or project_dir must be provided')
 
         if model_dir is None and project_dir is not None:
-            model_dir = os.path.join(os.path.join(project_dir, f'autogluon_models_best_fold'))
+            model_dir = os.path.join(os.path.join(project_dir, 'autogluon_models', f'autogluon_models_best_fold'))
 
         trainer = cls()
         trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
