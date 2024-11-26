@@ -39,14 +39,14 @@ shap = ">=0.46"
 
 [tool.pixi.environments]
 dev = { features = ["test", "style"], solve-group = "default" }
-py310 = ["py310", "test"]
+#py310 = ["py310", "test"]
 py311 = ["py311", "test"]
 py312 = ["py312", "test"]
 
 ############################################## python ###############################################
 
-[tool.pixi.feature.py310.dependencies]
-python = "3.10.*"
+#[tool.pixi.feature.py310.dependencies]
+#python = "3.10.*"
 [tool.pixi.feature.py311.dependencies]
 python = "3.11.*"
 [tool.pixi.feature.py312.dependencies]
