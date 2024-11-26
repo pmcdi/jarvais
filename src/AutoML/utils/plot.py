@@ -6,8 +6,7 @@ import seaborn as sns
 
 import os
 
-from sklearn.decomposition import PCA
-from sklearn.metrics import silhouette_samples, silhouette_score, confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, average_precision_score
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, average_precision_score, r2_score
 from sklearn.calibration import calibration_curve
 
 class ModelWrapper:
@@ -32,45 +31,45 @@ class ModelWrapper:
     
 def plot_feature_importance(predictor, X_test, y_test, 
                             output_dir: str = "./"):
-        """
-        Plots the feature importance with standard deviation and p-value significance.
-        """
-        df = predictor.feature_importance(pd.concat([X_test, y_test], axis=1))
+    """
+    Plots the feature importance with standard deviation and p-value significance.
+    """
+    df = predictor.feature_importance(pd.concat([X_test, y_test], axis=1))
 
-        # Plotting
-        fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
+    # Plotting
+    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
 
-        # Adding bar plot with error bars
-        bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
+    # Adding bar plot with error bars
+    bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
 
-        # Adding p_value significance indication
-        for i, (bar, p_value) in enumerate(zip(bars, df['p_value'])):
-            height = bar.get_height()
-            significance = '*' if p_value < 0.05 else ''
-            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance, 
-                    ha='center', va='bottom', fontsize=10, color='red')
+    # Adding p_value significance indication
+    for i, (bar, p_value) in enumerate(zip(bars, df['p_value'])):
+        height = bar.get_height()
+        significance = '*' if p_value < 0.05 else ''
+        ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance, 
+                ha='center', va='bottom', fontsize=10, color='red')
 
-        # Labels and title
-        ax.set_xlabel('Feature', fontsize=14)
-        ax.set_ylabel('Importance', fontsize=14)
-        ax.set_title('Feature Importance with Standard Deviation and p-value Significance', fontsize=16)
-        ax.axhline(0, color='grey', linewidth=0.8)
+    # Labels and title
+    ax.set_xlabel('Feature', fontsize=14)
+    ax.set_ylabel('Importance', fontsize=14)
+    ax.set_title('Feature Importance with Standard Deviation and p-value Significance', fontsize=16)
+    ax.axhline(0, color='grey', linewidth=0.8)
 
-        # Customize x-axis
-        ax.set_xticks(np.arange(len(df.index.values)))
-        ax.set_xticklabels(df.index.values, rotation=60, ha='right', fontsize=10)
+    # Customize x-axis
+    ax.set_xticks(np.arange(len(df.index.values)))
+    ax.set_xticklabels(df.index.values, rotation=60, ha='right', fontsize=10)
 
-        # Add gridlines
-        ax.grid(axis='y', linestyle='--', alpha=0.7)
+    # Add gridlines
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
 
-        # Add legend for significance at the top right
-        significance_patch = plt.Line2D([0], [0], color='red', marker='*', linestyle='None', markersize=10, label='p < 0.05')
-        ax.legend(handles=[significance_patch], loc='upper right', fontsize=12)
+    # Add legend for significance at the top right
+    significance_patch = plt.Line2D([0], [0], color='red', marker='*', linestyle='None', markersize=10, label='p < 0.05')
+    ax.legend(handles=[significance_patch], loc='upper right', fontsize=12)
 
-        # Adjust layout and save
-        plt.tight_layout()
-        fig.savefig(os.path.join(output_dir, 'feature_importance.png'))
-        plt.close()
+    # Adjust layout and save
+    plt.tight_layout()
+    fig.savefig(os.path.join(output_dir, 'feature_importance.png'))
+    plt.close()
 
 def plot_shap_values(predictor, X_train, X_test, 
                      max_display: int = 10,
@@ -237,54 +236,64 @@ def plot_umap(umap_data, output_dir: str = "./"):
     fig.savefig(figure_path)
     plt.close()
 
-def plot_clustering_diagnostics(model, X: np.ndarray, cluster_labels: np.ndarray):
-    """
-    Generates diagnostic plots for a clustering model.
+def bootstrap_metric(y_test, y_pred, f, nsamples=100):
+    values = []
+    for _ in range(nsamples):
+        idx = np.random.randint(len(y_test), size=len(y_test))
+        pred_sample = y_pred[idx]
+        y_test_sample = y_test[idx]
+        val = f(y_test_sample.ravel(), pred_sample.ravel())
+        values.append(val)
+    return values 
 
-    Parameters:
-    -----------
-    model: Fitted clustering model
-        The clustering model to evaluate.
-    X: np.ndarray
-        Feature matrix.
-    cluster_labels: np.ndarray
-        Cluster labels assigned by the clustering model.
-    """
-    
-    def plot_pca_clusters(X, cluster_labels):
-        pca = PCA(n_components=2)
-        components = pca.fit_transform(X)
-        plt.figure(figsize=(10, 6))
-        sns.scatterplot(x=components[:, 0], y=components[:, 1], hue=cluster_labels, palette='viridis')
-        plt.title('PCA of Clusters')
-        plt.xlabel('Principal Component 1')
-        plt.ylabel('Principal Component 2')
-        plt.show()
-
-    def plot_silhouette_analysis(X, cluster_labels):
-        silhouette_avg = silhouette_score(X, cluster_labels)
-        sample_silhouette_values = silhouette_samples(X, cluster_labels)
+def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test):
         
-        plt.figure(figsize=(10, 6))
-        y_lower = 10
-        for i in range(len(np.unique(cluster_labels))):
-            ith_cluster_silhouette_values = sample_silhouette_values[cluster_labels == i]
-            ith_cluster_silhouette_values.sort()
-            size_cluster_i = ith_cluster_silhouette_values.shape[0]
-            y_upper = y_lower + size_cluster_i
+    if predictor.problem_type == 'regression':
+        metrics = [('R2', r2_score)]
+    else:
+        metrics = [('ROC-AUC', roc_auc_score), ('Precision', average_precision_score)]
 
-            plt.fill_betweenx(np.arange(y_lower, y_upper), 0, ith_cluster_silhouette_values)
-            plt.text(-0.05, y_lower + 0.5 * size_cluster_i, str(i))
-            y_lower = y_upper + 10
-        
-        plt.axvline(x=silhouette_avg, color="red", linestyle="--")
-        plt.xlabel("Silhouette Coefficient Values")
-        plt.ylabel("Cluster")
-        plt.title("Silhouette Analysis")
+    for metric_name, metric_func in metrics:
+        models = []
+        values_list = []
+
+        for model in predictor.model_names():
+            # Get predicted probabilities for the positive class
+            y_pred = predictor.predict_proba(X_test, model=model).iloc[:, 1]
+            
+            # Bootstrap the metric
+            values = bootstrap_metric(y_test.to_numpy(), y_pred.to_numpy(), metric_func)
+            
+            # Append to lists
+            models += len(values) * [model]
+            values_list += values
+
+        # Create a results DataFrame
+        result_df = pd.DataFrame({'model': models, 'value': values_list})
+
+        sns.set_theme(style="whitegrid")
+
+        # Create the violin plot
+        plt.figure(figsize=(10, 6))  # Adjust the figure size
+
+        sns.violinplot(
+            data=result_df, 
+            x='value', 
+            y='model', 
+        )
+
+        # Add titles and labels
+        plt.title(f"Model Comparison via Bootstrapped {metric_name}", fontsize=16, weight='bold')
+        plt.xlabel(f"{metric_name} Values", fontsize=14)
+        plt.ylabel("Model", fontsize=14)
+
+        # Improve layout and readability
+        plt.xticks(fontsize=12)
+        plt.yticks(fontsize=12)
+        plt.tight_layout()
+
+        # Show the plot
         plt.show()
-
-    plot_pca_clusters(X, cluster_labels)
-    plot_silhouette_analysis(X, cluster_labels)
 
 def plot_regression_diagnostics(y_true, y_pred, output_dir):
     """
@@ -352,30 +361,20 @@ def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, output_di
 
 ### MODEL EVALUATION COPY OF EPIC PLOTS
 
-def _bootstrap(y_test, y_pred, f, nsamples=100):
-        values = []
-        for _ in range(nsamples):
-            idx = np.random.randint(len(y_test), size=len(y_test))
-            pred_sample = y_pred[idx]
-            y_test_sample = y_test[idx]
-            val = f(y_test_sample.ravel(), pred_sample.ravel())
-            values.append(val)
-        return [round(val, 2) for val in np.percentile(values, (2.5, 97.5))]
-
 def _bin_class_curve(y_true, y_pred):
-        sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]
-        y_true = np.array(y_true)[sort_ix]
-        y_pred = np.array(y_pred)[sort_ix]
-    
-        # Find where the threshold changes
-        distinct_ix = np.where(np.diff(y_pred))[0]
-        threshold_idxs = np.r_[distinct_ix, y_true.size - 1]
-    
-        # Add up the true positives and infer false ones
-        tps = np.cumsum(y_true)[threshold_idxs]
-        fps = 1 + threshold_idxs - tps
-    
-        return fps, tps, y_pred[threshold_idxs]
+    sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]
+    y_true = np.array(y_true)[sort_ix]
+    y_pred = np.array(y_pred)[sort_ix]
+
+    # Find where the threshold changes
+    distinct_ix = np.where(np.diff(y_pred))[0]
+    threshold_idxs = np.r_[distinct_ix, y_true.size - 1]
+
+    # Add up the true positives and infer false ones
+    tps = np.cumsum(y_true)[threshold_idxs]
+    fps = 1 + threshold_idxs - tps
+
+    return fps, tps, y_pred[threshold_idxs]
 
 def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
     # Compute test metrics
@@ -392,10 +391,10 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
     average_precision_val = average_precision_score(y_val, y_val_pred)
     prob_true_val, prob_pred_val = calibration_curve(y_val, y_val_pred, n_bins=10, strategy='uniform')
     
-    roc_conf_test = _bootstrap(y_test, y_pred, roc_auc_score)
-    roc_conf_val = _bootstrap(y_val, y_val_pred, roc_auc_score)
-    precision_conf_test = _bootstrap(y_test, y_pred, average_precision_score)
-    precision_conf_val = _bootstrap(y_val, y_val_pred, average_precision_score)
+    roc_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, roc_auc_score), (2.5, 97.5))]
+    roc_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, roc_auc_score), (2.5, 97.5))]
+    precision_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, average_precision_score), (2.5, 97.5))]
+    precision_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, average_precision_score), (2.5, 97.5))]
     
     # Set Seaborn style
     sns.set_theme(style="whitegrid")
