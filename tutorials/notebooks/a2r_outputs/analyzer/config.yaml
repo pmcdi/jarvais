@@ -1,0 +1,193 @@
+columns:
+  categorical:
+  - gender
+  - target_ED_visit
+  - intent
+  - regimen
+  - disease_site
+  continuous:
+  - glucose
+  - neutrophil
+  - aspartate_aminotransferase
+  - hematocrit
+  - weight
+  - white_blood_cell
+  - red_blood_cell
+  - mean_corpuscular_volume
+  - body_surface_area
+  - red_cell_distribution_width
+  - platelet
+  - mean_corpuscular_hemoglobin
+  - alanine_aminotransferase
+  - days_since_prev_ED_visit
+  - lactate_dehydrogenase
+  - lymphocyte
+  - alkaline_phosphatase
+  - esas_nausea
+  - age
+  - hemoglobin
+  - patient_ecog
+  - creatinine
+  - chloride
+  - phosphate
+  - esas_anxiety
+  - sodium
+  - potassium
+  - esas_depression
+  - total_bilirubin
+  - esas_well_being
+  - bicarbonate
+  - eosinophil
+  - height
+  - mean_corpuscular_hemoglobin_concentration
+  - esas_pain
+  - num_prior_ED_visits_within_5_years
+  - albumin
+  - esas_drowsiness
+  - monocyte
+  - cycle_number
+  - esas_shortness_of_breath
+  - esas_tiredness
+  - mean_platelet_volume
+  - esas_appetite
+  - magnesium
+  date: []
+  other: []
+mapping:
+  disease_site:
+    C01: Other
+    C02: Other
+    C04: Other
+    C05: Other
+    C06: Other
+    C09: Other
+    C10: Other
+    C11: Other
+    C15: C15
+    C16: C16
+    C17: C17
+    C18: C18
+    C19: C19
+    C20: C20
+    C21: C21
+    C22: C22
+    C23: C23
+    C24: C24
+    C25: C25
+    C34: Other
+    C37: Other
+    other: Other
+  gender:
+    Female: Female
+    Male: Male
+  intent:
+    ADJUVANT: ADJUVANT
+    CURATIVE: CURATIVE
+    NEOADJUVANT: NEOADJUVANT
+    PALLIATIVE: PALLIATIVE
+  regimen:
+    GI-CISPCAPE+TRAS(LOAD): Other
+    GI-CISPCAPE+TRAS(MAIN): Other
+    GI-CISPFU + TRAS(LOAD): Other
+    GI-CISPFU + TRAS(MAIN): Other
+    GI-CISPFU ANAL: Other
+    GI-CISPFU ESOPHAGEAL: Other
+    GI-DOCEQ3W: Other
+    GI-DOXO: Other
+    GI-ECF: GI-ECF
+    GI-ECX: GI-ECX
+    GI-EOX: Other
+    GI-FLOT (GASTRIC): Other
+    GI-FOLFIRI: GI-FOLFIRI
+    GI-FOLFIRI+BEVACIZUMAB: GI-FOLFIRI+BEVACIZUMAB
+    GI-FOLFIRI+PANITUMUMAB: Other
+    GI-FOLFIRINOX: GI-FOLFIRINOX
+    GI-FOLFNALIRI: Other
+    GI-FOLFNALIRI (COMP): Other
+    GI-FOLFOX (GASTRIC): Other
+    GI-FOLFOX+BEVACIZUMAB: GI-FOLFOX+BEVACIZUMAB
+    GI-FOLFOX-6 MOD: GI-FOLFOX-6 MOD
+    GI-FU CIV + RT: Other
+    GI-FU/FA/CISP BILIARY: Other
+    GI-FUFA C1,4,5 GASTRIC: Other
+    GI-FUFA C2 (GASTRIC): Other
+    GI-FUFA C3 (GASTRIC): Other
+    GI-FUFA WEEKLY: Other
+    GI-GEM 40MG/M2 2X/WK: GI-GEM 40MG/M2 2X/WK
+    GI-GEM 7-WEEKLY: Other
+    GI-GEM D1,8: Other
+    GI-GEM D1,8 + CAPECIT: Other
+    GI-GEM D1,8,15: GI-GEM D1,8,15
+    GI-GEM+ABRAXANE: GI-GEM+ABRAXANE
+    GI-GEMCAP: Other
+    GI-GEMCISP (BILIARY): GI-GEMCISP (BILIARY)
+    GI-GEMCISP (PANCREAS): Other
+    GI-GEMFU (BILIARY): Other
+    GI-IRINO 4-WEEKLY: Other
+    GI-IRINO Q3W: Other
+    GI-MITOFU: GI-MITOFU
+    GI-PACLI WEEKLY: Other
+    GI-PACLI/CARBO WEEKX5: GI-PACLI/CARBO WEEKX5
+    GI-PACLITAXEL: Other
+    GI-PANITUMUMAB: GI-PANITUMUMAB
+    GI-RAMUC(CCO)+PACL(W): GI-RAMUC(CCO)+PACL(W)
+    GI-RAMUCIRUMAB+PACLI: GI-RAMUCIRUMAB+PACLI
+    GI-XELIRI ELDERLY: Other
+    GI-XELOX: Other
+  target_ED_visit:
+    'False': 'False'
+    'True': 'True'
+missingness_strategy:
+  categorical:
+    disease_site: Unknown
+    gender: Unknown
+    intent: Unknown
+    regimen: Unknown
+    target_ED_visit: Unknown
+  continuous:
+    age: median
+    alanine_aminotransferase: median
+    albumin: median
+    alkaline_phosphatase: median
+    aspartate_aminotransferase: median
+    bicarbonate: median
+    body_surface_area: median
+    chloride: median
+    creatinine: median
+    cycle_number: median
+    days_since_prev_ED_visit: median
+    eosinophil: median
+    esas_anxiety: median
+    esas_appetite: median
+    esas_depression: median
+    esas_drowsiness: median
+    esas_nausea: median
+    esas_pain: median
+    esas_shortness_of_breath: median
+    esas_tiredness: median
+    esas_well_being: median
+    glucose: median
+    height: median
+    hematocrit: median
+    hemoglobin: median
+    lactate_dehydrogenase: median
+    lymphocyte: median
+    magnesium: median
+    mean_corpuscular_hemoglobin: median
+    mean_corpuscular_hemoglobin_concentration: median
+    mean_corpuscular_volume: median
+    mean_platelet_volume: median
+    monocyte: median
+    mrn: median
+    neutrophil: median
+    num_prior_ED_visits_within_5_years: median
+    patient_ecog: median
+    phosphate: median
+    platelet: median
+    potassium: median
+    red_blood_cell: median
+    red_cell_distribution_width: median
+    sodium: median
+    total_bilirubin: median
+    weight: median
+    white_blood_cell: median
