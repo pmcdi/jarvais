@@ -22,23 +22,51 @@ class Explainer():
         self.y_test = y_test
         self.output_dir = output_dir
 
+        if not os.path.exists(os.path.join(output_dir, 'figures')):
+            os.mkdir(os.path.join(output_dir, 'figures'))
+
     def run(self):
-        
+        plot_violin_of_bootsrapped_metrics(
+            self.predictor,
+            self.X_test, 
+            self.y_test, 
+            self.trainer.X_val, 
+            self.trainer.y_val, 
+            output_dir=os.path.join(self.output_dir, 'figures')
+            )
         # Plot diagnostics
         try:
             if self.predictor.problem_type in ['binary', 'multiclass']:
-                plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.trainer.y_val, self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], self.output_dir)
-                plot_shap_values(self.predictor, self.X_train, self.X_test, output_dir=self.output_dir)
+                plot_classification_diagnostics(
+                    self.y_test, 
+                    self.predictor.predict_proba(self.X_test).iloc[:, 1], 
+                    self.trainer.y_val, 
+                    self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], 
+                    output_dir=os.path.join(self.output_dir, 'figures')
+                    )
+                plot_shap_values(
+                    self.predictor, 
+                    self.X_train, 
+                    self.X_test, 
+                    output_dir=os.path.join(self.output_dir, 'figures')
+                    )
             elif self.predictor.problem_type == 'regression':
-                plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False), self.output_dir)
+                plot_regression_diagnostics(
+                    self.y_test, 
+                    self.predictor.predict(self.X_test, as_pandas=False), 
+                    output_dir=os.path.join(self.output_dir, 'figures')
+                    )
 
-            plot_violin_of_bootsrapped_metrics(self.predictor, self.X_test, self.y_test)
         except Exception as e:
             print(f"Error in plotting diagnostics: {e}")
 
         # Plot feature importance
         try:
-            plot_feature_importance(self.predictor, self.X_test, self.y_test, output_dir=self.output_dir)
+            plot_feature_importance(self.predictor, 
+                                    self.X_test, 
+                                    self.y_test, 
+                                    output_dir=os.path.join(self.output_dir, 'figures')
+                                    )
         except Exception as e:
             print(f"Error in plotting feature importance: {e}")
         
