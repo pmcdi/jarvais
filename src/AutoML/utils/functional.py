@@ -8,6 +8,9 @@ from sklearn.impute import KNNImputer
 from sklearn.preprocessing import MinMaxScaler
 
 from autogluon.tabular import TabularPredictor
+from autogluon.tabular.configs.hyperparameter_configs import get_hyperparameter_config
+
+from ..models import SimpleRegressionModel
 
 def knn_impute_categorical(data, columns):
     """
@@ -202,6 +205,9 @@ def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kw
 
     predictors, cv_scores, leaderboards, val_indices = [], [], [], []
 
+    custom_hyperparameters = get_hyperparameter_config('default')
+    custom_hyperparameters[SimpleRegressionModel] = {}
+
     for fold, (train_idx, val_idx) in enumerate(kf.split(data_train)):
         print(f"Training fold {fold + 1}/{num_folds}...")
         
@@ -212,7 +218,11 @@ def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kw
             label=target_variable, problem_type=task, eval_metric=eval_metric,
             path=os.path.join(output_dir, f'autogluon_models_fold_{fold + 1}'),
             verbosity=0, log_to_file=False,
-        ).fit(train_data, tuning_data=val_data, **predictor_fit_kwargs)
+        ).fit(
+            train_data, 
+            tuning_data=val_data,
+            hyperparameters=custom_hyperparameters, 
+            **predictor_fit_kwargs)
 
         score = predictor.evaluate(val_data)[eval_metric]
         print(f"Fold {fold + 1} score: {score}")
@@ -227,14 +237,21 @@ def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kw
         leaderboards.append(leaderboard)
 
     consolidated_leaderboard = pd.concat(leaderboards, ignore_index=True)
+
+    # Specify metrics for aggregation
     to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test', 'score_val', 'score_train'] + extra_metrics}
 
-    aggregated_leaderboard = consolidated_leaderboard.groupby('model').agg(to_agg)
-    final_leaderboard = pd.DataFrame({'model': consolidated_leaderboard['model'].unique()})
-    
+    # Group by 'model' and aggregate
+    aggregated_leaderboard = consolidated_leaderboard.groupby('model').agg(to_agg).reset_index()
+
+    # Create the final leaderboard dataframe with unique models
+    final_leaderboard = pd.DataFrame({'model': aggregated_leaderboard['model']})
+
+    # Populate the leaderboard with formatted metrics
     for col in to_agg.keys():
         final_leaderboard[col] = [
-            f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]' for row in aggregated_leaderboard[col].values
+            f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]'
+            for row in aggregated_leaderboard[col].values
         ]
     
     final_leaderboard['eval_metric'] = eval_metric
