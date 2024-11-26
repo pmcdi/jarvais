@@ -179,40 +179,22 @@ class TrainerSupervised():
                 predictor_fit_kwargs=self.predictor_fit_kwargs,
                 output_dir=self.output_dir)
             
+            # Update train data to remove validation
+            self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
+            self.y_train = self.y_train[~self.y_train.index.isin(self.y_val.index)]
+            
             self.predictor = self.predictors[self.best_fold]
          
-            extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error'] # Need to update for regression
-            show_leaderboard = ['model', 'score_test', 'score_val', 'score_train', 'eval_metric', 'f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['model', 'score_test', 'score_val', 'eval_metric']
+            extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error'] 
+            show_leaderboard = ['model', 'score_test', 'score_val', 'score_train', 'eval_metric'] + extra_metrics
 
-            print('\nModel Leaderbord\n----------------')
+            print('\nModel Leaderboard (Displays values in "mean [min, max]" format across training folds)\n----------------')
             print(tabulate(
                 leaderboard.sort_values(by='score_val', ascending=False)[show_leaderboard],
                 tablefmt = "fancy_grid", 
                 headers="keys",
                 showindex=False))
 
-            print('\nSimple Logistic Model\n---------------------')
-
-            self.simple_predictor = TabularPredictor(
-                label=target_variable,
-                problem_type=self.task,
-                eval_metric=eval_metric,
-                path=os.path.join(self.output_dir, 'simple_regression_model'),                                               
-                ).fit(
-                    pd.concat([self.X_train, self.y_train], axis=1), 
-                    hyperparameters={SimpleRegressionModel: {}},
-                    **self.predictor_fit_kwargs)
-
-            leaderboard = self.simple_predictor.leaderboard(pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
-
-            train_metrics = self.simple_predictor.leaderboard(pd.concat([self.X_train, self.y_train], axis=1))[['model', 'score_test']]
-            train_metrics = train_metrics.rename(columns={'score_test': 'score_train'})
-            leaderboard = leaderboard.merge(train_metrics, on='model')
-
-            print(tabulate(leaderboard.iloc[[0]][show_leaderboard], 
-                           tablefmt="fancy_grid", 
-                           headers="keys"))
-            
             if save_data:
                 self.data_dir = os.path.join(self.output_dir, 'data')
                 os.makedirs(self.data_dir, exist_ok=True)
