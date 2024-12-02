@@ -91,7 +91,7 @@ def plot_shap_values(predictor, X_train, X_test,
     # Generate and save the SHAP explanation plots
 
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
-    shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=True, ax=ax)
+    shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
     fig.savefig(os.path.join(output_dir, 'shap_heatmap.png'))
     plt.close()
 
