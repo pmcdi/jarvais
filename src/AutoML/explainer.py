@@ -1,11 +1,6 @@
-import os, pickle
-
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import shap
 
 from .utils import plot_feature_importance, plot_shap_values, plot_classification_diagnostics, plot_regression_diagnostics
+from .utils import BiasExplainer, infer_sensitive_features
 
 class Explainer():
     def __init__(self, 
@@ -24,19 +19,26 @@ class Explainer():
 
     def run(self):
         # Plot diagnostics
-            try:
-                if self.predictor.problem_type in ['binary', 'multiclass']:
-                    plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.trainer.y_val, self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], self.output_dir)
-                    plot_shap_values(self.predictor, self.X_train, self.X_test, output_dir=self.output_dir)
-                elif self.predictor.problem_type == 'regression':
-                    plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False), self.output_dir)
-            except Exception as e:
-                print(f"Error in plotting diagnostics: {e}")
 
-            # Plot feature importance
-            try:
-                plot_feature_importance(self.predictor, self.X_test, self.y_test, output_dir=self.output_dir)
-            except Exception as e:
+        infered_features = infer_sensitive_features(self.X_test)
+        sensitive_features = {k: self.X_test[k].tolist() for k in infered_features}
+
+        bias_exp = BiasExplainer(self.y_test, self.predictor.predict(self.X_test), sensitive_features=sensitive_features)
+        bias_exp.run(relative=True)
+        
+        try:
+            if self.predictor.problem_type in ['binary', 'multiclass']:
+                plot_classification_diagnostics(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.trainer.y_val, self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], self.output_dir)
+                plot_shap_values(self.predictor, self.X_train, self.X_test, output_dir=self.output_dir)
+            elif self.predictor.problem_type == 'regression':
+                plot_regression_diagnostics(self.y_test, self.predictor.predict(self.X_test, as_pandas=False), self.output_dir)
+        except Exception as e:
+            print(f"Error in plotting diagnostics: {e}")
+
+        # Plot feature importance
+        try:
+            plot_feature_importance(self.predictor, self.X_test, self.y_test, output_dir=self.output_dir)
+        except Exception as e:
                 print(f"Error in plotting feature importance: {e}")
 
     @classmethod
