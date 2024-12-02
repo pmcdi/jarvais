@@ -1,7 +1,43 @@
-import fairlearn.metrics as fm
-import pandas as pd
+import inspect, re
 from functools import partial
-import inspect
+
+import pandas as pd
+import fairlearn.metrics as fm
+
+
+def infer_sensitive_features(data: pd.DataFrame) -> list:
+    """
+    Infers potentially sensitive features from a DataFrame.
+
+    Parameters
+    ----------
+    data : pd.DataFrame
+        The input dataset.
+        
+    Returns
+    -------
+    sensitive_features : list
+        List of column names identified as potentially sensitive.
+    """
+    # Common sensitive keywords
+    sensitive_keywords = [
+        "gender", "sex", "age", "race", "ethnicity", "income",
+        "religion", "disability", "nationality", "language",
+        "marital", "citizen", "veteran", "status", "orientation"
+        "disease", "regimen", "disease_site"
+    ]
+
+    sensitive_features = []
+
+    # Check column names for sensitive keywords
+    for col in data.columns:
+        if any(re.search(rf"\b{keyword}\b", col, re.IGNORECASE) for keyword in sensitive_keywords):
+            sensitive_features.append(col)
+
+    # Remove duplicates
+    sensitive_features = list(set(sensitive_features))
+
+    return sensitive_features
 
 def get_metric(metric, sensitive_features=None):
     fn = getattr(fm, metric)
@@ -13,7 +49,7 @@ def get_metric(metric, sensitive_features=None):
 
 class BiasExplainer():
     def __init__(self,
-                 y_true, y_pred, sensitive_features: dict, metrics=['equalized_odds_ratio', 'demographic_parity_ratio', 'equal_opportunity_ratio'], **kwargs):
+                 y_true, y_pred, sensitive_features: dict, metrics=['mean_prediction', 'false_positive_rate'], **kwargs):
         
         self.y_true = y_true
         self.y_pred = y_pred
@@ -31,7 +67,6 @@ class BiasExplainer():
         else:
             raise ValueError("sensitive_features must be a pandas DataFrame, Series, dictionary or list")
         
-        print(type(self.sensitive_features), self.sensitive_features.columns)
         self.largest_features   = self.sensitive_features.groupby(self.sensitive_features.columns.tolist()).size().idxmax()
         self.metrics            = {metric: get_metric(metric, sensitive_features=sensitive_features) for metric in metrics}
         self.metric_frame       = self.get_metric_frame(**kwargs)
