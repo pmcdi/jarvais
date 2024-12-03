@@ -1,11 +1,13 @@
-import os, pickle
+import os
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import shap
+from .utils.plot import (
+    plot_feature_importance, 
+    plot_shap_values, 
+    plot_classification_diagnostics, 
+    plot_regression_diagnostics, 
+    plot_violin_of_bootsrapped_metrics)
 
-from .utils import plot_feature_importance, plot_shap_values, plot_classification_diagnostics, plot_regression_diagnostics, plot_violin_of_bootsrapped_metrics
+from .utils.pdf import generate_explainer_report_pdf
 
 class Explainer():
     def __init__(self, 
@@ -72,7 +74,8 @@ class Explainer():
                                     )
         except Exception as e:
             print(f"Error in plotting feature importance: {e}")
-        
+    
+        generate_explainer_report_pdf(self.predictor.problem_type, self.output_dir)
 
     @classmethod
     def from_trainer(cls, trainer):
