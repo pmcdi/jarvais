@@ -8,7 +8,8 @@ import numpy as np
 from pandas.api.types import is_numeric_dtype
 
 from .utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap
-from .utils.functional import knn_impute_categorical, get_outliers, generate_report_pdf
+from .utils.functional import knn_impute_categorical, get_outliers
+from .utils.pdf import generate_analysis_report_pdf
 
 from typing import Union
 
@@ -297,7 +298,7 @@ class Analyzer():
         self._create_multiplots()
 
         # Create Output PDF
-        generate_report_pdf(outlier_analysis=self.outlier_analysis, 
+        generate_analysis_report_pdf(outlier_analysis=self.outlier_analysis, 
                             multiplots=self.multiplots, 
                             categorical_columns=self.categorical_columns, 
                             output_dir=self.output_dir)
