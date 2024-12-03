@@ -32,6 +32,8 @@ class Explainer():
             self.y_test, 
             self.trainer.X_val, 
             self.trainer.y_val, 
+            self.X_train,
+            self.trainer.y_train,
             output_dir=os.path.join(self.output_dir, 'figures')
             )
         # Plot diagnostics
@@ -42,6 +44,8 @@ class Explainer():
                     self.predictor.predict_proba(self.X_test).iloc[:, 1], 
                     self.trainer.y_val, 
                     self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], 
+                    self.trainer.y_train, 
+                    self.predictor.predict_proba(self.X_train).iloc[:, 1], 
                     output_dir=os.path.join(self.output_dir, 'figures')
                     )
                 plot_shap_values(
@@ -56,7 +60,6 @@ class Explainer():
                     self.predictor.predict(self.X_test, as_pandas=False), 
                     output_dir=os.path.join(self.output_dir, 'figures')
                     )
-
         except Exception as e:
             print(f"Error in plotting diagnostics: {e}")
 
