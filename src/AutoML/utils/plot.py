@@ -254,7 +254,7 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
     if predictor.problem_type == 'regression':
         metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
     else:
-        metrics = [('ROC-AUC', roc_auc_score), ('PR-AUC', average_precision_score)]
+        metrics = [('AUROC', roc_auc_score), ('AUPRC', average_precision_score)]
 
     # Prepare lists for DataFrame
     results = []
@@ -285,50 +285,58 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
     # Create a results DataFrame
     result_df = pd.DataFrame(results, columns=['model', 'metric', 'data_split', 'value'])
 
-    # Sort models by median metric value within each combination of metric and data_split
-    model_order = (
-        result_df.groupby(['metric', 'data_split', 'model'])['value']
-        .median()
-        .reset_index()
-        .sort_values(by=['metric', 'data_split', 'value'], ascending=[True, True, False])
-        .groupby(['metric', 'data_split'])['model']
-        .apply(list)
-        .to_dict()
-    )
+     # Sort models by median metric value within each combination of metric and data_split
+    model_order_per_split = {}
+    for split in ['Test', 'Validation', 'Train']:
+        split_order = (
+            result_df[result_df['data_split'] == split]
+            .groupby(['metric', 'model'])['value']
+            .median()
+            .reset_index()
+            .sort_values(by=['metric', 'value'], ascending=[True, False])
+            .groupby('metric')['model']
+            .apply(list)
+            .to_dict()
+        )
+        model_order_per_split[split] = split_order
 
-    # Plot settings
-    sns.set_theme(style="whitegrid")
-    g = sns.FacetGrid(
-        result_df,
-        col="metric",
-        row="data_split",
-        margin_titles=True,
-        height=4,
-        aspect=1.5,
-        sharex=True
-    )
+    # Function to create violin plots for a specific data split
+    def create_violin_plot(data_split, save_path):
+        sns.set_theme(style="whitegrid")
+        subset = result_df[result_df['data_split'] == data_split]
+        g = sns.FacetGrid(
+            subset,
+            col="metric",
+            margin_titles=True,
+            height=4,
+            aspect=1.5,
+            xlim=(0,1.1)
+        )
 
-    # Create violin plots with sorted models
-    def violin_plot(data, **kwargs):
-        metric, data_split = data.iloc[0][['metric', 'data_split']]
-        order = model_order.get((metric, data_split), None)
-        sns.violinplot(data=data, x="value", y="model", linewidth=1, order=order, **kwargs)
+        # Create violin plots with sorted models
+        def violin_plot(data, **kwargs):
+            metric = data.iloc[0]['metric']
+            order = model_order_per_split[data_split].get(metric, None)
+            sns.violinplot(data=data, x="value", y="model", linewidth=1, order=order, **kwargs)
 
-    g.map_dataframe(violin_plot)
+        g.map_dataframe(violin_plot)
 
-    # Adjust the titles and axis labels
-    g.set_titles(row_template="{row_name} Data", col_template="{col_name}")
-    g.set_axis_labels("Metric Value", "Model")
+        # Adjust the titles and axis labels
+        g.set_titles(col_template="{col_name}")
+        g.set_axis_labels("Metric Value", "Model")
 
-    # Add overall title and adjust layout
-    plt.subplots_adjust(top=0.9)
-    g.figure.suptitle("Violin Plot of Bootstrapped Metrics", fontsize=16)
-    g.tight_layout(w_pad=0.5, h_pad=1)
-    
-    # Save the plot
-    output_path = os.path.join(output_dir, 'bootstrapped_metrics.png')
-    plt.savefig(output_path, dpi=300)
-    plt.close()
+        # Add overall title and adjust layout
+        g.figure.suptitle(f"Violin Plot of Bootstrapped Metrics - {data_split} Data", fontsize=16)
+        g.tight_layout(w_pad=0.5, h_pad=1)
+
+        # Save the plot
+        g.savefig(save_path, dpi=300)
+        plt.close()
+
+    # Generate and save plots for each data split
+    create_violin_plot('Test', os.path.join(output_dir, 'test_metrics_violin.png'))
+    create_violin_plot('Validation', os.path.join(output_dir, 'validation_metrics_violin.png'))
+    create_violin_plot('Train', os.path.join(output_dir, 'train_metrics_violin.png'))
 
 def plot_regression_diagnostics(y_true, y_pred, output_dir):
     """
