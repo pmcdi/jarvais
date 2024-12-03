@@ -182,8 +182,8 @@ def generate_report_pdf(outlier_analysis=None,
     # Save PDF
     pdf.output(os.path.join(output_dir, 'analysis_report.pdf'))
 
-def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kwargs, 
-                  output_dir, eval_metric='accuracy', num_folds=5):
+def train_with_cv(data_train, data_test, target_variable, task, 
+                  output_dir, eval_metric='accuracy', num_folds=5, **kwargs):
     """
     Trains a TabularPredictor using manual cross-validation without bagging and consolidates the leaderboards.
 
@@ -222,7 +222,7 @@ def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kw
             train_data, 
             tuning_data=val_data,
             hyperparameters=custom_hyperparameters, 
-            **predictor_fit_kwargs)
+            **kwargs)
 
         score = predictor.evaluate(val_data)[eval_metric]
         print(f"Fold {fold + 1} score: {score}")

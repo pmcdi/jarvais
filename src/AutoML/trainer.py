@@ -117,7 +117,7 @@ class TrainerSupervised():
             explain: bool = False,
             save_data: bool = True,
             k_folds: int = 5,
-            predictor_fit_kwargs: Optional[dict[str, Any]] = None) -> None:
+            **kwargs) -> None:
         """
         Executes the AutoML pipeline on the given dataset.
 
@@ -145,8 +145,6 @@ class TrainerSupervised():
         # Initialize mutable defaults
         if exclude is None:
             exclude = []
-        if predictor_fit_kwargs is None:
-            predictor_fit_kwargs = {}
 
         exclude.append(target_variable)
         try:
@@ -195,8 +193,8 @@ class TrainerSupervised():
                 task=self.task, 
                 eval_metric=eval_metric, 
                 num_folds=k_folds,
-                predictor_fit_kwargs=predictor_fit_kwargs,
-                output_dir=os.path.join(self.output_dir, 'autogluon_models'))
+                output_dir=os.path.join(self.output_dir, 'autogluon_models'),
+                **kwargs)
             
             self.predictor = self.predictors[self.best_fold]
 
@@ -222,7 +220,7 @@ class TrainerSupervised():
             ).fit(
                 pd.concat([self.X_train, self.y_train], axis=1), 
                 hyperparameters=custom_hyperparameters, 
-                **predictor_fit_kwargs)
+                **kwargs)
             
             self.X_val, self.y_val = self.predictor.load_data_internal(data='val', return_y=True)
             # Update train data to remove validation
