@@ -132,9 +132,9 @@ def generate_explainer_report_pdf(
     # Title
     pdf.write(5, "Explainer Report\n\n")
 
-    pdf.image((output_dir / 'figures' / 'test_metrics_violin.png'), Align.C, h=pdf.eph/3, w=pdf.epw-20)
-    pdf.image((output_dir / 'figures' / 'validation_metrics_violin.png'), Align.C, h=pdf.eph/3, w=pdf.epw-20)
-    pdf.image((output_dir / 'figures' /  'train_metrics_violin.png'), Align.C, h=pdf.eph/3, w=pdf.epw-20)
+    pdf.image((output_dir / 'figures' / 'test_metrics_violin.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+    pdf.image((output_dir / 'figures' / 'validation_metrics_violin.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+    pdf.image((output_dir / 'figures' /  'train_metrics_violin.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
     pdf.add_page()
 
     pdf.image((output_dir / 'figures' / 'feature_importance.png'), Align.C, w=pdf.epw-20)
@@ -142,9 +142,7 @@ def generate_explainer_report_pdf(
 
     if problem_type in ['binary', 'multiclass']:
         pdf.image((output_dir / 'figures' / 'model_evaluation.png'), Align.C, w=pdf.epw-20)
-        pdf.add_page()
-
-        pdf.image((output_dir / 'figures' / 'confusion_matrix.png'), Align.C, w=pdf.epw-20)
+        pdf.image((output_dir / 'figures' / 'confusion_matrix.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
         pdf.add_page()
 
         pdf.image((output_dir / 'figures' / 'shap_barplot.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
