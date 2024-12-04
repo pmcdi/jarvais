@@ -116,6 +116,42 @@ def chi2_reduction(X, y, k):
     selected_features = X.columns[selector.get_support(indices=True)]
     return X[selected_features]
 
+def format_leaderboard(leaderboard, extra_metrics, score_col_name):
+
+    if score_col_name == 'score_val' and 'score_val' in leaderboard.columns:
+        leaderboard = leaderboard.drop(score_col_name, axis=1)
+    leaderboard = leaderboard.rename(columns={'score_test': score_col_name})
+
+    def format_scores(row, score_col, extra_metrics):
+        """Format scores as a string with AUROC, F1, and AUPRC. Or with R2 and RMSE for regression"""
+        if 'f1' in extra_metrics:
+            return f"AUROC {row[score_col]}\nF1: {row['f1']}\nAUPRC: {row['average_precision']}"
+        else:
+            return f"R2 {row[score_col]}\nRMSE: {row['root_mean_squared_error']}"
+
+    leaderboard[score_col_name] = leaderboard.apply(lambda row: format_scores(row, score_col_name, extra_metrics), axis=1)
+    return leaderboard[['model', score_col_name]]
+
+def aggregate_folds(consolidated_leaderboard, extra_metrics):
+
+    # Specify metrics for aggregation
+    to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test'] + extra_metrics}
+
+    # Group by 'model' and aggregate
+    aggregated_leaderboard = consolidated_leaderboard.groupby('model').agg(to_agg).reset_index()
+
+    # Create the final leaderboard dataframe with unique models
+    final_leaderboard = pd.DataFrame({'model': aggregated_leaderboard['model']})
+
+    # Populate the leaderboard with formatted metrics
+    for col in to_agg.keys():
+        final_leaderboard[col] = [
+            f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]'
+            for row in aggregated_leaderboard[col].values
+        ]
+    
+    return final_leaderboard
+    
 def train_with_cv(data_train, data_test, target_variable, task, 
                   output_dir, eval_metric='accuracy', num_folds=5, **kwargs):
     """
@@ -137,10 +173,13 @@ def train_with_cv(data_train, data_test, target_variable, task,
     """
     kf = KFold(n_splits=num_folds, shuffle=True, random_state=42)
 
-    predictors, cv_scores, leaderboards, val_indices = [], [], [], []
+    predictors, cv_scores, val_indices = [], [], []
+    train_leaderboards, val_leaderboards, test_leaderboards = [], [], []
 
     custom_hyperparameters = get_hyperparameter_config('default')
     custom_hyperparameters[SimpleRegressionModel] = {}
+
+    extra_metrics = ['f1', 'average_precision'] if task in ['binary', 'multiclass'] else ['root_mean_squared_error']
 
     for fold, (train_idx, val_idx) in enumerate(kf.split(data_train)):
         print(f"Training fold {fold + 1}/{num_folds}...")
@@ -164,31 +203,23 @@ def train_with_cv(data_train, data_test, target_variable, task,
         predictors.append(predictor)
         cv_scores.append(score)
 
-        extra_metrics = ['f1', 'average_precision'] if task in ['binary', 'multiclass'] else ['root_mean_squared_error']
-        leaderboard = predictor.leaderboard(data_test, extra_metrics=extra_metrics)
-        train_metrics = predictor.leaderboard(train_data)[['model', 'score_test']].rename(columns={'score_test': 'score_train'})
-        leaderboard = leaderboard.merge(train_metrics, on='model')
-        leaderboards.append(leaderboard)
-
-    consolidated_leaderboard = pd.concat(leaderboards, ignore_index=True)
-
-    # Specify metrics for aggregation
-    to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test', 'score_val', 'score_train'] + extra_metrics}
-
-    # Group by 'model' and aggregate
-    aggregated_leaderboard = consolidated_leaderboard.groupby('model').agg(to_agg).reset_index()
-
-    # Create the final leaderboard dataframe with unique models
-    final_leaderboard = pd.DataFrame({'model': aggregated_leaderboard['model']})
-
-    # Populate the leaderboard with formatted metrics
-    for col in to_agg.keys():
-        final_leaderboard[col] = [
-            f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]'
-            for row in aggregated_leaderboard[col].values
-        ]
+        train_leaderboards.append(predictor.leaderboard(train_data, extra_metrics=extra_metrics))
+        val_leaderboards.append(predictor.leaderboard(val_data, extra_metrics=extra_metrics))
+        test_leaderboards.append(predictor.leaderboard(data_test, extra_metrics=extra_metrics))
     
-    final_leaderboard['eval_metric'] = eval_metric
+    train_leaderboard = aggregate_folds(pd.concat(train_leaderboards, ignore_index=True), extra_metrics)
+    val_leaderboard = aggregate_folds(pd.concat(val_leaderboards, ignore_index=True), extra_metrics)
+    test_leaderboard = aggregate_folds(pd.concat(test_leaderboards, ignore_index=True), extra_metrics)
+
+    final_leaderboard = pd.merge(
+                pd.merge(
+                    format_leaderboard(train_leaderboard, extra_metrics, 'score_train'),
+                    format_leaderboard(val_leaderboard, extra_metrics, 'score_val'),
+                    on='model'
+                ),
+                format_leaderboard(test_leaderboard, extra_metrics, 'score_test'),
+                on='model'
+            )
 
     best_fold = cv_scores.index(max(cv_scores))
     val_indices_best = val_indices[best_fold]
