@@ -185,8 +185,6 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
     # Turn off unused axes
     for j in range(n, len(ax)):
         fig.delaxes(ax[j])  # Turn off unused axes
-
-    plt.tight_layout()
     
     # save multiplot
     multiplot_path = os.path.join(output_dir, 'multiplots', f'{var}_multiplots.png')
@@ -330,7 +328,7 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
         g.tight_layout(w_pad=0.5, h_pad=1)
 
         # Save the plot
-        g.savefig(save_path, dpi=300)
+        g.savefig(save_path, dpi=500)
         plt.close()
 
     # Generate and save plots for each data split
