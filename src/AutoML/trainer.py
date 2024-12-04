@@ -12,7 +12,7 @@ from autogluon.tabular.configs.hyperparameter_configs import get_hyperparameter_
 
 from .explainer import Explainer
 from .models import SimpleRegressionModel
-from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction, train_with_cv
+from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction, train_with_cv, format_leaderboard
 
 class TrainerSupervised():
     def __init__(self,
@@ -182,8 +182,9 @@ class TrainerSupervised():
         elif self.task == 'regression':
             eval_metric = 'r2'
 
-        extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error'] 
-        show_leaderboard = ['model', 'score_test', 'score_val', 'score_train', 'eval_metric'] + extra_metrics
+        # When changing extra_metrics consider where it's used and make updates accordingly
+        extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
+        show_leaderboard = ['model', 'score_test', 'score_val', 'score_train',] 
         
         if k_folds > 1:
             self.predictors, leaderboard, self.best_fold, self.X_val, self.y_val = train_with_cv(
@@ -227,11 +228,25 @@ class TrainerSupervised():
             self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
             self.y_train = self.y_train[~self.y_train.index.isin(self.y_val.index)]
 
-            leaderboard = self.predictor.leaderboard(
-                pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
-            train_metrics = self.predictor.leaderboard(
-                pd.concat([self.X_train, self.y_train], axis=1))[['model', 'score_test']].rename(columns={'score_test': 'score_train'})
-            leaderboard = leaderboard.merge(train_metrics, on='model')
+            train_leaderboard = self.predictor.leaderboard(
+                pd.concat([self.X_train, self.y_train], axis=1), 
+                extra_metrics=extra_metrics).round(2)
+            val_leaderboard = self.predictor.leaderboard(
+                pd.concat([self.X_val, self.y_val], axis=1), 
+                extra_metrics=extra_metrics).round(2)
+            test_leaderboard = self.predictor.leaderboard(
+                pd.concat([self.X_test, self.y_test], axis=1), 
+                extra_metrics=extra_metrics).round(2)
+            
+            leaderboard = pd.merge(
+                pd.merge(
+                    format_leaderboard(train_leaderboard, extra_metrics, 'score_train'),
+                    format_leaderboard(val_leaderboard, extra_metrics, 'score_val'),
+                    on='model'
+                ),
+                format_leaderboard(test_leaderboard, extra_metrics, 'score_test'),
+                on='model'
+            )
 
             print('\nModel Leaderboard\n----------------')
             print(tabulate(
