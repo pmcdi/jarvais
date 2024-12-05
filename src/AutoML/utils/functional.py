@@ -116,74 +116,45 @@ def chi2_reduction(X, y, k):
     selected_features = X.columns[selector.get_support(indices=True)]
     return X[selected_features]
 
-def generate_report_pdf(outlier_analysis=None,
-                        multiplots=None,
-                        categorical_columns=None,
-                        output_dir: str = "./"):
-    import os
-    import pandas as pd
-    from fpdf import FPDF
-    from fpdf.enums import Align
+def format_leaderboard(leaderboard, extra_metrics, score_col_name):
 
-    from .pdf import add_outlier_analysis, add_multiplots, add_table
-    """
-    Generate a PDF report of the analysis with plots and tables.
+    if score_col_name == 'score_val' and 'score_val' in leaderboard.columns:
+        leaderboard = leaderboard.drop(score_col_name, axis=1)
+    leaderboard = leaderboard.rename(columns={'score_test': score_col_name})
 
-    This method creates a PDF report containing various analysis results, 
-    including outlier analysis, correlation plots, multiplots, and a summary table.
+    def format_scores(row, score_col, extra_metrics):
+        """Format scores as a string with AUROC, F1, and AUPRC. Or with R2 and RMSE for regression"""
+        if 'f1' in extra_metrics:
+            return f"AUROC {row[score_col]}\nF1: {row['f1']}\nAUPRC: {row['auprc']}"
+        else:
+            return f"R2 {row[score_col]}\nRMSE: {row['root_mean_squared_error']}"
 
-    The report is structured as follows:
-        - Cover page with the report title.
-        - Outlier analysis text.
-        - Pair plot, Pearson correlation, and Spearman correlation plots.
-        - Multiplots for categorical vs. continuous variable relationships.
-        - A tabular summary of the analysis results.
+    leaderboard[score_col_name] = leaderboard.apply(lambda row: format_scores(row, score_col_name, extra_metrics), axis=1)
+    return leaderboard[['model', score_col_name]]
 
-    The PDF uses custom fonts and is saved in the specified output directory.
-    """
+def aggregate_folds(consolidated_leaderboard, extra_metrics):
+    extra_metrics = [str(item) for item in extra_metrics]
 
-    # Instantiate PDF
-    pdf = FPDF()
-    pdf.add_page()
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    # Specify metrics for aggregation
+    to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test'] + extra_metrics}
+
+    # Group by 'model' and aggregate
+    aggregated_leaderboard = consolidated_leaderboard.groupby('model').agg(to_agg).reset_index()
+
+    # Create the final leaderboard dataframe with unique models
+    final_leaderboard = pd.DataFrame({'model': aggregated_leaderboard['model']})
+
+    # Populate the leaderboard with formatted metrics
+    for col in to_agg.keys():
+        final_leaderboard[col] = [
+            f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]'
+            for row in aggregated_leaderboard[col].values
+        ]
     
-    # Adding unicode fonts
-    font_path = os.path.join(script_dir, 'fonts/DejaVuSans.ttf')
-    pdf.add_font("dejavu-sans", style="", fname=font_path)
-    font_path = os.path.join(script_dir, 'fonts/DejaVuSans-Bold.ttf')
-    pdf.add_font("dejavu-sans", style="b", fname=font_path)
-    pdf.set_font('dejavu-sans', '', 24)  
-
-    # Title
-    pdf.write(5, "Analysis Report\n\n")
-
-    # Add outlier analysis
-    if outlier_analysis:
-        pdf = add_outlier_analysis(pdf, outlier_analysis)
+    return final_leaderboard
     
-    # Add page-wide pairplots
-    pdf.image(os.path.join(output_dir, 'pairplot.png'), Align.C, w=pdf.epw-20)
-    pdf.add_page()
-
-    # Add correlation plots
-    pdf.image(os.path.join(output_dir, 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
-    pdf.image(os.path.join(output_dir, 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
-
-    # Add multiplots
-    if multiplots and categorical_columns:
-        pdf = add_multiplots(pdf, multiplots, categorical_columns)
-
-    # Add demographic breakdown "table one"
-    path_tableone = os.path.join(output_dir, 'tableone.csv')
-    if os.path.exists(path_tableone):
-        csv_df = pd.read_csv(path_tableone, na_filter=False).astype(str)
-        pdf = add_table(pdf, csv_df)
-
-    # Save PDF
-    pdf.output(os.path.join(output_dir, 'analysis_report.pdf'))
-
-def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kwargs, 
-                  output_dir, eval_metric='accuracy', num_folds=5):
+def train_with_cv(data_train, data_test, target_variable, task, 
+                  output_dir, extra_metrics, eval_metric='accuracy', num_folds=5, **kwargs):
     """
     Trains a TabularPredictor using manual cross-validation without bagging and consolidates the leaderboards.
 
@@ -203,7 +174,8 @@ def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kw
     """
     kf = KFold(n_splits=num_folds, shuffle=True, random_state=42)
 
-    predictors, cv_scores, leaderboards, val_indices = [], [], [], []
+    predictors, cv_scores, val_indices = [], [], []
+    train_leaderboards, val_leaderboards, test_leaderboards = [], [], []
 
     custom_hyperparameters = get_hyperparameter_config('default')
     custom_hyperparameters[SimpleRegressionModel] = {}
@@ -222,7 +194,7 @@ def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kw
             train_data, 
             tuning_data=val_data,
             hyperparameters=custom_hyperparameters, 
-            **predictor_fit_kwargs)
+            **kwargs)
 
         score = predictor.evaluate(val_data)[eval_metric]
         print(f"Fold {fold + 1} score: {score}")
@@ -230,31 +202,23 @@ def train_with_cv(data_train, data_test, target_variable, task, predictor_fit_kw
         predictors.append(predictor)
         cv_scores.append(score)
 
-        extra_metrics = ['f1', 'average_precision'] if task in ['binary', 'multiclass'] else ['root_mean_squared_error']
-        leaderboard = predictor.leaderboard(data_test, extra_metrics=extra_metrics)
-        train_metrics = predictor.leaderboard(train_data)[['model', 'score_test']].rename(columns={'score_test': 'score_train'})
-        leaderboard = leaderboard.merge(train_metrics, on='model')
-        leaderboards.append(leaderboard)
-
-    consolidated_leaderboard = pd.concat(leaderboards, ignore_index=True)
-
-    # Specify metrics for aggregation
-    to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test', 'score_val', 'score_train'] + extra_metrics}
-
-    # Group by 'model' and aggregate
-    aggregated_leaderboard = consolidated_leaderboard.groupby('model').agg(to_agg).reset_index()
-
-    # Create the final leaderboard dataframe with unique models
-    final_leaderboard = pd.DataFrame({'model': aggregated_leaderboard['model']})
-
-    # Populate the leaderboard with formatted metrics
-    for col in to_agg.keys():
-        final_leaderboard[col] = [
-            f'{round(row[0], 2)} [{round(row[1], 2)}, {round(row[2], 2)}]'
-            for row in aggregated_leaderboard[col].values
-        ]
+        train_leaderboards.append(predictor.leaderboard(train_data, extra_metrics=extra_metrics))
+        val_leaderboards.append(predictor.leaderboard(val_data, extra_metrics=extra_metrics))
+        test_leaderboards.append(predictor.leaderboard(data_test, extra_metrics=extra_metrics))
     
-    final_leaderboard['eval_metric'] = eval_metric
+    train_leaderboard = aggregate_folds(pd.concat(train_leaderboards, ignore_index=True), extra_metrics)
+    val_leaderboard = aggregate_folds(pd.concat(val_leaderboards, ignore_index=True), extra_metrics)
+    test_leaderboard = aggregate_folds(pd.concat(test_leaderboards, ignore_index=True), extra_metrics)
+
+    final_leaderboard = pd.merge(
+                pd.merge(
+                    format_leaderboard(train_leaderboard, extra_metrics, 'score_train'),
+                    format_leaderboard(val_leaderboard, extra_metrics, 'score_val'),
+                    on='model'
+                ),
+                format_leaderboard(test_leaderboard, extra_metrics, 'score_test'),
+                on='model'
+            )
 
     best_fold = cv_scores.index(max(cv_scores))
     val_indices_best = val_indices[best_fold]
