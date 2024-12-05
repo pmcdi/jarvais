@@ -125,7 +125,7 @@ def format_leaderboard(leaderboard, extra_metrics, score_col_name):
     def format_scores(row, score_col, extra_metrics):
         """Format scores as a string with AUROC, F1, and AUPRC. Or with R2 and RMSE for regression"""
         if 'f1' in extra_metrics:
-            return f"AUROC {row[score_col]}\nF1: {row['f1']}\nAUPRC: {row['average_precision']}"
+            return f"AUROC {row[score_col]}\nF1: {row['f1']}\nAUPRC: {row['auprc']}"
         else:
             return f"R2 {row[score_col]}\nRMSE: {row['root_mean_squared_error']}"
 
@@ -133,6 +133,7 @@ def format_leaderboard(leaderboard, extra_metrics, score_col_name):
     return leaderboard[['model', score_col_name]]
 
 def aggregate_folds(consolidated_leaderboard, extra_metrics):
+    extra_metrics = [str(item) for item in extra_metrics]
 
     # Specify metrics for aggregation
     to_agg = {k: ['mean', 'min', 'max'] for k in ['score_test'] + extra_metrics}
@@ -153,7 +154,7 @@ def aggregate_folds(consolidated_leaderboard, extra_metrics):
     return final_leaderboard
     
 def train_with_cv(data_train, data_test, target_variable, task, 
-                  output_dir, eval_metric='accuracy', num_folds=5, **kwargs):
+                  output_dir, extra_metrics, eval_metric='accuracy', num_folds=5, **kwargs):
     """
     Trains a TabularPredictor using manual cross-validation without bagging and consolidates the leaderboards.
 
@@ -178,8 +179,6 @@ def train_with_cv(data_train, data_test, target_variable, task,
 
     custom_hyperparameters = get_hyperparameter_config('default')
     custom_hyperparameters[SimpleRegressionModel] = {}
-
-    extra_metrics = ['f1', 'average_precision'] if task in ['binary', 'multiclass'] else ['root_mean_squared_error']
 
     for fold, (train_idx, val_idx) in enumerate(kf.split(data_train)):
         print(f"Training fold {fold + 1}/{num_folds}...")

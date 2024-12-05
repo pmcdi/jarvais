@@ -132,9 +132,9 @@ def generate_explainer_report_pdf(
     # Title
     pdf.write(5, "Explainer Report\n\n")
 
-    pdf.image((output_dir / 'figures' / 'test_metrics_violin.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
-    pdf.image((output_dir / 'figures' / 'validation_metrics_violin.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
-    pdf.image((output_dir / 'figures' /  'train_metrics_violin.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+    pdf.image((output_dir / 'figures' / 'test_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+    pdf.image((output_dir / 'figures' / 'validation_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+    pdf.image((output_dir / 'figures' /  'train_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
     pdf.add_page()
 
     pdf.image((output_dir / 'figures' / 'feature_importance.png'), Align.C, w=pdf.epw-20)

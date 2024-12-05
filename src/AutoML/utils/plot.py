@@ -6,8 +6,10 @@ import seaborn as sns
 
 import os
 
-from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, average_precision_score, r2_score, root_mean_squared_error
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, r2_score, root_mean_squared_error, auc
 from sklearn.calibration import calibration_curve
+
+sns.set_theme(style="darkgrid", font="Arial")
 
 class ModelWrapper:
     def __init__(self, predictor, feature_names, target_variable=None):
@@ -90,6 +92,8 @@ def plot_shap_values(predictor, X_train, X_test,
     # print(shap_values[...,1])
     # Generate and save the SHAP explanation plots
 
+    sns.set_theme(style="darkgrid", font="Arial")
+
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
     shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
     fig.savefig(os.path.join(output_dir, 'shap_heatmap.png'))
@@ -115,7 +119,6 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
 
     num_categories = len(data[var].unique())
 
-    sns.set_theme(style="white")
     labels, values = prep_for_pie(data, var)
 
     # only write % if big enough
@@ -202,8 +205,9 @@ def plot_corr(corr, size,
     fig, ax = plt.subplots(1, 1, figsize=(size, size))
     mask = np.triu(np.ones_like(corr, dtype=bool)) # Keep only lower triangle
     np.fill_diagonal(mask, False)
+    sns.set_theme(style="darkgrid", font="Arial")
     g = sns.heatmap(corr, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f", ax=ax)
-    plt.title(f'Pearson Correlation Matrix')
+    plt.title(f'Correlation Matrix')
     plt.tight_layout()
 
     figure_path = os.path.join(output_dir, file_name)
@@ -218,6 +222,7 @@ def plot_pairplot(data, columns_to_plot,
         columns_to_plot += [target_variable]
         hue = target_variable
 
+    sns.set_theme(style="darkgrid", font="Arial")
     g = sns.pairplot(data[columns_to_plot], hue=hue)   
     g.figure.suptitle("Pair Plot", y=1.08)  
 
@@ -227,12 +232,17 @@ def plot_pairplot(data, columns_to_plot,
 
 def plot_umap(umap_data, output_dir: str = "./"):
     fig, ax = plt.subplots(figsize=(8, 8), dpi=72)
+    sns.set_theme(style="darkgrid", font="Arial")
     g = sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
     plt.title(f'UMAP of Continuous Variables')
 
     figure_path = os.path.join(output_dir, 'umap_continuous_data.png')
     fig.savefig(figure_path)
     plt.close()
+
+def pr_auc(y_true, y_scores):
+        precision, recall, _ = precision_recall_curve(y_true, y_scores)
+        return auc(recall, precision) 
 
 def bootstrap_metric(y_test, y_pred, f, nsamples=100):
     np.random.seed(0)
@@ -252,7 +262,7 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
     if predictor.problem_type == 'regression':
         metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
     else:
-        metrics = [('AUROC', roc_auc_score), ('AUPRC', average_precision_score)]
+        metrics = [('AUROC', roc_auc_score), ('AUPRC', pr_auc)]
 
     # Prepare lists for DataFrame
     results = []
@@ -300,7 +310,7 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
 
     # Function to create violin plots for a specific data split
     def create_violin_plot(data_split, save_path):
-        sns.set_theme(style="whitegrid")
+        sns.set_theme(style="darkgrid", font="Arial")
         subset = result_df[result_df['data_split'] == data_split]
         g = sns.FacetGrid(
             subset,
@@ -324,7 +334,7 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
         g.set_axis_labels("Metric Value", "Model")
 
         # Add overall title and adjust layout
-        g.figure.suptitle(f"Violin Plot of Bootstrapped Metrics - {data_split} Data", fontsize=16)
+        g.figure.suptitle(f"Model Performance of {data_split} Data (Bootstrapped)", fontsize=16)
         g.tight_layout(w_pad=0.5, h_pad=1)
 
         # Save the plot
@@ -332,9 +342,9 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
         plt.close()
 
     # Generate and save plots for each data split
-    create_violin_plot('Test', os.path.join(output_dir, 'test_metrics_violin.png'))
-    create_violin_plot('Validation', os.path.join(output_dir, 'validation_metrics_violin.png'))
-    create_violin_plot('Train', os.path.join(output_dir, 'train_metrics_violin.png'))
+    create_violin_plot('Test', os.path.join(output_dir, 'test_metrics_bootstrap.png'))
+    create_violin_plot('Validation', os.path.join(output_dir, 'validation_metrics_bootstrap.png'))
+    create_violin_plot('Train', os.path.join(output_dir, 'train_metrics_bootstrap.png'))
 
 def plot_regression_diagnostics(y_true, y_pred, output_dir):
     """
@@ -351,6 +361,7 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir):
 
     def plot_regression_line(y_true, y_pred, xlabel='True Values', ylabel='Predictions', title='True vs Predicted Values'):
         plt.figure(figsize=(10, 6))
+        sns.set_theme(style="darkgrid", font="Arial")
         sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
         sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
         plt.xlabel(xlabel)
@@ -362,6 +373,7 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir):
     def plot_residuals(y_true, y_pred, title='Residual Plot'):
         residuals = y_true - y_pred
         plt.figure(figsize=(10, 6))
+        sns.set_theme(style="darkgrid", font="Arial")
         sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
         plt.axhline(0, color='red', linestyle='--')
         plt.xlabel('Fitted Values')
@@ -371,6 +383,7 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir):
         plt.close()
     def plot_residual_histogram(residuals, title='Histogram of Residuals'):
         plt.figure(figsize=(10, 6))
+        sns.set_theme(style="darkgrid", font="Arial")
         sns.histplot(residuals, kde=True, bins=30)
         plt.xlabel('Residuals')
         plt.title(title)
@@ -422,21 +435,21 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, y_train, y_train_pred, out
     fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
     roc_auc_test = roc_auc_score(y_test, y_pred)
     precision_test, recall_test, thresholds_pr_test = precision_recall_curve(y_test, y_pred)
-    average_precision_test = average_precision_score(y_test, y_pred)
+    average_precision_test = pr_auc(y_test, y_pred)
     prob_true_test, prob_pred_test = calibration_curve(y_test, y_pred, n_bins=10, strategy='uniform')
 
     # Compute validation metrics
     fpr_val, tpr_val, thresholds_roc_val = roc_curve(y_val, y_val_pred)
     roc_auc_val = roc_auc_score(y_val, y_val_pred)
     precision_val, recall_val, thresholds_pr_val = precision_recall_curve(y_val, y_val_pred)
-    average_precision_val = average_precision_score(y_val, y_val_pred)
+    average_precision_val = pr_auc(y_val, y_val_pred)
     prob_true_val, prob_pred_val = calibration_curve(y_val, y_val_pred, n_bins=10, strategy='uniform')
     
     # Compute train metrics
     fpr_train, tpr_train, thresholds_roc_train = roc_curve(y_train, y_train_pred)
     roc_auc_train = roc_auc_score(y_train, y_train_pred)
     precision_train, recall_train, thresholds_pr_train = precision_recall_curve(y_train, y_train_pred)
-    average_precision_train = average_precision_score(y_train, y_train_pred)
+    average_precision_train = pr_auc(y_train, y_train_pred)
     prob_true_train, prob_pred_train = calibration_curve(y_train, y_train_pred, n_bins=10, strategy='uniform')
 
     # Compute confidence intervals
@@ -444,12 +457,12 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, y_train, y_train_pred, out
     roc_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, roc_auc_score), (2.5, 97.5))]
     roc_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, roc_auc_score), (2.5, 97.5))]
 
-    precision_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, average_precision_score), (2.5, 97.5))]
-    precision_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, average_precision_score), (2.5, 97.5))]
-    precision_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, average_precision_score), (2.5, 97.5))]
+    precision_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, pr_auc), (2.5, 97.5))]
+    precision_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, pr_auc), (2.5, 97.5))]
+    precision_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, pr_auc), (2.5, 97.5))]
 
     # Set Seaborn style
-    sns.set_theme(style="whitegrid")
+    sns.set_theme(style="darkgrid", font="Arial")
 
     plt.figure(figsize=(37.5, 10))
 
