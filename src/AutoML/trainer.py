@@ -3,16 +3,19 @@ import os
 import pandas as pd
 from tabulate import tabulate
 
-from typing import Union, List, Any, Optional
+from typing import Union, List, Optional
 
 from sklearn.model_selection import train_test_split
 
 from autogluon.tabular import TabularPredictor
 from autogluon.tabular.configs.hyperparameter_configs import get_hyperparameter_config
+from autogluon.core.metrics import make_scorer
 
 from .explainer import Explainer
 from .models import SimpleRegressionModel
-from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction, train_with_cv, format_leaderboard
+
+from .utils.functional import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction, train_with_cv, format_leaderboard
+from .utils.plot import pr_auc
 
 class TrainerSupervised():
     def __init__(self,
@@ -180,10 +183,16 @@ class TrainerSupervised():
         if self.task in ['binary', 'multiclass']:
             eval_metric = 'roc_auc'
         elif self.task == 'regression':
-            eval_metric = 'r2'
+            eval_metric = 'r2' 
+             
+        ag_pr_auc_scorer = make_scorer(name='auprc',
+                                 score_func=pr_auc,
+                                 optimum=1,
+                                 greater_is_better=True,
+                                 needs_class=True)
 
         # When changing extra_metrics consider where it's used and make updates accordingly
-        extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
+        extra_metrics = ['f1', ag_pr_auc_scorer] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
         show_leaderboard = ['model', 'score_test', 'score_val', 'score_train',] 
         
         if k_folds > 1:
@@ -191,8 +200,9 @@ class TrainerSupervised():
                 pd.concat([self.X_train, self.y_train], axis=1),
                 pd.concat([self.X_test, self.y_test], axis=1), 
                 target_variable=target_variable, 
-                task=self.task, 
-                eval_metric=eval_metric, 
+                task=self.task,
+                extra_metrics=extra_metrics,
+                eval_metric=eval_metric,
                 num_folds=k_folds,
                 output_dir=os.path.join(self.output_dir, 'autogluon_models'),
                 **kwargs)
