@@ -1,20 +1,27 @@
-import os, yaml
+import os, yaml, warnings, logging
+from pathlib import Path
 
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from tableone import TableOne
-import numpy as np
 from pandas.api.types import is_numeric_dtype
 
 from .utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap
-from .utils.functional import knn_impute_categorical, get_outliers, generate_report_pdf
+from .utils.functional import knn_impute_categorical, get_outliers
+from .utils.pdf import generate_analysis_report_pdf
 
 from typing import Union
 
 from umap import UMAP
 
 from joblib import Parallel, delayed
+
+logging.basicConfig(filename=(Path.cwd() / "warnings.log"), level=logging.INFO)
+
+def custom_warning_handler(message, category, filename, lineno, file=None, line=None):
+    log_message = f"{category.__name__}: {message} in {filename} at line {lineno}"
+    logging.warning(log_message)
+
+warnings.showwarning = custom_warning_handler
 
 class Analyzer():
     def __init__(self,
@@ -169,7 +176,7 @@ class Analyzer():
             for col in self.data.columns:
                 if self.data[col].dtype == 'object':
                     try:
-                        self.data[col] = pd.to_datetime(self.data[col])
+                        self.data[col] = pd.to_datetime(self.data[col], format='mixed')
                         self.date_columns.append(col)
                     except ValueError:
                         pass
@@ -297,7 +304,7 @@ class Analyzer():
         self._create_multiplots()
 
         # Create Output PDF
-        generate_report_pdf(outlier_analysis=self.outlier_analysis, 
+        generate_analysis_report_pdf(outlier_analysis=self.outlier_analysis, 
                             multiplots=self.multiplots, 
                             categorical_columns=self.categorical_columns, 
                             output_dir=self.output_dir)

@@ -1,11 +1,13 @@
-import os, pickle
+import os
 
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import shap
+from .utils.plot import (
+    plot_feature_importance, 
+    plot_shap_values, 
+    plot_classification_diagnostics, 
+    plot_regression_diagnostics, 
+    plot_violin_of_bootsrapped_metrics)
 
-from .utils import plot_feature_importance, plot_shap_values, plot_classification_diagnostics, plot_regression_diagnostics, plot_violin_of_bootsrapped_metrics
+from .utils.pdf import generate_explainer_report_pdf
 
 class Explainer():
     def __init__(self, 
@@ -32,6 +34,8 @@ class Explainer():
             self.y_test, 
             self.trainer.X_val, 
             self.trainer.y_val, 
+            self.X_train,
+            self.trainer.y_train,
             output_dir=os.path.join(self.output_dir, 'figures')
             )
         # Plot diagnostics
@@ -42,6 +46,8 @@ class Explainer():
                     self.predictor.predict_proba(self.X_test).iloc[:, 1], 
                     self.trainer.y_val, 
                     self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], 
+                    self.trainer.y_train, 
+                    self.predictor.predict_proba(self.X_train).iloc[:, 1], 
                     output_dir=os.path.join(self.output_dir, 'figures')
                     )
                 plot_shap_values(
@@ -56,7 +62,6 @@ class Explainer():
                     self.predictor.predict(self.X_test, as_pandas=False), 
                     output_dir=os.path.join(self.output_dir, 'figures')
                     )
-
         except Exception as e:
             print(f"Error in plotting diagnostics: {e}")
 
@@ -69,7 +74,8 @@ class Explainer():
                                     )
         except Exception as e:
             print(f"Error in plotting feature importance: {e}")
-        
+    
+        generate_explainer_report_pdf(self.predictor.problem_type, self.output_dir)
 
     @classmethod
     def from_trainer(cls, trainer):
