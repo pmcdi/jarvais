@@ -3,16 +3,19 @@ import os
 import pandas as pd
 from tabulate import tabulate
 
-from typing import Union, List, Any, Optional
+from typing import Union, List, Optional
 
 from sklearn.model_selection import train_test_split
 
 from autogluon.tabular import TabularPredictor
 from autogluon.tabular.configs.hyperparameter_configs import get_hyperparameter_config
+from autogluon.core.metrics import make_scorer
 
 from .explainer import Explainer
 from .models import SimpleRegressionModel
-from .utils import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction, train_with_cv
+
+from .utils.functional import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction, train_with_cv, format_leaderboard
+from .utils.plot import pr_auc
 
 class TrainerSupervised():
     def __init__(self,
@@ -117,7 +120,7 @@ class TrainerSupervised():
             explain: bool = False,
             save_data: bool = True,
             k_folds: int = 5,
-            predictor_fit_kwargs: Optional[dict[str, Any]] = None) -> None:
+            **kwargs) -> None:
         """
         Executes the AutoML pipeline on the given dataset.
 
@@ -145,8 +148,6 @@ class TrainerSupervised():
         # Initialize mutable defaults
         if exclude is None:
             exclude = []
-        if predictor_fit_kwargs is None:
-            predictor_fit_kwargs = {}
 
         exclude.append(target_variable)
         try:
@@ -182,21 +183,29 @@ class TrainerSupervised():
         if self.task in ['binary', 'multiclass']:
             eval_metric = 'roc_auc'
         elif self.task == 'regression':
-            eval_metric = 'r2'
+            eval_metric = 'r2' 
+             
+        ag_pr_auc_scorer = make_scorer(name='auprc',
+                                 score_func=pr_auc,
+                                 optimum=1,
+                                 greater_is_better=True,
+                                 needs_class=True)
 
-        extra_metrics = ['f1', 'average_precision'] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error'] 
-        show_leaderboard = ['model', 'score_test', 'score_val', 'score_train', 'eval_metric'] + extra_metrics
+        # When changing extra_metrics consider where it's used and make updates accordingly
+        extra_metrics = ['f1', ag_pr_auc_scorer] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
+        show_leaderboard = ['model', 'score_test', 'score_val', 'score_train',] 
         
         if k_folds > 1:
             self.predictors, leaderboard, self.best_fold, self.X_val, self.y_val = train_with_cv(
                 pd.concat([self.X_train, self.y_train], axis=1),
                 pd.concat([self.X_test, self.y_test], axis=1), 
                 target_variable=target_variable, 
-                task=self.task, 
-                eval_metric=eval_metric, 
+                task=self.task,
+                extra_metrics=extra_metrics,
+                eval_metric=eval_metric,
                 num_folds=k_folds,
-                predictor_fit_kwargs=predictor_fit_kwargs,
-                output_dir=os.path.join(self.output_dir, 'autogluon_models'))
+                output_dir=os.path.join(self.output_dir, 'autogluon_models'),
+                **kwargs)
             
             self.predictor = self.predictors[self.best_fold]
 
@@ -222,18 +231,32 @@ class TrainerSupervised():
             ).fit(
                 pd.concat([self.X_train, self.y_train], axis=1), 
                 hyperparameters=custom_hyperparameters, 
-                **predictor_fit_kwargs)
+                **kwargs)
             
             self.X_val, self.y_val = self.predictor.load_data_internal(data='val', return_y=True)
             # Update train data to remove validation
             self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
             self.y_train = self.y_train[~self.y_train.index.isin(self.y_val.index)]
 
-            leaderboard = self.predictor.leaderboard(
-                pd.concat([self.X_test, self.y_test], axis=1), extra_metrics=extra_metrics)
-            train_metrics = self.predictor.leaderboard(
-                pd.concat([self.X_train, self.y_train], axis=1))[['model', 'score_test']].rename(columns={'score_test': 'score_train'})
-            leaderboard = leaderboard.merge(train_metrics, on='model')
+            train_leaderboard = self.predictor.leaderboard(
+                pd.concat([self.X_train, self.y_train], axis=1), 
+                extra_metrics=extra_metrics).round(2)
+            val_leaderboard = self.predictor.leaderboard(
+                pd.concat([self.X_val, self.y_val], axis=1), 
+                extra_metrics=extra_metrics).round(2)
+            test_leaderboard = self.predictor.leaderboard(
+                pd.concat([self.X_test, self.y_test], axis=1), 
+                extra_metrics=extra_metrics).round(2)
+            
+            leaderboard = pd.merge(
+                pd.merge(
+                    format_leaderboard(train_leaderboard, extra_metrics, 'score_train'),
+                    format_leaderboard(val_leaderboard, extra_metrics, 'score_val'),
+                    on='model'
+                ),
+                format_leaderboard(test_leaderboard, extra_metrics, 'score_test'),
+                on='model'
+            )
 
             print('\nModel Leaderboard\n----------------')
             print(tabulate(
