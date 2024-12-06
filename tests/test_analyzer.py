@@ -49,21 +49,16 @@ def test_analyzer_initialization(analyzer, sample_data):
     assert analyzer.config is None
 
 def test_replace_missing(analyzer):
-    analyzer.config = {
-        'missingness_strategy': {
-            'continuous': {'D': 'mean'},
-            'categorical': {}
-        }
-    }
-    analyzer.continuous_columns = ['D']
-    analyzer.categorical_columns = []
-    analyzer._replace_missing()
+    analyzer._create_config()
+    analyzer.config['missingness_strategy']['continuous']['D'] = 'mean'
+    analyzer._apply_config() # replace missing happens in here
+    
     assert analyzer.data['D'].isna().sum() == 0
     assert np.isclose(analyzer.data['D'].iloc[0], analyzer.data['D'].mean(), rtol=1e-4)
 
-def test_run_janitor(analyzer):
-    # _infer_types is always run inside _run_janitor
-    analyzer._run_janitor()
+def test_create_config(analyzer):
+    # _infer_types is always run inside _create_config
+    analyzer._create_config()
     assert 'A' in analyzer.continuous_columns
     assert 'B' in analyzer.continuous_columns
     assert 'C' in analyzer.categorical_columns
