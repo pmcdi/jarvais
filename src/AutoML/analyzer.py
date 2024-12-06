@@ -1,10 +1,8 @@
-import os, yaml
+import yaml
+from pathlib import Path
 
 import pandas as pd
-import seaborn as sns
-import matplotlib.pyplot as plt
 from tableone import TableOne
-import numpy as np
 from pandas.api.types import is_numeric_dtype
 
 from .utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap
@@ -20,8 +18,8 @@ class Analyzer():
     def __init__(self,
                  data: pd.DataFrame, 
                  target_variable: Union[str, None] = None,
-                 config_file: Union[str, os.PathLike, None] = None,
-                 output_dir: Union[str, os.PathLike] = '.'):
+                 config_file: Union[str, Path, None] = None,
+                 output_dir: Union[str, Path] = Path.cwd()):
         """
 
         Initializes the Analyzer with the provided data.
@@ -41,20 +39,21 @@ class Analyzer():
 
         self.data = data
         self.target_variable = target_variable
-
-        if not os.path.exists(output_dir):
-            os.mkdir(output_dir)
-        if output_dir == '.':
+        
+        output_dir = Path(output_dir)
+        output_dir.mkdir(parents=True, exist_ok=True)
+        if output_dir.resolve() == Path.cwd():
             print('Using current directory as output directory\n')
-            
+         
         self.output_dir = output_dir
 
         if config_file is not None:
-            if os.path.isfile(config_file):
-                with open(config_file, 'r') as file:
-                    self.config = yaml.safe_load(file)
+            config_file = Path(config_file) 
+            if config_file.is_file():  
+                with config_file.open('r') as file: 
+                    self.config_file = yaml.safe_load(file)  
             else:
-                raise ValueError('Config file does not exist')
+                raise ValueError(f'Config file does not exist at {config_file}')
         else:
             self.config = None
 
@@ -233,12 +232,11 @@ class Analyzer():
 
         self.multiplots = [] # Used to save in PDF later
 
-        if not os.path.exists(os.path.join(self.output_dir, 'multiplots')): # To save multiplots
-            os.mkdir(os.path.join(self.output_dir, 'multiplots'))
+        (self.output_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
 
         self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(self.data, self.umap_data, var, self.continuous_columns, self.output_dir) for var in self.categorical_columns)
 
-    def run(self):
+    def run(self, one_hot = False):
 
         """
         Runs the data cleaning and visualization process.
@@ -251,7 +249,7 @@ class Analyzer():
 
         self.mytable = TableOne(df_keep, categorical=self.categorical_columns, pval=False)
         print(self.mytable.tabulate(tablefmt = "fancy_grid"))
-        self.mytable.to_csv(os.path.join(self.output_dir, 'tableone.csv'))
+        self.mytable.to_csv(self.output_dir / 'tableone.csv')
 
         # Apply missingness replacement and save updated data
         if not 'missingness_strategy' in self.config.keys():
@@ -260,12 +258,18 @@ class Analyzer():
             self.config['missingness_strategy']['categorical'] = {cat :'Unknown' for cat in self.categorical_columns} # Defining default replacement for each missing categorical variable
             self.config['missingness_strategy']['continuous'] = {cont :'median' for cont in self.continuous_columns} # Defining default replacement for each missing continuous variable
 
-            with open(os.path.join(self.output_dir, 'config.yaml'), 'w') as f:
+            with open(self.output_dir / 'config.yaml', 'w') as f:
                 yaml.dump(self.config, f)
 
         # Clean it up
         self._replace_missing()
-        self.data.to_csv(os.path.join(self.output_dir, 'updated_data.csv'))
+        if one_hot:
+            pd.get_dummies(
+                self.data, 
+                columns=[cat for cat in self.categorical_columns if cat != self.target_variable]
+                ).to_csv(self.output_dir / 'updated_data.csv')
+        else:   
+            self.data.to_csv(self.output_dir / 'updated_data.csv')
 
         # Create Plots 
         size = len(self.continuous_columns)*1.5
