@@ -1,13 +1,13 @@
 import os
 
-from .utils.plot import (
+from ..utils.plot import (
     plot_feature_importance, 
     plot_shap_values, 
     plot_classification_diagnostics, 
     plot_regression_diagnostics, 
     plot_violin_of_bootsrapped_metrics)
 
-from .utils.pdf import generate_explainer_report_pdf
+from ..utils.pdf import generate_explainer_report_pdf
 
 class Explainer():
     def __init__(self, 
