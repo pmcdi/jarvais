@@ -246,7 +246,7 @@ def plot_umap(umap_data,
     output_dir = Path(output_dir)
 
     fig, ax = plt.subplots(figsize=(8, 8), dpi=72)
-    g = sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
+    sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
     plt.title(f'UMAP of Continuous Variables')
 
     figure_path = output_dir / 'umap_continuous_data.png'
@@ -270,7 +270,7 @@ def bootstrap_metric(y_test, y_pred, f, nsamples=100):
     return values 
 
 def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, X_train, y_train, output_dir: str | Path = Path.cwd()):
-    
+        
     output_dir = Path(output_dir)
         
     # Define metrics based on the problem type
@@ -417,8 +417,6 @@ def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, y_train, 
     Generates diagnostic plots for a classification model.
 
     """
-
-    output_dir = Path(output_dir)
 
     output_dir = Path(output_dir)
 
