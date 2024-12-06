@@ -25,7 +25,7 @@ class TrainerSupervised():
                  task: str = None,
                  reduction_method: Union[str, None] = None,
                  keep_k: int = 2,
-                 output_dir: Union[str, Path] = '.',):
+                 output_dir: str | Path = Path.cwd()):
         """
         Initialize the AutoMLTrainer class with specified configurations.
 
@@ -37,7 +37,7 @@ class TrainerSupervised():
             The feature reduction method to apply. Options are 'mrmr', 'variance_threshold', 'corr', 'chi2'.
         keep_k : int, default=2
             Number of features to keep, if a reduction method is defined.
-        output_dir : str or os.PathLike, default='.'
+        output_dir : str or pathlib.Path, default=Path.cwd()
             The directory where output files will be saved.
         
 
