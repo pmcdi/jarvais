@@ -1,17 +1,14 @@
-<<<<<<< HEAD
 import yaml, warnings, logging
-=======
-import yaml
->>>>>>> 2ea984b21d979ab2a80882701785248062ff757d
 from pathlib import Path
 
 import pandas as pd
 from tableone import TableOne
 from pandas.api.types import is_numeric_dtype
 
-from .utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap
-from .utils.functional import knn_impute_categorical, get_outliers
-from .utils.pdf import generate_analysis_report_pdf
+from ._janitor import knn_impute_categorical, get_outliers
+
+from ..utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap
+from ..utils.pdf import generate_analysis_report_pdf
 
 from typing import Union
 

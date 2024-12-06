@@ -1,4 +1,5 @@
 import os
+from pathlib import Path
 
 import pandas as pd
 from tabulate import tabulate
@@ -11,18 +12,20 @@ from autogluon.tabular import TabularPredictor
 from autogluon.tabular.configs.hyperparameter_configs import get_hyperparameter_config
 from autogluon.core.metrics import make_scorer
 
-from .explainer import Explainer
-from .models import SimpleRegressionModel
+from ._feature_reduction import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction
+from ._simple_regression_model import SimpleRegressionModel
+from ._leaderboard import format_leaderboard
+from ._training import train_autogluon_with_cv
 
-from .utils.functional import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction, train_with_cv, format_leaderboard
-from .utils.plot import pr_auc
+from ..explainer import Explainer
+from ..utils.functional import auprc
 
 class TrainerSupervised():
     def __init__(self,
                  task: str = None,
                  reduction_method: Union[str, None] = None,
                  keep_k: int = 2,
-                 output_dir: Union[str, os.PathLike] = '.',):
+                 output_dir: Union[str, Path] = '.',):
         """
         Initialize the AutoMLTrainer class with specified configurations.
 
@@ -44,16 +47,16 @@ class TrainerSupervised():
             If the task parameter is not one of the specified options.
         """
         self.task = task
-        self.output_dir = output_dir
+        self.output_dir = Path(output_dir)
         self.reduction_method = reduction_method
         self.keep_k = keep_k
 
-        if task not in ['binary', 'multiclass', 'regression', 'quantile', None]:
-            raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression', 'quantile'. Or provide nothing and let Autogluon infer the task.")
+        if task not in ['binary', 'multiclass', 'regression', None]:
+            raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression'. Or provide nothing and let Autogluon infer the task.")
 
         # Create output directory if it doesn't exist
-        os.makedirs(self.output_dir, exist_ok=True)
-        os.makedirs(os.path.join(self.output_dir, 'autogluon_models'), exist_ok=True)
+        self.output_dir.mkdir(exist_ok=True, parents=True)
+        (self.output_dir / 'autogluon_models').mkdir(exist_ok=True, parents=True)
 
     def _feature_reduction(self, X, y):
         """
@@ -185,18 +188,18 @@ class TrainerSupervised():
         elif self.task == 'regression':
             eval_metric = 'r2' 
              
-        ag_pr_auc_scorer = make_scorer(name='auprc',
-                                 score_func=pr_auc,
+        ag_auprc_scorer = make_scorer(name='auprc',
+                                 score_func=auprc,
                                  optimum=1,
                                  greater_is_better=True,
                                  needs_class=True)
 
         # When changing extra_metrics consider where it's used and make updates accordingly
-        extra_metrics = ['f1', ag_pr_auc_scorer] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
+        extra_metrics = ['f1', ag_auprc_scorer] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
         show_leaderboard = ['model', 'score_test', 'score_val', 'score_train',] 
         
         if k_folds > 1:
-            self.predictors, leaderboard, self.best_fold, self.X_val, self.y_val = train_with_cv(
+            self.predictors, leaderboard, self.best_fold, self.X_val, self.y_val = train_autogluon_with_cv(
                 pd.concat([self.X_train, self.y_train], axis=1),
                 pd.concat([self.X_test, self.y_test], axis=1), 
                 target_variable=target_variable, 
@@ -204,7 +207,7 @@ class TrainerSupervised():
                 extra_metrics=extra_metrics,
                 eval_metric=eval_metric,
                 num_folds=k_folds,
-                output_dir=os.path.join(self.output_dir, 'autogluon_models'),
+                output_dir=(self.output_dir / 'autogluon_models'),
                 **kwargs)
             
             self.predictor = self.predictors[self.best_fold]
@@ -226,7 +229,7 @@ class TrainerSupervised():
 
             self.predictor = TabularPredictor(
             label=target_variable, problem_type=self.task, eval_metric=eval_metric,
-            path=os.path.join(self.output_dir, 'autogluon_models', f'autogluon_models_best_fold'),
+            path=(self.output_dir / 'autogluon_models' / f'autogluon_models_best_fold'),
             log_to_file=False,
             ).fit(
                 pd.concat([self.X_train, self.y_train], axis=1), 
@@ -266,14 +269,14 @@ class TrainerSupervised():
                 showindex=False))
 
         if save_data:
-            self.data_dir = os.path.join(self.output_dir, 'data')
-            os.makedirs(self.data_dir, exist_ok=True)
-            self.X_train.to_csv(os.path.join(self.data_dir, 'X_train.csv'), index=False)
-            self.X_test.to_csv(os.path.join(self.data_dir, 'X_test.csv'), index=False)
-            self.X_val.to_csv(os.path.join(self.data_dir, 'X_val.csv'), index=False)
-            self.y_train.to_csv(os.path.join(self.data_dir, 'y_train.csv'), index=False)
-            self.y_test.to_csv(os.path.join(self.data_dir, 'y_test.csv'), index=False)
-            self.y_val.to_csv(os.path.join(self.data_dir, 'y_val.csv'), index=False)
+            self.data_dir = self.output_dir / 'data'
+            self.data_dir.mkdir(parents=True, exist_ok=True)
+            self.X_train.to_csv((self.data_dir / 'X_train.csv'), index=False)
+            self.X_test.to_csv((self.data_dir / 'X_test.csv'), index=False)
+            self.X_val.to_csv((self.data_dir / 'X_val.csv'), index=False)
+            self.y_train.to_csv((self.data_dir / 'y_train.csv'), index=False)
+            self.y_test.to_csv((self.data_dir / 'y_test.csv'), index=False)
+            self.y_val.to_csv((self.data_dir / 'y_val.csv'), index=False)
         
         if explain:
             explainer = Explainer.from_trainer(self)
@@ -286,8 +289,8 @@ class TrainerSupervised():
     
     @classmethod
     def load_model(cls, 
-                   model_dir: str = None,
-                   project_dir: str = None):
+                   model_dir: str | Path= None,
+                   project_dir: str | Path = None):
         """
         Load a trained model from the specified directory.
 
@@ -308,7 +311,7 @@ class TrainerSupervised():
             raise ValueError('model_dir or project_dir must be provided')
 
         if model_dir is None and project_dir is not None:
-            model_dir = os.path.join(os.path.join(project_dir, 'autogluon_models', f'autogluon_models_best_fold'))
+            model_dir = Path(project_dir) / 'autogluon_models' / 'autogluon_models_best_fold'
 
         trainer = cls()
         trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)

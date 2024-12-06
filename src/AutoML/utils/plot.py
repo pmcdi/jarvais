@@ -6,8 +6,10 @@ import seaborn as sns
 
 from pathlib import Path
 
-from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, r2_score, root_mean_squared_error, auc
+from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, r2_score, root_mean_squared_error
 from sklearn.calibration import calibration_curve
+
+from .functional import auprc, bootstrap_metric
 
 sns.set_theme(style="darkgrid", font="Arial")
 
@@ -253,22 +255,6 @@ def plot_umap(umap_data,
     fig.savefig(figure_path)
     plt.close()
 
-def pr_auc(y_true, y_scores):
-        precision, recall, _ = precision_recall_curve(y_true, y_scores)
-        return auc(recall, precision) 
-
-def bootstrap_metric(y_test, y_pred, f, nsamples=100):
-    np.random.seed(0)
-    values = []
-    
-    for _ in range(nsamples):
-        idx = np.random.randint(len(y_test), size=len(y_test))
-        pred_sample = y_pred[idx]
-        y_test_sample = y_test[idx]
-        val = f(y_test_sample.ravel(), pred_sample.ravel())
-        values.append(val)
-    return values 
-
 def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, X_train, y_train, output_dir: str | Path = Path.cwd()):
         
     output_dir = Path(output_dir)
@@ -277,7 +263,7 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
     if predictor.problem_type == 'regression':
         metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
     else:
-        metrics = [('AUROC', roc_auc_score), ('AUPRC', pr_auc)]
+        metrics = [('AUROC', roc_auc_score), ('AUPRC', auprc)]
 
     # Prepare lists for DataFrame
     results = []
@@ -457,21 +443,21 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, y_train, y_train_pred, out
     fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
     roc_auc_test = roc_auc_score(y_test, y_pred)
     precision_test, recall_test, thresholds_pr_test = precision_recall_curve(y_test, y_pred)
-    average_precision_test = pr_auc(y_test, y_pred)
+    average_precision_test = auprc(y_test, y_pred)
     prob_true_test, prob_pred_test = calibration_curve(y_test, y_pred, n_bins=10, strategy='uniform')
 
     # Compute validation metrics
     fpr_val, tpr_val, thresholds_roc_val = roc_curve(y_val, y_val_pred)
     roc_auc_val = roc_auc_score(y_val, y_val_pred)
     precision_val, recall_val, thresholds_pr_val = precision_recall_curve(y_val, y_val_pred)
-    average_precision_val = pr_auc(y_val, y_val_pred)
+    average_precision_val = auprc(y_val, y_val_pred)
     prob_true_val, prob_pred_val = calibration_curve(y_val, y_val_pred, n_bins=10, strategy='uniform')
     
     # Compute train metrics
     fpr_train, tpr_train, thresholds_roc_train = roc_curve(y_train, y_train_pred)
     roc_auc_train = roc_auc_score(y_train, y_train_pred)
     precision_train, recall_train, thresholds_pr_train = precision_recall_curve(y_train, y_train_pred)
-    average_precision_train = pr_auc(y_train, y_train_pred)
+    average_precision_train = auprc(y_train, y_train_pred)
     prob_true_train, prob_pred_train = calibration_curve(y_train, y_train_pred, n_bins=10, strategy='uniform')
 
     # Compute confidence intervals
@@ -479,9 +465,9 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, y_train, y_train_pred, out
     roc_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, roc_auc_score), (2.5, 97.5))]
     roc_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, roc_auc_score), (2.5, 97.5))]
 
-    precision_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, pr_auc), (2.5, 97.5))]
-    precision_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, pr_auc), (2.5, 97.5))]
-    precision_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, pr_auc), (2.5, 97.5))]
+    precision_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, auprc), (2.5, 97.5))]
+    precision_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, auprc), (2.5, 97.5))]
+    precision_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, auprc), (2.5, 97.5))]
 
     # Set Seaborn style
     sns.set_theme(style="darkgrid", font="Arial")
