@@ -4,7 +4,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-import os
+from pathlib import Path
 
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, average_precision_score, r2_score, root_mean_squared_error
 from sklearn.calibration import calibration_curve
@@ -30,10 +30,13 @@ class ModelWrapper:
         return preds
     
 def plot_feature_importance(predictor, X_test, y_test, 
-                            output_dir: str = "./"):
+                            output_dir: str | Path = Path.cwd()):
     """
     Plots the feature importance with standard deviation and p-value significance.
     """
+
+    output_dir = Path(output_dir)
+
     df = predictor.feature_importance(pd.concat([X_test, y_test], axis=1))
 
     # Plotting
@@ -68,14 +71,16 @@ def plot_feature_importance(predictor, X_test, y_test,
 
     # Adjust layout and save
     plt.tight_layout()
-    fig.savefig(os.path.join(output_dir, 'feature_importance.png'))
+    fig.savefig(output_dir / 'feature_importance.png')
     plt.close()
 
 def plot_shap_values(predictor, X_train, X_test, 
                      max_display: int = 10,
-                     output_dir: str = "./"):
+                     output_dir: str | Path = Path.cwd()):
     # import shap only at function call
     import shap
+
+    output_dir = Path(output_dir)
     
     predictor = ModelWrapper(predictor, X_train.columns)
     # sample 100 samples from training set to create baseline
@@ -92,12 +97,12 @@ def plot_shap_values(predictor, X_train, X_test,
 
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
     shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
-    fig.savefig(os.path.join(output_dir, 'shap_heatmap.png'))
+    fig.savefig(output_dir / 'shap_heatmap.png')
     plt.close()
 
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
     shap.plots.bar(shap_values[...,1], max_display=max_display, show=False, ax=ax)
-    fig.savefig(os.path.join(output_dir, 'shap_barplot.png'))
+    fig.savefig(output_dir / 'shap_barplot.png')
     plt.close()
 
 def prep_for_pie(df, label):
@@ -110,8 +115,10 @@ def prep_for_pie(df, label):
     return labels, values
 
 def plot_one_multiplot(data, umap_data, var, continuous_columns, 
-                       output_dir: str = "./"):
+                       output_dir: str | Path = Path.cwd()):
     from scipy.stats import f_oneway, ttest_ind
+
+    output_dir = Path(output_dir)
 
     num_categories = len(data[var].unique())
 
@@ -189,7 +196,7 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
     plt.tight_layout()
     
     # save multiplot
-    multiplot_path = os.path.join(output_dir, 'multiplots', f'{var}_multiplots.png')
+    multiplot_path = output_dir / 'multiplots' / f'{var}_multiplots.png'
     plt.savefig(multiplot_path)
     plt.close()
     
@@ -198,8 +205,9 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
 
 def plot_corr(corr, size, 
               file_name: str = 'correlation_matrix.png',
-              output_dir: str = "./"):
+              output_dir: str | Path = Path.cwd()):
     
+    output_dir = Path(output_dir)
 
     fig, ax = plt.subplots(1, 1, figsize=(size, size))
     mask = np.triu(np.ones_like(corr, dtype=bool)) # Keep only lower triangle
@@ -208,31 +216,37 @@ def plot_corr(corr, size,
     plt.title(f'Pearson Correlation Matrix')
     plt.tight_layout()
 
-    figure_path = os.path.join(output_dir, file_name)
+    figure_path = output_dir / file_name
     fig.savefig(figure_path)
     plt.close()
 
 def plot_pairplot(data, columns_to_plot,
-                  output_dir: str = "./", 
+                  output_dir: str | Path = Path.cwd(), 
                   target_variable: str = None):
-    hue = None
+    
+    output_dir = Path(output_dir)
+
+    hue = target_variable
     if target_variable is not None:
-        columns_to_plot += [target_variable]
-        hue = target_variable
+        columns_to_plot += [target_variable] 
 
     g = sns.pairplot(data[columns_to_plot], hue=hue)   
     g.figure.suptitle("Pair Plot", y=1.08)  
 
-    figure_path = os.path.join(output_dir, 'pairplot.png')
+    figure_path = output_dir / 'pairplot.png'
     plt.savefig(figure_path)
     plt.close()
 
-def plot_umap(umap_data, output_dir: str = "./"):
+def plot_umap(umap_data, 
+              output_dir: str | Path = Path.cwd()):
+   
+    output_dir = Path(output_dir)
+
     fig, ax = plt.subplots(figsize=(8, 8), dpi=72)
-    g = sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
+    sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
     plt.title(f'UMAP of Continuous Variables')
 
-    figure_path = os.path.join(output_dir, 'umap_continuous_data.png')
+    figure_path = output_dir / 'umap_continuous_data.png'
     fig.savefig(figure_path)
     plt.close()
 
@@ -248,7 +262,9 @@ def bootstrap_metric(y_test, y_pred, f, nsamples=100):
         values.append(val)
     return values 
 
-def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, output_dir):
+def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, output_dir: str | Path = Path.cwd()):
+    
+    output_dir = Path(output_dir)
         
     # Define metrics based on the problem type
     if predictor.problem_type == 'regression':
@@ -316,11 +332,11 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
     g.tight_layout(w_pad=0.5, h_pad=1)
     
     # Save the plot
-    output_path = os.path.join(output_dir, 'bootstrapped_metrics.png')
+    output_path = output_dir / 'bootstrapped_metrics.png'
     plt.savefig(output_path, dpi=300)
     plt.close()
 
-def plot_regression_diagnostics(y_true, y_pred, output_dir):
+def plot_regression_diagnostics(y_true, y_pred, output_dir: str | Path = Path.cwd()):
     """
     Generates diagnostic plots for a regression model.
 
@@ -329,6 +345,8 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir):
     model: Fitted regression model
         The regression model to evaluate.
     """
+
+    output_dir = Path(output_dir)
     
     # Predict the target values
     residuals = y_true - y_pred
@@ -340,7 +358,7 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir):
         plt.xlabel(xlabel)
         plt.ylabel(ylabel)
         plt.title(title)
-        plt.savefig(os.path.join(output_dir, 'true_vs_predicted.png'))
+        plt.savefig(output_dir / 'true_vs_predicted.png')
         plt.close()
 
     def plot_residuals(y_true, y_pred, title='Residual Plot'):
@@ -351,14 +369,14 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir):
         plt.xlabel('Fitted Values')
         plt.ylabel('Residuals')
         plt.title(title)
-        plt.savefig(os.path.join(output_dir, 'residual_plot.png'))
+        plt.savefig(output_dir / 'residual_plot.png')
         plt.close()
     def plot_residual_histogram(residuals, title='Histogram of Residuals'):
         plt.figure(figsize=(10, 6))
         sns.histplot(residuals, kde=True, bins=30)
         plt.xlabel('Residuals')
         plt.title(title)
-        plt.savefig(os.path.join(output_dir, 'residual_hist.png'))
+        plt.savefig(output_dir / 'residual_hist.png')
         plt.close()
 
     # Call all the plotting functions
@@ -366,11 +384,13 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir):
     plot_residuals(y_true, y_pred)
     plot_residual_histogram(residuals)
 
-def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, output_dir):
+def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, output_dir: str | Path = Path.cwd()):
     """
     Generates diagnostic plots for a classification model.
 
     """
+
+    output_dir = Path(output_dir)
 
     plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), y_val.to_numpy(), y_val_pred.to_numpy(), output_dir)
 
@@ -381,7 +401,7 @@ def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, output_di
     plt.xlabel('Predicted')
     plt.ylabel('Actual')
     plt.title('Confusion Matrix')
-    plt.savefig(os.path.join(output_dir, 'confusion_matrix.png'))
+    plt.savefig(output_dir / 'confusion_matrix.png')
     plt.close()
 
 ### MODEL EVALUATION COPY OF EPIC PLOTS
@@ -401,7 +421,10 @@ def _bin_class_curve(y_true, y_pred):
 
     return fps, tps, y_pred[threshold_idxs]
 
-def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
+def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir: str | Path = Path.cwd()):
+
+    output_dir = Path(output_dir)
+
     # Compute test metrics
     fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
     roc_auc_test = roc_auc_score(y_test, y_pred)
@@ -533,5 +556,5 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, output_dir):
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'model_evaluation.png'))
+    plt.savefig(output_dir / 'model_evaluation.png')
     plt.close()
