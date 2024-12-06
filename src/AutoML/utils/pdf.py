@@ -1,4 +1,3 @@
-import os
 from pathlib import Path
 import pandas as pd
 from fpdf import FPDF
@@ -52,7 +51,7 @@ def generate_analysis_report_pdf(
         outlier_analysis=None,
         multiplots=None,
         categorical_columns=None,
-        output_dir: str = "./"):
+        output_dir: str | Path = Path.cwd()):
     """
     Generate a PDF report of the analysis with plots and tables.
 
@@ -68,18 +67,19 @@ def generate_analysis_report_pdf(
 
     The PDF uses custom fonts and is saved in the specified output directory.
     """
+    output_dir = Path(output_dir)
 
     # Instantiate PDF
     pdf = FPDF()
     pdf.add_page()
-    script_dir = os.path.dirname(os.path.abspath(__file__))
+    script_dir = Path(__file__).resolve().parent
     
     # Adding unicode fonts
-    font_path = os.path.join(script_dir, 'fonts/DejaVuSans.ttf')
+    font_path = (script_dir / 'fonts/DejaVuSans.ttf')
     pdf.add_font("dejavu-sans", style="", fname=font_path)
-    font_path = os.path.join(script_dir, 'fonts/DejaVuSans-Bold.ttf')
+    font_path = (script_dir / 'fonts/DejaVuSans-Bold.ttf')
     pdf.add_font("dejavu-sans", style="b", fname=font_path)
-    pdf.set_font('dejavu-sans', '', 24)  
+    pdf.set_font('dejavu-sans', '', 24)
 
     # Title
     pdf.write(5, "Analysis Report\n\n")
@@ -89,29 +89,29 @@ def generate_analysis_report_pdf(
         pdf = add_outlier_analysis(pdf, outlier_analysis)
     
     # Add page-wide pairplots
-    pdf.image(os.path.join(output_dir, 'pairplot.png'), Align.C, w=pdf.epw-20)
+    pdf.image((output_dir / 'pairplot.png'), Align.C, w=pdf.epw-20)
     pdf.add_page()
 
     # Add correlation plots
-    pdf.image(os.path.join(output_dir, 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
-    pdf.image(os.path.join(output_dir, 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
+    pdf.image((output_dir / 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
+    pdf.image((output_dir / 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
 
     # Add multiplots
     if multiplots and categorical_columns:
         pdf = add_multiplots(pdf, multiplots, categorical_columns)
 
     # Add demographic breakdown "table one"
-    path_tableone = os.path.join(output_dir, 'tableone.csv')
-    if os.path.exists(path_tableone):
+    path_tableone = output_dir / 'tableone.csv'
+    if path_tableone.exists():
         csv_df = pd.read_csv(path_tableone, na_filter=False).astype(str)
         pdf = add_table(pdf, csv_df)
 
     # Save PDF
-    pdf.output(os.path.join(output_dir, 'analysis_report.pdf'))
+    pdf.output(output_dir / 'analysis_report.pdf')
 
 def generate_explainer_report_pdf(
         problem_type: str,
-        output_dir: str | Path = "./"):
+        output_dir: str | Path = Path.cwd()):
     """
     Generate a PDF report of the explainer with plots.
     """
