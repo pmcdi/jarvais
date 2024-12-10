@@ -1,13 +1,17 @@
-import os
+import os, pickle
 import shutil
 import pandas as pd
 
 from autogluon.tabular import TabularPredictor
-from autogluon.tabular.configs.hyperparameter_configs import get_hyperparameter_config
 
 from sklearn.model_selection import KFold
 
-from ._simple_regression_model import SimpleRegressionModel
+from sksurv.metrics import concordance_index_censored
+from sksurv.linear_model import CoxnetSurvivalAnalysis
+from sksurv.ensemble import GradientBoostingSurvivalAnalysis, RandomSurvivalForest
+from sksurv.svm import FastSurvivalSVM
+from sksurv.util import Surv
+
 from ._leaderboard import aggregate_folds, format_leaderboard
 
 def train_autogluon_with_cv(data_train, data_test, target_variable, task, 
@@ -34,9 +38,6 @@ def train_autogluon_with_cv(data_train, data_test, target_variable, task,
     predictors, cv_scores, val_indices = [], [], []
     train_leaderboards, val_leaderboards, test_leaderboards = [], [], []
 
-    custom_hyperparameters = get_hyperparameter_config('default')
-    custom_hyperparameters[SimpleRegressionModel] = {}
-
     for fold, (train_idx, val_idx) in enumerate(kf.split(data_train)):
         print(f"Training fold {fold + 1}/{num_folds}...")
         
@@ -50,7 +51,6 @@ def train_autogluon_with_cv(data_train, data_test, target_variable, task,
         ).fit(
             train_data, 
             tuning_data=val_data,
-            hyperparameters=custom_hyperparameters, 
             **kwargs)
 
         score = predictor.evaluate(val_data)[eval_metric]
@@ -85,3 +85,43 @@ def train_autogluon_with_cv(data_train, data_test, target_variable, task,
                     os.path.join(output_dir, f'autogluon_models_best_fold'), dirs_exist_ok=True)
 
     return predictors, final_leaderboard, best_fold, X_val, y_val
+
+def train_survival_models(X_train, y_train, X_test, y_test, output_dir):
+
+    y_train = Surv.from_dataframe('event', 'time', y_train)
+    y_test = Surv.from_dataframe('event', 'time', y_test)
+
+    (output_dir / 'survival_models').mkdir(exist_ok=True, parents=True)
+
+    models = {
+        "CoxPH": CoxnetSurvivalAnalysis(fit_baseline_model=True),  # fit_baseline_model=True to enable cumulative hazard prediction
+        "GradientBoosting": GradientBoostingSurvivalAnalysis(),
+        "RandomForest": RandomSurvivalForest(n_estimators=100, random_state=42),
+        "SVM": FastSurvivalSVM(max_iter=1000, tol=1e-5, random_state=0),
+    }
+
+    fitted_models = {}
+    for name, model in models.items():
+        print(f"Training {name}...")
+        model.fit(X_train, y_train)
+        fitted_models[name] = model
+
+        model_path = output_dir / 'survival_models' / f"{name}.pkl"
+        with open(model_path, "wb") as f:
+            pickle.dump(model, f)
+
+    def evaluate_model(model, X_test, y_test):
+        predictions = model.predict(X_test)
+        return concordance_index_censored(y_test["event"], y_test["time"], predictions)[0]
+
+    cindex_scores = {}
+    for name, model in fitted_models.items():
+        cindex_scores[name] = evaluate_model(model, X_test, y_test)
+
+    # Output C-index scores
+    print("\nC-index Scores:")
+    for model_name, cindex in cindex_scores.items():
+        print(f"{model_name}: {cindex:.4f}")
+
+    return fitted_models, cindex_scores
+

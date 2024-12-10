@@ -15,14 +15,14 @@ from autogluon.core.metrics import make_scorer
 from ._feature_reduction import mrmr_reduction, var_reduction, kbest_reduction, chi2_reduction
 from ._simple_regression_model import SimpleRegressionModel
 from ._leaderboard import format_leaderboard
-from ._training import train_autogluon_with_cv
+from ._training import train_autogluon_with_cv, train_survival_models
 
 from ..explainer import Explainer
 from ..utils.functional import auprc
 
 class TrainerSupervised():
     def __init__(self,
-                 task: str = None,
+                 task: str,
                  reduction_method: Union[str, None] = None,
                  keep_k: int = 2,
                  output_dir: str | Path = Path.cwd()):
@@ -51,12 +51,11 @@ class TrainerSupervised():
         self.reduction_method = reduction_method
         self.keep_k = keep_k
 
-        if task not in ['binary', 'multiclass', 'regression', None]:
-            raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression'. Or provide nothing and let Autogluon infer the task.")
+        if task not in ['binary', 'multiclass', 'regression', 'time_to_event', None]:
+            raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression', 'time_to_event'")
 
         # Create output directory if it doesn't exist
         self.output_dir.mkdir(exist_ok=True, parents=True)
-        (self.output_dir / 'autogluon_models').mkdir(exist_ok=True, parents=True)
 
     def _feature_reduction(self, X, y):
         """
@@ -152,7 +151,11 @@ class TrainerSupervised():
         if exclude is None:
             exclude = []
 
-        exclude.append(target_variable)
+        if isinstance(target_variable, list):
+            exclude += target_variable
+        else:
+            exclude.append(target_variable)
+
         try:
             X = data.drop(columns=exclude)
             y = data[target_variable]
@@ -169,104 +172,113 @@ class TrainerSupervised():
 
             self.feature_names = list(X.columns)                
 
-        if self.task in ['binary', 'multiclass']:
-            if y.value_counts().min() > 1: # Meaning it can be used to stratify, if this condition is not met train_test_split produces - ValueError: The least populated class in y has only 1 member, which is too few. The minimum number of groups for any class cannot be less than 2.
-                if stratify_on is not None:
-                    stratify_col = y.astype(str) + '_' + data[stratify_on].astype(str) 
-                else:
-                    stratify_col = y                
-            else:
-                raise ValueError('Least populated class has only one entry')
+        if self.task in {'binary', 'multiclass'}:
+            stratify_col = (
+                y.astype(str) + '_' + data[stratify_on].astype(str)
+                if stratify_on is not None
+                else y
+            )
         else:
             stratify_col = None
         
-        
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(X, y, test_size=test_size, stratify=stratify_col, random_state=42)
 
-        if self.task in ['binary', 'multiclass']:
-            eval_metric = 'roc_auc'
-        elif self.task == 'regression':
-            eval_metric = 'r2' 
-             
-        ag_auprc_scorer = make_scorer(name='auprc',
-                                 score_func=auprc,
-                                 optimum=1,
-                                 greater_is_better=True,
-                                 needs_class=True)
+        if self.task == 'time_to_event':
 
-        # When changing extra_metrics consider where it's used and make updates accordingly
-        extra_metrics = ['f1', ag_auprc_scorer] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
-        show_leaderboard = ['model', 'score_test', 'score_val', 'score_train',] 
-        
-        if k_folds > 1:
-            self.predictors, leaderboard, self.best_fold, self.X_val, self.y_val = train_autogluon_with_cv(
-                pd.concat([self.X_train, self.y_train], axis=1),
-                pd.concat([self.X_test, self.y_test], axis=1), 
-                target_variable=target_variable, 
-                task=self.task,
-                extra_metrics=extra_metrics,
-                eval_metric=eval_metric,
-                num_folds=k_folds,
-                output_dir=(self.output_dir / 'autogluon_models'),
-                **kwargs)
-            
-            self.predictor = self.predictors[self.best_fold]
+            self.X_val = pd.DataFrame()
+            self.y_val = pd.DataFrame()
 
-            # Update train data to remove validation
-            self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
-            self.y_train = self.y_train[~self.y_train.index.isin(self.y_val.index)]
+            self.predictors, scores = train_survival_models(self.X_train, self.y_train, self.X_test, self.y_test, self.output_dir)
+            self.predictor = self.predictors[max(scores, key=scores.get)]
 
-            print('\nModel Leaderboard (Displays values in "mean [min, max]" format across training folds)\n------------------------------------------------------------------------------------')
-            print(tabulate(
-                leaderboard.sort_values(by='score_test', ascending=False)[show_leaderboard],
-                tablefmt = "fancy_grid", 
-                headers="keys",
-                showindex=False))
-            
         else:
+            (self.output_dir / 'autogluon_models').mkdir(exist_ok=True, parents=True)
+
+            if self.task in ['binary', 'multiclass']:
+                eval_metric = 'roc_auc'
+            elif self.task == 'regression':
+                eval_metric = 'r2' 
+                
+            ag_auprc_scorer = make_scorer(name='auprc', # Move this to a seperate file?
+                                    score_func=auprc,
+                                    optimum=1,
+                                    greater_is_better=True,
+                                    needs_class=True)
+
+            # When changing extra_metrics consider where it's used and make updates accordingly
+            extra_metrics = ['f1', ag_auprc_scorer] if self.task in ['binary', 'multiclass'] else ['root_mean_squared_error']
+            show_leaderboard = ['model', 'score_test', 'score_val', 'score_train'] 
+
             custom_hyperparameters = get_hyperparameter_config('default')
             custom_hyperparameters[SimpleRegressionModel] = {}
-
-            self.predictor = TabularPredictor(
-            label=target_variable, problem_type=self.task, eval_metric=eval_metric,
-            path=(self.output_dir / 'autogluon_models' / f'autogluon_models_best_fold'),
-            log_to_file=False,
-            ).fit(
-                pd.concat([self.X_train, self.y_train], axis=1), 
-                hyperparameters=custom_hyperparameters, 
-                **kwargs)
+            kwargs['hyperparameters'] = custom_hyperparameters
             
-            self.X_val, self.y_val = self.predictor.load_data_internal(data='val', return_y=True)
-            # Update train data to remove validation
-            self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
-            self.y_train = self.y_train[~self.y_train.index.isin(self.y_val.index)]
+            if k_folds > 1:
+                self.predictors, leaderboard, self.best_fold, self.X_val, self.y_val = train_autogluon_with_cv(
+                    pd.concat([self.X_train, self.y_train], axis=1),
+                    pd.concat([self.X_test, self.y_test], axis=1), 
+                    target_variable=target_variable, 
+                    task=self.task,
+                    extra_metrics=extra_metrics,
+                    eval_metric=eval_metric,
+                    num_folds=k_folds,
+                    output_dir=(self.output_dir / 'autogluon_models'),
+                    **kwargs)
+                
+                self.predictor = self.predictors[self.best_fold]
 
-            train_leaderboard = self.predictor.leaderboard(
-                pd.concat([self.X_train, self.y_train], axis=1), 
-                extra_metrics=extra_metrics).round(2)
-            val_leaderboard = self.predictor.leaderboard(
-                pd.concat([self.X_val, self.y_val], axis=1), 
-                extra_metrics=extra_metrics).round(2)
-            test_leaderboard = self.predictor.leaderboard(
-                pd.concat([self.X_test, self.y_test], axis=1), 
-                extra_metrics=extra_metrics).round(2)
-            
-            leaderboard = pd.merge(
-                pd.merge(
-                    format_leaderboard(train_leaderboard, extra_metrics, 'score_train'),
-                    format_leaderboard(val_leaderboard, extra_metrics, 'score_val'),
+                # Update train data to remove validation
+                self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
+                self.y_train = self.y_train[~self.y_train.index.isin(self.y_val.index)]
+
+                print('\nModel Leaderboard (Displays values in "mean [min, max]" format across training folds)\n------------------------------------------------------------------------------------')
+                print(tabulate(
+                    leaderboard.sort_values(by='score_test', ascending=False)[show_leaderboard],
+                    tablefmt = "fancy_grid", 
+                    headers="keys",
+                    showindex=False))
+                
+            else:
+                
+                self.predictor = TabularPredictor(
+                label=target_variable, problem_type=self.task, eval_metric=eval_metric,
+                path=(self.output_dir / 'autogluon_models' / f'autogluon_models_best_fold'),
+                log_to_file=False,
+                ).fit(
+                    pd.concat([self.X_train, self.y_train], axis=1), 
+                    **kwargs)
+                
+                self.X_val, self.y_val = self.predictor.load_data_internal(data='val', return_y=True)
+                # Update train data to remove validation
+                self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
+                self.y_train = self.y_train[~self.y_train.index.isin(self.y_val.index)]
+
+                train_leaderboard = self.predictor.leaderboard(
+                    pd.concat([self.X_train, self.y_train], axis=1), 
+                    extra_metrics=extra_metrics).round(2)
+                val_leaderboard = self.predictor.leaderboard(
+                    pd.concat([self.X_val, self.y_val], axis=1), 
+                    extra_metrics=extra_metrics).round(2)
+                test_leaderboard = self.predictor.leaderboard(
+                    pd.concat([self.X_test, self.y_test], axis=1), 
+                    extra_metrics=extra_metrics).round(2)
+                
+                leaderboard = pd.merge(
+                    pd.merge(
+                        format_leaderboard(train_leaderboard, extra_metrics, 'score_train'),
+                        format_leaderboard(val_leaderboard, extra_metrics, 'score_val'),
+                        on='model'
+                    ),
+                    format_leaderboard(test_leaderboard, extra_metrics, 'score_test'),
                     on='model'
-                ),
-                format_leaderboard(test_leaderboard, extra_metrics, 'score_test'),
-                on='model'
-            )
+                )
 
-            print('\nModel Leaderboard\n----------------')
-            print(tabulate(
-                leaderboard.sort_values(by='score_test', ascending=False)[show_leaderboard],
-                tablefmt = "fancy_grid", 
-                headers="keys",
-                showindex=False))
+                print('\nModel Leaderboard\n----------------')
+                print(tabulate(
+                    leaderboard.sort_values(by='score_test', ascending=False)[show_leaderboard],
+                    tablefmt = "fancy_grid", 
+                    headers="keys",
+                    showindex=False))
 
         if save_data:
             self.data_dir = self.output_dir / 'data'
