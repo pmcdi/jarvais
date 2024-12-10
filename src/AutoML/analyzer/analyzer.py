@@ -166,8 +166,6 @@ class Analyzer():
         print(self.mytable.tabulate(tablefmt = "fancy_grid"))
         self.mytable.to_csv(self.output_dir / 'tableone.csv')
 
-        self._apply_config()
-
         # PLOTS
         size = len(self.continuous_columns)*1.5
 
@@ -197,6 +195,8 @@ class Analyzer():
         # Create Multiplots
         self._create_multiplots()
 
+        self._apply_config()
+
         # Create Output PDF
         generate_analysis_report_pdf(outlier_analysis=self.outlier_analysis, 
                             multiplots=self.multiplots, 
@@ -204,15 +204,14 @@ class Analyzer():
                             output_dir=self.output_dir)
     
     @classmethod
-    def dry_run(cls, data: pd.DataFrame, output_dir: str | Path = Path.cwd()):
+    def dry_run(cls, data: pd.DataFrame):
 
         output_dir = Path(output_dir)
 
         analyzer = cls(data, output_dir=output_dir)  
         analyzer._create_config()  
 
-        with open(output_dir / 'config.yaml', 'w') as f:
-            yaml.dump(analyzer.config, f)
+        # Maybe also output tableone?
 
         return analyzer.config  
 
