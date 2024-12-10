@@ -28,7 +28,7 @@ class Analyzer():
                  data: pd.DataFrame, 
                  target_variable: Union[str, None] = None,
                  one_hot_encode: bool = False,
-                 config_file: Union[str, Path, None] = None,
+                 config: Union[str, Path, None] = None,
                  output_dir: Union[str, Path] = Path.cwd()):
         """
 
@@ -42,7 +42,7 @@ class Analyzer():
             The target variable in the dataset. Default is None.
         one_hot_encode : bool, optional
             One Hot Encode the data. Default is False
-        config_file : Union[str, os.PathLike, None], optional
+        config : Union[str, os.PathLike, None], optional
             Path to a yaml file that contains settings for janitor. Default is None where janitor will produce one automaticaly.
         output_dir: Union[str, os.PathLike], optional
             Output directory for analysis. Default is current directory.
@@ -55,20 +55,18 @@ class Analyzer():
         
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
-        if output_dir.resolve() == Path.cwd():
-            print('Using current directory as output directory\n')
          
         self.output_dir = output_dir
 
-        if config_file is not None:
-            config_file = Path(config_file) 
-            if config_file.is_file():  
-                with config_file.open('r') as file: 
-                    self.config_file = yaml.safe_load(file)  
+        if config is not None:
+            config = Path(config) 
+            if config.is_file():  
+                with config.open('r') as file: 
+                    self.config = yaml.safe_load(file)  
             else:
-                raise ValueError(f'Config file does not exist at {config_file}')
+                raise ValueError(f'Config file does not exist at {config}')
         else:
-            self.config = None
+            self.config = config
 
         self.outlier_analysis = '' # Used later when writing to PDF           
         
@@ -97,7 +95,7 @@ class Analyzer():
             print("Columns that are all NaN(probably ID columns) dropping...: ", nan_columns)
             self.continuous_columns = list(set(self.continuous_columns) - set(nan_columns))
 
-        print(f'Used a heuristic to define categorical and continuous columns. Please review!\nCategorical: {self.categorical_columns}\n\nContinuous: {self.continuous_columns}')
+        print(f'Used a heuristic to define categorical and continuous columns. Please review!\n\nCategorical: {self.categorical_columns}\nContinuous: {self.continuous_columns}')
 
         columns['categorical'] = self.categorical_columns
         columns['continuous'] = self.continuous_columns
@@ -125,13 +123,6 @@ class Analyzer():
 
         self.data = replace_missing(self.data, self.categorical_columns, self.continuous_columns, self.config)
 
-        if self.one_hot_encode:
-            self.data = pd.get_dummies(
-                self.data, 
-                columns=[cat for cat in self.categorical_columns if cat != self.target_variable])
-        
-        self.data.to_csv(self.output_dir / 'updated_data.csv')
-
     def _create_multiplots(self):
         """
         Generate and save multiplots for each categorical variable against all continuous variables. 
@@ -158,6 +149,8 @@ class Analyzer():
 
         with open(self.output_dir / 'config.yaml', 'w') as f:
             yaml.dump(self.config, f)
+
+        self._apply_config()
 
         # Create Table One
         df_keep = self.data[self.continuous_columns + self.categorical_columns]
@@ -195,7 +188,12 @@ class Analyzer():
         # Create Multiplots
         self._create_multiplots()
 
-        self._apply_config()
+        if self.one_hot_encode:
+            self.data = pd.get_dummies(
+                self.data, 
+                columns=[cat for cat in self.categorical_columns if cat != self.target_variable])
+        
+        self.data.to_csv(self.output_dir / 'updated_data.csv')
 
         # Create Output PDF
         generate_analysis_report_pdf(outlier_analysis=self.outlier_analysis, 
@@ -205,13 +203,16 @@ class Analyzer():
     
     @classmethod
     def dry_run(cls, data: pd.DataFrame):
+        """
+        Returns generated config and displays TableOne
+        """
+        analyzer = cls(data)  
+        analyzer._create_config()
 
-        output_dir = Path(output_dir)
+        df_keep = analyzer.data[analyzer.continuous_columns + analyzer.categorical_columns]
 
-        analyzer = cls(data, output_dir=output_dir)  
-        analyzer._create_config()  
-
-        # Maybe also output tableone?
+        mytable = TableOne(df_keep, categorical=analyzer.categorical_columns, pval=False)
+        print(mytable.tabulate(tablefmt = "fancy_grid"))  
 
         return analyzer.config  
 
