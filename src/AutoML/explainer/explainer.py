@@ -1,4 +1,8 @@
-import os
+from pathlib import Path
+import pandas as pd
+
+from sklearn.inspection import permutation_importance
+from sksurv.util import Surv
 
 from ..utils.plot import (
     plot_feature_importance, 
@@ -15,67 +19,76 @@ class Explainer():
                  X_train,
                  X_test,
                  y_test,
-                 output_dir='.'):
+                 output_dir=Path.cwd()):
         
         self.trainer = trainer
         self.predictor = trainer.predictor
         self.X_train = X_train
         self.X_test = X_test
         self.y_test = y_test
-        self.output_dir = output_dir
+        self.output_dir = Path(output_dir)
 
-        if not os.path.exists(os.path.join(output_dir, 'figures')):
-            os.mkdir(os.path.join(output_dir, 'figures'))
+        (output_dir / 'figures').mkdir(parents=True, exist_ok=True)
 
     def run(self):
-        plot_violin_of_bootsrapped_metrics(
-            self.predictor,
-            self.X_test, 
-            self.y_test, 
-            self.trainer.X_val, 
-            self.trainer.y_val, 
-            self.X_train,
-            self.trainer.y_train,
-            output_dir=os.path.join(self.output_dir, 'figures')
-            )
+        
+        if self.trainer.task != 'time_to_event':
+            plot_violin_of_bootsrapped_metrics(
+                self.predictor,
+                self.X_test, 
+                self.y_test, 
+                self.trainer.X_val, 
+                self.trainer.y_val, 
+                self.X_train,
+                self.trainer.y_train,
+                output_dir=self.output_dir / 'figures'
+                )
+        
         # Plot diagnostics
-        try:
-            if self.predictor.problem_type in ['binary', 'multiclass']:
-                plot_classification_diagnostics(
-                    self.y_test, 
-                    self.predictor.predict_proba(self.X_test).iloc[:, 1], 
-                    self.trainer.y_val, 
-                    self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], 
-                    self.trainer.y_train, 
-                    self.predictor.predict_proba(self.X_train).iloc[:, 1], 
-                    output_dir=os.path.join(self.output_dir, 'figures')
-                    )
-                plot_shap_values(
-                    self.predictor, 
-                    self.X_train, 
-                    self.X_test, 
-                    output_dir=os.path.join(self.output_dir, 'figures')
-                    )
-            elif self.predictor.problem_type == 'regression':
-                plot_regression_diagnostics(
-                    self.y_test, 
-                    self.predictor.predict(self.X_test, as_pandas=False), 
-                    output_dir=os.path.join(self.output_dir, 'figures')
-                    )
-        except Exception as e:
-            print(f"Error in plotting diagnostics: {e}")
+        if self.trainer.task in ['binary', 'multiclass']:
+            plot_classification_diagnostics(
+                self.y_test, 
+                self.predictor.predict_proba(self.X_test).iloc[:, 1], 
+                self.trainer.y_val, 
+                self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1], 
+                self.trainer.y_train, 
+                self.predictor.predict_proba(self.X_train).iloc[:, 1], 
+                output_dir=self.output_dir / 'figures'
+                )
+            plot_shap_values(
+                self.predictor, 
+                self.X_train, 
+                self.X_test, 
+                output_dir=self.output_dir / 'figures'
+                )
+        elif self.trainer.task == 'regression':
+            plot_regression_diagnostics(
+                self.y_test, 
+                self.predictor.predict(self.X_test, as_pandas=False), 
+                output_dir=self.output_dir / 'figures'
+                )
 
-        # Plot feature importance
-        try:
-            plot_feature_importance(self.predictor, 
-                                    self.X_test, 
-                                    self.y_test, 
-                                    output_dir=os.path.join(self.output_dir, 'figures')
-                                    )
-        except Exception as e:
-            print(f"Error in plotting feature importance: {e}")
-    
-        generate_explainer_report_pdf(self.predictor.problem_type, self.output_dir)
+        # Plot feature importance            
+        if self.trainer.task == 'time_to_event':
+            for _, model in self.trainer.predictors.items():
+                result = permutation_importance(model, self.X_test, Surv.from_dataframe('event', 'time', self.y_test), n_repeats=15)
+                importance_df = pd.DataFrame(
+                    {
+                        "importance": result["importances_mean"],
+                        "stddev": result["importances_std"],
+                    },
+                    index=self.X_test.columns,
+                ).sort_values(by="importance", ascending=False)
+        else:
+            importance_df = self.predictor.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
+
+        plot_feature_importance(importance_df, 
+                                self.X_test, 
+                                self.y_test, 
+                                output_dir=self.output_dir / 'figures'
+                                )
+
+        generate_explainer_report_pdf(self.trainer.task, self.output_dir)
 
     @classmethod
     def from_trainer(cls, trainer):

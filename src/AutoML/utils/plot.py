@@ -32,15 +32,13 @@ class ModelWrapper:
             preds = self.ag_model.predict(X)
         return preds
     
-def plot_feature_importance(predictor, X_test, y_test, 
+def plot_feature_importance(df, X_test, y_test, 
                             output_dir: str | Path = Path.cwd()):
     """
     Plots the feature importance with standard deviation and p-value significance.
     """
 
     output_dir = Path(output_dir)
-
-    df = predictor.feature_importance(pd.concat([X_test, y_test], axis=1))
 
     # Plotting
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
@@ -49,11 +47,12 @@ def plot_feature_importance(predictor, X_test, y_test,
     bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
 
     # Adding p_value significance indication
-    for i, (bar, p_value) in enumerate(zip(bars, df['p_value'])):
-        height = bar.get_height()
-        significance = '*' if p_value < 0.05 else ''
-        ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance, 
-                ha='center', va='bottom', fontsize=10, color='red')
+    if 'p_value' in df.columns:
+        for bar, p_value in zip(bars, df['p_value']):
+            height = bar.get_height()
+            significance = '*' if p_value < 0.05 else ''
+            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance, 
+                    ha='center', va='bottom', fontsize=10, color='red')
 
     # Labels and title
     ax.set_xlabel('Feature', fontsize=14)
