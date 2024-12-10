@@ -7,9 +7,9 @@ from fpdf.enums import Align
 
 def add_outlier_analysis(pdf, outlier_analysis):
     if outlier_analysis != '':
-        pdf.set_font('dejavu-sans', '', 12)  
+        pdf.set_font('inter', '', 12)  
         pdf.write(5, f"Outlier Analysis:\n")
-        pdf.set_font('dejavu-sans', '', 10) 
+        pdf.set_font('inter', '', 10) 
         pdf.write(5, outlier_analysis)
     
     return pdf
@@ -18,7 +18,7 @@ def add_multiplots(pdf, multiplots, categorical_columns):
     for plot, cat in zip(multiplots, categorical_columns):
         pdf.add_page()
         
-        pdf.set_font('dejavu-sans', '', 12)
+        pdf.set_font('inter', '', 12)
         pdf.write(5, f"{cat.title()} Multiplots\n")
         
         current_y = pdf.get_y()
@@ -36,7 +36,7 @@ def add_table(pdf, csv_df):
     data = [headers] + csv_df.values.tolist()
 
     pdf.add_page()
-    pdf.set_font('dejavu-sans', '', 10)  
+    pdf.set_font('inter', '', 10)  
     with pdf.table() as table:
         for data_row in data:
             row = table.row()
@@ -48,10 +48,10 @@ def add_table(pdf, csv_df):
 # Reports
 
 def generate_analysis_report_pdf(
-        outlier_analysis=None,
-        multiplots=None,
-        categorical_columns=None,
-        output_dir: str | Path = Path.cwd()):
+        outlier_analysis: str,
+        multiplots: list,
+        categorical_columns: list,
+        output_dir: str | Path):
     """
     Generate a PDF report of the analysis with plots and tables.
 
@@ -75,11 +75,11 @@ def generate_analysis_report_pdf(
     script_dir = Path(__file__).resolve().parent
     
     # Adding unicode fonts
-    font_path = (script_dir / 'fonts/DejaVuSans.ttf')
-    pdf.add_font("dejavu-sans", style="", fname=font_path)
-    font_path = (script_dir / 'fonts/DejaVuSans-Bold.ttf')
-    pdf.add_font("dejavu-sans", style="b", fname=font_path)
-    pdf.set_font('dejavu-sans', '', 24)
+    font_path = (script_dir / 'fonts/Inter_28pt-Regular.ttf')
+    pdf.add_font("inter", style="", fname=font_path)
+    font_path = (script_dir / 'fonts/Inter_28pt-Bold.ttf')
+    pdf.add_font("inter", style="b", fname=font_path)
+    pdf.set_font('inter', '', 24)  
 
     # Title
     pdf.write(5, "Analysis Report\n\n")
@@ -111,7 +111,7 @@ def generate_analysis_report_pdf(
 
 def generate_explainer_report_pdf(
         problem_type: str,
-        output_dir: str | Path = Path.cwd()):
+        output_dir: str | Path):
     """
     Generate a PDF report of the explainer with plots.
     """
@@ -123,11 +123,11 @@ def generate_explainer_report_pdf(
     script_dir = Path(__file__).resolve().parent
     
     # Adding unicode fonts
-    font_path = (script_dir / 'fonts/DejaVuSans.ttf')
-    pdf.add_font("dejavu-sans", style="", fname=font_path)
-    font_path = (script_dir / 'fonts/DejaVuSans-Bold.ttf')
-    pdf.add_font("dejavu-sans", style="b", fname=font_path)
-    pdf.set_font('dejavu-sans', '', 24)  
+    font_path = (script_dir / 'fonts/Inter_28pt-Regular.ttf')
+    pdf.add_font("inter", style="", fname=font_path)
+    font_path = (script_dir / 'fonts/Inter_28pt-Bold.ttf')
+    pdf.add_font("inter", style="b", fname=font_path)
+    pdf.set_font('inter', '', 24)  
 
     # Title
     pdf.write(5, "Explainer Report\n\n")
