@@ -1,8 +1,8 @@
-import os
 from pathlib import Path
 
 import pandas as pd
 from tabulate import tabulate
+import pickle
 
 from typing import Union, List, Optional
 
@@ -302,7 +302,15 @@ class TrainerSupervised():
     def infer(self, data: pd.DataFrame,
               model: str = None):
         
-        return self.predictor.predict_proba(data, model) if self.predictor.can_predict_proba else self.predictor.predict(data, model) 
+        if hasattr(self.predictor, 'can_predict_proba'): # Autogluon
+            inference =  self.predictor.predict_proba(data, model) if self.predictor.can_predict_proba else self.predictor.predict(data, model) 
+        else: # Survival models
+            if model == None:
+                inference = self.predictor.predict(data)
+            else:
+                inference = self.predictors[model].predict(data)
+
+        return inference 
     
     @classmethod
     def load_model(cls, 
@@ -328,10 +336,21 @@ class TrainerSupervised():
             raise ValueError('model_dir or project_dir must be provided')
 
         if model_dir is None and project_dir is not None:
-            model_dir = Path(project_dir) / 'autogluon_models' / 'autogluon_models_best_fold'
-
+            model_dir = (Path(project_dir) / 'autogluon_models' / 'autogluon_models_best_fold'
+             if (Path(project_dir) / 'autogluon_models' / 'autogluon_models_best_fold').exists()
+             else Path(project_dir) / 'survival_models')
+            
         trainer = cls()
-        trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
+        
+        if 'survival' in str(model_dir):
+            trainer.predictor = pickle.load((model_dir / 'best_model.pkl').open('rb'))
+            trainer.predictors = dict()
+            for pkl_file in model_dir.glob("*.pkl"):
+                if pkl_file.stem != 'best_model':
+                    with pkl_file.open("rb") as f:
+                        trainer.predictors[pkl_file.stem] = pickle.load(f) 
+        else:
+            trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
 
         return trainer
 
