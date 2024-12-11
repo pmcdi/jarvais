@@ -28,7 +28,7 @@ class Explainer():
         self.y_test = y_test
         self.output_dir = Path(output_dir)
 
-        (self.output_dir / 'figures').mkdir(parents=True, exist_ok=True)
+        (output_dir / 'figures').mkdir(parents=True, exist_ok=True)
 
     def run(self):
         
