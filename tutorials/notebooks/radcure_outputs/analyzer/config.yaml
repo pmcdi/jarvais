@@ -1,0 +1,46 @@
+columns:
+  categorical:
+  - T Stage
+  - Stage
+  - N Stage
+  - Sex
+  - Disease Site
+  - Chemotherapy
+  - Dose
+  - HPV Combined
+  - EGFRI
+  - death
+  continuous:
+  - age at dx
+  - survival_time
+  date: []
+  other: []
+mapping:
+  T Stage:
+    T1: T1
+    T1a: T1a
+    T1b: T1b
+    T2: T2
+    T2 (2): Other
+    T3: T3
+    T3 (2): Other
+    T4: T4
+    T4a: T4a
+    T4b: T4b
+    TX: Other
+    Tis: Tis
+missingness_strategy:
+  categorical:
+    Chemotherapy: Unknown
+    Disease Site: Unknown
+    Dose: Unknown
+    EGFRI: Unknown
+    HPV Combined: Unknown
+    N Stage: Unknown
+    Sex: Unknown
+    Stage: Unknown
+    T Stage: Unknown
+    death: Unknown
+  continuous:
+    age at dx: median
+    survival_time: median

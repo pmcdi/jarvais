@@ -1,7 +1,8 @@
 import pytest
 import pandas as pd
 import numpy as np
-import os, shutil
+import shutil
+from pathlib import Path
 from AutoML.trainer import TrainerSupervised
 
 @pytest.fixture
@@ -16,18 +17,18 @@ def sample_data():
 
 @pytest.fixture
 def tmpdir():
-    temp_path = "./tests/tmp"
-    if not os.path.exists(temp_path):
-        os.makedirs(temp_path, exist_ok=True)
-    else:
-        for file in os.listdir(temp_path):
-            file_path = os.path.join(temp_path, file)
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-            
+    temp_path = Path("./tests/tmp")
+    temp_path.mkdir(parents=True, exist_ok=True)
+
+    for file in temp_path.iterdir():
+        file_path = temp_path / file
+        if file_path.is_file() or file_path.is_symlink():
+            file_path.unlink() 
+        elif file_path.is_dir():
+            shutil.rmtree(file_path) 
+                    
     yield temp_path
+
 
 def test_trainer_initialization():
     trainer = TrainerSupervised(task='binary')    
@@ -48,9 +49,9 @@ def test_run_method(sample_data, tmpdir):
     data = pd.concat([X, y], axis=1)
     trainer = TrainerSupervised(task='binary', output_dir=str(tmpdir))
     trainer.run(data=data, target_variable='target', save_data=True)
-    data_dir = os.path.join(str(tmpdir), 'data')
-    assert os.path.exists(os.path.join(data_dir, 'X_train.csv'))
-    assert os.path.exists(os.path.join(data_dir, 'X_test.csv'))
+    data_dir = tmpdir / 'data'
+    assert (data_dir / 'X_train.csv').exists()
+    assert (data_dir / 'X_test.csv').exists()
     assert hasattr(trainer, 'predictor')
     assert hasattr(trainer, 'X_train')
     assert hasattr(trainer, 'X_test')
