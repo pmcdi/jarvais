@@ -5,6 +5,8 @@ pixi.toml
 data/
 tests/tmp
 
+**/*.pkl
+
 *cpython*
 __pycache__
 
