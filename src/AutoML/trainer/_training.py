@@ -123,9 +123,5 @@ def train_survival_models(X_train, y_train, X_test, y_test, output_dir):
     for model_name, cindex in cindex_scores.items():
         print(f"{model_name}: {cindex:.4f}")
 
-    model_path = output_dir / 'survival_models' / "best_model.pkl" # Save for later loading
-    with open(model_path, "wb") as f:
-        pickle.dump(fitted_models[max(cindex_scores, key=cindex_scores.get)], f)
-
     return fitted_models, cindex_scores
 
