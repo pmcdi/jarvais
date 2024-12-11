@@ -1,1 +1,0 @@
-from .lr import SimpleRegressionModel
