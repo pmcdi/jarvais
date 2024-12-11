@@ -1,7 +1,8 @@
 import pytest
-import os, shutil
+import shutil
 import pandas as pd
 import numpy as np
+from pathlib import Path
 from AutoML.explainer import Explainer
 from AutoML.trainer import TrainerSupervised
 
@@ -17,17 +18,16 @@ def sample_data():
 
 @pytest.fixture
 def tmpdir():
-    temp_path = "./tests/tmp"
-    if not os.path.exists(temp_path):
-        os.makedirs(temp_path, exist_ok=True)
-    else:
-        for file in os.listdir(temp_path):
-            file_path = os.path.join(temp_path, file)
-            if os.path.isfile(file_path) or os.path.islink(file_path):
-                os.unlink(file_path)
-            elif os.path.isdir(file_path):
-                shutil.rmtree(file_path)
-            
+    temp_path = Path("./tests/tmp")
+    temp_path.mkdir(parents=True, exist_ok=True)
+
+    for file in temp_path.iterdir():
+        file_path = temp_path / file
+        if file_path.is_file() or file_path.is_symlink():
+            file_path.unlink() 
+        elif file_path.is_dir():
+            shutil.rmtree(file_path) 
+                    
     yield temp_path
 
 @pytest.fixture
@@ -58,17 +58,11 @@ def test_explainer_run_binary_classification(explainer_instance):
     explainer = explainer_instance
     explainer.run()
     # Check if diagnostic plots are saved
-    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'confusion_matrix.png')), \
-    "Error: Confusion matrix figure is missing. Check if the confusion_matrix.png file was correctly generated and saved."
-    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'feature_importance.png')), \
-        "Error: Feature importance figure is missing. Ensure that the feature_importance.png file was generated and saved to the correct directory."
-    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'model_evaluation.png')), \
-        "Error: Model evaluation figure is missing. Verify that the model_evaluation.png file was created and stored in the specified directory."
-    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'shap_heatmap.png')), \
-        "Error: SHAP heatmap figure is missing. Confirm that the shap_heatmap.png file was generated and saved properly."
-    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'shap_barplot.png')), \
-        "Error: SHAP bar plot figure is missing. Check if the shap_barplot.png file was successfully created and saved."
-
+    assert (explainer.output_dir / 'figures' / 'confusion_matrix.png').exists()
+    assert (explainer.output_dir / 'figures' / 'feature_importance.png').exists()
+    assert (explainer.output_dir / 'figures' / 'model_evaluation.png').exists()
+    assert (explainer.output_dir / 'figures' / 'shap_heatmap.png').exists()
+    assert (explainer.output_dir / 'figures' / 'shap_barplot.png').exists()
 
 def test_explainer_from_trainer(trained_binary_model, tmpdir):
     trainer = trained_binary_model
@@ -98,6 +92,7 @@ def test_explainer_run_regression(trained_regression_model, tmpdir):
     explainer = Explainer.from_trainer(trainer)
     explainer.run()
     # Check if regression diagnostic plots are saved
-    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'residual_plot.png'))
-    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'true_vs_predicted.png'))
-    assert os.path.exists(os.path.join(explainer.output_dir, 'figures', 'feature_importance.png'))
+    assert (explainer.output_dir / 'figures' / 'residual_plot.png').exists()
+    assert (explainer.output_dir / 'figures' / 'true_vs_predicted.png').exists()
+    assert (explainer.output_dir / 'figures' / 'feature_importance.png').exists()
+
