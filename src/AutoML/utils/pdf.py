@@ -89,12 +89,12 @@ def generate_analysis_report_pdf(
         pdf = add_outlier_analysis(pdf, outlier_analysis)
     
     # Add page-wide pairplots
-    pdf.image((output_dir / 'pairplot.png'), Align.C, w=pdf.epw-20)
+    pdf.image((output_dir / 'figures' / 'pairplot.png'), Align.C, w=pdf.epw-20)
     pdf.add_page()
 
     # Add correlation plots
-    pdf.image((output_dir / 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
-    pdf.image((output_dir / 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
+    pdf.image((output_dir / 'figures' / 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
+    pdf.image((output_dir / 'figures' / 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
 
     # Add multiplots
     if multiplots and categorical_columns:
