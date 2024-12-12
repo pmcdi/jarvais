@@ -83,8 +83,6 @@ class Explainer():
             importance_df = self.predictor.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
 
         plot_feature_importance(importance_df, 
-                                self.X_test, 
-                                self.y_test, 
                                 output_dir=self.output_dir / 'figures'
                                 )
 
