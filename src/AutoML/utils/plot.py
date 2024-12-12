@@ -8,106 +8,13 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, r2_score, root_mean_squared_error
 from sklearn.calibration import calibration_curve
 
+from itertools import combinations
+
 from .functional import auprc, bootstrap_metric
 
 sns.set_theme(style="darkgrid", font="Arial")
 
-class ModelWrapper:
-    def __init__(self, predictor, feature_names, target_variable=None):
-        self.ag_model = predictor
-        self.feature_names = feature_names
-        self.target_variable = target_variable
-        if target_variable is None and predictor.problem_type != 'regression':
-            print("Since target_class not specified, SHAP will explain predictions for each class")
-    
-    def predict_proba(self, X):
-        if isinstance(X, pd.Series):
-            X = X.values.reshape(1,-1)
-        if not isinstance(X, pd.DataFrame):
-            X = pd.DataFrame(X, columns=self.feature_names)
-
-        if self.ag_model.can_predict_proba:
-            preds = self.ag_model.predict_proba(X)
-        else:
-            preds = self.ag_model.predict(X)
-        return preds
-    
-def plot_feature_importance(df, X_test, y_test, 
-                            output_dir: str | Path = Path.cwd()):
-    """
-    Plots the feature importance with standard deviation and p-value significance.
-    """
-
-    output_dir = Path(output_dir)
-
-    # Plotting
-    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
-
-    # Adding bar plot with error bars
-    bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
-
-    # Adding p_value significance indication
-    if 'p_value' in df.columns:
-        for bar, p_value in zip(bars, df['p_value']):
-            height = bar.get_height()
-            significance = '*' if p_value < 0.05 else ''
-            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance, 
-                    ha='center', va='bottom', fontsize=10, color='red')
-
-    # Labels and title
-    ax.set_xlabel('Feature', fontsize=14)
-    ax.set_ylabel('Importance', fontsize=14)
-    ax.set_title('Feature Importance with Standard Deviation and p-value Significance', fontsize=16)
-    ax.axhline(0, color='grey', linewidth=0.8)
-
-    # Customize x-axis
-    ax.set_xticks(np.arange(len(df.index.values)))
-    ax.set_xticklabels(df.index.values, rotation=60, ha='right', fontsize=10)
-
-    # Add gridlines
-    ax.grid(axis='y', linestyle='--', alpha=0.7)
-
-    # Add legend for significance at the top right
-    significance_patch = plt.Line2D([0], [0], color='red', marker='*', linestyle='None', markersize=10, label='p < 0.05')
-    ax.legend(handles=[significance_patch], loc='upper right', fontsize=12)
-
-    # Adjust layout and save
-    plt.tight_layout()
-    fig.savefig(output_dir / 'feature_importance.png')
-    plt.close()
-
-def plot_shap_values(predictor, X_train, X_test, 
-                     max_display: int = 10,
-                     output_dir: str | Path = Path.cwd()):
-    # import shap only at function call
-    import shap
-
-    output_dir = Path(output_dir)
-    
-    predictor = ModelWrapper(predictor, X_train.columns)
-    # sample 100 samples from training set to create baseline
-    background_data = shap.sample(X_train, 100) 
-    shap_exp = shap.KernelExplainer(predictor.predict_proba, background_data)
-
-    # sample 100 samples from test set to evaluate with shap values
-    test_data = shap.sample(X_test, 100) 
-
-    # Compute SHAP values for the test set
-    shap_values = shap_exp(test_data)
-    # print(shap_values[...,1])
-    # Generate and save the SHAP explanation plots
-
-    sns.set_theme(style="darkgrid", font="Arial")
-
-    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
-    shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
-    fig.savefig(output_dir / 'shap_heatmap.png')
-    plt.close()
-
-    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
-    shap.plots.bar(shap_values[...,1], max_display=max_display, show=False, ax=ax)
-    fig.savefig(output_dir / 'shap_barplot.png')
-    plt.close()
+# ANALYZER
 
 def prep_for_pie(df, label):
     # Prepares data for pie plotting by grouping and sorting values.
@@ -213,14 +120,28 @@ def plot_corr(corr, size,
     fig, ax = plt.subplots(1, 1, figsize=(size, size))
     mask = np.triu(np.ones_like(corr, dtype=bool)) # Keep only lower triangle
     np.fill_diagonal(mask, False)
-    sns.set_theme(style="darkgrid", font="Arial")
-    g = sns.heatmap(corr, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f", ax=ax)
+    sns.heatmap(corr, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f", ax=ax)
     plt.title(f'Correlation Matrix')
     plt.tight_layout()
 
     figure_path = output_dir / file_name
     fig.savefig(figure_path)
     plt.close()
+
+def plot_frequency_table(data: pd.DataFrame, columns: list, output_dir: str | Path):
+
+    frequency_dir = Path(output_dir) / 'frequency_tables'
+    frequency_dir.mkdir(parents=True, exist_ok=True)
+
+    for column_1, column_2 in combinations(columns, 2):
+        heatmap_data = pd.crosstab(data[column_1], data[column_2])
+        plt.figure(figsize=(8, 6))
+        sns.heatmap(heatmap_data, annot=True, cmap='coolwarm', fmt='d', linewidth=.5)
+        plt.title(f'Frequency Table for {column_1} and {column_2}')
+        plt.xlabel(column_2)
+        plt.ylabel(column_1)
+        plt.savefig(frequency_dir / f'{column_1}_vs_{column_2}.png')
+        plt.close()
 
 def plot_pairplot(data, columns_to_plot,
                   output_dir: str | Path = Path.cwd(), 
@@ -251,6 +172,104 @@ def plot_umap(umap_data,
 
     figure_path = output_dir / 'umap_continuous_data.png'
     fig.savefig(figure_path)
+    plt.close()
+
+# EXPLAINER
+
+class ModelWrapper:
+    def __init__(self, predictor, feature_names, target_variable=None):
+        self.ag_model = predictor
+        self.feature_names = feature_names
+        self.target_variable = target_variable
+        if target_variable is None and predictor.problem_type != 'regression':
+            print("Since target_class not specified, SHAP will explain predictions for each class")
+    
+    def predict_proba(self, X):
+        if isinstance(X, pd.Series):
+            X = X.values.reshape(1,-1)
+        if not isinstance(X, pd.DataFrame):
+            X = pd.DataFrame(X, columns=self.feature_names)
+
+        if self.ag_model.can_predict_proba:
+            preds = self.ag_model.predict_proba(X)
+        else:
+            preds = self.ag_model.predict(X)
+        return preds
+    
+def plot_feature_importance(df, output_dir: str | Path):
+    """
+    Plots the feature importance with standard deviation and p-value significance.
+    """
+
+    output_dir = Path(output_dir)
+
+    # Plotting
+    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
+
+    # Adding bar plot with error bars
+    bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
+
+    # Adding p_value significance indication
+    if 'p_value' in df.columns:
+        for bar, p_value in zip(bars, df['p_value']):
+            height = bar.get_height()
+            significance = '*' if p_value < 0.05 else ''
+            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance, 
+                    ha='center', va='bottom', fontsize=10, color='red')
+
+    # Labels and title
+    ax.set_xlabel('Feature', fontsize=14)
+    ax.set_ylabel('Importance', fontsize=14)
+    ax.set_title('Feature Importance with Standard Deviation and p-value Significance', fontsize=16)
+    ax.axhline(0, color='grey', linewidth=0.8)
+
+    # Customize x-axis
+    ax.set_xticks(np.arange(len(df.index.values)))
+    ax.set_xticklabels(df.index.values, rotation=60, ha='right', fontsize=10)
+
+    # Add gridlines
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+
+    # Add legend for significance at the top right
+    significance_patch = plt.Line2D([0], [0], color='red', marker='*', linestyle='None', markersize=10, label='p < 0.05')
+    ax.legend(handles=[significance_patch], loc='upper right', fontsize=12)
+
+    # Adjust layout and save
+    plt.tight_layout()
+    fig.savefig(output_dir / 'feature_importance.png')
+    plt.close()
+
+def plot_shap_values(predictor, X_train, X_test, 
+                     max_display: int = 10,
+                     output_dir: str | Path = Path.cwd()):
+    # import shap only at function call
+    import shap
+
+    output_dir = Path(output_dir)
+    
+    predictor = ModelWrapper(predictor, X_train.columns)
+    # sample 100 samples from training set to create baseline
+    background_data = shap.sample(X_train, 100) 
+    shap_exp = shap.KernelExplainer(predictor.predict_proba, background_data)
+
+    # sample 100 samples from test set to evaluate with shap values
+    test_data = shap.sample(X_test, 100) 
+
+    # Compute SHAP values for the test set
+    shap_values = shap_exp(test_data)
+    # print(shap_values[...,1])
+    # Generate and save the SHAP explanation plots
+
+    sns.set_theme(style="darkgrid", font="Arial")
+
+    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
+    shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
+    fig.savefig(output_dir / 'shap_heatmap.png')
+    plt.close()
+
+    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
+    shap.plots.bar(shap_values[...,1], max_display=max_display, show=False, ax=ax)
+    fig.savefig(output_dir / 'shap_barplot.png')
     plt.close()
 
 def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, X_train, y_train, output_dir: str | Path = Path.cwd()):

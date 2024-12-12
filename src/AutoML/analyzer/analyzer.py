@@ -6,7 +6,7 @@ from tableone import TableOne
 
 from ._janitor import replace_missing, get_outliers, infer_types
 
-from ..utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap
+from ..utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap, plot_frequency_table
 from ..utils.pdf import generate_analysis_report_pdf
 
 from typing import Union
@@ -123,16 +123,21 @@ class Analyzer():
 
         self.data = replace_missing(self.data, self.categorical_columns, self.continuous_columns, self.config)
 
-    def _create_multiplots(self):
+    def _create_multiplots(self, figures_dir):
         """
         Generate and save multiplots for each categorical variable against all continuous variables. 
         """
 
         self.multiplots = [] # Used to save in PDF later
 
-        (self.output_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
+        (figures_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
 
-        self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(self.data, self.umap_data, var, self.continuous_columns, self.output_dir) for var in self.categorical_columns)
+        self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(
+            self.data, 
+            self.umap_data, 
+            var, 
+            self.continuous_columns, 
+            figures_dir) for var in self.categorical_columns)
 
     def run(self):
 
@@ -160,17 +165,22 @@ class Analyzer():
         self.mytable.to_csv(self.output_dir / 'tableone.csv')
 
         # PLOTS
-        size = len(self.continuous_columns)*1.5
+        figures_dir = self.output_dir / 'figures'
+        figures_dir.mkdir(exist_ok=True, parents=True)
 
         # Correlation Plots
         p_corr = self.data[self.continuous_columns].corr(method="pearson")
         s_corr = self.data[self.continuous_columns].corr(method="spearman")
-        plot_corr(p_corr, size, file_name='pearson_correlation.png', output_dir=self.output_dir)
-        plot_corr(s_corr, size, file_name='spearman_correlation.png', output_dir=self.output_dir)
+        size = len(self.continuous_columns)*1.5
+        plot_corr(p_corr, size, file_name='pearson_correlation.png', output_dir=figures_dir)
+        plot_corr(s_corr, size, file_name='spearman_correlation.png', output_dir=figures_dir)
+
+        # Categorical cross frequency table
+        plot_frequency_table(self.data, self.categorical_columns, figures_dir)
 
         # UMAP reduced data + Plots
         self.umap_data = UMAP(n_components=2).fit_transform(self.data[self.continuous_columns])
-        plot_umap(self.umap_data, output_dir=self.output_dir)
+        plot_umap(self.umap_data, output_dir=figures_dir)
 
         # plot pairplot
         if len(self.continuous_columns) > 10: # Keep only the top ten correlated pairs in the pair plot
@@ -181,12 +191,12 @@ class Analyzer():
             columns_to_plot = self.continuous_columns
 
         if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
-            plot_pairplot(self.data, columns_to_plot, output_dir=self.output_dir, target_variable=self.target_variable)     
+            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir, target_variable=self.target_variable)     
         else:
-            plot_pairplot(self.data, columns_to_plot, output_dir=self.output_dir)         
+            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir)         
 
         # Create Multiplots
-        self._create_multiplots()
+        self._create_multiplots(figures_dir)
 
         if self.one_hot_encode:
             self.data = pd.get_dummies(
