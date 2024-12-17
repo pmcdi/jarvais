@@ -53,7 +53,9 @@ class BiasExplainer():
         
         self.y_true = y_true
         self.y_pred = y_pred
-
+        self.mapper = {"mean_prediction": "Demographic Parity",
+                       "false_positive_rate": "(FPR) Equalized Odds",
+                       "true_positive_rate": "(TPR) Equalized Odds or Equal Opportunity"}
         # Convert sensitive_features to DataFrame or leave as Series
         if isinstance(sensitive_features, pd.DataFrame) or isinstance(sensitive_features, pd.Series):
             self.sensitive_features = sensitive_features
