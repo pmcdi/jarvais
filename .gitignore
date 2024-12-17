@@ -1,11 +1,11 @@
 .pixi/
 pixi.lock
 pixi.toml
-./tutorials
 ./data
 data/
-tutorials/
 tests/tmp
+
+**/*.pkl
 
 *cpython*
 __pycache__
