@@ -16,8 +16,8 @@ jobs:
     timeout-minutes: 15 # Consider increasing timeout
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, macos-14, windows-latest]
-        env: ["py310", "py311", "py312"]
+        os: [ubuntu-latest, windows-latest]
+        env: ["py311", "py312"]
 
     steps:
       - uses: actions/checkout@v4
