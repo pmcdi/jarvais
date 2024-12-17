@@ -16,3 +16,4 @@ __pycache__
 AutogluonModels# pixi environments
 .pixi
 *.egg-info
+*/.DS_Store
