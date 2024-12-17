@@ -1,4 +1,3 @@
-
 from autogluon.core.models import AbstractModel
 from autogluon.features.generators import LabelEncoderFeatureGenerator
 import pandas as pd
@@ -6,9 +5,8 @@ from numpy import ndarray, float32
 
 class SimpleRegressionModel(AbstractModel):
     """
-    A simple logistic regression model wrapped in an AutoGluon model class.
-    It can handle `binary` or `multiclass` classification tasks.
-    However, it cannot handle multinomial/ordinal classification as AutoGluon's feature generator is unpredictable.
+    A simple regression model wrapped in an AutoGluon model class.
+    It can handle `binary`, `multiclass`, `regression` tasks.
     """
     def __init__(self, **kwargs):
         # Simply pass along kwargs to parent, and init our internal `_feature_generator` variable to None
@@ -69,11 +67,11 @@ class SimpleRegressionModel(AbstractModel):
         })
 
         # Print the coefficients along with their corresponding features
-        print("\nSimple Regression Model Coefficients:")
-        print(coef_df.sort_values(by='Coefficient', key=abs, ascending=False).to_string(index=False))  # sort by coefficient value for better readability
+        # print("\nSimple Regression Model Coefficients:")
+        # print(coef_df.sort_values(by='Coefficient', key=abs, ascending=False).to_string(index=False))  # sort by coefficient value for better readability
         
-        # Print the intercept separately
-        print(f"\nSimple Regression Model Intercept: {intercept}")
+        # # Print the intercept separately
+        # print(f"\nSimple Regression Model Intercept: {intercept}")
         
         # print('Exiting the `_fit` method')
 
