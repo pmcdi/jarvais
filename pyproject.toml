@@ -6,6 +6,7 @@ authors = [
     { name = "Joshua Siraj", email = "joshua.siraj@ryerson.ca" },
     { name = "Sejin Kim", email = "hello@sejin.kim" }
 ]
+dependencies = ["optuna-integration[pytorch-lightning]>=4.1.0,<5"]
 
 [tool.pixi.project]
 channels = ["conda-forge", "pytorch"]
@@ -30,12 +31,15 @@ tableone = "==0.9.1"
 borb = ">=2.1.25,<3"
 scikit-survival = ">=0.23.1,<0.24"
 pycox = ">=0.3.0,<0.4"
+prettytable = ">=3.12.0,<4"
+lifelines = ">=0.30.0,<0.31"
+lightning = ">=2.4.0,<3"
+optuna = ">=4.1.0,<5"
 
 [tool.pixi.pypi-dependencies]
 AutoML = { path = ".", editable = true }
 pyyaml = "*"
 mrmr-selection = "==0.2.8"
-seismometer = ">=0.2.1, <0.3"
 umap-learn = ">=0.5.6, <0.6"
 shap = ">=0.46"
 
