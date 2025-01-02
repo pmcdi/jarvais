@@ -1,23 +1,28 @@
-import yaml, warnings, logging
+import logging
+import warnings
 from pathlib import Path
-
-import pandas as pd
-from tableone import TableOne
-
-from ._janitor import replace_missing, get_outliers, infer_types
-
-from ..utils.plot import plot_one_multiplot, plot_corr, plot_pairplot, plot_umap, plot_frequency_table
-from ..utils.pdf import generate_analysis_report_pdf
-
 from typing import Union
 
+import pandas as pd
+import yaml
+from joblib import Parallel, delayed
+from tableone import TableOne
 from umap import UMAP
 
-from joblib import Parallel, delayed
+from ._janitor import get_outliers, infer_types, replace_missing
+from ..utils.pdf import generate_analysis_report_pdf
+from ..utils.plot import (
+    plot_corr,
+    plot_frequency_table,
+    plot_kaplan_meier_by_category,
+    plot_one_multiplot,
+    plot_pairplot,
+    plot_umap,
+)
 
 logging.basicConfig(filename=(Path.cwd() / "warnings.log"), level=logging.INFO)
 
-def custom_warning_handler(message, category, filename, lineno, file=None, line=None):
+def custom_warning_handler(message, category, filename, lineno, file=None, line=None) -> None:
     log_message = f"{category.__name__}: {message} in {filename} at line {lineno}"
     logging.warning(log_message)
 
@@ -25,8 +30,9 @@ warnings.showwarning = custom_warning_handler
 
 class Analyzer():
     def __init__(self,
-                 data: pd.DataFrame, 
+                 data: pd.DataFrame,
                  target_variable: Union[str, None] = None,
+                 task: Union[str, None] = None,
                  one_hot_encode: bool = False,
                  config: Union[str, Path, None] = None,
                  output_dir: Union[str, Path] = Path.cwd()):
@@ -34,8 +40,8 @@ class Analyzer():
 
         Initializes the Analyzer with the provided data.
 
-        Parameters:
-        -----------
+        Parameters
+        ----------
         data : pd.DataFrame
             The input data to analyze.
         target_variable : str, optional
@@ -43,34 +49,38 @@ class Analyzer():
         one_hot_encode : bool, optional
             One Hot Encode the data. Default is False
         config : Union[str, os.PathLike, None], optional
-            Path to a yaml file that contains settings for janitor. Default is None where janitor will produce one automaticaly.
+            Path to a yaml file that contains settings for janitor. 
+            Default is None where janitor will produce one automaticaly.
         output_dir: Union[str, os.PathLike], optional
             Output directory for analysis. Default is current directory.
 
         """
-
         self.data = data
         self.target_variable = target_variable
+        self.task = task
         self.one_hot_encode = one_hot_encode
-        
+
+        if self.task == 'time_to_event':
+            assert target_variable == 'event' and 'time' in data.columns, "When setting task to 'time_to_event', target_variable must be 'event' and 'time' must be in data"
+
         output_dir = Path(output_dir)
         output_dir.mkdir(parents=True, exist_ok=True)
-         
+
         self.output_dir = output_dir
 
         if config is not None:
-            config = Path(config) 
-            if config.is_file():  
-                with config.open('r') as file: 
-                    self.config = yaml.safe_load(file)  
+            config = Path(config)
+            if config.is_file():
+                with config.open('r') as file:
+                    self.config = yaml.safe_load(file)
             else:
                 raise ValueError(f'Config file does not exist at {config}')
         else:
             self.config = config
 
-        self.outlier_analysis = '' # Used later when writing to PDF           
-        
-    def _create_config(self):
+        self.outlier_analysis = '' # Used later when writing to PDF
+
+    def _create_config(self) -> None:
         """
         Creates and saves a configuration file for column types, outlier handling, and missing value strategies.
 
@@ -80,15 +90,14 @@ class Analyzer():
         3. **Outlier Detection**: Identifies outliers in categorical columns and stores the mappings.
         4. **Missing Value Strategy**: Sets default imputation strategies for categorical and continuous variables.
         """
-
         print('Config file not found. Creating custom...')
 
         self.config = {}
-        columns = {}    
+        columns = {}
 
         self.categorical_columns, self.continuous_columns, self.date_columns = infer_types(self.data)
         self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].apply(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
-        
+
         nan_ = self.data.apply(lambda col: col.isna().all())
         nan_columns = nan_[nan_].index.tolist()
         if len(nan_columns) > 0:
@@ -105,14 +114,14 @@ class Analyzer():
         self.config['columns'] = columns
 
         outlier_analysis, mapping = get_outliers(self.data, self.categorical_columns)
-        
+
         self.outlier_analysis += outlier_analysis
         self.config['mapping'] = mapping
 
         self.config['missingness_strategy'] = {}
         self.config['missingness_strategy']['categorical'] = {cat :'Unknown' for cat in self.categorical_columns} # Defining default replacement for each missing categorical variable
         self.config['missingness_strategy']['continuous'] = {cont :'median' for cont in self.continuous_columns} # Defining default replacement for each missing continuous variable
-    
+
     def _apply_config(self):
 
         print('Applying changes from config...\n')
@@ -127,24 +136,21 @@ class Analyzer():
         """
         Generate and save multiplots for each categorical variable against all continuous variables. 
         """
-
         self.multiplots = [] # Used to save in PDF later
 
         (figures_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
 
         self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(
-            self.data, 
-            self.umap_data, 
-            var, 
-            self.continuous_columns, 
+            self.data,
+            self.umap_data,
+            var,
+            self.continuous_columns,
             figures_dir) for var in self.categorical_columns)
 
     def run(self):
-
         """
         Runs the data cleaning and visualization process.
         """
-
         if self.config is None:
             self._create_config()
         else:
@@ -167,6 +173,12 @@ class Analyzer():
         # PLOTS
         figures_dir = self.output_dir / 'figures'
         figures_dir.mkdir(exist_ok=True, parents=True)
+
+        if self.task == 'time_to_event':
+            data_x = self.data.drop(columns=['time', 'event'])
+            data_y = self.data[['time', 'event']]
+            categorical_columns  = [cat for cat in self.categorical_columns if cat != 'event']
+            plot_kaplan_meier_by_category(data_x, data_y, categorical_columns, figures_dir / 'kaplan_meier')
 
         # Correlation Plots
         p_corr = self.data[self.continuous_columns].corr(method="pearson")
@@ -191,39 +203,40 @@ class Analyzer():
             columns_to_plot = self.continuous_columns
 
         if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
-            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir, target_variable=self.target_variable)     
+            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir, target_variable=self.target_variable)
         else:
-            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir)         
+            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir)
 
         # Create Multiplots
         self._create_multiplots(figures_dir)
 
         if self.one_hot_encode:
             self.data = pd.get_dummies(
-                self.data, 
-                columns=[cat for cat in self.categorical_columns if cat != self.target_variable])
-        
+                self.data,
+                columns=[cat for cat in self.categorical_columns if cat != self.target_variable],
+                dtype=float)
+
         self.data.to_csv(self.output_dir / 'updated_data.csv')
 
         # Create Output PDF
-        generate_analysis_report_pdf(outlier_analysis=self.outlier_analysis, 
-                            multiplots=self.multiplots, 
-                            categorical_columns=self.categorical_columns, 
+        generate_analysis_report_pdf(outlier_analysis=self.outlier_analysis,
+                            multiplots=self.multiplots,
+                            categorical_columns=self.categorical_columns,
                             output_dir=self.output_dir)
-    
+
     @classmethod
     def dry_run(cls, data: pd.DataFrame):
         """
         Returns generated config and displays TableOne
         """
-        analyzer = cls(data)  
+        analyzer = cls(data)
         analyzer._create_config()
 
         df_keep = analyzer.data[analyzer.continuous_columns + analyzer.categorical_columns]
 
         mytable = TableOne(df_keep, categorical=analyzer.categorical_columns, pval=False)
-        print(mytable.tabulate(tablefmt = "fancy_grid"))  
+        print(mytable.tabulate(tablefmt = "fancy_grid"))
 
-        return analyzer.config  
+        return analyzer.config
 
 
