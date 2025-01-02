@@ -8,6 +8,8 @@ import seaborn as sns
 from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, r2_score, root_mean_squared_error
 from sklearn.calibration import calibration_curve
 
+from sksurv.nonparametric import kaplan_meier_estimator
+
 from itertools import combinations
 
 from .functional import auprc, bootstrap_metric
@@ -174,6 +176,60 @@ def plot_umap(umap_data,
     fig.savefig(figure_path)
     plt.close()
 
+def plot_kaplan_meier_by_category(data_x: pd.DataFrame, data_y: pd.DataFrame, categorical_columns: list, output_dir: str | Path):
+    """
+    Plots Kaplan-Meier survival curves for each category in the specified categorical columns.
+
+    Parameters:
+    - data_x: pandas DataFrame containing features, including categorical columns.
+    - data_y: pandas structured array with 'event' and 'time' as columns.
+    - categorical_columns: list of categorical column names in data_x to iterate over.
+    """
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    for cat_col in categorical_columns:
+        plt.figure(figsize=(10, 6))
+        plt.title(f"Kaplan-Meier Survival Curve by {cat_col}")
+
+        # Get unique categories for the current column
+        unique_categories = data_x[cat_col].unique()
+
+        # Plot survival curves for each category
+        for category in unique_categories:
+            mask_category = data_x[cat_col] == category
+            try: # To catch when there are not enough samples for category
+                time_category, survival_prob_category, conf_int = kaplan_meier_estimator(
+                    data_y["event"][mask_category].astype(bool),
+                    data_y["time"][mask_category],
+                    conf_type="log-log",
+                )
+    
+                plt.step(
+                    time_category,
+                    survival_prob_category,
+                    where="post",
+                    label=f"{cat_col} = {category}"
+                )
+                plt.fill_between(
+                    time_category,
+                    conf_int[0],
+                    conf_int[1],
+                    alpha=0.25,
+                    step="post"
+                )
+            except Exception as _:
+                pass
+
+        # Customize plot appearance
+        plt.ylim(0, 1)
+        plt.ylabel(r"Estimated Probability of Survival $\hat{S}(t)$")
+        plt.xlabel("Time $t$")
+        plt.legend(loc="best")
+        plt.grid(alpha=0.3)
+        plt.savefig(output_dir / f'kaplan_meier_{cat_col}.png')
+        plt.close()
+
 # EXPLAINER
 
 class ModelWrapper:
@@ -196,7 +252,7 @@ class ModelWrapper:
             preds = self.ag_model.predict(X)
         return preds
     
-def plot_feature_importance(df, output_dir: str | Path):
+def plot_feature_importance(df, output_dir: str | Path, model_name: str=''):
     """
     Plots the feature importance with standard deviation and p-value significance.
     """
@@ -220,7 +276,7 @@ def plot_feature_importance(df, output_dir: str | Path):
     # Labels and title
     ax.set_xlabel('Feature', fontsize=14)
     ax.set_ylabel('Importance', fontsize=14)
-    ax.set_title('Feature Importance with Standard Deviation and p-value Significance', fontsize=16)
+    ax.set_title(f'Feature Importance with Standard Deviation and p-value Significance ({model_name})', fontsize=16)
     ax.axhline(0, color='grey', linewidth=0.8)
 
     # Customize x-axis

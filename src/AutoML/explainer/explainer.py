@@ -69,23 +69,23 @@ class Explainer():
                 )
 
         # Plot feature importance            
-        if self.trainer.task == 'time_to_event':
-            for _, model in self.trainer.predictors.items():
-                result = permutation_importance(model, self.X_test, Surv.from_dataframe('event', 'time', self.y_test), n_repeats=15)
-                importance_df = pd.DataFrame(
-                    {
-                        "importance": result["importances_mean"],
-                        "stddev": result["importances_std"],
-                    },
-                    index=self.X_test.columns,
-                ).sort_values(by="importance", ascending=False)
+        if self.trainer.task == 'time_to_event': # NEEDS TO BE UPDATED
+            model = self.trainer.predictors['CoxPH']
+            result = permutation_importance(model, self.X_test, Surv.from_dataframe('event', 'time', self.y_test), n_repeats=15)
+            
+            importance_df = pd.DataFrame(
+                {
+                    "importance": result["importances_mean"],
+                    "stddev": result["importances_std"],
+                },
+                index=self.X_test.columns,
+            ).sort_values(by="importance", ascending=False)
+            model_name = 'CoxPH'
         else:
             importance_df = self.predictor.feature_importance(pd.concat([self.X_test, self.y_test], axis=1))
-
-        plot_feature_importance(importance_df, 
-                                output_dir=self.output_dir / 'figures'
-                                )
-
+            model_name = self.predictor.model_best
+        
+        plot_feature_importance(importance_df, self.output_dir / 'figures', model_name)
         generate_explainer_report_pdf(self.trainer.task, self.output_dir)
 
     @classmethod
