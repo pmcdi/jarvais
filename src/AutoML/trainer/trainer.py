@@ -2,7 +2,7 @@ from pathlib import Path
 
 import pandas as pd
 from tabulate import tabulate
-import pickle
+import pickle, json
 
 from typing import Union, List, Optional
 
@@ -19,6 +19,8 @@ from ._training import train_autogluon_with_cv, train_survival_models
 
 from ..explainer import Explainer
 from ..utils.functional import auprc
+
+from ..utils.models.survival import LitMTLR, LitDeepSurv
 
 class TrainerSupervised():
     def __init__(self,
@@ -343,12 +345,20 @@ class TrainerSupervised():
         trainer = cls()
         
         if 'survival' in str(model_dir):
-            trainer.predictor = pickle.load((model_dir / 'best_model.pkl').open('rb'))
+            with open(model_dir / "model_info.json", "r") as f:
+                model_info = json.load(f)
+
             trainer.predictors = dict()
-            for pkl_file in model_dir.glob("*.pkl"):
-                if pkl_file.stem != 'best_model':
-                    with pkl_file.open("rb") as f:
-                        trainer.predictors[pkl_file.stem] = pickle.load(f) 
+            for model_name, _ in model_info.items():
+                if model_name == 'MTLR':
+                    trainer.predictors[model_name] = LitMTLR.load_from_checkpoint(checkpoint_path="MTLR.ckpt") 
+                elif model_name == 'DeepSurv':
+                    trainer.predictors[model_name] = LitDeepSurv.load_from_checkpoint(checkpoint_path="DeepSurv.ckpt") 
+                else:
+                    with (model_dir / f'{model_name}.pkl').open("rb") as f:
+                        pickle.load(f)
+
+            trainer.predictor = trainer.predictors[max(model_info, key=model_info.get)]
         else:
             trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
 
