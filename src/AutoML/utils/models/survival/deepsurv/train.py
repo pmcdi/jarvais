@@ -68,6 +68,7 @@ def train_deepsurv(data_train: pd.DataFrame, data_test: pd.DataFrame, output_dir
     model = LitDeepSurv(in_channel=in_channel, **trial.params)
 
     trainer = pl.Trainer(
+        default_root_dir=output_dir,
         logger=True,
         enable_checkpointing=False,
         enable_progress_bar=False,

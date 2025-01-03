@@ -95,6 +95,7 @@ def train_mtlr(data_train: pd.DataFrame, data_test: pd.DataFrame, output_dir: Pa
     model = LitMTLR(in_channel=in_channel, num_time_bins=len(time_bins), **trial.params)
 
     trainer = pl.Trainer(
+        default_root_dir=output_dir,
         logger=True,
         enable_checkpointing=False,
         enable_progress_bar=False,

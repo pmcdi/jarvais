@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
 import seaborn as sns
+import shap
+from autogluon.tabular import TabularPredictor
+from scipy.stats import f_oneway, ttest_ind
 from sklearn.calibration import calibration_curve
 from sklearn.metrics import (
     confusion_matrix,
@@ -22,24 +25,22 @@ sns.set_theme(style="darkgrid", font="Arial")
 
 # ANALYZER
 
-def prep_for_pie(df, label):
-    # Prepares data for pie plotting by grouping and sorting values.
-    data = df.groupby(label).size().sort_values(ascending=False)
+def plot_one_multiplot(
+        data: pd.DataFrame,
+        umap_data: pd.DataFrame,
+        var: str,
+        continuous_columns: list,
+        output_dir: Path
+    ) -> Path:
 
-    labels = data.index.tolist()
-    values = data.values.tolist()
+    def prep_for_pie(df, label):
+        # Prepares data for pie plotting by grouping and sorting values.
+        data = df.groupby(label).size().sort_values(ascending=False)
 
-    return labels, values
+        labels = data.index.tolist()
+        values = data.values.tolist()
 
-def plot_one_multiplot(data, umap_data, var, continuous_columns,
-                       output_dir: str | Path = Path.cwd()):
-    from scipy.stats import f_oneway, ttest_ind
-
-    output_dir = Path(output_dir)
-
-    num_categories = len(data[var].unique())
-
-    labels, values = prep_for_pie(data, var)
+        return labels, values
 
     # only write % if big enough
     def autopct(pct):
@@ -49,6 +50,10 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
         base_fontsize = 16
         min_fontsize = 8
         return max(base_fontsize - num_categories * 1.5, min_fontsize)
+
+    num_categories = len(data[var].unique())
+
+    labels, values = prep_for_pie(data, var)
 
     fontsize = calculate_fontsize(num_categories)
 
@@ -84,20 +89,16 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
     for col in continuous_columns:
         unique_values = data[var].unique()
 
-        # If binary classification, use t-test
-        if len(unique_values) == 2:
+        if len(unique_values) == 2: # If binary classification, use t-test
             group1 = data[data[var] == unique_values[0]][col]
             group2 = data[data[var] == unique_values[1]][col]
             _, p_value = ttest_ind(group1, group2, equal_var=False)
-
-        # For more than two categories, use ANOVA
-        else:
+        else: # For more than two categories, use ANOVA
             groups = [data[data[var] == value][col] for value in unique_values]
             _, p_value = f_oneway(*groups)
 
         p_values[col] = p_value
 
-    # Sort the continuous columns by p-value (ascending order)
     sorted_columns = sorted(p_values, key=p_values.get)
 
     for i, col in enumerate(sorted_columns):
@@ -107,21 +108,20 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
 
     # Turn off unused axes
     for j in range(n, len(ax)):
-        fig.delaxes(ax[j])  # Turn off unused axes
+        fig.delaxes(ax[j])
 
-    # save multiplot
     multiplot_path = output_dir / 'multiplots' / f'{var}_multiplots.png'
     plt.savefig(multiplot_path)
     plt.close()
 
-    # return path to figure for PDF
     return multiplot_path
 
-def plot_corr(corr, size,
-              file_name: str = 'correlation_matrix.png',
-              output_dir: str | Path = Path.cwd()):
-
-    output_dir = Path(output_dir)
+def plot_corr(
+        corr: pd.DataFrame,
+        size: float,
+        output_dir: Path,
+        file_name: str = 'correlation_matrix.png'
+    ) -> None:
 
     fig, ax = plt.subplots(1, 1, figsize=(size, size))
     mask = np.triu(np.ones_like(corr, dtype=bool)) # Keep only lower triangle
@@ -134,7 +134,11 @@ def plot_corr(corr, size,
     fig.savefig(figure_path)
     plt.close()
 
-def plot_frequency_table(data: pd.DataFrame, columns: list, output_dir: str | Path):
+def plot_frequency_table(
+        data: pd.DataFrame,
+        columns: list,
+        output_dir: Path
+    ) -> None:
 
     frequency_dir = Path(output_dir) / 'frequency_tables'
     frequency_dir.mkdir(parents=True, exist_ok=True)
@@ -149,11 +153,12 @@ def plot_frequency_table(data: pd.DataFrame, columns: list, output_dir: str | Pa
         plt.savefig(frequency_dir / f'{column_1}_vs_{column_2}.png')
         plt.close()
 
-def plot_pairplot(data, columns_to_plot,
-                  output_dir: str | Path = Path.cwd(),
-                  target_variable: str = None):
-
-    output_dir = Path(output_dir)
+def plot_pairplot(
+        data: pd.DataFrame,
+        columns_to_plot: list,
+        output_dir: Path,
+        target_variable: str = None
+    ) -> None:
 
     hue = target_variable
     if target_variable is not None:
@@ -167,10 +172,7 @@ def plot_pairplot(data, columns_to_plot,
     plt.savefig(figure_path)
     plt.close()
 
-def plot_umap(umap_data,
-              output_dir: str | Path = Path.cwd()):
-
-    output_dir = Path(output_dir)
+def plot_umap(umap_data: np.ndarray, output_dir: Path) -> None:
 
     fig, ax = plt.subplots(figsize=(8, 8), dpi=72)
     sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
@@ -180,23 +182,19 @@ def plot_umap(umap_data,
     fig.savefig(figure_path)
     plt.close()
 
-def plot_kaplan_meier_by_category(data_x: pd.DataFrame, data_y: pd.DataFrame, categorical_columns: list, output_dir: str | Path):
-    """
-    Plots Kaplan-Meier survival curves for each category in the specified categorical columns.
-
-    Parameters
-    ----------
-    - data_x: pandas DataFrame containing features, including categorical columns.
-    - data_y: pandas structured array with 'event' and 'time' as columns.
-    - categorical_columns: list of categorical column names in data_x to iterate over.
-    """
+def plot_kaplan_meier_by_category(
+        data_x: pd.DataFrame,
+        data_y: pd.DataFrame,
+        categorical_columns: list,
+        output_dir: Path
+    ) -> None:
+    """Plots Kaplan-Meier survival curves for each category in the specified categorical columns."""
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for cat_col in categorical_columns:
         plt.figure(figsize=(10, 6))
         plt.title(f"Kaplan-Meier Survival Curve by {cat_col}")
 
-        # Get unique categories for the current column
         unique_categories = data_x[cat_col].unique()
 
         # Plot survival curves for each category
@@ -225,7 +223,6 @@ def plot_kaplan_meier_by_category(data_x: pd.DataFrame, data_y: pd.DataFrame, ca
             except Exception as _:
                 pass
 
-        # Customize plot appearance
         plt.ylim(0, 1)
         plt.ylabel(r"Estimated Probability of Survival $\hat{S}(t)$")
         plt.xlabel("Time $t$")
@@ -237,7 +234,7 @@ def plot_kaplan_meier_by_category(data_x: pd.DataFrame, data_y: pd.DataFrame, ca
 # EXPLAINER
 
 class ModelWrapper:
-    def __init__(self, predictor, feature_names, target_variable=None):
+    def __init__(self, predictor: TabularPredictor, feature_names: list, target_variable: str=None):
         self.ag_model = predictor
         self.feature_names = feature_names
         self.target_variable = target_variable
@@ -256,19 +253,12 @@ class ModelWrapper:
             preds = self.ag_model.predict(X)
         return preds
 
-def plot_feature_importance(df, output_dir: str | Path, model_name: str=''):
-    """
-    Plots the feature importance with standard deviation and p-value significance.
-    """
-    output_dir = Path(output_dir)
-
-    # Plotting
+def plot_feature_importance(df: pd.DataFrame, output_dir: Path, model_name: str=''):
+    """Plots the feature importance with standard deviation and p-value significance."""
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
 
-    # Adding bar plot with error bars
     bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
 
-    # Adding p_value significance indication
     if 'p_value' in df.columns:
         for bar, p_value in zip(bars, df['p_value']):
             height = bar.get_height()
@@ -276,38 +266,32 @@ def plot_feature_importance(df, output_dir: str | Path, model_name: str=''):
             ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance,
                     ha='center', va='bottom', fontsize=10, color='red')
 
-    # Labels and title
     ax.set_xlabel('Feature', fontsize=14)
     ax.set_ylabel('Importance', fontsize=14)
     ax.set_title(f'Feature Importance with Standard Deviation and p-value Significance ({model_name})', fontsize=16)
     ax.axhline(0, color='grey', linewidth=0.8)
 
-    # Customize x-axis
     ax.set_xticks(np.arange(len(df.index.values)))
     ax.set_xticklabels(df.index.values, rotation=60, ha='right', fontsize=10)
 
-    # Add gridlines
     ax.grid(axis='y', linestyle='--', alpha=0.7)
 
-    # Add legend for significance at the top right
     significance_patch = plt.Line2D([0], [0], color='red', marker='*', linestyle='None', markersize=10, label='p < 0.05')
     ax.legend(handles=[significance_patch], loc='upper right', fontsize=12)
 
-    # Adjust layout and save
     plt.tight_layout()
     fig.savefig(output_dir / 'feature_importance.png')
     plt.close()
 
-def plot_shap_values(predictor, X_train, X_test,
-                     max_display: int = 10,
-                     output_dir: str | Path = Path.cwd()):
-    # import shap only at function call
-    import shap
-
-    output_dir = Path(output_dir)
+def plot_shap_values(
+        predictor: TabularPredictor,
+        X_train: pd.DataFrame,
+        X_test: pd.DataFrame,
+        output_dir: Path,
+        max_display: int = 10,
+    ) -> None:
 
     predictor = ModelWrapper(predictor, X_train.columns)
-    # sample 100 samples from training set to create baseline
     background_data = shap.sample(X_train, 100)
     shap_exp = shap.KernelExplainer(predictor.predict_proba, background_data)
 
@@ -316,11 +300,8 @@ def plot_shap_values(predictor, X_train, X_test,
 
     # Compute SHAP values for the test set
     shap_values = shap_exp(test_data)
-    # print(shap_values[...,1])
-    # Generate and save the SHAP explanation plots
 
     sns.set_theme(style="darkgrid", font="Arial")
-
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
     shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
     fig.savefig(output_dir / 'shap_heatmap.png')
@@ -331,9 +312,16 @@ def plot_shap_values(predictor, X_train, X_test,
     fig.savefig(output_dir / 'shap_barplot.png')
     plt.close()
 
-def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, X_train, y_train, output_dir: str | Path = Path.cwd()):
-
-    output_dir = Path(output_dir)
+def plot_violin_of_bootsrapped_metrics(
+        predictor: TabularPredictor,
+        X_test: pd.DataFrame,
+        y_test: pd.DataFrame,
+        X_val: pd.DataFrame,
+        y_val: pd.DataFrame,
+        X_train: pd.DataFrame,
+        y_train: pd.DataFrame,
+        output_dir: Path
+    ) -> None:
 
     # Define metrics based on the problem type
     if predictor.problem_type == 'regression':
@@ -346,7 +334,6 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
 
     # Loop through models and metrics to compute bootstrapped values
     for model_name in predictor.model_names():
-
         if predictor.problem_type == 'regression':
             y_pred_test = predictor.predict(X_test, model=model_name)
             y_pred_val = predictor.predict(X_val, model=model_name)
@@ -357,7 +344,6 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
             y_pred_train = predictor.predict_proba(X_train, model=model_name).iloc[:, 1]
 
         for metric_name, metric_func in metrics:
-
             test_values = bootstrap_metric(y_test.to_numpy(), y_pred_test.to_numpy(), metric_func)
             results.extend([(model_name, metric_name, 'Test', value) for value in test_values])
 
@@ -423,17 +409,8 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
     create_violin_plot('Validation', output_dir / 'validation_metrics_bootstrap.png')
     create_violin_plot('Train', output_dir / 'train_metrics_bootstrap.png')
 
-def plot_regression_diagnostics(y_true, y_pred, output_dir: str | Path = Path.cwd()):
-    """
-    Generates diagnostic plots for a regression model.
-
-    Parameters
-    ----------
-    model: Fitted regression model
-        The regression model to evaluate.
-    """
-    output_dir = Path(output_dir)
-
+def plot_regression_diagnostics(y_true: np.ndarray, y_pred: np.ndarray, output_dir: Path):
+    """Generates diagnostic plots for a regression model."""
     # Predict the target values
     residuals = y_true - y_pred
 
@@ -473,14 +450,25 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir: str | Path = Path.cw
     plot_residuals(y_true, y_pred)
     plot_residual_histogram(residuals)
 
-def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, y_train, y_train_pred, output_dir: str | Path = Path.cwd()):
-    """
-    Generates diagnostic plots for a classification model.
-
-    """
-    output_dir = Path(output_dir)
-
-    plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), y_val.to_numpy(), y_val_pred.to_numpy(), y_train.to_numpy(), y_train_pred.to_numpy() , output_dir)
+def plot_classification_diagnostics(
+        y_true: pd.DataFrame,
+        y_pred: pd.DataFrame,
+        y_val: pd.DataFrame,
+        y_val_pred: pd.DataFrame,
+        y_train: pd.DataFrame,
+        y_train_pred: pd.DataFrame,
+        output_dir: Path
+    ) -> None:
+    """Generates diagnostic plots for a classification model."""
+    plot_epic_copy(
+        y_true.to_numpy(),
+        y_pred.to_numpy(),
+        y_val.to_numpy(),
+        y_val_pred.to_numpy(),
+        y_train.to_numpy(),
+        y_train_pred.to_numpy() ,
+        output_dir
+    )
 
     conf_matrix = confusion_matrix(y_true, y_pred.apply(lambda x: 1 if x >= 0.5 else 0))
 
@@ -494,7 +482,7 @@ def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, y_train, 
 
 ### MODEL EVALUATION COPY OF EPIC PLOTS
 
-def _bin_class_curve(y_true, y_pred):
+def _bin_class_curve(y_true: np.ndarray, y_pred: np.ndarray):
     sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]
     y_true = np.array(y_true)[sort_ix]
     y_pred = np.array(y_pred)[sort_ix]
@@ -509,9 +497,15 @@ def _bin_class_curve(y_true, y_pred):
 
     return fps, tps, y_pred[threshold_idxs]
 
-def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, y_train, y_train_pred, output_dir: str | Path = Path.cwd()):
-
-    output_dir = Path(output_dir)
+def plot_epic_copy(
+        y_test: np.ndarray,
+        y_pred: np.ndarray,
+        y_val: np.ndarray,
+        y_val_pred: np.ndarray,
+        y_train: np.ndarray,
+        y_train_pred: np.ndarray,
+        output_dir: Path
+    ) -> None:
 
     # Compute test metrics
     fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
@@ -652,7 +646,6 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, y_train, y_train_pred, out
         counts, _ = np.histogram(values, bins=bins)
         return counts.max()
 
-    # Example for y_pred and y_val_pred
     highest_bin_count = max(
         _get_highest_bin_count(y_pred[y_test == 0], bins=20),
         _get_highest_bin_count(y_pred[y_test == 1], bins=20),
