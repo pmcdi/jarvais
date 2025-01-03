@@ -9,7 +9,7 @@ from AutoML.trainer import TrainerSupervised
 @pytest.fixture
 def classification_data():
     X, y = make_classification(
-        n_samples=100, n_features=5, n_informative=3, n_redundant=1, random_state=42
+        n_samples=50, n_features=5, n_informative=3, n_redundant=1, random_state=42
     )
     X = pd.DataFrame(X, columns=[f"feature{i}" for i in range(1, X.shape[1] + 1)])
     y = pd.Series(y, name="target")
@@ -18,7 +18,7 @@ def classification_data():
 @pytest.fixture
 def regression_data():
     X, y = make_regression(
-        n_samples=100, n_features=5, noise=0.1, random_state=42
+        n_samples=50, n_features=5, noise=0.1, random_state=42
     )
     X = pd.DataFrame(X, columns=[f"feature{i}" for i in range(1, X.shape[1] + 1)])
     y = pd.Series(y, name="target")
@@ -27,7 +27,7 @@ def regression_data():
 @pytest.fixture
 def time_to_event_data():
     """Synthetic time-to-event data generation."""
-    n_samples = 100
+    n_samples = 50
     np.random.seed(42)
     X = np.random.normal(size=(n_samples, 5))  # Covariates
     event_time = np.random.exponential(scale=10, size=n_samples)  # Simulated survival times
