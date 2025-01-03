@@ -45,7 +45,7 @@ class Explainer():
                 self.X_train,
                 self.trainer.y_train,
                 output_dir=self.output_dir / 'figures'
-                )
+            )
 
         # Plot diagnostics
         if self.trainer.task in ['binary', 'multiclass']:
@@ -57,19 +57,19 @@ class Explainer():
                 self.trainer.y_train,
                 self.predictor.predict_proba(self.X_train).iloc[:, 1],
                 output_dir=self.output_dir / 'figures'
-                )
+            )
             plot_shap_values(
                 self.predictor,
                 self.X_train,
                 self.X_test,
                 output_dir=self.output_dir / 'figures'
-                )
+            )
         elif self.trainer.task == 'regression':
             plot_regression_diagnostics(
                 self.y_test,
                 self.predictor.predict(self.X_test, as_pandas=False),
                 output_dir=self.output_dir / 'figures'
-                )
+            )
 
         # Plot feature importance
         if self.trainer.task == 'time_to_event': # NEEDS TO BE UPDATED

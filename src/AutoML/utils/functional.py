@@ -1,11 +1,18 @@
+from typing import Callable
+
 import numpy as np
 from sklearn.metrics import auc, precision_recall_curve
 
-def auprc(y_true, y_scores):
+def auprc(y_true: np.ndarray, y_scores: np.ndarray) -> float:
         precision, recall, _ = precision_recall_curve(y_true, y_scores)
         return auc(recall, precision)
 
-def bootstrap_metric(y_test, y_pred, f, nsamples=100):
+def bootstrap_metric(
+        y_test: np.ndarray,
+        y_pred: np.ndarray,
+        f: Callable[[np.ndarray, np.ndarray], float],
+        nsamples: int=100
+    ) -> float:
     np.random.seed(0)
     values = []
 
