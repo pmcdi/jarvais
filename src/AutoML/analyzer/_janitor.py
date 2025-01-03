@@ -1,10 +1,13 @@
+from typing import List, Tuple
+
 import pandas as pd
 from pandas.api.types import is_numeric_dtype
-
 from sklearn.impute import KNNImputer
 from sklearn.preprocessing import MinMaxScaler
 
-def replace_missing(data: pd.DataFrame, categorical_columns: list, continuous_columns: list, config: dict):
+def replace_missing(
+        data: pd.DataFrame, categorical_columns: list,
+        continuous_columns: list, config: dict) -> pd.DataFrame:
     """
     Replace missing values in the dataset based on specified strategies.
 
@@ -25,9 +28,8 @@ def replace_missing(data: pd.DataFrame, categorical_columns: list, continuous_co
         KNN imputation for categorical variables is performed using integer encoding and
         inverse transformation. This can be computationally expensive for large datasets.
     """
-
-    for cont in continuous_columns: 
-        strategy = 'median' if cont not in config['missingness_strategy']['continuous'].keys() else config['missingness_strategy']['continuous'][cont]
+    for cont in continuous_columns:
+        strategy = config['missingness_strategy']['continuous'].get(cont, 'median')
         if strategy.lower() == 'median':
             replace_with = data[cont].median()
         elif strategy.lower() == 'mean':
@@ -39,8 +41,9 @@ def replace_missing(data: pd.DataFrame, categorical_columns: list, continuous_co
             replace_with = data[cont].median()
         data[cont] = data[cont].fillna(replace_with)
 
-    for cat in categorical_columns: # For categorical var, replaces with string provided in config(default Unknown)
-        filler = 'Unknown' if cat not in config['missingness_strategy']['categorical'].keys() else config['missingness_strategy']['categorical'][cat]
+    # For categorical var, replaces with string provided in config(default=Unknown)
+    for cat in categorical_columns:
+        filler = config['missingness_strategy']['categorical'].get(cat, 'Unknown')
         if config['missingness_strategy']['categorical'][cat].lower() != 'knn':
             data[cat] = data[cat].fillna(filler)
 
@@ -48,20 +51,22 @@ def replace_missing(data: pd.DataFrame, categorical_columns: list, continuous_co
     for cat in categorical_columns:
         if config['missingness_strategy']['categorical'][cat].lower() == 'knn':
             print(f'Using KNN to fill missing values in {cat}, this may take a while...\n')
-            data[cat] = knn_impute_categorical(data_to_use, categorical_columns)[cat]    
+            data[cat] = knn_impute_categorical(data_to_use, categorical_columns)[cat]
 
-    return data 
+    return data
 
-def knn_impute_categorical(data: pd.DataFrame, categorical_columns: list):
+def knn_impute_categorical(data: pd.DataFrame, categorical_columns: list) -> pd.DataFrame:
     """
-    Perform KNN imputation on categorical columns. 
+    Perform KNN imputation on categorical columns.
+
     From https://www.kaggle.com/discussions/questions-and-answers/153147
 
     Args:
         data (DataFrame): The data containing categorical columns.
         categorical_columns (list): List of categorical column names.
 
-    Returns:
+    Returns
+    -------
         DataFrame: Data with imputed categorical columns.
     """
     mm = MinMaxScaler()
@@ -94,20 +99,22 @@ def knn_impute_categorical(data: pd.DataFrame, categorical_columns: list):
 
     return df
 
-def get_outliers(data: pd.DataFrame, categorical_columns: list):
+def get_outliers(data: pd.DataFrame, categorical_columns: list) -> Tuple[str, dict]:
     """
-    Perform outlier analysis on categorical columns. 
+    Perform outlier analysis on categorical columns.
 
     Args:
         data (DataFrame): The data containing categorical columns.
         categorical_columns (list): List of categorical column names.
 
-    Returns:
-        DataFrame: Data with imputed categorical columns.
+    Returns
+    -------
+        str: String of outliers
+        dict: mapping for those outliers
     """
-
     mapping = {}
-    
+    total_report = ''
+
     for cat in categorical_columns:
         category_counts = data[cat].value_counts()
         threshold = int(len(data)*.01)
@@ -123,38 +130,40 @@ def get_outliers(data: pd.DataFrame, categorical_columns: list):
 
         if len(outliers) > 0:
             outliers = [f'{o}: {category_counts[o]} out of {data[cat].count()}' for o in outliers]
+            total_report += f'  - Outliers found in {cat}: {outliers}\n'
             print(f'  - Outliers found in {cat}: {outliers}')
-            return f'  - Outliers found in {cat}: {outliers}\n', mapping
         else:
             print(f'  - No Outliers found in {cat}')
-            return f'  - No Outliers found in {cat}\n', mapping
-    
-def infer_types(data: pd.DataFrame):
+            total_report += f'  - No Outliers found in {cat}\n'
+
+    return total_report, mapping
+
+def infer_types(data: pd.DataFrame) -> Tuple[List[str], List[str], List[str]]:
     """
     Infer and categorize column data types in the dataset.
+
     Adapted from https://github.com/tompollard/tableone/blob/main/tableone/preprocessors.py
 
-    This method analyzes the dataset to categorize columns as either 
+    This method analyzes the dataset to categorize columns as either
     continuous or categorical based on their data types and unique value proportions.
 
     Assumptions:
         - All non-numerical and non-date columns are considered categorical.
         - Boolean columns are not considered numerical but categorical.
-        - Numerical columns with a unique value proportion below a threshold are 
-        considered categorical.
+        - Numerical columns with a unique value proportion below a threshold are
+          considered categorical.
 
-    The method also applies a heuristic to detect and classify ID columns 
+    The method also applies a heuristic to detect and classify ID columns
     as categorical if they have a low proportion of unique values.
     """
-
     date_columns = [
         col for col in data.select_dtypes(include=['object']).columns
         if pd.to_datetime(data[col], format='mixed', errors='coerce').notna().any()
     ]
 
     # assume all non-numerical and date columns are categorical
-    numeric_cols = set([col for col in data.columns if is_numeric_dtype(data[col])])
-    numeric_cols = set([col for col in numeric_cols if data[col].dtype != bool]) # Filter out boolean 
+    numeric_cols = {col for col in data.columns if is_numeric_dtype(data[col])}
+    numeric_cols = {col for col in numeric_cols if data[col].dtype != bool}
     likely_cat = set(data.columns) - numeric_cols
     likely_cat = list(likely_cat - set(date_columns))
 
@@ -164,7 +173,8 @@ def infer_types(data: pd.DataFrame):
         if likely_flag:
             likely_cat.append(var)
 
-    likely_cat = [cat for cat in likely_cat if data[cat].nunique()/data[cat].count() < 0.2] # Heuristic targeted at detecting ID columns
+    # Heuristic targeted at detecting ID columns
+    likely_cat = [cat for cat in likely_cat if data[cat].nunique()/data[cat].count() < 0.2]
 
     categorical_columns = likely_cat
     continuous_columns = list(set(data.columns) - set(likely_cat) - set(date_columns))

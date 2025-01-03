@@ -1,16 +1,20 @@
+from itertools import combinations
 from pathlib import Path
-import pandas as pd
-import numpy as np
 
 import matplotlib.pyplot as plt
+import numpy as np
+import pandas as pd
 import seaborn as sns
-
-from sklearn.metrics import confusion_matrix, roc_curve, roc_auc_score, precision_recall_curve, r2_score, root_mean_squared_error
 from sklearn.calibration import calibration_curve
-
+from sklearn.metrics import (
+    confusion_matrix,
+    precision_recall_curve,
+    r2_score,
+    roc_auc_score,
+    roc_curve,
+    root_mean_squared_error,
+)
 from sksurv.nonparametric import kaplan_meier_estimator
-
-from itertools import combinations
 
 from .functional import auprc, bootstrap_metric
 
@@ -24,10 +28,10 @@ def prep_for_pie(df, label):
 
     labels = data.index.tolist()
     values = data.values.tolist()
-    
+
     return labels, values
 
-def plot_one_multiplot(data, umap_data, var, continuous_columns, 
+def plot_one_multiplot(data, umap_data, var, continuous_columns,
                        output_dir: str | Path = Path.cwd()):
     from scipy.stats import f_oneway, ttest_ind
 
@@ -45,7 +49,7 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
         base_fontsize = 16
         min_fontsize = 8
         return max(base_fontsize - num_categories * 1.5, min_fontsize)
-    
+
     fontsize = calculate_fontsize(num_categories)
 
     # setting number of rows/columns for subplots
@@ -55,19 +59,19 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
     scaler = 6
 
     # create subplot grid
-    fig, ax = plt.subplots(rows, cols, figsize=(rows*scaler, cols*scaler)) 
-    ax = ax.flatten() 
+    fig, ax = plt.subplots(rows, cols, figsize=(rows*scaler, cols*scaler))
+    ax = ax.flatten()
 
     # Pie plot of categorical variable
-    ax[0].pie(values, 
-                labels=labels, 
-                autopct=autopct, 
+    ax[0].pie(values,
+                labels=labels,
+                autopct=autopct,
                 startangle=90,
                 counterclock=False,
                 textprops={'fontsize': fontsize},
                 colors=plt.cm.Set2.colors) # 90 = 12 o'clock, 0 = 3 o'clock, 180 = 9 o'clock
     ax[0].set_title(f"{var} Distribution. N: {data[var].count()}")
-    
+
     # UMAP colored by variable
     sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], hue=data[var], alpha=.7, ax=ax[1])
     ax[1].set_title(f'UMAP of Continuous Variables with {var}')
@@ -79,18 +83,18 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
     # Calculate p-values
     for col in continuous_columns:
         unique_values = data[var].unique()
-        
+
         # If binary classification, use t-test
         if len(unique_values) == 2:
             group1 = data[data[var] == unique_values[0]][col]
             group2 = data[data[var] == unique_values[1]][col]
             _, p_value = ttest_ind(group1, group2, equal_var=False)
-        
+
         # For more than two categories, use ANOVA
         else:
             groups = [data[data[var] == value][col] for value in unique_values]
             _, p_value = f_oneway(*groups)
-        
+
         p_values[col] = p_value
 
     # Sort the continuous columns by p-value (ascending order)
@@ -104,26 +108,26 @@ def plot_one_multiplot(data, umap_data, var, continuous_columns,
     # Turn off unused axes
     for j in range(n, len(ax)):
         fig.delaxes(ax[j])  # Turn off unused axes
-    
+
     # save multiplot
     multiplot_path = output_dir / 'multiplots' / f'{var}_multiplots.png'
     plt.savefig(multiplot_path)
     plt.close()
-    
+
     # return path to figure for PDF
     return multiplot_path
 
-def plot_corr(corr, size, 
+def plot_corr(corr, size,
               file_name: str = 'correlation_matrix.png',
               output_dir: str | Path = Path.cwd()):
-    
+
     output_dir = Path(output_dir)
 
     fig, ax = plt.subplots(1, 1, figsize=(size, size))
     mask = np.triu(np.ones_like(corr, dtype=bool)) # Keep only lower triangle
     np.fill_diagonal(mask, False)
     sns.heatmap(corr, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f", ax=ax)
-    plt.title(f'Correlation Matrix')
+    plt.title('Correlation Matrix')
     plt.tight_layout()
 
     figure_path = output_dir / file_name
@@ -146,31 +150,31 @@ def plot_frequency_table(data: pd.DataFrame, columns: list, output_dir: str | Pa
         plt.close()
 
 def plot_pairplot(data, columns_to_plot,
-                  output_dir: str | Path = Path.cwd(), 
+                  output_dir: str | Path = Path.cwd(),
                   target_variable: str = None):
-    
+
     output_dir = Path(output_dir)
 
     hue = target_variable
     if target_variable is not None:
-        columns_to_plot += [target_variable] 
+        columns_to_plot += [target_variable]
 
     sns.set_theme(style="darkgrid", font="Arial")
-    g = sns.pairplot(data[columns_to_plot], hue=hue)   
-    g.figure.suptitle("Pair Plot", y=1.08)  
+    g = sns.pairplot(data[columns_to_plot], hue=hue)
+    g.figure.suptitle("Pair Plot", y=1.08)
 
     figure_path = output_dir / 'pairplot.png'
     plt.savefig(figure_path)
     plt.close()
 
-def plot_umap(umap_data, 
+def plot_umap(umap_data,
               output_dir: str | Path = Path.cwd()):
-   
+
     output_dir = Path(output_dir)
 
     fig, ax = plt.subplots(figsize=(8, 8), dpi=72)
     sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
-    plt.title(f'UMAP of Continuous Variables')
+    plt.title('UMAP of Continuous Variables')
 
     figure_path = output_dir / 'umap_continuous_data.png'
     fig.savefig(figure_path)
@@ -180,12 +184,12 @@ def plot_kaplan_meier_by_category(data_x: pd.DataFrame, data_y: pd.DataFrame, ca
     """
     Plots Kaplan-Meier survival curves for each category in the specified categorical columns.
 
-    Parameters:
+    Parameters
+    ----------
     - data_x: pandas DataFrame containing features, including categorical columns.
     - data_y: pandas structured array with 'event' and 'time' as columns.
     - categorical_columns: list of categorical column names in data_x to iterate over.
     """
-
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for cat_col in categorical_columns:
@@ -204,7 +208,7 @@ def plot_kaplan_meier_by_category(data_x: pd.DataFrame, data_y: pd.DataFrame, ca
                     data_y["time"][mask_category],
                     conf_type="log-log",
                 )
-    
+
                 plt.step(
                     time_category,
                     survival_prob_category,
@@ -239,7 +243,7 @@ class ModelWrapper:
         self.target_variable = target_variable
         if target_variable is None and predictor.problem_type != 'regression':
             print("Since target_class not specified, SHAP will explain predictions for each class")
-    
+
     def predict_proba(self, X):
         if isinstance(X, pd.Series):
             X = X.values.reshape(1,-1)
@@ -251,12 +255,11 @@ class ModelWrapper:
         else:
             preds = self.ag_model.predict(X)
         return preds
-    
+
 def plot_feature_importance(df, output_dir: str | Path, model_name: str=''):
     """
     Plots the feature importance with standard deviation and p-value significance.
     """
-
     output_dir = Path(output_dir)
 
     # Plotting
@@ -270,7 +273,7 @@ def plot_feature_importance(df, output_dir: str | Path, model_name: str=''):
         for bar, p_value in zip(bars, df['p_value']):
             height = bar.get_height()
             significance = '*' if p_value < 0.05 else ''
-            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance, 
+            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance,
                     ha='center', va='bottom', fontsize=10, color='red')
 
     # Labels and title
@@ -295,21 +298,21 @@ def plot_feature_importance(df, output_dir: str | Path, model_name: str=''):
     fig.savefig(output_dir / 'feature_importance.png')
     plt.close()
 
-def plot_shap_values(predictor, X_train, X_test, 
+def plot_shap_values(predictor, X_train, X_test,
                      max_display: int = 10,
                      output_dir: str | Path = Path.cwd()):
     # import shap only at function call
     import shap
 
     output_dir = Path(output_dir)
-    
+
     predictor = ModelWrapper(predictor, X_train.columns)
     # sample 100 samples from training set to create baseline
-    background_data = shap.sample(X_train, 100) 
+    background_data = shap.sample(X_train, 100)
     shap_exp = shap.KernelExplainer(predictor.predict_proba, background_data)
 
     # sample 100 samples from test set to evaluate with shap values
-    test_data = shap.sample(X_test, 100) 
+    test_data = shap.sample(X_test, 100)
 
     # Compute SHAP values for the test set
     shap_values = shap_exp(test_data)
@@ -329,9 +332,9 @@ def plot_shap_values(predictor, X_train, X_test,
     plt.close()
 
 def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, X_train, y_train, output_dir: str | Path = Path.cwd()):
-        
+
     output_dir = Path(output_dir)
-        
+
     # Define metrics based on the problem type
     if predictor.problem_type == 'regression':
         metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
@@ -343,7 +346,7 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
 
     # Loop through models and metrics to compute bootstrapped values
     for model_name in predictor.model_names():
-        
+
         if predictor.problem_type == 'regression':
             y_pred_test = predictor.predict(X_test, model=model_name)
             y_pred_val = predictor.predict(X_val, model=model_name)
@@ -354,13 +357,13 @@ def plot_violin_of_bootsrapped_metrics(predictor, X_test, y_test, X_val, y_val, 
             y_pred_train = predictor.predict_proba(X_train, model=model_name).iloc[:, 1]
 
         for metric_name, metric_func in metrics:
-            
+
             test_values = bootstrap_metric(y_test.to_numpy(), y_pred_test.to_numpy(), metric_func)
             results.extend([(model_name, metric_name, 'Test', value) for value in test_values])
-            
+
             val_values = bootstrap_metric(y_val.to_numpy(), y_pred_val.to_numpy(), metric_func)
             results.extend([(model_name, metric_name, 'Validation', value) for value in val_values])
-            
+
             train_values = bootstrap_metric(y_train.to_numpy(), y_pred_train.to_numpy(), metric_func)
             results.extend([(model_name, metric_name, 'Train', value) for value in train_values])
 
@@ -424,14 +427,13 @@ def plot_regression_diagnostics(y_true, y_pred, output_dir: str | Path = Path.cw
     """
     Generates diagnostic plots for a regression model.
 
-    Parameters:
-    -----------
+    Parameters
+    ----------
     model: Fitted regression model
         The regression model to evaluate.
     """
-
     output_dir = Path(output_dir)
-    
+
     # Predict the target values
     residuals = y_true - y_pred
 
@@ -476,7 +478,6 @@ def plot_classification_diagnostics(y_true, y_pred, y_val, y_val_pred, y_train, 
     Generates diagnostic plots for a classification model.
 
     """
-
     output_dir = Path(output_dir)
 
     plot_epic_copy(y_true.to_numpy(), y_pred.to_numpy(), y_val.to_numpy(), y_val_pred.to_numpy(), y_train.to_numpy(), y_train_pred.to_numpy() , output_dir)
@@ -525,7 +526,7 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, y_train, y_train_pred, out
     precision_val, recall_val, thresholds_pr_val = precision_recall_curve(y_val, y_val_pred)
     average_precision_val = auprc(y_val, y_val_pred)
     prob_true_val, prob_pred_val = calibration_curve(y_val, y_val_pred, n_bins=10, strategy='uniform')
-    
+
     # Compute train metrics
     fpr_train, tpr_train, thresholds_roc_train = roc_curve(y_train, y_train_pred)
     roc_auc_train = roc_auc_score(y_train, y_train_pred)
@@ -661,7 +662,7 @@ def plot_epic_copy(y_test, y_pred, y_val, y_val_pred, y_train, y_train_pred, out
         _get_highest_bin_count(y_train_pred[y_train == 1], bins=20)
     )
     highest_bin_count += highest_bin_count//20
-    
+
     plt.subplot(2, 5, 8)
     sns.histplot(y_pred[y_test == 0], bins=20, alpha=0.7, label="Test Actual False", color='blue', kde=False)
     sns.histplot(y_pred[y_test == 1], bins=20, alpha=0.7, label="Test Actual True", color='magenta', kde=False)

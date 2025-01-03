@@ -1,27 +1,32 @@
-import os, pickle, json
-from pathlib import Path
+import json
+import os
+import pickle
 import shutil
+from pathlib import Path
+from typing import Tuple
+
 import pandas as pd
-
 from autogluon.tabular import TabularPredictor
-
 from sklearn.model_selection import KFold
-
-from sksurv.metrics import concordance_index_censored
-from sksurv.linear_model import CoxnetSurvivalAnalysis
 from sksurv.ensemble import GradientBoostingSurvivalAnalysis, RandomSurvivalForest
+from sksurv.linear_model import CoxnetSurvivalAnalysis
+from sksurv.metrics import concordance_index_censored
 from sksurv.svm import FastSurvivalSVM
 from sksurv.util import Surv
 
 from ._leaderboard import aggregate_folds, format_leaderboard
-from ..utils import train_mtlr, train_deepsurv
+from ..utils import train_deepsurv, train_mtlr
 
-def train_autogluon_with_cv(data_train: pd.DataFrame, data_test: pd.DataFrame, target_variable: str, task: str, 
-                  output_dir: Path, extra_metrics: list, eval_metric: str='accuracy', num_folds: int=5, **kwargs):
+def train_autogluon_with_cv(
+        data_train: pd.DataFrame, data_test: pd.DataFrame,
+        target_variable: str, task: str,
+        output_dir: Path, extra_metrics: list,
+        eval_metric: str='accuracy', num_folds: int=5, **kwargs: dict):
     """
     Trains a TabularPredictor using manual cross-validation without bagging and consolidates the leaderboards.
 
-    Parameters:
+    Parameters
+    ----------
     - data_train (DataFrame): Combined training data (features + target).
     - data_test (DataFrame): Combined test data (features + target).
     - target_variable (str): Name of the target column.
@@ -31,7 +36,8 @@ def train_autogluon_with_cv(data_train: pd.DataFrame, data_test: pd.DataFrame, t
     - num_folds (int): Number of cross-validation folds (default: 5).
     - kwargs (dict): Additional arguments to pass to TabularPredictor's fit method.
 
-    Returns:
+    Returns
+    -------
     - predictors: A list of trained predictors (one per fold).
     - final_leaderboard: A single DataFrame containing all models across folds.
     """
@@ -42,7 +48,7 @@ def train_autogluon_with_cv(data_train: pd.DataFrame, data_test: pd.DataFrame, t
 
     for fold, (train_idx, val_idx) in enumerate(kf.split(data_train)):
         print(f"Training fold {fold + 1}/{num_folds}...")
-        
+
         train_data, val_data = data_train.iloc[train_idx], data_train.iloc[val_idx]
         val_indices.append(val_idx)
 
@@ -51,7 +57,7 @@ def train_autogluon_with_cv(data_train: pd.DataFrame, data_test: pd.DataFrame, t
             path=os.path.join(output_dir, f'autogluon_models_fold_{fold + 1}'),
             verbosity=0, log_to_file=False,
         ).fit(
-            train_data, 
+            train_data,
             tuning_data=val_data,
             **kwargs)
 
@@ -64,7 +70,7 @@ def train_autogluon_with_cv(data_train: pd.DataFrame, data_test: pd.DataFrame, t
         train_leaderboards.append(predictor.leaderboard(train_data, extra_metrics=extra_metrics))
         val_leaderboards.append(predictor.leaderboard(val_data, extra_metrics=extra_metrics))
         test_leaderboards.append(predictor.leaderboard(data_test, extra_metrics=extra_metrics))
-    
+
     train_leaderboard = aggregate_folds(pd.concat(train_leaderboards, ignore_index=True), extra_metrics)
     val_leaderboard = aggregate_folds(pd.concat(val_leaderboards, ignore_index=True), extra_metrics)
     test_leaderboard = aggregate_folds(pd.concat(test_leaderboards, ignore_index=True), extra_metrics)
@@ -81,31 +87,33 @@ def train_autogluon_with_cv(data_train: pd.DataFrame, data_test: pd.DataFrame, t
 
     best_fold = cv_scores.index(max(cv_scores))
     val_indices_best = val_indices[best_fold]
-    X_val, y_val = data_train.iloc[val_indices_best].drop(columns=target_variable), data_train.iloc[val_indices_best][target_variable]
+    X_val = data_train.iloc[val_indices_best].drop(columns=target_variable)
+    y_val = data_train.iloc[val_indices_best][target_variable]
 
-    shutil.copytree(os.path.join(output_dir, f'autogluon_models_fold_{best_fold + 1}'), 
-                    os.path.join(output_dir, f'autogluon_models_best_fold'), dirs_exist_ok=True)
+    shutil.copytree(os.path.join(output_dir, f'autogluon_models_fold_{best_fold + 1}'),
+                    os.path.join(output_dir, 'autogluon_models_best_fold'), dirs_exist_ok=True)
 
     return predictors, final_leaderboard, best_fold, X_val, y_val
 
-def train_survival_models(X_train, y_train, X_test, y_test, output_dir):
-    """
-    Train both deep and traditional survival models, consolidate fitted models and C-index scores.
-    """
-
+def train_survival_models(
+        X_train: pd.DataFrame, y_train: pd.DataFrame,
+        X_test: pd.DataFrame, y_test: pd.DataFrame, output_dir: Path) -> Tuple[dict, dict]:
+    """Train both deep and traditional survival models, consolidate fitted models and C-index scores."""
     (output_dir / 'survival_models').mkdir(exist_ok=True, parents=True)
 
     fitted_models = {}
     cindex_scores = {}
 
     # Deep Models
-    fitted_models['MTLR'], cindex_scores['MTLR'] = train_mtlr(pd.concat([X_train, y_train], axis=1), 
-                                                              pd.concat([X_test, y_test], axis=1), 
-                                                              output_dir / 'survival_models')
-    fitted_models['DeepSurv'], cindex_scores['DeepSurv'] = train_deepsurv(pd.concat([X_train, y_train], axis=1), 
-                                                                          pd.concat([X_test, y_test], axis=1), 
-                                                                          output_dir / 'survival_models')
-    
+    fitted_models['MTLR'], cindex_scores['MTLR'] = train_mtlr(
+        pd.concat([X_train, y_train], axis=1),
+        pd.concat([X_test, y_test], axis=1),
+        output_dir / 'survival_models')
+    fitted_models['DeepSurv'], cindex_scores['DeepSurv'] = train_deepsurv(
+        pd.concat([X_train, y_train], axis=1),
+        pd.concat([X_test, y_test], axis=1),
+        output_dir / 'survival_models')
+
     # Basic Models
     y_train = Surv.from_dataframe('event', 'time', y_train)
     y_test = Surv.from_dataframe('event', 'time', y_test)
