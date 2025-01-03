@@ -29,44 +29,44 @@ def custom_warning_handler(message, category, filename, lineno, file=None, line=
 warnings.showwarning = custom_warning_handler
 
 class Analyzer():
+    """
+    A data analysis and cleaning tool for preprocessing datasets, generating reports, and visualizations.
+
+    Features:
+    - Handles missing values and outliers.
+    - Infers column types (categorical, continuous, date).
+    - Supports one-hot encoding and time-to-event analysis.
+    - Generates summary statistics and correlation plots.
+    - Produces a comprehensive PDF analysis report.
+
+    Args:
+        data (pd.DataFrame): Input dataset.
+        target_variable (str, optional): Target variable in the dataset.
+        task (str, optional): Type of analysis task ('time_to_event' supported).
+        one_hot_encode (bool, optional): Whether to one-hot encode categorical columns.
+        config (Union[str, Path, None], optional): Path to a YAML configuration file.
+        output_dir (Union[str, Path], optional): Directory to save outputs. Default is the current directory.
+    """
+
     def __init__(self,
                  data: pd.DataFrame,
                  target_variable: Union[str, None] = None,
                  task: Union[str, None] = None,
                  one_hot_encode: bool = False,
                  config: Union[str, Path, None] = None,
-                 output_dir: Union[str, Path] = Path.cwd()):
-        """
+                 output_dir: Union[str, Path, None] = None):
 
-        Initializes the Analyzer with the provided data.
-
-        Parameters
-        ----------
-        data : pd.DataFrame
-            The input data to analyze.
-        target_variable : str, optional
-            The target variable in the dataset. Default is None.
-        one_hot_encode : bool, optional
-            One Hot Encode the data. Default is False
-        config : Union[str, os.PathLike, None], optional
-            Path to a yaml file that contains settings for janitor. 
-            Default is None where janitor will produce one automaticaly.
-        output_dir: Union[str, os.PathLike], optional
-            Output directory for analysis. Default is current directory.
-
-        """
         self.data = data
         self.target_variable = target_variable
         self.task = task
         self.one_hot_encode = one_hot_encode
 
+        assert_message = "When setting task to 'time_to_event', target_variable must be 'event' and 'time' must be in data"
         if self.task == 'time_to_event':
-            assert target_variable == 'event' and 'time' in data.columns, "When setting task to 'time_to_event', target_variable must be 'event' and 'time' must be in data"
+            assert target_variable == 'event' and 'time' in data.columns, assert_message
 
-        output_dir = Path(output_dir)
-        output_dir.mkdir(parents=True, exist_ok=True)
-
-        self.output_dir = output_dir
+        self.output_dir = Path.cwd() if output_dir is None else Path(output_dir)
+        self.output_dir.mkdir(parents=True, exist_ok=True)
 
         if config is not None:
             config = Path(config)
@@ -82,7 +82,7 @@ class Analyzer():
 
     def _create_config(self) -> None:
         """
-        Creates and saves a configuration file for column types, outlier handling, and missing value strategies.
+        Create and save a configuration file for column types, outlier handling, and missing value strategies.
 
         Steps:
         1. **Infer Column Types**: Identifies categorical, continuous, and date columns using `infer_types`.
@@ -96,7 +96,8 @@ class Analyzer():
         columns = {}
 
         self.categorical_columns, self.continuous_columns, self.date_columns = infer_types(self.data)
-        self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].apply(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
+        # Replace all non numerical values with NaN
+        self.data[self.continuous_columns] = self.data[self.continuous_columns].apply(pd.to_numeric, errors='coerce')
 
         nan_ = self.data.apply(lambda col: col.isna().all())
         nan_columns = nan_[nan_].index.tolist()
@@ -119,10 +120,12 @@ class Analyzer():
         self.config['mapping'] = mapping
 
         self.config['missingness_strategy'] = {}
-        self.config['missingness_strategy']['categorical'] = {cat :'Unknown' for cat in self.categorical_columns} # Defining default replacement for each missing categorical variable
-        self.config['missingness_strategy']['continuous'] = {cont :'median' for cont in self.continuous_columns} # Defining default replacement for each missing continuous variable
+        # Defining default replacement for each missing categorical variable
+        self.config['missingness_strategy']['categorical'] = {cat :'Unknown' for cat in self.categorical_columns}
+        # Defining default replacement for each missing continuous variable
+        self.config['missingness_strategy']['continuous'] = {cont :'median' for cont in self.continuous_columns}
 
-    def _apply_config(self):
+    def _apply_config(self) -> None:
 
         print('Applying changes from config...\n')
 
@@ -132,10 +135,8 @@ class Analyzer():
 
         self.data = replace_missing(self.data, self.categorical_columns, self.continuous_columns, self.config)
 
-    def _create_multiplots(self, figures_dir):
-        """
-        Generate and save multiplots for each categorical variable against all continuous variables. 
-        """
+    def _create_multiplots(self, figures_dir: Path) -> None:
+        """Generate and save multiplots for each categorical variable against all continuous variables."""
         self.multiplots = [] # Used to save in PDF later
 
         (figures_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
@@ -147,16 +148,15 @@ class Analyzer():
             self.continuous_columns,
             figures_dir) for var in self.categorical_columns)
 
-    def run(self):
-        """
-        Runs the data cleaning and visualization process.
-        """
+    def run(self) -> None:
+        """Run the data cleaning and visualization process."""
         if self.config is None:
             self._create_config()
         else:
             self.continuous_columns = self.config['columns']['continuous']
             self.categorical_columns = self.config['columns']['categorical']
-            self.data.loc[:, self.continuous_columns] = self.data.loc[:, self.continuous_columns].map(lambda x: pd.to_numeric(x, errors='coerce')) # Replace all non numerical values with NaN
+            # Replace all non numerical values with NaN
+            self.data[self.continuous_columns] = self.data[self.continuous_columns].apply(pd.to_numeric, errors='coerce')
 
         with open(self.output_dir / 'config.yaml', 'w') as f:
             yaml.dump(self.config, f)
@@ -178,7 +178,10 @@ class Analyzer():
             data_x = self.data.drop(columns=['time', 'event'])
             data_y = self.data[['time', 'event']]
             categorical_columns  = [cat for cat in self.categorical_columns if cat != 'event']
-            plot_kaplan_meier_by_category(data_x, data_y, categorical_columns, figures_dir / 'kaplan_meier')
+            plot_kaplan_meier_by_category(
+                data_x, data_y,
+                categorical_columns,
+                figures_dir / 'kaplan_meier')
 
         # Correlation Plots
         p_corr = self.data[self.continuous_columns].corr(method="pearson")
@@ -194,15 +197,17 @@ class Analyzer():
         self.umap_data = UMAP(n_components=2).fit_transform(self.data[self.continuous_columns])
         plot_umap(self.umap_data, output_dir=figures_dir)
 
-        # plot pairplot
-        if len(self.continuous_columns) > 10: # Keep only the top ten correlated pairs in the pair plot
-            corr_pairs = s_corr.abs().unstack().sort_values(kind="quicksort", ascending=False).drop_duplicates()
+        # Plot pairplot: keeping only the top ten correlated pairs in the pair plot
+        if len(self.continuous_columns) > 10:
+            corr_pairs = s_corr.abs().unstack().sort_values(
+                kind="quicksort",
+                ascending=False).drop_duplicates()
             top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
-            columns_to_plot = list(set([index for pair in top_10_pairs.index for index in pair]))
+            columns_to_plot = list({index for pair in top_10_pairs.index for index in pair})
         else:
             columns_to_plot = self.continuous_columns
 
-        if self.target_variable in self.categorical_columns: # No point in using target as hue if its not a categorical variable
+        if self.target_variable in self.categorical_columns:
             plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir, target_variable=self.target_variable)
         else:
             plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir)
@@ -225,10 +230,8 @@ class Analyzer():
                             output_dir=self.output_dir)
 
     @classmethod
-    def dry_run(cls, data: pd.DataFrame):
-        """
-        Returns generated config and displays TableOne
-        """
+    def dry_run(cls, data: pd.DataFrame) -> dict:
+        """Simply Return generated config and displays TableOne."""
         analyzer = cls(data)
         analyzer._create_config()
 
