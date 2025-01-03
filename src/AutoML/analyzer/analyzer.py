@@ -181,7 +181,8 @@ class Analyzer():
             plot_kaplan_meier_by_category(
                 data_x, data_y,
                 categorical_columns,
-                figures_dir / 'kaplan_meier')
+                figures_dir / 'kaplan_meier'
+            )
 
         # Correlation Plots
         p_corr = self.data[self.continuous_columns].corr(method="pearson")
