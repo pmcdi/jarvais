@@ -17,7 +17,7 @@ from ._simple_regression_model import SimpleRegressionModel
 from ._training import train_autogluon_with_cv, train_survival_models
 from ..explainer import Explainer
 from ..utils.functional import auprc
-from ..utils.models.survival import LitDeepSurv, LitMTLR
+from .survival import LitDeepSurv, LitMTLR
 
 class TrainerSupervised():
     """

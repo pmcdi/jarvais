@@ -15,7 +15,7 @@ from sksurv.svm import FastSurvivalSVM
 from sksurv.util import Surv
 
 from ._leaderboard import aggregate_folds, format_leaderboard
-from ..utils import train_deepsurv, train_mtlr
+from .survival import train_deepsurv, train_mtlr
 
 def train_autogluon_with_cv(
         data_train: pd.DataFrame, data_test: pd.DataFrame,
