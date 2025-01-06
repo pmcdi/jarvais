@@ -6,8 +6,10 @@ from sklearn.impute import KNNImputer
 from sklearn.preprocessing import MinMaxScaler
 
 def replace_missing(
-        data: pd.DataFrame, categorical_columns: list,
-        continuous_columns: list, config: dict) -> pd.DataFrame:
+        data: pd.DataFrame, 
+        categorical_columns: list,
+        continuous_columns: list, config: dict
+    ) -> pd.DataFrame:
     """
     Replace missing values in the dataset based on specified strategies.
 
