@@ -7,6 +7,7 @@ authors = [
     { name = "Sejin Kim", email = "hello@sejin.kim" }
 ]
 dependencies = ["optuna-integration[pytorch-lightning]>=4.1.0,<5"]
+dependencies = ["optuna-integration[pytorch-lightning]>=4.1.0,<5"]
 
 [tool.pixi.project]
 channels = ["conda-forge", "pytorch"]
@@ -45,11 +46,14 @@ shap = ">=0.46"
 [tool.pixi.environments]
 dev = { features = ["test", "style"], solve-group = "default" }
 py310 = ["py310", "test"]
+py310 = ["py310", "test"]
 py311 = ["py311", "test"]
 py312 = ["py312", "test"]
 
 ############################################## python ###############################################
 
+[tool.pixi.feature.py310.dependencies]
+python = "3.10.*"
 [tool.pixi.feature.py310.dependencies]
 python = "3.10.*"
 [tool.pixi.feature.py311.dependencies]
