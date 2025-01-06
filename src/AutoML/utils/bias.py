@@ -1,7 +1,8 @@
+import inspect
+from functools import partial
+
 import fairlearn.metrics as fm
 import pandas as pd
-from functools import partial
-import inspect
 
 def get_metric(metric, sensitive_features=None):
     fn = getattr(fm, metric)
@@ -14,7 +15,7 @@ def get_metric(metric, sensitive_features=None):
 class BiasExplainer():
     def __init__(self,
                  y_true, y_pred, sensitive_features: dict, metrics=['equalized_odds_ratio', 'demographic_parity_ratio', 'equal_opportunity_ratio'], **kwargs):
-        
+
         self.y_true = y_true
         self.y_pred = y_pred
 
@@ -30,12 +31,12 @@ class BiasExplainer():
                 self.sensitive_features = pd.DataFrame(sensitive_features, columns=['sensitive_feature'])
         else:
             raise ValueError("sensitive_features must be a pandas DataFrame, Series, dictionary or list")
-        
+
         print(type(self.sensitive_features), self.sensitive_features.columns)
         self.largest_features   = self.sensitive_features.groupby(self.sensitive_features.columns.tolist()).size().idxmax()
         self.metrics            = {metric: get_metric(metric, sensitive_features=sensitive_features) for metric in metrics}
         self.metric_frame       = self.get_metric_frame(**kwargs)
-        
+
     def get_metric_frame(self, **kwargs):
         return fm.MetricFrame(metrics=self.metrics,
                               y_true=self.y_true,
@@ -47,7 +48,7 @@ class BiasExplainer():
         self.results = pd.DataFrame(self.metric_frame.by_group.T, index=self.metrics.keys())
         if relative:
             self.run_relative_largest()
-        
+
         print("Here are the bias subgroup analysis results:\n")
         print(self.results)
 

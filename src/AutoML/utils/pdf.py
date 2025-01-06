@@ -1,42 +1,35 @@
 from pathlib import Path
+
 import pandas as pd
 from fpdf import FPDF
 from fpdf.enums import Align
 
 # UTILS
 
-def add_outlier_analysis(pdf, outlier_analysis):
-    if outlier_analysis != '':
-        pdf.set_font('inter', '', 12)  
-        pdf.write(5, f"Outlier Analysis:\n")
-        pdf.set_font('inter', '', 10) 
-        pdf.write(5, outlier_analysis)
-    
-    return pdf
-
-def add_multiplots(pdf, multiplots, categorical_columns):
+def add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list) -> FPDF:
     for plot, cat in zip(multiplots, categorical_columns):
         pdf.add_page()
-        
+
         pdf.set_font('inter', '', 12)
         pdf.write(5, f"{cat.title()} Multiplots\n")
-        
+
         current_y = pdf.get_y()
-        
-        img_width = pdf.epw - 20  
+
+        img_width = pdf.epw - 20
         img_height = pdf.eph - current_y - 20
-        
+
         pdf.image(plot, x=10, y=current_y + 5, w=img_width, h=img_height, keep_aspect_ratio=True)
-        
+
     return pdf
 
-def add_table(pdf, csv_df):
+def add_table(pdf: FPDF, csv_df: pd.DataFrame) -> FPDF:
     headers = csv_df.columns.tolist()
-    headers = [f'' if 'Unnamed:' in header else header for header in headers] # Keep empty header entries
-    data = [headers] + csv_df.values.tolist()
+    # Keep empty header entries
+    headers = ['' if 'Unnamed:' in header else header for header in headers]
+    data = [headers, *csv_df.values.tolist()]
 
     pdf.add_page()
-    pdf.set_font('inter', '', 10)  
+    pdf.set_font('inter', '', 10)
     with pdf.table() as table:
         for data_row in data:
             row = table.row()
@@ -51,50 +44,41 @@ def generate_analysis_report_pdf(
         outlier_analysis: str,
         multiplots: list,
         categorical_columns: list,
-        output_dir: str | Path):
-    """
-    Generate a PDF report of the analysis with plots and tables.
-
-    This method creates a PDF report containing various analysis results, 
-    including outlier analysis, correlation plots, multiplots, and a summary table.
-
-    The report is structured as follows:
-        - Cover page with the report title.
-        - Outlier analysis text.
-        - Pair plot, Pearson correlation, and Spearman correlation plots.
-        - Multiplots for categorical vs. continuous variable relationships.
-        - A tabular summary of the analysis results.
-
-    The PDF uses custom fonts and is saved in the specified output directory.
-    """
+        output_dir: str | Path
+    ) -> None:
+    """Generate a PDF report of the analysis with plots and tables."""
     output_dir = Path(output_dir)
+    figures_dir = output_dir / 'figures'
 
     # Instantiate PDF
     pdf = FPDF()
     pdf.add_page()
     script_dir = Path(__file__).resolve().parent
-    
+
     # Adding unicode fonts
     font_path = (script_dir / 'fonts/Inter_28pt-Regular.ttf')
     pdf.add_font("inter", style="", fname=font_path)
     font_path = (script_dir / 'fonts/Inter_28pt-Bold.ttf')
     pdf.add_font("inter", style="b", fname=font_path)
-    pdf.set_font('inter', '', 24)  
+    pdf.set_font('inter', '', 24)
 
     # Title
     pdf.write(5, "Analysis Report\n\n")
 
     # Add outlier analysis
-    if outlier_analysis:
-        pdf = add_outlier_analysis(pdf, outlier_analysis)
-    
+    if outlier_analysis != '':
+        pdf.set_font('inter', '', 12)
+        pdf.write(5, "Outlier Analysis:\n")
+        pdf.set_font('inter', '', 10)
+        pdf.write(5, outlier_analysis)
+
     # Add page-wide pairplots
-    pdf.image((output_dir / 'pairplot.png'), Align.C, w=pdf.epw-20)
+    pdf.image((figures_dir / 'pairplot.png'), Align.C, w=pdf.epw-20)
     pdf.add_page()
 
     # Add correlation plots
-    pdf.image((output_dir / 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
-    pdf.image((output_dir / 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
+    pdf.image((figures_dir / 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
+    pdf.image((figures_dir / 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
 
     # Add multiplots
     if multiplots and categorical_columns:
@@ -111,45 +95,45 @@ def generate_analysis_report_pdf(
 
 def generate_explainer_report_pdf(
         problem_type: str,
-        output_dir: str | Path):
-    """
-    Generate a PDF report of the explainer with plots.
-    """
+        output_dir: str | Path
+    ) -> None:
+    """Generate a PDF report of the explainer with plots."""
     output_dir = Path(output_dir)
+    figures_dir = output_dir / 'figures'
 
     # Instantiate PDF
     pdf = FPDF()
     pdf.add_page()
     script_dir = Path(__file__).resolve().parent
-    
+
     # Adding unicode fonts
     font_path = (script_dir / 'fonts/Inter_28pt-Regular.ttf')
     pdf.add_font("inter", style="", fname=font_path)
     font_path = (script_dir / 'fonts/Inter_28pt-Bold.ttf')
     pdf.add_font("inter", style="b", fname=font_path)
-    pdf.set_font('inter', '', 24)  
+    pdf.set_font('inter', '', 24)
 
     # Title
     pdf.write(5, "Explainer Report\n\n")
 
     if problem_type != 'time_to_event':
-        pdf.image((output_dir / 'figures' / 'test_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
-        pdf.image((output_dir / 'figures' / 'validation_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
-        pdf.image((output_dir / 'figures' /  'train_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+        pdf.image((figures_dir / 'test_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+        pdf.image((figures_dir / 'validation_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+        pdf.image((figures_dir /  'train_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
         pdf.add_page()
 
-    pdf.image((output_dir / 'figures' / 'feature_importance.png'), Align.C, w=pdf.epw-20)
+    pdf.image((figures_dir / 'feature_importance.png'), Align.C, w=pdf.epw-20)
     pdf.add_page()
 
     if problem_type in ['binary', 'multiclass']:
-        pdf.image((output_dir / 'figures' / 'model_evaluation.png'), Align.C, w=pdf.epw-20)
-        pdf.image((output_dir / 'figures' / 'confusion_matrix.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
+        pdf.image((figures_dir / 'model_evaluation.png'), Align.C, w=pdf.epw-20)
+        pdf.image((figures_dir / 'confusion_matrix.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
         pdf.add_page()
 
-        pdf.image((output_dir / 'figures' / 'shap_barplot.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
+        pdf.image((figures_dir / 'shap_barplot.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
         pdf.image((output_dir /  'figures' / 'shap_heatmap.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
     elif problem_type == 'regression':
-        pdf.image((output_dir / 'figures' / 'residual_plot.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
+        pdf.image((figures_dir / 'residual_plot.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
         pdf.image((output_dir /  'figures' / 'true_vs_predicted.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
 
     # Save PDF
