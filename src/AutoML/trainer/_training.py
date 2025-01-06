@@ -40,6 +40,9 @@ def train_autogluon_with_cv(
     -------
     - predictors: A list of trained predictors (one per fold).
     - final_leaderboard: A single DataFrame containing all models across folds.
+    - best_fold: The index of best training fold
+    - X_val: The validation features 
+    - y_val: The validation target
     """
     kf = KFold(n_splits=num_folds, shuffle=True, random_state=42)
 
@@ -96,8 +99,12 @@ def train_autogluon_with_cv(
     return predictors, final_leaderboard, best_fold, X_val, y_val
 
 def train_survival_models(
-        X_train: pd.DataFrame, y_train: pd.DataFrame,
-        X_test: pd.DataFrame, y_test: pd.DataFrame, output_dir: Path) -> Tuple[dict, dict]:
+        X_train: pd.DataFrame, 
+        y_train: pd.DataFrame,
+        X_test: pd.DataFrame, 
+        y_test: pd.DataFrame, 
+        output_dir: Path
+    ) -> Tuple[dict, dict]:
     """Train both deep and traditional survival models, consolidate fitted models and C-index scores."""
     (output_dir / 'survival_models').mkdir(exist_ok=True, parents=True)
 

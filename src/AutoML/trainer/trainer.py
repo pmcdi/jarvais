@@ -1,7 +1,7 @@
 import json
 import pickle
 from pathlib import Path
-from typing import List, Optional, Union
+from typing import List
 
 import numpy as np
 import pandas as pd
@@ -20,30 +20,32 @@ from ..utils.functional import auprc
 from ..utils.models.survival import LitDeepSurv, LitMTLR
 
 class TrainerSupervised():
-    def __init__(self,
-                 task: str=None,
-                 reduction_method: Union[str, None] = None,
-                 keep_k: int = 2,
-                 output_dir: str | Path = None):
-        """
-        Initialize the AutoMLTrainer class with specified configurations.
+    """
+    TrainerSupervised class for supervised AutoML workflows.
 
-        Parameters
-        ----------
-        task : str, default-None
-            The type of task to handle. Options are 'binary', 'multiclass', 'regression', 'time_to_event'. Providing None defaults to Autogluon infering.
-        reduction_method : str, default=None
-            The feature reduction method to apply. Options are 'mrmr', 'variance_threshold', 'corr', 'chi2'.
-        keep_k : int, default=2
-            Number of features to keep, if a reduction method is defined.
-        output_dir : str or pathlib.Path, default=Path.cwd()
-            The directory where output files will be saved.
+    Provides functionality for feature reduction, training models (e.g., AutoGluon, survival models),
+    and performing inference. Supports various tasks like binary/multiclass classification,
+    regression, and time-to-event analysis.
 
-        Raises
-        ------
-        ValueError
-            If the task parameter is not one of the specified options.
-        """
+    Methods:
+    - `run`: Execute the AutoML pipeline on a dataset.
+    - `infer`: Perform inference using the trained model.
+    - `load_model`: Load a saved model from disk.
+
+    Parameters:
+    - `task` (str): Type of task ('binary', 'multiclass', 'regression', 'time_to_event'). Defaults to None.
+    - `reduction_method` (str): Feature reduction method ('mrmr', 'variance_threshold', 'corr', 'chi2').
+    - `keep_k` (int): Number of features to retain during reduction. Defaults to 2.
+    - `output_dir` (str|Path): Directory for saving outputs. Defaults to current working directory.
+    """
+    def __init__(
+            self,
+            task: str=None,
+            reduction_method: str | None = None,
+            keep_k: int = 2,
+            output_dir: str | Path = None
+        ) -> None:
+
         self.task = task
         self.reduction_method = reduction_method
         self.keep_k = keep_k
@@ -101,15 +103,16 @@ class TrainerSupervised():
 
     def _train_autogluon_with_cv(self) -> None:
         self.predictors, leaderboard, self.best_fold, self.X_val, self.y_val = train_autogluon_with_cv(
-                    pd.concat([self.X_train, self.y_train], axis=1),
-                    pd.concat([self.X_test, self.y_test], axis=1),
-                    target_variable=self.target_variable,
-                    task=self.task,
-                    extra_metrics=self.extra_metrics,
-                    eval_metric=self.eval_metric,
-                    num_folds=self.k_folds,
-                    output_dir=(self.output_dir / 'autogluon_models'),
-                    **self.kwargs)
+            pd.concat([self.X_train, self.y_train], axis=1),
+            pd.concat([self.X_test, self.y_test], axis=1),
+            target_variable=self.target_variable,
+            task=self.task,
+            extra_metrics=self.extra_metrics,
+            eval_metric=self.eval_metric,
+            num_folds=self.k_folds,
+            output_dir=(self.output_dir / 'autogluon_models'),
+            **self.kwargs
+        )
 
         self.predictor = self.predictors[self.best_fold]
 
@@ -122,16 +125,20 @@ class TrainerSupervised():
             leaderboard.sort_values(by='score_test', ascending=False)[self.show_leaderboard],
             tablefmt = "fancy_grid",
             headers="keys",
-            showindex=False))
+            showindex=False
+        ))
 
     def _train_autogluon(self) -> None:
         self.predictor = TabularPredictor(
-            label=self.target_variable, problem_type=self.task, eval_metric=self.eval_metric,
+            label=self.target_variable, 
+            problem_type=self.task, 
+            eval_metric=self.eval_metric,
             path=(self.output_dir / 'autogluon_models' / 'autogluon_models_best_fold'),
             log_to_file=False,
-            ).fit(
-                pd.concat([self.X_train, self.y_train], axis=1),
-                **self.kwargs)
+        ).fit(
+            pd.concat([self.X_train, self.y_train], axis=1),
+            **self.kwargs
+        )
 
         self.X_val, self.y_val = self.predictor.load_data_internal(data='val', return_y=True)
         # Update train data to remove validation
@@ -170,12 +177,13 @@ class TrainerSupervised():
             data: pd.DataFrame,
             target_variable: str,
             test_size: float = 0.2,
-            exclude: Optional[List[str]] = None,
-            stratify_on: Optional[str] = None,
+            exclude: List[str] | None = None,
+            stratify_on: str | None = None,
             explain: bool = False,
             save_data: bool = True,
             k_folds: int = 5,
-            **kwargs:dict) -> None:
+            **kwargs:dict
+        ) -> None:
         """
         Execute the AutoML pipeline on the given dataset.
 

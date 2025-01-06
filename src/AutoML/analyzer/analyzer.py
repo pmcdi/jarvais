@@ -50,11 +50,11 @@ class Analyzer():
     def __init__(
             self,
             data: pd.DataFrame,
-            target_variable: Union[str, None] = None,
-            task: Union[str, None] = None,
+            target_variable: str | None = None,
+            task: str | None = None,
             one_hot_encode: bool = False,
-            config: Union[str, Path, None] = None,
-            output_dir: Union[str, Path, None] = None
+            config: str | Path | None = None,
+            output_dir: str | Path | None = None
         ) -> None:
 
         self.data = data
