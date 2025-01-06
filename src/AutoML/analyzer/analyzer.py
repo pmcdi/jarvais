@@ -47,14 +47,15 @@ class Analyzer():
         config (Union[str, Path, None], optional): Path to a YAML configuration file.
         output_dir (Union[str, Path], optional): Directory to save outputs. Default is the current directory.
     """
-
-    def __init__(self,
-                 data: pd.DataFrame,
-                 target_variable: Union[str, None] = None,
-                 task: Union[str, None] = None,
-                 one_hot_encode: bool = False,
-                 config: Union[str, Path, None] = None,
-                 output_dir: Union[str, Path, None] = None):
+    def __init__(
+            self,
+            data: pd.DataFrame,
+            target_variable: Union[str, None] = None,
+            task: Union[str, None] = None,
+            one_hot_encode: bool = False,
+            config: Union[str, Path, None] = None,
+            output_dir: Union[str, Path, None] = None
+        ) -> None:
 
         self.data = data
         self.target_variable = target_variable
@@ -141,12 +142,15 @@ class Analyzer():
 
         (figures_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
 
-        self.multiplots = Parallel(n_jobs=-1)(delayed(plot_one_multiplot)(
-            self.data,
-            self.umap_data,
-            var,
-            self.continuous_columns,
-            figures_dir) for var in self.categorical_columns)
+        self.multiplots = Parallel(n_jobs=-1)(
+            delayed(plot_one_multiplot)(
+                self.data,
+                self.umap_data,
+                var,
+                self.continuous_columns,
+                figures_dir
+            ) for var in self.categorical_columns
+        )
 
     def run(self) -> None:
         """Run the data cleaning and visualization process."""
@@ -202,7 +206,8 @@ class Analyzer():
         if len(self.continuous_columns) > 10:
             corr_pairs = s_corr.abs().unstack().sort_values(
                 kind="quicksort",
-                ascending=False).drop_duplicates()
+                ascending=False
+            ).drop_duplicates()
             top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
             columns_to_plot = list({index for pair in top_10_pairs.index for index in pair})
         else:
@@ -220,15 +225,18 @@ class Analyzer():
             self.data = pd.get_dummies(
                 self.data,
                 columns=[cat for cat in self.categorical_columns if cat != self.target_variable],
-                dtype=float)
+                dtype=float
+            )
 
         self.data.to_csv(self.output_dir / 'updated_data.csv')
 
         # Create Output PDF
-        generate_analysis_report_pdf(outlier_analysis=self.outlier_analysis,
-                            multiplots=self.multiplots,
-                            categorical_columns=self.categorical_columns,
-                            output_dir=self.output_dir)
+        generate_analysis_report_pdf(
+            self.outlier_analysis,
+            self.multiplots,
+            self.categorical_columns,
+            self.output_dir
+        )
 
     @classmethod
     def dry_run(cls, data: pd.DataFrame) -> dict:
