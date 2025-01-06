@@ -96,7 +96,6 @@ def train_mtlr(data_train: pd.DataFrame, data_test: pd.DataFrame, output_dir: Pa
 
     trainer = pl.Trainer(
         default_root_dir=output_dir,
-        logger=True,
         enable_checkpointing=False,
         enable_progress_bar=False,
         enable_model_summary=False,
