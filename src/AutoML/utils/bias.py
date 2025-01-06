@@ -70,7 +70,7 @@ class BiasExplainer():
         self.largest_features   = self.sensitive_features.groupby(self.sensitive_features.columns.tolist()).size().idxmax()
         self.metrics            = {metric: get_metric(metric, sensitive_features=sensitive_features) for metric in metrics}
         self.metric_frame       = self.get_metric_frame(**kwargs)
-        
+
     def get_metric_frame(self, **kwargs):
         return fm.MetricFrame(metrics=self.metrics,
                               y_true=self.y_true,
@@ -82,7 +82,7 @@ class BiasExplainer():
         self.results = pd.DataFrame(self.metric_frame.by_group.T, index=self.metrics.keys())
         if relative:
             self.run_relative_largest()
-        
+
         print("Here are the bias subgroup analysis results:\n")
         print(self.results)
 
