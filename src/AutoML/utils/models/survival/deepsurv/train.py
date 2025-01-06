@@ -69,7 +69,6 @@ def train_deepsurv(data_train: pd.DataFrame, data_test: pd.DataFrame, output_dir
 
     trainer = pl.Trainer(
         default_root_dir=output_dir,
-        logger=True,
         enable_checkpointing=False,
         enable_progress_bar=False,
         enable_model_summary=False,
