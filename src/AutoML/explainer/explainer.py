@@ -1,5 +1,4 @@
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 from sklearn.inspection import permutation_importance
@@ -16,12 +15,14 @@ from ..utils.plot import (
 
 class Explainer():
     """A class to generate diagnostic plots and reports for models trained using TrainerSupervised."""
-    def __init__(self,
-                 trainer,
-                 X_train: pd.DataFrame,
-                 X_test: pd.DataFrame,
-                 y_test: pd.DataFrame,
-                 output_dir: Union[str, Path, None] = None):
+    def __init__(
+            self,
+            trainer,
+            X_train: pd.DataFrame,
+            X_test: pd.DataFrame,
+            y_test: pd.DataFrame,
+            output_dir: str | Path | None = None
+        ) -> None:
 
         self.trainer = trainer
         self.predictor = trainer.predictor
