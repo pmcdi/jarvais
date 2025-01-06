@@ -61,7 +61,7 @@ def train_mtlr(data_train: pd.DataFrame, data_test: pd.DataFrame, output_dir: Pa
     def objective(trial: optuna.trial.Trial) -> float:
         C1 = trial.suggest_categorical("C1", [c1 for c1 in np.logspace(-2, 3, 6)])
         dropout = trial.suggest_float("dropout", 0.2, 0.5)
-        dims = trial.suggest_categorical("dims", [[2**n, 2**(n-3)] for n in range(4, 9)])
+        dims = trial.suggest_categorical("dims", [[2**n, 2**n] for n in range(4, 10)])
 
         model = LitMTLR(in_channel=in_channel, num_time_bins=len(time_bins), dims=dims, dropout=dropout, C1=C1)
 
