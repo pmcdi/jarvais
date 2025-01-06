@@ -63,13 +63,14 @@ def test_create_multiplots(analyzer):
     analyzer.categorical_columns = ['C']
     analyzer.continuous_columns = ['A', 'B']
     analyzer.umap_data = pd.DataFrame.from_dict({'UMAP1': [i for i in range(1, 16)], 'UMAP2': [j for j in range(15, 0, -1)]}).to_numpy()
-    analyzer._create_multiplots()
+    analyzer._create_multiplots(figures_dir=analyzer.output_dir / 'figures')
     assert len(analyzer.multiplots) > 0
 
 def test_run(analyzer):
     analyzer.run()
     assert (analyzer.output_dir / 'tableone.csv').exists()
     assert (analyzer.output_dir / 'updated_data.csv').exists()
-    assert (analyzer.output_dir / 'pearson_correlation.png').exists()
-    assert (analyzer.output_dir / 'spearman_correlation.png').exists()
-    assert (analyzer.output_dir / 'multiplots').exists()
+    assert (analyzer.output_dir / 'figures' / 'pearson_correlation.png').exists()
+    assert (analyzer.output_dir / 'figures' / 'spearman_correlation.png').exists()
+    assert (analyzer.output_dir / 'figures' / 'multiplots').exists()
+    assert (analyzer.output_dir / 'figures' / 'frequency_tables').exists()
