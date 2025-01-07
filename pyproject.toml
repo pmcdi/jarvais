@@ -52,8 +52,6 @@ py312 = ["py312", "test"]
 
 [tool.pixi.feature.py310.dependencies]
 python = "3.10.*"
-[tool.pixi.feature.py310.dependencies]
-python = "3.10.*"
 [tool.pixi.feature.py311.dependencies]
 python = "3.11.*"
 [tool.pixi.feature.py312.dependencies]
