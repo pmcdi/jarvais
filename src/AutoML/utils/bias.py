@@ -2,6 +2,7 @@ import inspect, re
 from functools import partial
 
 import pandas as pd
+from tabulate import tabulate
 import fairlearn.metrics as fm
 
 
@@ -84,9 +85,10 @@ class BiasExplainer():
             self.run_relative_largest()
 
         print("Here are the bias subgroup analysis results:\n")
-        print(self.results)
+        print(tabulate(self.results, headers='keys', tablefmt='fancy_grid'))
 
     def run_relative_largest(self):
         print(f"Calculating relative metric to the largest subgroup: {self.largest_features}")
         results_relative = self.results.T/self.results[self.largest_features]
+        results_relative = results_relative.applymap(lambda x: f"{x} ✅" if x > 0.9 else f"{x} ❌")
         self.results = pd.concat([self.results, results_relative.T.rename(index=lambda x: f"Relative {x}")])
