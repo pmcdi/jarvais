@@ -7821,7 +7821,9 @@ packages:
   name: automl
   version: 0.1.0
   path: .
-  sha256: 408914b36f2247a8f8c23a20e524a5bb23d1d957408b89314a0681693dc91d22
+  sha256: f678a2af9aa0e31669f191452428de4e0449cd181e4768d2881047dc1f837420
+  requires_dist:
+  - optuna-integration[pytorch-lightning]>=4.1.0,<5
   editable: true
 - kind: conda
   name: aws-c-auth
