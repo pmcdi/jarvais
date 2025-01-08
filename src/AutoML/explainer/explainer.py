@@ -1,4 +1,5 @@
 from pathlib import Path
+from typing import List
 
 import pandas as pd
 from sklearn.inspection import permutation_importance
@@ -12,6 +13,7 @@ from ..utils.plot import (
     plot_shap_values,
     plot_violin_of_bootsrapped_metrics,
 )
+from ..utils.bias import BiasExplainer, infer_sensitive_features
 
 class Explainer():
     """A class to generate diagnostic plots and reports for models trained using TrainerSupervised."""
@@ -21,7 +23,8 @@ class Explainer():
             X_train: pd.DataFrame,
             X_test: pd.DataFrame,
             y_test: pd.DataFrame,
-            output_dir: str | Path | None = None
+            output_dir: str | Path | None = None,
+            sensitive_features: list | None = None,
         ) -> None:
 
         self.trainer = trainer
@@ -29,6 +32,7 @@ class Explainer():
         self.X_train = X_train
         self.X_test = X_test
         self.y_test = y_test
+        self.sensitive_features = sensitive_features
 
         self.output_dir = Path.cwd() if output_dir is None else Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -47,6 +51,13 @@ class Explainer():
                 self.trainer.y_train,
                 output_dir=self.output_dir / 'figures'
             )
+
+        if self.trainer.task != 'time_to_event':
+            self.bias_results = self.run_bias_audit()
+
+            (self.output_dir / 'bias').mkdir(parents=True, exist_ok=True)
+            for result in self.bias_results:
+                result.to_csv((self.output_dir / 'bias' / f'{result.columns.name}.csv'))
 
         # Plot diagnostics
         if self.trainer.task in ['binary', 'multiclass']:
@@ -95,7 +106,14 @@ class Explainer():
         plot_feature_importance(importance_df, self.output_dir / 'figures', model_name)
         generate_explainer_report_pdf(self.trainer.task, self.output_dir)
 
+    def run_bias_audit(self) -> List[pd.DataFrame]:
+
+        self.sensitive_features = infer_sensitive_features(self.X_test) if self.sensitive_features is None else self.sensitive_features
+
+        bias = BiasExplainer(self.y_test, self.predictor.predict(self.X_test), self.sensitive_features, metrics=['mean_prediction', 'false_positive_rate'])
+        return bias.run(relative=True)
+
     @classmethod
-    def from_trainer(cls, trainer):
+    def from_trainer(cls, trainer, **kwargs):
         """Create Explainer object from TrainerSupervised object."""
-        return cls(trainer, trainer.X_train, trainer.X_test, trainer.y_test, trainer.output_dir)
+        return cls(trainer, trainer.X_train, trainer.X_test, trainer.y_test, trainer.output_dir, **kwargs)
