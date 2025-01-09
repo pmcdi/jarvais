@@ -1,0 +1,25 @@
+site_name: AutoML Documentation
+
+theme:
+    name: material
+    palette:
+        scheme: slate
+
+plugins:
+- mkdocstrings
+- mkdocs-jupyter:
+    theme: dark
+
+nav:
+  - AutoML Docs: index.md
+  - get_started.md
+  - Tutorials:
+      - Classification: tutorials/a2r_example.ipynb
+      - Time-To-Event: tutorials/radcure_time_to_event.ipynb
+  - API:
+      - Analyzer: api/analyzer.md
+      - Trainer: api/trainer.md
+      - Explainer: api/explainer.md
+
+extra_css:
+  - assets/styles.css

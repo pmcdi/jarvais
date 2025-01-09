@@ -1,7 +1,6 @@
 import logging
 import warnings
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 import yaml
@@ -28,24 +27,39 @@ def custom_warning_handler(message, category, filename, lineno, file=None, line=
 
 warnings.showwarning = custom_warning_handler
 
-class Analyzer():
+class Analyzer:
     """
     A data analysis and cleaning tool for preprocessing datasets, generating reports, and visualizations.
 
     Features:
-    - Handles missing values and outliers.
-    - Infers column types (categorical, continuous, date).
-    - Supports one-hot encoding and time-to-event analysis.
-    - Generates summary statistics and correlation plots.
-    - Produces a comprehensive PDF analysis report.
+        - Handles missing values and outliers.
+        - Infers column types (categorical, continuous, date).
+        - Supports one-hot encoding and time-to-event analysis.
+        - Generates summary statistics and correlation plots.
+        - Produces a comprehensive PDF analysis report.
 
     Args:
         data (pd.DataFrame): Input dataset.
         target_variable (str, optional): Target variable in the dataset.
-        task (str, optional): Type of analysis task ('time_to_event' supported).
+        task (str, optional): Type of analysis task.
         one_hot_encode (bool, optional): Whether to one-hot encode categorical columns.
-        config (Union[str, Path, None], optional): Path to a YAML configuration file.
-        output_dir (Union[str, Path], optional): Directory to save outputs. Default is the current directory.
+        config (str | Path, optional): Path to a YAML configuration file.
+        output_dir (str | Path, optional): Directory to save outputs. Default is the current directory.
+
+    Example:
+        ```python
+        from AutoML.analyzer import Analyzer
+        import pandas as pd
+
+        data = pd.DataFrame({
+            "age": [25, 32, 40],
+            "income": [50000, 60000, 75000],
+            "category": ["A", "B", "A"]
+        })
+
+        analyzer = Analyzer(data, target_variable="income", task="regression")
+        analyzer.run()
+        ```
     """
     def __init__(
             self,
@@ -53,8 +67,8 @@ class Analyzer():
             target_variable: str | None = None,
             task: str | None = None,
             one_hot_encode: bool = False,
-            config: str | Path | None = None,
-            output_dir: str | Path | None = None
+            config: str | Path = None,
+            output_dir: str | Path = None
         ) -> None:
 
         self.data = data

@@ -8,14 +8,14 @@ Follow pixi installation process found [here](https://pixi.sh/latest/)
 
 1. **Clone Repo and Navigate**
 
-    ```sh
+    ```bash
     git clone https://github.com/pmcdi/AutoML.git
     cd AutoML
     ```
 
 2. **Install Dependencies**
 
-    ```sh
+    ```bash
     pixi install
     ```
 
@@ -40,15 +40,17 @@ analyzer.run()
 ```
 #### Example Output
 
-##### Feature Types:
-- **Categorical**: ['Gender', 'Disease Type', 'Treatment']
-- **Continuous**: ['Age', 'Tumor Size']
+```bash
+Feature Types:
+  - Categorical: ['Gender', 'Disease Type', 'Treatment']
+  - Continuous: ['Age', 'Tumor Size']
 
-##### Outlier Detection:
-- Outliers found in **Gender**: ['Male: 5 out of 1000']
-- Outliers found in **Disease Type**: ['Lung Cancer: 10 out of 1000']
-- No Outliers found in **Treatment**
-- Outliers found in **Tumor Size**: ['12.5: 2 out of 1000']
+Outlier Detection:
+  - Outliers found in Gender: ['Male: 5 out of 1000']
+  - Outliers found in Disease Type: ['Lung Cancer: 10 out of 1000']
+  - No Outliers found in Treatment
+  - Outliers found in Tumor Size: ['12.5: 2 out of 1000']
+```
 
 ##### TableOne(Data Summary):
 
@@ -105,11 +107,14 @@ trainer.run(data=data, target_variable='target', save_data=True)
 
 #### Example Output
 
+```bash
 Training fold 1/5...  
 Fold 1 score: `0.8467207586933614`
 
 Training fold 2/5...  
 Fold 2 score: `0.8487846136306914`
+...
+```
 
 ##### Model Leaderboard
 Displays values in `mean [min, max]` format across training folds.
