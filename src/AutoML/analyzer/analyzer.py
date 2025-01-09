@@ -106,8 +106,8 @@ class Analyzer():
             print("Columns that are all NaN(probably ID columns) dropping...: ", nan_columns)
             self.continuous_columns = list(set(self.continuous_columns) - set(nan_columns))
 
-        print(f'Used a heuristic to define categorical and continuous columns. Please review!\n\nCategorical: {self.categorical_columns}\nContinuous: {self.continuous_columns}')
-
+        print("Used a heuristic to define categorical and continuous columns. Please review!")
+        
         columns['categorical'] = self.categorical_columns
         columns['continuous'] = self.continuous_columns
         columns['date'] = self.date_columns
@@ -161,6 +161,10 @@ class Analyzer():
             self.categorical_columns = self.config['columns']['categorical']
             # Replace all non numerical values with NaN
             self.data[self.continuous_columns] = self.data[self.continuous_columns].apply(pd.to_numeric, errors='coerce')
+            self.outlier_analysis, _ = get_outliers(self.data, self.categorical_columns)
+
+        print(f"Feature Types:\n  - Categorical: {self.categorical_columns}\n  - Continuous: {self.continuous_columns}")
+        print(f"\n\nOutlier Analysis:\n{self.outlier_analysis}")
 
         with open(self.output_dir / 'config.yaml', 'w') as f:
             yaml.dump(self.config, f)
@@ -245,6 +249,9 @@ class Analyzer():
         analyzer._create_config()
 
         df_keep = analyzer.data[analyzer.continuous_columns + analyzer.categorical_columns]
+
+        print(f"\n\nFeature Types:\n  - Categorical: {analyzer.categorical_columns}\n  - Continuous: {analyzer.continuous_columns}")
+        print(f"\n\nOutlier Analysis:\n{analyzer.outlier_analysis}")
 
         mytable = TableOne(df_keep, categorical=analyzer.categorical_columns, pval=False)
         print(mytable.tabulate(tablefmt = "fancy_grid"))
