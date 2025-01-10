@@ -8,18 +8,16 @@ AutoML for Oncology is a Python package designed to automate and enhance machine
 
 Follow pixi installation process found [here](https://pixi.sh/latest/)
 
-1. **Clone Repo and Navigate**
+```bash
+# Clone Repo
+git clone https://github.com/pmcdi/AutoML.git
 
-    ```
-    git clone https://github.com/pmcdi/AutoML.git
-    cd AutoML
-    ```
+# Navigate to project
+cd AutoML
 
-2. **Install Dependencies**
-
-    ```
-    pixi install
-    ```
+# Install dependencies
+pixi install
+```
 
 ## Modules
 
