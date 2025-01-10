@@ -19,3 +19,7 @@
 .jp-Cell-outputWrapper::-webkit-scrollbar-thumb:hover {
     background: #555;
 }
+
+.md-main__inner.md-grid {
+    max-width: initial;
+}

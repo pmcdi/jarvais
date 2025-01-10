@@ -120,8 +120,9 @@ class Explainer():
     def _run_bias_audit(self) -> List[pd.DataFrame]:
 
         self.sensitive_features = infer_sensitive_features(self.X_test) if self.sensitive_features is None else self.sensitive_features
+        metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate']
 
-        bias = BiasExplainer(self.y_test, self.predictor.predict(self.X_test), self.sensitive_features, metrics=['mean_prediction', 'false_positive_rate'])
+        bias = BiasExplainer(self.y_test, self.predictor.predict(self.X_test), self.sensitive_features, metrics=metrics)
         return bias.run(relative=True)
 
     @classmethod

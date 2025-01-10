@@ -9,12 +9,17 @@ plugins:
 - mkdocstrings
 - mkdocs-jupyter:
     theme: dark
+    
 
 nav:
-  - AutoML Docs: index.md
-  - get_started.md
+  - Introduction: index.md
+  - Get Started:
+    - Analyzer Quick Start: get_started/analyzer.md
+    - Trainer Quick Start: get_started/trainer.md
+    - Explainer Quick Start: get_started/explainer.md
   - Tutorials:
-      - Classification: tutorials/a2r_example.ipynb
+      - Classification: tutorials/classification.ipynb
+      - Regression: tutorials/regression.ipynb
       - Time-To-Event: tutorials/radcure_time_to_event.ipynb
   - API:
       - Analyzer: api/analyzer.md
