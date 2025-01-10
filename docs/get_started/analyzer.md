@@ -90,3 +90,8 @@ UMAP visualization of continuous data.
 
 <img src="../example_images/umap_continuous_data.png" alt="UMAP Continuous Data" width="500"/>
 
+#### 5. Kaplan Meier Curve (Time-To-Event)
+Kaplan Meier Curves for all categorical variables. An option exclusive to time-to-event data.
+
+<img src="../example_images/kaplan_meier_Disease Site.png" alt="Kaplan Meier Curve" width="500"/>
+
