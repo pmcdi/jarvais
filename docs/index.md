@@ -25,6 +25,6 @@ Follow pixi installation process found [here](https://pixi.sh/latest/)
 
 This package consists of 3 different modules:
 
-- **Analyzer**: A module that analyzes and processes data, providing valuable insights for downstream tasks.
-- **Trainer**: A module for training machine learning models, designed to be flexible and efficient.
-- **Explainer**: A module that explains model predictions, offering interpretability and transparency in decision-making.
+- [**Analyzer**](get_started/analyzer.md): A module that analyzes and processes data, providing valuable insights for downstream tasks.
+- [**Trainer**](get_started/trainer.md): A module for training machine learning models, designed to be flexible and efficient.
+- [**Explainer**](get_started/explainer.md): A module that explains model predictions, offering interpretability and transparency in decision-making.
