@@ -76,3 +76,6 @@ The **Explainer** module generates the following files and directories:
 
 <img src="../example_images/true_vs_predicted.png" alt="True vs Predicted" width="750"/>
 
+### Explainer Report
+
+![Explainer Report](<./pdfs/explainer_report.pdf>){ type=application/pdf style="min-height:75vh;width:75%" }
