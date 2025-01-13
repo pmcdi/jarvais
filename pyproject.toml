@@ -6,7 +6,7 @@ authors = [
     { name = "Joshua Siraj", email = "joshua.siraj@ryerson.ca" },
     { name = "Sejin Kim", email = "hello@sejin.kim" }
 ]
-dependencies = ["optuna-integration[pytorch-lightning]>=4.1.0,<5", "mkdocstrings[python]>=0.27.0,<0.28", "mkdocs-material>=9.5.49,<10", "mkdocs-jupyter>=0.25.1,<0.26"]
+dependencies = ["optuna-integration[pytorch-lightning]>=4.1.0,<5", "mkdocstrings[python]>=0.27.0,<0.28"]
 
 [tool.pixi.project]
 channels = ["conda-forge", "pytorch"]
@@ -42,6 +42,9 @@ AutoML = { path = ".", editable = true }
 mrmr-selection = "==0.2.8"
 umap-learn = ">=0.5.6, <0.6"
 scikit-survival = ">=0.23.1,<0.24"
+mkdocs-material = ">=9.5.49,<10" 
+mkdocs-jupyter = ">=0.25.1,<0.26" 
+mkdocs-pdf = ">=0.1.2,<0.2"
 
 [tool.pixi.environments]
 dev = { features = ["test", "style"], solve-group = "default" }

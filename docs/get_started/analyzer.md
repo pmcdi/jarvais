@@ -95,3 +95,6 @@ Kaplan Meier Curves for all categorical variables. An option exclusive to time-t
 
 <img src="../example_images/kaplan_meier_Disease Site.png" alt="Kaplan Meier Curve" width="500"/>
 
+### Analysis Report
+
+![Analysis Report](<./pdfs/analysis_report.pdf>){ type=application/pdf style="min-height:75vh;width:75%" }
