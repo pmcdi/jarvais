@@ -9,7 +9,10 @@ plugins:
 - mkdocstrings
 - mkdocs-jupyter:
     theme: dark
-    
+- mkdocs-pdf
+
+markdown_extensions:
+  - attr_list
 
 nav:
   - Introduction: index.md
