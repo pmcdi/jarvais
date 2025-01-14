@@ -19,24 +19,35 @@ from ..explainer import Explainer
 from ..utils.functional import auprc
 from .survival import LitDeepSurv, LitMTLR
 
-class TrainerSupervised():
+class TrainerSupervised:
     """
     TrainerSupervised class for supervised AutoML workflows.
 
-    Provides functionality for feature reduction, training models (e.g., AutoGluon, survival models),
-    and performing inference. Supports various tasks like binary/multiclass classification,
-    regression, and time-to-event analysis.
+    This class provides functionality for feature reduction, training models (e.g., AutoGluon, survival models), 
+    and performing inference. It supports various tasks such as binary/multiclass classification, regression, 
+    and time-to-event analysis.
 
-    Methods:
-    - `run`: Execute the AutoML pipeline on a dataset.
-    - `infer`: Perform inference using the trained model.
-    - `load_model`: Load a saved model from disk.
+    Args:
+        task (str, optional): Type of task. Must be one of {'binary', 'multiclass', 'regression', 'time_to_event'}. 
+        reduction_method (str | None, optional): Feature reduction method. Supported methods include 
+            {'mrmr', 'variance_threshold', 'corr', 'chi2'}.
+        keep_k (int, optional): Number of features to retain during reduction.
+        output_dir (str | Path, optional): Directory for saving outputs. Defaults to the current working directory.
+        
+    Example:
+        ```python
+        from AutoML.trainer import TrainerSupervised
 
-    Parameters:
-    - `task` (str): Type of task ('binary', 'multiclass', 'regression', 'time_to_event'). Defaults to None.
-    - `reduction_method` (str): Feature reduction method ('mrmr', 'variance_threshold', 'corr', 'chi2').
-    - `keep_k` (int): Number of features to retain during reduction. Defaults to 2.
-    - `output_dir` (str|Path): Directory for saving outputs. Defaults to current working directory.
+        trainer = TrainerSupervised(
+            task="binary",
+            reduction_method="mrmr",
+            keep_k=10,
+            output_dir="./results"
+        )
+        trainer.run(data=my_data, target_variable="target")
+        
+        predictions = trainer.infer(new_data)
+        ```
     """
     def __init__(
             self,
@@ -187,26 +198,22 @@ class TrainerSupervised():
         """
         Execute the AutoML pipeline on the given dataset.
 
-        Parameters
-        ----------
-        data : pd.DataFrame
-            The input dataset containing features and target.
-        target_variable : str
-            The name of the target variable in the dataset.
-        test_size : float, default=0.2
-            Proportion of the dataset to include in the test split (0 < test_size < 1).
-        exclude : list of str, optional
-            List of columns to exclude from the feature set. Default is an empty list.
-        stratify_on : str, optional
-            Column to use for stratification, if any. Must be compatible with `target_variable`.
-        explain : bool, default=False
-            Whether to generate explainability reports for the model.
-        save_data : bool, default=True
-            Whether to save train/test/validation data to disk.
-        k_folds : int, default=5
-            Number of folds for cross-validation. If 1, uses AutoGluon-specific validation.
-        kwargs : dict, optional
-            Additional arguments passed to the AutoGluon predictor's `fit` method.
+        Args:
+            data (pd.DataFrame): The input dataset containing features and target.
+            target_variable (str): The name of the target variable in the dataset.
+            test_size (float, optional): Proportion of the dataset to include in the test split. 
+                Must be between 0 and 1. Default is 0.2.
+            exclude (list of str, optional): List of columns to exclude from the feature set. 
+                Default is an empty list.
+            stratify_on (str, optional): Column to use for stratification, if any. 
+                Must be compatible with `target_variable`.
+            explain (bool, optional): Whether to generate explainability reports for the model. 
+                Default is False.
+            save_data (bool, optional): Whether to save train/test/validation data to disk. 
+                Default is True.
+            k_folds (int, optional): Number of folds for cross-validation. If 1, uses AutoGluon-specific validation. 
+                Default is 5.
+            kwargs (dict, optional): Additional arguments passed to the AutoGluon predictor's `fit` method.
         """
         self.target_variable = target_variable
         self.k_folds = k_folds
@@ -297,7 +304,16 @@ class TrainerSupervised():
             explainer.run()
 
     def infer(self, data: pd.DataFrame, model: str = None) -> pd.DataFrame | pd.Series | np.ndarray:
-        """Perform inference using the trained predictor on the provided data."""
+        """
+        Perform inference using the trained predictor on the provided data.
+
+        Args:
+            data (pd.DataFrame): The input data for which inference is to be performed.
+            model (str, optional): The name of the model to use for inference. If None, the default model is used.
+
+        Returns:
+            pd.DataFrame, pd.Series, or np.ndarray: The prediction results from the model.
+        """
         if hasattr(self.predictor, 'can_predict_proba'): # Autogluon
             if self.predictor.can_predict_proba:
                 inference =  self.predictor.predict_proba(data, model)
@@ -318,17 +334,12 @@ class TrainerSupervised():
         """
         Load a trained model from the specified directory.
 
-        Parameters
-        ----------
-        model_dir : str
-            The directory where the model is saved.
-        project_dir : str
-            The directory where the trainer was ran.
+        Args:
+            model_dir (str or Path, optional): The directory where the model is saved.
+            project_dir (str or Path, optional): The directory where the trainer was run.
 
-        Returns
-        -------
-        TrainerSupervised
-            The loaded model.
+        Returns:
+            TrainerSupervised: The loaded model.
         """
         if not (model_dir or project_dir):
             raise ValueError('model_dir or project_dir must be provided')

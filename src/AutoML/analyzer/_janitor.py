@@ -117,6 +117,7 @@ def get_outliers(data: pd.DataFrame, categorical_columns: list) -> Tuple[str, di
     mapping = {}
     total_report = ''
 
+
     for cat in categorical_columns:
         category_counts = data[cat].value_counts()
         threshold = int(len(data)*.01)
@@ -133,9 +134,7 @@ def get_outliers(data: pd.DataFrame, categorical_columns: list) -> Tuple[str, di
         if len(outliers) > 0:
             outliers = [f'{o}: {category_counts[o]} out of {data[cat].count()}' for o in outliers]
             total_report += f'  - Outliers found in {cat}: {outliers}\n'
-            print(f'  - Outliers found in {cat}: {outliers}')
         else:
-            print(f'  - No Outliers found in {cat}')
             total_report += f'  - No Outliers found in {cat}\n'
 
     return total_report, mapping

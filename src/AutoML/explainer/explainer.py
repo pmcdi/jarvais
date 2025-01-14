@@ -16,7 +16,18 @@ from ..utils.plot import (
 from ..utils.bias import BiasExplainer, infer_sensitive_features
 
 class Explainer():
-    """A class to generate diagnostic plots and reports for models trained using TrainerSupervised."""
+    """
+    A class to generate diagnostic plots and reports for models trained using TrainerSupervised.
+
+    Attributes:
+        trainer (TrainerSupervised): The TrainerSupervised object containing the trained model.
+        predictor (object): The AutoGluon predictor object used for inference.
+        X_train (pd.DataFrame): The training dataset used to train the model.
+        X_test (pd.DataFrame): The test dataset for evaluating the model.
+        y_test (pd.DataFrame): The true target values for the test dataset.
+        output_dir (Path): The directory where plots, reports, and outputs are saved.
+        sensitive_features (list, optional): List of features considered sensitive for bias auditing.
+    """
     def __init__(
             self,
             trainer,
@@ -53,7 +64,7 @@ class Explainer():
             )
 
         if self.trainer.task != 'time_to_event':
-            self.bias_results = self.run_bias_audit()
+            self.bias_results = self._run_bias_audit()
 
             (self.output_dir / 'bias').mkdir(parents=True, exist_ok=True)
             for result in self.bias_results:
@@ -106,11 +117,12 @@ class Explainer():
         plot_feature_importance(importance_df, self.output_dir / 'figures', model_name)
         generate_explainer_report_pdf(self.trainer.task, self.output_dir)
 
-    def run_bias_audit(self) -> List[pd.DataFrame]:
+    def _run_bias_audit(self) -> List[pd.DataFrame]:
 
         self.sensitive_features = infer_sensitive_features(self.X_test) if self.sensitive_features is None else self.sensitive_features
+        metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate']
 
-        bias = BiasExplainer(self.y_test, self.predictor.predict(self.X_test), self.sensitive_features, metrics=['mean_prediction', 'false_positive_rate'])
+        bias = BiasExplainer(self.y_test, self.predictor.predict(self.X_test), self.sensitive_features, metrics=metrics)
         return bias.run(relative=True)
 
     @classmethod

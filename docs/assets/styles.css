@@ -1,0 +1,25 @@
+/* Make Jupyter notebook output cells scrollable */
+.jp-Cell-outputWrapper  {
+    max-height: 450px; /* Adjust height as needed */
+    overflow-y: auto;
+    padding: 10px;
+    border-radius: 5px;
+}
+
+/* Optional: Style the scrollbar */
+.jp-Cell-outputWrapper::-webkit-scrollbar {
+    width: 8px;
+}
+
+.jp-Cell-outputWrapper::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+}
+
+.jp-Cell-outputWrapper::-webkit-scrollbar-thumb:hover {
+    background: #555;
+}
+
+.md-main__inner.md-grid {
+    max-width: initial;
+}
