@@ -97,7 +97,7 @@ class LitDeepSurv(pl.LightningModule):
         with torch.no_grad():
             y_pred = self.model(torch.tensor(x.drop(["time", "event"], axis=1).values, dtype=torch.float))
 
-        return -y_pred
+        return y_pred
 
     def configure_optimizers(self) -> optim.Optimizer:
         return optim.Adam(self.model.parameters())
