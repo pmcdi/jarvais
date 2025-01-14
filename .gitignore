@@ -5,6 +5,7 @@ pixi.toml
 data/
 tests/tmp
 *.bak
+*.test
 
 .DS_Store
 
