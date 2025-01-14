@@ -1,0 +1,33 @@
+site_name: AutoML Documentation
+
+theme:
+    name: material
+    palette:
+        scheme: slate
+
+plugins:
+- mkdocstrings
+- mkdocs-jupyter:
+    theme: dark
+- mkdocs-pdf
+
+markdown_extensions:
+  - attr_list
+
+nav:
+  - Introduction: index.md
+  - Get Started:
+    - Analyzer Quick Start: get_started/analyzer.md
+    - Trainer Quick Start: get_started/trainer.md
+    - Explainer Quick Start: get_started/explainer.md
+  - Tutorials:
+      - Classification: tutorials/classification.ipynb
+      - Regression: tutorials/regression.ipynb
+      - Time-To-Event: tutorials/radcure_time_to_event.ipynb
+  - API:
+      - Analyzer: api/analyzer.md
+      - Trainer: api/trainer.md
+      - Explainer: api/explainer.md
+
+extra_css:
+  - assets/styles.css
