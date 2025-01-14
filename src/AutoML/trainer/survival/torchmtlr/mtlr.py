@@ -124,7 +124,7 @@ class LitMTLR(pl.LightningModule):
             y_pred = self.model(torch.tensor(x.drop(["time", "event"], axis=1).values, dtype=torch.float))
             risk_pred = mtlr_risk(y_pred)
 
-        return -risk_pred
+        return risk_pred
 
     def configure_optimizers(self) -> optim.Optimizer:
         return make_optimizer(optim.Adam, self.model, lr=.005, weight_decay=1e-5)
