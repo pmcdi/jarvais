@@ -8094,7 +8094,15 @@ packages:
   name: automl
   version: 0.1.0
   path: .
+<<<<<<< HEAD
   sha256: 81b7307267944c9ac2800cd3b6954d36e9f366838b7b99477a2f3ddd91b8aadf
+=======
+<<<<<<< HEAD
+  sha256: 1f3b34bad080e3d05532ffcff8632698098c3d83b296f8efaac938cb0bdbe59c
+=======
+  sha256: b1138fe3344336b3358fc95687592dd92b01ad1a31449ed30bcc29498a1849f6
+>>>>>>> 84ca363 (build: update to lock and .toml)
+>>>>>>> 8069033 (build: update to lock and .toml)
   requires_dist:
   - optuna-integration[pytorch-lightning]>=4.1.0,<5
   - mkdocstrings[python]>=0.27.0,<0.28
