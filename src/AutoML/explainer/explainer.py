@@ -50,17 +50,15 @@ class Explainer():
                 self.X_train,
                 self.trainer.y_train,
                 output_dir=self.output_dir / 'figures'
-            )
+            )            
 
-        if self.trainer.task != 'time_to_event':
+        if self.trainer.task in ['binary', 'multiclass']:
             self.bias_results = self.run_bias_audit()
 
             (self.output_dir / 'bias').mkdir(parents=True, exist_ok=True)
             for result in self.bias_results:
                 result.to_csv((self.output_dir / 'bias' / f'{result.columns.name}.csv'))
 
-        # Plot diagnostics
-        if self.trainer.task in ['binary', 'multiclass']:
             plot_classification_diagnostics(
                 self.y_test,
                 self.predictor.predict_proba(self.X_test).iloc[:, 1],
@@ -76,6 +74,7 @@ class Explainer():
                 self.X_test,
                 output_dir=self.output_dir / 'figures'
             )
+
         elif self.trainer.task == 'regression':
             plot_regression_diagnostics(
                 self.y_test,
@@ -110,7 +109,7 @@ class Explainer():
 
         self.sensitive_features = infer_sensitive_features(self.X_test) if self.sensitive_features is None else self.sensitive_features
 
-        bias = BiasExplainer(self.y_test, self.predictor.predict(self.X_test), self.sensitive_features, metrics=['mean_prediction', 'false_positive_rate'])
+        bias = BiasExplainer(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.sensitive_features, metrics=['mean_prediction', 'false_positive_rate'])
         return bias.run(relative=True)
 
     @classmethod
