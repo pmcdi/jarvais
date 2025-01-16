@@ -43,7 +43,7 @@ class BiasExplainer():
             y_true: pd.DataFrame, 
             y_pred: pd.DataFrame, 
             sensitive_features: dict, 
-            metrics: list = ['mean_prediction', 'false_positive_rate'], 
+            metrics: list = ['mean_prediction', 'false_positive_rate', 'true_positive_rate'], 
             **kwargs: dict
         ) -> None:
 
@@ -127,10 +127,12 @@ class BiasExplainer():
                 **self.kwargs
             )
             result = pd.DataFrame(metric_frame.by_group.T, index=_metrics.keys())
-            
+            result = result.rename(columns=self.mapper)
+            result = result.applymap(lambda x: f"{x:.3f}")
+
             if relative:
                 results_relative = result.T / result[largest_feature]
-                results_relative = results_relative.applymap(lambda x: f"{x} ✅" if x <= fairness_threshold or 1/x <= fairness_threshold else f"{x} ❌")
+                results_relative = results_relative.applymap(lambda x: f"{x:.3f} ✅" if x <= fairness_threshold or 1/x <= fairness_threshold else f"{x:.3f} ❌")
                 result = pd.concat([result, results_relative.T.rename(index=lambda x: f"Relative {x}")])
 
             self.results.append(result)
