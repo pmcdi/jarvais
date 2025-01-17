@@ -2,6 +2,8 @@
 
 The `Explainer` class is part of the `AutoML.explainer` module. It generates explainability reports for trained models.
 
-::: AutoML.explainer.explainer.Explainer
+::: AutoML.explainer.Explainer
     options:
         heading_level: 3
+        members_order: source
+        show_root_heading: true
