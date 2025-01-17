@@ -13,7 +13,7 @@ from ..utils.plot import (
     plot_shap_values,
     plot_violin_of_bootsrapped_metrics,
 )
-from ..utils.bias import BiasExplainer, infer_sensitive_features
+from .bias import BiasExplainer, infer_sensitive_features
 
 class Explainer():
     """A class to generate diagnostic plots and reports for models trained using TrainerSupervised."""
