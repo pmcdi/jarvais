@@ -1,0 +1,10 @@
+# Analyzer
+
+The `Analyzer` class is part of the `AutoML.analyzer` module. It provides tools for exploring datasets and identifying issues.
+
+::: AutoML.analyzer.Analyzer
+    options:
+        heading_level: 3
+        members_order: source
+        show_root_heading: true
+            
