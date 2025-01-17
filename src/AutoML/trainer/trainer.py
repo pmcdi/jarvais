@@ -326,49 +326,57 @@ class TrainerSupervised:
                 inference = self.predictors[model].predict(data)
 
         return inference
-
+    
     @classmethod
-    def load_model(cls,
-                   model_dir: str | Path = None,
-                   project_dir: str | Path = None):
+    def load_trainer(cls, project_dir: str | Path):
         """
-        Load a trained model from the specified directory.
+        Load a trained TrainerSupervised from the specified directory.
 
         Args:
-            model_dir (str or Path, optional): The directory where the model is saved.
             project_dir (str or Path, optional): The directory where the trainer was run.
 
         Returns:
-            TrainerSupervised: The loaded model.
+            TrainerSupervised: The loaded Trainer.
         """
-        if not (model_dir or project_dir):
-            raise ValueError('model_dir or project_dir must be provided')
-
-        if model_dir is None and project_dir is not None:
-            model_dir = (Path(project_dir) / 'autogluon_models' / 'autogluon_models_best_fold'
-             if (Path(project_dir) / 'autogluon_models' / 'autogluon_models_best_fold').exists()
-             else Path(project_dir) / 'survival_models')
+        project_dir = Path(project_dir)
 
         trainer = cls()
 
-        if 'survival' in str(model_dir):
+        if (project_dir / 'survival_models').exists():
+            model_dir = (project_dir / 'survival_models')
             with open(model_dir / "model_info.json", "r") as f:
                 model_info = json.load(f)
 
             trainer.predictors = {}
             for model_name, _ in model_info.items():
                 if model_name == 'MTLR':
-                    trainer.predictors[model_name] = LitMTLR.load_from_checkpoint("MTLR.ckpt")
+                    trainer.predictors[model_name] = LitMTLR.load_from_checkpoint(model_dir / "MTLR.ckpt")
                 elif model_name == 'DeepSurv':
-                    trainer.predictors[model_name] = LitDeepSurv.load_from_checkpoint("DeepSurv.ckpt")
+                    trainer.predictors[model_name] = LitDeepSurv.load_from_checkpoint(model_dir / "DeepSurv.ckpt")
                 else:
                     with (model_dir / f'{model_name}.pkl').open("rb") as f:
                         pickle.load(f)
 
             trainer.predictor = trainer.predictors[max(model_info, key=model_info.get)]
+            trainer.task = 'time_to_event'
         else:
+            model_dir = (project_dir / 'autogluon_models' / 'autogluon_models_best_fold')
             trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
-
+            trainer.task = trainer.predictor.problem_type
+        
+        trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv', index_col=0)
+        trainer.X_train = pd.read_csv(project_dir / 'data' / 'X_train.csv', index_col=0)
+        trainer.y_test = pd.read_csv(project_dir / 'data' / 'y_test.csv', index_col=0).squeeze()
+        trainer.y_train = pd.read_csv(project_dir / 'data' / 'y_train.csv', index_col=0).squeeze()
+        
+        # There was no validation data for time_to_event
+        if trainer.task == 'time_to_event':
+            trainer.X_val = pd.DataFrame()
+            trainer.y_val = pd.Series()
+        else: 
+            trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv', index_col=0)
+            trainer.y_val = pd.read_csv(project_dir / 'data' / 'y_val.csv', index_col=0).squeeze()
+  
         return trainer
 
 
