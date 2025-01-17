@@ -95,6 +95,7 @@ class MTLR(nn.Module):
 class LitMTLR(pl.LightningModule):
     def __init__(self, in_channel: int, num_time_bins: int, dims: List[int], dropout: float, C1: float):
         super(LitMTLR, self).__init__()
+        self.save_hyperparameters() 
 
         self.in_channel = in_channel
         self.num_time_bins = num_time_bins
