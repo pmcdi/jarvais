@@ -83,8 +83,9 @@ class NegativeLogLikelihood(nn.Module):
     
 class LitDeepSurv(pl.LightningModule):
     def __init__(self, in_channel: int, dims: List[int], dropout: float, l2_reg: float):
-
         super(LitDeepSurv, self).__init__()
+        self.save_hyperparameters() 
+        
         self.model = DeepSurv(in_channel, dims=dims, dropout=dropout)
         self.criterion = NegativeLogLikelihood(l2_reg)
         self.best_c_index = 0
