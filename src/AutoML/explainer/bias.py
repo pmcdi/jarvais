@@ -38,15 +38,7 @@ def get_metric(metric, sensitive_features=None):
     return partial(fn, sensitive_features=sensitive_features) if 'sensitive_features' in params and sensitive_features else fn
 
 class BiasExplainer():
-    def __init__(
-            self, 
-            y_true: pd.DataFrame, 
-            y_pred: pd.DataFrame, 
-            sensitive_features: dict, 
-            metrics: list = ['mean_prediction', 'false_positive_rate', 'true_positive_rate'], 
-            **kwargs: dict
-        ) -> None:
-        """
+    """
     A class for explaining and analyzing bias in a predictive model's outcomes based on sensitive features.
 
     This class performs various fairness audits by evaluating predictive outcomes with respect to sensitive features such as
@@ -68,7 +60,14 @@ class BiasExplainer():
         kwargs (dict):
             Additional parameters passed to various methods, such as metric calculation and plot generation.
     """
-
+    def __init__(
+            self, 
+            y_true: pd.DataFrame, 
+            y_pred: pd.DataFrame, 
+            sensitive_features: dict, 
+            metrics: list = ['mean_prediction', 'false_positive_rate', 'true_positive_rate'], 
+            **kwargs: dict
+        ) -> None:
         self.y_true = y_true
         self.y_pred = y_pred
         self.mapper = {"mean_prediction": "Demographic Parity",
