@@ -28,6 +28,8 @@ nav:
       - Analyzer: api/analyzer.md
       - Trainer: api/trainer.md
       - Explainer: api/explainer.md
+      - Utils:
+        - Plotting: api/plot.md
 
 extra_css:
   - assets/styles.css
