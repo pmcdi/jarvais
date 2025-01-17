@@ -38,7 +38,7 @@ class Analyzer:
         - Generates summary statistics and correlation plots.
         - Produces a comprehensive PDF analysis report.
 
-    Args:
+    Attributes:
         data (pd.DataFrame): Input dataset.
         target_variable (str, optional): Target variable in the dataset.
         task (str, optional): Type of analysis task.

@@ -27,7 +27,7 @@ class TrainerSupervised:
     and performing inference. It supports various tasks such as binary/multiclass classification, regression, 
     and time-to-event analysis.
 
-    Args:
+    Attributes:
         task (str, optional): Type of task. Must be one of {'binary', 'multiclass', 'regression', 'time_to_event'}. 
         reduction_method (str | None, optional): Feature reduction method. Supported methods include 
             {'mrmr', 'variance_threshold', 'corr', 'chi2'}.
