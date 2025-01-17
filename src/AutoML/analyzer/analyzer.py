@@ -6,7 +6,6 @@ import pandas as pd
 import yaml
 from joblib import Parallel, delayed
 from tableone import TableOne
-from umap import UMAP
 
 from ._janitor import get_outliers, infer_types, replace_missing
 from ..utils.pdf import generate_analysis_report_pdf
@@ -217,24 +216,13 @@ class Analyzer:
         plot_frequency_table(self.data, self.categorical_columns, figures_dir)
 
         # UMAP reduced data + Plots
-        self.umap_data = UMAP(n_components=2).fit_transform(self.data[self.continuous_columns])
-        plot_umap(self.umap_data, output_dir=figures_dir)
+        self.umap_data = plot_umap(self.data, self.continuous_columns, figures_dir)
 
         # Plot pairplot: keeping only the top ten correlated pairs in the pair plot
-        if len(self.continuous_columns) > 10:
-            corr_pairs = s_corr.abs().unstack().sort_values(
-                kind="quicksort",
-                ascending=False
-            ).drop_duplicates()
-            top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
-            columns_to_plot = list({index for pair in top_10_pairs.index for index in pair})
-        else:
-            columns_to_plot = self.continuous_columns
-
         if self.target_variable in self.categorical_columns:
-            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir, target_variable=self.target_variable)
+            plot_pairplot(self.data, self.continuous_columns, output_dir=figures_dir, target_variable=self.target_variable)
         else:
-            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir)
+            plot_pairplot(self.data, self.continuous_columns, output_dir=figures_dir)
 
         # Create Multiplots
         self._create_multiplots(figures_dir)
