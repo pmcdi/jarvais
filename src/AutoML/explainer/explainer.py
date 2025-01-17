@@ -64,7 +64,7 @@ class Explainer():
             )            
 
         if self.trainer.task in ['binary', 'multiclass']:
-            self.bias_results = self.run_bias_audit()
+            self.bias_results = self._run_bias_audit()
 
             (self.output_dir / 'bias').mkdir(parents=True, exist_ok=True)
             for result in self.bias_results:
@@ -119,7 +119,6 @@ class Explainer():
     def _run_bias_audit(self) -> List[pd.DataFrame]:
 
         self.sensitive_features = infer_sensitive_features(self.X_test) if self.sensitive_features is None else self.sensitive_features
-        metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate']
 
         bias = BiasExplainer(self.y_test, self.predictor.predict_proba(self.X_test).iloc[:, 1], self.sensitive_features, metrics=['mean_prediction', 'false_positive_rate'])
         return bias.run(relative=True)

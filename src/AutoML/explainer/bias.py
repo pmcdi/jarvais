@@ -187,6 +187,6 @@ class BiasExplainer():
 
             self.results.append(result)
             print(f"Subgroup Analysis({sensitive_feature.title()})")
-            print(f'{tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')}\n')
+            print(f"{tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')}\n")
 
         return self.results
