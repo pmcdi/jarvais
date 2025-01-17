@@ -1,13 +1,11 @@
 import logging
 import warnings
 from pathlib import Path
-from typing import Union
 
 import pandas as pd
 import yaml
 from joblib import Parallel, delayed
 from tableone import TableOne
-from umap import UMAP
 
 from ._janitor import get_outliers, infer_types, replace_missing
 from ..utils.pdf import generate_analysis_report_pdf
@@ -28,24 +26,39 @@ def custom_warning_handler(message, category, filename, lineno, file=None, line=
 
 warnings.showwarning = custom_warning_handler
 
-class Analyzer():
+class Analyzer:
     """
     A data analysis and cleaning tool for preprocessing datasets, generating reports, and visualizations.
 
     Features:
-    - Handles missing values and outliers.
-    - Infers column types (categorical, continuous, date).
-    - Supports one-hot encoding and time-to-event analysis.
-    - Generates summary statistics and correlation plots.
-    - Produces a comprehensive PDF analysis report.
+        - Handles missing values and outliers.
+        - Infers column types (categorical, continuous, date).
+        - Supports one-hot encoding and time-to-event analysis.
+        - Generates summary statistics and correlation plots.
+        - Produces a comprehensive PDF analysis report.
 
-    Args:
+    Attributes:
         data (pd.DataFrame): Input dataset.
         target_variable (str, optional): Target variable in the dataset.
-        task (str, optional): Type of analysis task ('time_to_event' supported).
+        task (str, optional): Type of analysis task.
         one_hot_encode (bool, optional): Whether to one-hot encode categorical columns.
-        config (Union[str, Path, None], optional): Path to a YAML configuration file.
-        output_dir (Union[str, Path], optional): Directory to save outputs. Default is the current directory.
+        config (str | Path, optional): Path to a YAML configuration file.
+        output_dir (str | Path, optional): Directory to save outputs. Default is the current directory.
+
+    Example:
+        ```python
+        from AutoML.analyzer import Analyzer
+        import pandas as pd
+
+        data = pd.DataFrame({
+            "age": [25, 32, 40],
+            "income": [50000, 60000, 75000],
+            "category": ["A", "B", "A"]
+        })
+
+        analyzer = Analyzer(data, target_variable="income", task="regression")
+        analyzer.run()
+        ```
     """
     def __init__(
             self,
@@ -53,8 +66,8 @@ class Analyzer():
             target_variable: str | None = None,
             task: str | None = None,
             one_hot_encode: bool = False,
-            config: str | Path | None = None,
-            output_dir: str | Path | None = None
+            config: str | Path = None,
+            output_dir: str | Path = None
         ) -> None:
 
         self.data = data
@@ -106,8 +119,8 @@ class Analyzer():
             print("Columns that are all NaN(probably ID columns) dropping...: ", nan_columns)
             self.continuous_columns = list(set(self.continuous_columns) - set(nan_columns))
 
-        print(f'Used a heuristic to define categorical and continuous columns. Please review!\n\nCategorical: {self.categorical_columns}\nContinuous: {self.continuous_columns}')
-
+        print("Used a heuristic to define categorical and continuous columns. Please review!")
+        
         columns['categorical'] = self.categorical_columns
         columns['continuous'] = self.continuous_columns
         columns['date'] = self.date_columns
@@ -161,6 +174,10 @@ class Analyzer():
             self.categorical_columns = self.config['columns']['categorical']
             # Replace all non numerical values with NaN
             self.data[self.continuous_columns] = self.data[self.continuous_columns].apply(pd.to_numeric, errors='coerce')
+            self.outlier_analysis, _ = get_outliers(self.data, self.categorical_columns)
+
+        print(f"Feature Types:\n  - Categorical: {self.categorical_columns}\n  - Continuous: {self.continuous_columns}")
+        print(f"\n\nOutlier Analysis:\n{self.outlier_analysis}")
 
         with open(self.output_dir / 'config.yaml', 'w') as f:
             yaml.dump(self.config, f)
@@ -199,24 +216,13 @@ class Analyzer():
         plot_frequency_table(self.data, self.categorical_columns, figures_dir)
 
         # UMAP reduced data + Plots
-        self.umap_data = UMAP(n_components=2).fit_transform(self.data[self.continuous_columns])
-        plot_umap(self.umap_data, output_dir=figures_dir)
+        self.umap_data = plot_umap(self.data, self.continuous_columns, figures_dir)
 
         # Plot pairplot: keeping only the top ten correlated pairs in the pair plot
-        if len(self.continuous_columns) > 10:
-            corr_pairs = s_corr.abs().unstack().sort_values(
-                kind="quicksort",
-                ascending=False
-            ).drop_duplicates()
-            top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
-            columns_to_plot = list({index for pair in top_10_pairs.index for index in pair})
-        else:
-            columns_to_plot = self.continuous_columns
-
         if self.target_variable in self.categorical_columns:
-            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir, target_variable=self.target_variable)
+            plot_pairplot(self.data, self.continuous_columns, output_dir=figures_dir, target_variable=self.target_variable)
         else:
-            plot_pairplot(self.data, columns_to_plot, output_dir=figures_dir)
+            plot_pairplot(self.data, self.continuous_columns, output_dir=figures_dir)
 
         # Create Multiplots
         self._create_multiplots(figures_dir)
@@ -245,6 +251,9 @@ class Analyzer():
         analyzer._create_config()
 
         df_keep = analyzer.data[analyzer.continuous_columns + analyzer.categorical_columns]
+
+        print(f"\n\nFeature Types:\n  - Categorical: {analyzer.categorical_columns}\n  - Continuous: {analyzer.continuous_columns}")
+        print(f"\n\nOutlier Analysis:\n{analyzer.outlier_analysis}")
 
         mytable = TableOne(df_keep, categorical=analyzer.categorical_columns, pval=False)
         print(mytable.tabulate(tablefmt = "fancy_grid"))
