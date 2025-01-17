@@ -1,25 +1,25 @@
 from itertools import combinations
 from pathlib import Path
 
-import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 import seaborn as sns
+
 import shap
 from autogluon.tabular import TabularPredictor
 from scipy.stats import f_oneway, ttest_ind
-from sklearn.calibration import calibration_curve
 from sklearn.metrics import (
     confusion_matrix,
-    precision_recall_curve,
     r2_score,
     roc_auc_score,
-    roc_curve,
     root_mean_squared_error,
 )
 from sksurv.nonparametric import kaplan_meier_estimator
+from umap import UMAP
 
 from .functional import auprc, bootstrap_metric
+from ._plot_epic import plot_epic_copy
 
 sns.set_theme(style="darkgrid", font="Arial")
 
@@ -122,7 +122,15 @@ def plot_corr(
         output_dir: Path,
         file_name: str = 'correlation_matrix.png'
     ) -> None:
+    """
+    Plots a lower-triangle heatmap of the correlation matrix and saves it as an image file.
 
+    Args:
+        corr (pd.DataFrame): Correlation matrix to visualize.
+        size (float): Size of the heatmap figure.
+        output_dir (Path): Directory to save the output image.
+        file_name (str): Name of the saved image file. Defaults to 'correlation_matrix.png'.
+    """
     fig, ax = plt.subplots(1, 1, figsize=(size, size))
     mask = np.triu(np.ones_like(corr, dtype=bool)) # Keep only lower triangle
     np.fill_diagonal(mask, False)
@@ -139,7 +147,14 @@ def plot_frequency_table(
         columns: list,
         output_dir: Path
     ) -> None:
+    """
+    Generates and saves heatmap visualizations for frequency tables of all column pair combinations.
 
+    Args:
+        data (pd.DataFrame): Input dataset containing the columns to analyze.
+        columns (list): List of column names to create frequency tables for.
+        output_dir (Path): Directory to save the generated heatmaps.
+    """
     frequency_dir = Path(output_dir) / 'frequency_tables'
     frequency_dir.mkdir(parents=True, exist_ok=True)
 
@@ -155,10 +170,32 @@ def plot_frequency_table(
 
 def plot_pairplot(
         data: pd.DataFrame,
-        columns_to_plot: list,
+        continuous_columns: list,
         output_dir: Path,
-        target_variable: str = None
+        target_variable: str = None,
+        n_keep: int = 10
     ) -> None:
+    """
+    Generates a pair plot of the specified continuous columns in the dataset.
+
+    Args:
+        data (pd.DataFrame): The input DataFrame containing the data to be visualized.
+        continuous_columns (list): A list of column names corresponding to continuous variables.
+        output_dir (Path): Directory where the resulting plot will be saved.
+        target_variable (str, optional): The target variable to use as a hue for coloring the pair plot. Defaults to None.
+        n_keep (int, optional): The maximum number of continuous columns to include in the plot. 
+            If exceeded, the most correlated columns are selected. Defaults to 10.
+    """
+    if len(continuous_columns) > n_keep:
+        spearman_corr = data[continuous_columns].corr(method="spearman") 
+        corr_pairs = spearman_corr.abs().unstack().sort_values(
+            kind="quicksort",
+            ascending=False
+        ).drop_duplicates()
+        top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
+        columns_to_plot = list({index for pair in top_10_pairs.index for index in pair})
+    else:
+        columns_to_plot = continuous_columns
 
     hue = target_variable
     if target_variable is not None:
@@ -172,7 +209,24 @@ def plot_pairplot(
     plt.savefig(figure_path)
     plt.close()
 
-def plot_umap(umap_data: np.ndarray, output_dir: Path) -> None:
+def plot_umap(
+        data: pd.DataFrame,
+        continuous_columns: list,
+        output_dir: Path
+    ) -> np.ndarray:
+    """
+    Generates a 2D UMAP projection of the specified continuous columns and saves the resulting scatter plot.
+
+    Args:
+        data (pd.DataFrame): The input DataFrame containing the data to be visualized.
+        continuous_columns (list): A list of column names corresponding to continuous variables 
+            to be included in the UMAP projection.
+        output_dir (Path): Directory where the resulting plot will be saved.
+
+    Returns:
+        np.ndarray: A 2D NumPy array of the UMAP-transformed data.
+    """
+    umap_data = UMAP(n_components=2).fit_transform(data[continuous_columns])
 
     fig, ax = plt.subplots(figsize=(8, 8), dpi=72)
     sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
@@ -182,13 +236,23 @@ def plot_umap(umap_data: np.ndarray, output_dir: Path) -> None:
     fig.savefig(figure_path)
     plt.close()
 
+    return umap_data
+
 def plot_kaplan_meier_by_category(
         data_x: pd.DataFrame,
         data_y: pd.DataFrame,
         categorical_columns: list,
         output_dir: Path
     ) -> None:
-    """Plots Kaplan-Meier survival curves for each category in the specified categorical columns."""
+    """
+    Plots Kaplan-Meier survival curves for each category in the specified categorical columns.
+
+    Args:
+        data_x (pd.DataFrame): Dataset containing the categorical columns to group by.
+        data_y (pd.DataFrame): Dataset containing 'time' and 'event' columns for survival analysis.
+        categorical_columns (list): List of categorical column names to generate survival curves for.
+        output_dir (Path): Directory to save the Kaplan-Meier survival curve plots.
+    """
     output_dir.mkdir(parents=True, exist_ok=True)
 
     for cat_col in categorical_columns:
@@ -254,7 +318,28 @@ class ModelWrapper:
         return preds
 
 def plot_feature_importance(df: pd.DataFrame, output_dir: Path, model_name: str=''):
-    """Plots the feature importance with standard deviation and p-value significance."""
+    """
+    Plots feature importance with standard deviation and p-value significance.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the feature importance data. 
+            Look below for required format.
+        output_dir (Path): Directory to save the feature importance plot.
+        model_name (str): Optional name of the model, included in the plot title.
+
+    Example:
+        The `df` DataFrame should look like this:
+
+        ```python
+        import pandas as pd
+
+        df = pd.DataFrame({
+            'importance': [0.25, 0.18, 0.12, 0.10],
+            'stddev': [0.03, 0.02, 0.01, 0.015],
+            'p_value': [0.03, 0.07, 0.01, 0.2]
+        }, index=['Feature A', 'Feature B', 'Feature C', 'Feature D'])
+        ```
+    """
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
 
     bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
@@ -290,7 +375,16 @@ def plot_shap_values(
         output_dir: Path,
         max_display: int = 10,
     ) -> None:
+    """
+    Generates and saves SHAP value visualizations, including a heatmap and a bar plot, for a autogluon tabular model.
 
+    Args:
+        predictor (TabularPredictor): The trained tabular predictor model for which SHAP values are calculated.
+        X_train (pd.DataFrame): Training dataset used to create the SHAP background data.
+        X_test (pd.DataFrame): Test dataset used to evaluate and compute SHAP values.
+        output_dir (Path): Directory to save the SHAP value visualizations.
+        max_display (int): Maximum number of features to display in the visualizations. Defaults to 10.
+    """
     predictor = ModelWrapper(predictor, X_train.columns)
     background_data = shap.sample(X_train, 100)
     shap_exp = shap.KernelExplainer(predictor.predict_proba, background_data)
@@ -322,7 +416,19 @@ def plot_violin_of_bootsrapped_metrics(
         y_train: pd.DataFrame,
         output_dir: Path
     ) -> None:
+    """
+    Generates violin plots for bootstrapped model performance metrics across train, validation, and test datasets.
 
+    Args:
+        predictor (TabularPredictor): The trained model predictor for evaluating performance metrics.
+        X_test (pd.DataFrame): Test features dataset.
+        y_test (pd.DataFrame): Test target values.
+        X_val (pd.DataFrame): Validation features dataset.
+        y_val (pd.DataFrame): Validation target values.
+        X_train (pd.DataFrame): Training features dataset.
+        y_train (pd.DataFrame): Training target values.
+        output_dir (Path): Directory to save the generated violin plots.
+    """
     # Define metrics based on the problem type
     if predictor.problem_type == 'regression':
         metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
@@ -409,60 +515,85 @@ def plot_violin_of_bootsrapped_metrics(
     create_violin_plot('Validation', output_dir / 'validation_metrics_bootstrap.png')
     create_violin_plot('Train', output_dir / 'train_metrics_bootstrap.png')
 
-def plot_regression_diagnostics(y_true: np.ndarray, y_pred: np.ndarray, output_dir: Path):
-    """Generates diagnostic plots for a regression model."""
-    # Predict the target values
+def plot_regression_diagnostics(
+        y_true: np.ndarray, 
+        y_pred: np.ndarray, 
+        output_dir: Path
+    ) -> None:
+    """
+    Generates diagnostic plots for evaluating a regression model.
+
+    Plots:
+        - True vs. Predicted values plot.
+        - Residuals plot.
+        - Histogram of residuals.
+
+    Args:
+        y_true (np.ndarray): Array of true target values.
+        y_pred (np.ndarray): Array of predicted values from the regression model.
+        output_dir (Path): Directory to save the diagnostic plots.
+    """
     residuals = y_true - y_pred
+    
+    # Regression Line
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="darkgrid", font="Arial")
+    sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
+    sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
+    plt.xlabel('True Values')
+    plt.ylabel('Predictions')
+    plt.title('True vs Predicted Values')
+    plt.savefig(output_dir / 'true_vs_predicted.png')
+    plt.close()
 
-    def plot_regression_line(y_true, y_pred, xlabel='True Values', ylabel='Predictions', title='True vs Predicted Values'):
-        plt.figure(figsize=(10, 6))
-        sns.set_theme(style="darkgrid", font="Arial")
-        sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
-        sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
-        plt.xlabel(xlabel)
-        plt.ylabel(ylabel)
-        plt.title(title)
-        plt.savefig(output_dir / 'true_vs_predicted.png')
-        plt.close()
+    # Residuals
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="darkgrid", font="Arial")
+    sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
+    plt.axhline(0, color='red', linestyle='--')
+    plt.xlabel('Fitted Values')
+    plt.ylabel('Residuals')
+    plt.title('Residual Plot')
+    plt.savefig(output_dir / 'residual_plot.png')
+    plt.close()
 
-    def plot_residuals(y_true, y_pred, title='Residual Plot'):
-        residuals = y_true - y_pred
-        plt.figure(figsize=(10, 6))
-        sns.set_theme(style="darkgrid", font="Arial")
-        sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
-        plt.axhline(0, color='red', linestyle='--')
-        plt.xlabel('Fitted Values')
-        plt.ylabel('Residuals')
-        plt.title(title)
-        plt.savefig(output_dir / 'residual_plot.png')
-        plt.close()
-    def plot_residual_histogram(residuals, title='Histogram of Residuals'):
-        plt.figure(figsize=(10, 6))
-        sns.set_theme(style="darkgrid", font="Arial")
-        sns.histplot(residuals, kde=True, bins=30)
-        plt.xlabel('Residuals')
-        plt.title(title)
-        plt.savefig(output_dir / 'residual_hist.png')
-        plt.close()
-
-    # Call all the plotting functions
-    plot_regression_line(y_true, y_pred)
-    plot_residuals(y_true, y_pred)
-    plot_residual_histogram(residuals)
+    # Residual Histogram
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="darkgrid", font="Arial")
+    sns.histplot(residuals, kde=True, bins=30)
+    plt.xlabel('Residuals')
+    plt.title('Histogram of Residuals')
+    plt.savefig(output_dir / 'residual_hist.png')
+    plt.close()
 
 def plot_classification_diagnostics(
-        y_true: pd.DataFrame,
-        y_pred: pd.DataFrame,
+        y_test: pd.DataFrame,
+        y_test_pred: pd.DataFrame,
         y_val: pd.DataFrame,
         y_val_pred: pd.DataFrame,
         y_train: pd.DataFrame,
         y_train_pred: pd.DataFrame,
         output_dir: Path
     ) -> None:
-    """Generates diagnostic plots for a classification model."""
+    """
+    Generates diagnostic plots for evaluating a classification model.
+
+    Plots:
+        - Epic model evaluation plots (ROC Curve, Precision-Recall Curve, Calibration Curve, Sensitivity/Flag Curve).
+        - Confusion Matrix.
+
+    Args:
+        y_test (pd.DataFrame): True labels for the test dataset.
+        y_test_pred (pd.DataFrame): Predicted probabilities for the test dataset.
+        y_val (pd.DataFrame): True labels for the validation dataset.
+        y_val_pred (pd.DataFrame): Predicted probabilities for the validation dataset.
+        y_train (pd.DataFrame): True labels for the training dataset.
+        y_train_pred (pd.DataFrame): Predicted probabilities for the training dataset.
+        output_dir (Path): Directory to save the diagnostic plots.
+    """
     plot_epic_copy(
-        y_true.to_numpy(),
-        y_pred.to_numpy(),
+        y_test.to_numpy(),
+        y_test_pred.to_numpy(),
         y_val.to_numpy(),
         y_val_pred.to_numpy(),
         y_train.to_numpy(),
@@ -470,7 +601,7 @@ def plot_classification_diagnostics(
         output_dir
     )
 
-    conf_matrix = confusion_matrix(y_true, y_pred.apply(lambda x: 1 if x >= 0.5 else 0))
+    conf_matrix = confusion_matrix(y_test, y_test_pred.apply(lambda x: 1 if x >= 0.5 else 0))
 
     plt.figure(figsize=(8, 6))
     sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
@@ -480,209 +611,3 @@ def plot_classification_diagnostics(
     plt.savefig(output_dir / 'confusion_matrix.png')
     plt.close()
 
-### MODEL EVALUATION COPY OF EPIC PLOTS
-
-def _bin_class_curve(y_true: np.ndarray, y_pred: np.ndarray):
-    sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]
-    y_true = np.array(y_true)[sort_ix]
-    y_pred = np.array(y_pred)[sort_ix]
-
-    # Find where the threshold changes
-    distinct_ix = np.where(np.diff(y_pred))[0]
-    threshold_idxs = np.r_[distinct_ix, y_true.size - 1]
-
-    # Add up the true positives and infer false ones
-    tps = np.cumsum(y_true)[threshold_idxs]
-    fps = 1 + threshold_idxs - tps
-
-    return fps, tps, y_pred[threshold_idxs]
-
-def plot_epic_copy(
-        y_test: np.ndarray,
-        y_pred: np.ndarray,
-        y_val: np.ndarray,
-        y_val_pred: np.ndarray,
-        y_train: np.ndarray,
-        y_train_pred: np.ndarray,
-        output_dir: Path
-    ) -> None:
-
-    # Compute test metrics
-    fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
-    roc_auc_test = roc_auc_score(y_test, y_pred)
-    precision_test, recall_test, thresholds_pr_test = precision_recall_curve(y_test, y_pred)
-    average_precision_test = auprc(y_test, y_pred)
-    prob_true_test, prob_pred_test = calibration_curve(y_test, y_pred, n_bins=10, strategy='uniform')
-
-    # Compute validation metrics
-    fpr_val, tpr_val, thresholds_roc_val = roc_curve(y_val, y_val_pred)
-    roc_auc_val = roc_auc_score(y_val, y_val_pred)
-    precision_val, recall_val, thresholds_pr_val = precision_recall_curve(y_val, y_val_pred)
-    average_precision_val = auprc(y_val, y_val_pred)
-    prob_true_val, prob_pred_val = calibration_curve(y_val, y_val_pred, n_bins=10, strategy='uniform')
-
-    # Compute train metrics
-    fpr_train, tpr_train, thresholds_roc_train = roc_curve(y_train, y_train_pred)
-    roc_auc_train = roc_auc_score(y_train, y_train_pred)
-    precision_train, recall_train, thresholds_pr_train = precision_recall_curve(y_train, y_train_pred)
-    average_precision_train = auprc(y_train, y_train_pred)
-    prob_true_train, prob_pred_train = calibration_curve(y_train, y_train_pred, n_bins=10, strategy='uniform')
-
-    # Compute confidence intervals
-    roc_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, roc_auc_score), (2.5, 97.5))]
-    roc_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, roc_auc_score), (2.5, 97.5))]
-    roc_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, roc_auc_score), (2.5, 97.5))]
-
-    precision_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, auprc), (2.5, 97.5))]
-    precision_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, auprc), (2.5, 97.5))]
-    precision_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, auprc), (2.5, 97.5))]
-
-    # Set Seaborn style
-    sns.set_theme(style="darkgrid", font="Arial")
-
-    plt.figure(figsize=(37.5, 10))
-
-    # 1. ROC Curve
-    plt.subplot(2, 5, 1)
-    sns.lineplot(x=fpr_test, y=tpr_test, label=f"Test AUROC = {roc_auc_test:.2f} {roc_conf_test}", color="blue")
-    sns.lineplot(x=fpr_val, y=tpr_val, label=f"Validation AUROC = {roc_auc_val:.2f} {roc_conf_val}", color="orange")
-    sns.lineplot(x=fpr_train, y=tpr_train, label=f"Train AUROC = {roc_auc_train:.2f} {roc_conf_train}", color="green")
-    plt.xlabel("1 - Specificity")
-    plt.ylabel("Sensitivity")
-    plt.title("ROC Curve")
-    plt.legend()
-
-    # 2. Precision-Recall Curve
-    plt.subplot(2, 5, 2)
-    sns.lineplot(x=recall_test, y=precision_test, label=f"Test AUC-PR = {average_precision_test:.2f} {precision_conf_test}", color="blue")
-    sns.lineplot(x=recall_val, y=precision_val, label=f"Validation AUC-PR = {average_precision_val:.2f} {precision_conf_val}", color="orange")
-    sns.lineplot(x=recall_train, y=precision_train, label=f"Train AUC-PR = {average_precision_train:.2f} {precision_conf_train}", color="green")
-    plt.xlabel("Recall")
-    plt.ylabel("Precision")
-    plt.title("Precision-Recall Curve")
-    plt.legend()
-
-    # 3. Calibration Curve
-    plt.subplot(2, 5, 6)
-    sns.lineplot(x=prob_pred_test, y=prob_true_test, label="Test Calibration Curve", color="blue", marker='o')
-    sns.lineplot(x=prob_pred_val, y=prob_true_val, label="Validation Calibration Curve", color="orange", marker='o')
-    sns.lineplot(x=prob_pred_train, y=prob_true_train, label="Train Calibration Curve", color="green", marker='o')
-    sns.lineplot(x=[0, 1], y=[0, 1], linestyle="--", label="Perfect Calibration", color="gray")
-    plt.xlabel("Predicted Probability")
-    plt.ylabel("Observed Probability")
-    plt.title("Calibration Curve")
-    plt.legend()
-
-    # 4. Sensitivity vs Flag Rate
-    fps, tps, _ = _bin_class_curve(y_test, y_pred)
-    sens_test = tps / sum(y_test)
-    flag_rate_test = (tps + fps) / len(y_test)
-
-    fps, tps, _ = _bin_class_curve(y_val, y_val_pred)
-    sens_val = tps / sum(y_val)
-    flag_rate_val = (tps + fps) / len(y_val)
-
-    fps, tps, _ = _bin_class_curve(y_train, y_train_pred)
-    sens_train = tps / sum(y_train)
-    flag_rate_train = (tps + fps) / len(y_train)
-
-    plt.subplot(2, 5, 7)
-    sns.lineplot(x=flag_rate_test, y=sens_test, label="Test", color="blue")
-    sns.lineplot(x=flag_rate_val, y=sens_val, label="Validation", color="orange")
-    sns.lineplot(x=flag_rate_train, y=sens_train, label="Train", color="green")
-    plt.xlabel('Flag Rate')
-    plt.ylabel('Sensitivity')
-    plt.title('Sensitivity/Flag Curve')
-    plt.legend()
-
-    # 5. Sensitivity, Specificity, PPV by Threshold
-    # Test Metrics
-    sensitivity_test = tpr_test
-    specificity_test = 1 - fpr_test
-    ppv_test = precision_test[:-1]
-
-    # Validation Metrics
-    sensitivity_val = tpr_val
-    specificity_val = 1 - fpr_val
-    ppv_val = precision_val[:-1]
-
-    # Train Metrics
-    sensitivity_train = tpr_train
-    specificity_train = 1 - fpr_train
-    ppv_train = precision_train[:-1]
-
-    # Plot Test Metrics
-    plt.subplot(2, 5, 3)
-    sns.lineplot(x=thresholds_roc_test, y=sensitivity_test, label="Test Sensitivity", color="blue")
-    sns.lineplot(x=thresholds_roc_test, y=specificity_test, label="Test Specificity", color="green")
-    sns.lineplot(x=thresholds_pr_test, y=ppv_test, label="Test PPV", color="magenta")
-    plt.xlabel("Threshold")
-    plt.ylabel("Metric")
-    plt.title("Test Metrics by Threshold")
-    plt.legend()
-
-    # Plot Validation Metrics
-    plt.subplot(2, 5, 4)
-    sns.lineplot(x=thresholds_roc_val, y=sensitivity_val, label="Validation Sensitivity", linestyle="--", color="orange")
-    sns.lineplot(x=thresholds_roc_val, y=specificity_val, label="Validation Specificity", linestyle="--", color="darkgreen")
-    sns.lineplot(x=thresholds_pr_val, y=ppv_val, label="Validation PPV", linestyle="--", color="pink")
-    plt.xlabel("Threshold")
-    plt.ylabel("Metric")
-    plt.title("Validation Metrics by Threshold")
-    plt.legend()
-
-    # Plot Train Metrics
-    plt.subplot(2, 5, 5)
-    sns.lineplot(x=thresholds_roc_train, y=sensitivity_train, label="Train Sensitivity", linestyle=":", color="purple")
-    sns.lineplot(x=thresholds_roc_train, y=specificity_train, label="Train Specificity", linestyle=":", color="brown")
-    sns.lineplot(x=thresholds_pr_train, y=ppv_train, label="Train PPV", linestyle=":", color="cyan")
-    plt.xlabel("Threshold")
-    plt.ylabel("Metric")
-    plt.title("Train Metrics by Threshold")
-    plt.legend()
-
-    # 6. Histogram of Predicted Probabilities
-    def _get_highest_bin_count(values, bins):
-        counts, _ = np.histogram(values, bins=bins)
-        return counts.max()
-
-    highest_bin_count = max(
-        _get_highest_bin_count(y_pred[y_test == 0], bins=20),
-        _get_highest_bin_count(y_pred[y_test == 1], bins=20),
-        _get_highest_bin_count(y_val_pred[y_val == 0], bins=20),
-        _get_highest_bin_count(y_val_pred[y_val == 1], bins=20),
-        _get_highest_bin_count(y_train_pred[y_train == 0], bins=20),
-        _get_highest_bin_count(y_train_pred[y_train == 1], bins=20)
-    )
-    highest_bin_count += highest_bin_count//20
-
-    plt.subplot(2, 5, 8)
-    sns.histplot(y_pred[y_test == 0], bins=20, alpha=0.7, label="Test Actual False", color='blue', kde=False)
-    sns.histplot(y_pred[y_test == 1], bins=20, alpha=0.7, label="Test Actual True", color='magenta', kde=False)
-    plt.xlabel("Predicted Probability")
-    plt.ylabel("Count")
-    plt.title("Histogram of Predicted Probabilities")
-    plt.ylim(0, highest_bin_count)
-    plt.legend()
-
-    plt.subplot(2, 5, 9)
-    sns.histplot(y_val_pred[y_val == 0], bins=20, alpha=0.5, label="Validation Actual False", color='orange', kde=False)
-    sns.histplot(y_val_pred[y_val == 1], bins=20, alpha=0.5, label="Validation Actual True", color='pink', kde=False)
-    plt.xlabel("Predicted Probability")
-    plt.ylabel("Count")
-    plt.title("Histogram of Predicted Probabilities")
-    plt.ylim(0, highest_bin_count)
-    plt.legend()
-
-    plt.subplot(2, 5, 10)
-    sns.histplot(y_train_pred[y_train == 0], bins=20, alpha=0.5, label="Train Actual False", color='green', kde=False)
-    sns.histplot(y_train_pred[y_train == 1], bins=20, alpha=0.5, label="Train Actual True", color='purple', kde=False)
-    plt.xlabel("Predicted Probability")
-    plt.ylabel("Count")
-    plt.title("Histogram of Predicted Probabilities")
-    plt.ylim(0, highest_bin_count)
-    plt.legend()
-
-    plt.tight_layout()
-    plt.savefig(output_dir / 'model_evaluation.png')
-    plt.close()
