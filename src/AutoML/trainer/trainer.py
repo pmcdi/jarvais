@@ -191,7 +191,6 @@ class TrainerSupervised:
             exclude: List[str] | None = None,
             stratify_on: str | None = None,
             explain: bool = False,
-            save_data: bool = True,
             k_folds: int = 5,
             **kwargs:dict
         ) -> None:
@@ -209,8 +208,6 @@ class TrainerSupervised:
                 Must be compatible with `target_variable`.
             explain (bool, optional): Whether to generate explainability reports for the model. 
                 Default is False.
-            save_data (bool, optional): Whether to save train/test/validation data to disk. 
-                Default is True.
             k_folds (int, optional): Number of folds for cross-validation. If 1, uses AutoGluon-specific validation. 
                 Default is 5.
             kwargs (dict, optional): Additional arguments passed to the AutoGluon predictor's `fit` method.
@@ -289,15 +286,14 @@ class TrainerSupervised:
             else:
                 self._train_autogluon()
 
-        if save_data:
-            self.data_dir = self.output_dir / 'data'
-            self.data_dir.mkdir(parents=True, exist_ok=True)
-            self.X_train.to_csv((self.data_dir / 'X_train.csv'), index=False)
-            self.X_test.to_csv((self.data_dir / 'X_test.csv'), index=False)
-            self.X_val.to_csv((self.data_dir / 'X_val.csv'), index=False)
-            self.y_train.to_csv((self.data_dir / 'y_train.csv'), index=False)
-            self.y_test.to_csv((self.data_dir / 'y_test.csv'), index=False)
-            self.y_val.to_csv((self.data_dir / 'y_val.csv'), index=False)
+        self.data_dir = self.output_dir / 'data'
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.X_train.to_csv((self.data_dir / 'X_train.csv'), index=False)
+        self.X_test.to_csv((self.data_dir / 'X_test.csv'), index=False)
+        self.X_val.to_csv((self.data_dir / 'X_val.csv'), index=False)
+        self.y_train.to_csv((self.data_dir / 'y_train.csv'), index=False)
+        self.y_test.to_csv((self.data_dir / 'y_test.csv'), index=False)
+        self.y_val.to_csv((self.data_dir / 'y_val.csv'), index=False)
 
         if explain:
             explainer = Explainer.from_trainer(self)
@@ -365,11 +361,11 @@ class TrainerSupervised:
             trainer.task = trainer.predictor.problem_type
         
         trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv', index_col=0)
+        trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv', index_col=0)
         trainer.X_train = pd.read_csv(project_dir / 'data' / 'X_train.csv', index_col=0)
         trainer.y_test = pd.read_csv(project_dir / 'data' / 'y_test.csv', index_col=0).squeeze()
-        trainer.y_train = pd.read_csv(project_dir / 'data' / 'y_train.csv', index_col=0).squeeze()
-        trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv', index_col=0)
         trainer.y_val = pd.read_csv(project_dir / 'data' / 'y_val.csv', index_col=0).squeeze()
+        trainer.y_train = pd.read_csv(project_dir / 'data' / 'y_train.csv', index_col=0).squeeze()
   
         return trainer
 
