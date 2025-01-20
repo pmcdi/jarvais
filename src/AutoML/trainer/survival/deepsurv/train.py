@@ -5,8 +5,6 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 
-from sklearn.model_selection import train_test_split
-
 import lightning.pytorch as pl
 import optuna
 from optuna.integration import PyTorchLightningPruningCallback
@@ -18,11 +16,9 @@ from .utils import calculate_c_index
 # Suppress PyTorch Lightning logging
 logging.getLogger("lightning.pytorch.utilities.rank_zero").setLevel(logging.FATAL)
 
-def train_deepsurv(data_train: pd.DataFrame, data_test: pd.DataFrame, output_dir: Path):
+def train_deepsurv(data_train: pd.DataFrame, data_val:pd.DataFrame, data_test: pd.DataFrame, output_dir: Path):
 
     in_channel = len(data_train.columns) - 2 # -2 to remove time and event
-
-    data_train, data_val = train_test_split(data_train, test_size=0.1, stratify=data_train['event'], random_state=42)
 
     # Initialize datasets and dataloaders
     train_dataset = SurvivalDataset(data_train)

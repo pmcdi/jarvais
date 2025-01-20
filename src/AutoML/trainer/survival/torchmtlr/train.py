@@ -11,8 +11,6 @@ from .mtlr import mtlr_risk, LitMTLR
 from .utils import encode_survival, make_time_bins, normalize
 from lifelines.utils import concordance_index
 
-from sklearn.model_selection import train_test_split
-
 import lightning.pytorch as pl
 import optuna
 from optuna.integration import PyTorchLightningPruningCallback
@@ -42,7 +40,7 @@ def create_dataloader(data: pd.DataFrame, time_bins: torch.Tensor):
 
     return DataLoader(TensorDataset(X, y), batch_size=len(data), shuffle=True)
 
-def train_mtlr(data_train: pd.DataFrame, data_test: pd.DataFrame, output_dir: Path):
+def train_mtlr(data_train: pd.DataFrame, data_val:pd.DataFrame, data_test: pd.DataFrame, output_dir: Path):
 
     in_channel = len(data_train.columns) - 2  # -2 to exclude "time" and "event"
     time_bins = make_time_bins(data_train["time"].values, event=data_train["event"].values)
@@ -51,9 +49,8 @@ def train_mtlr(data_train: pd.DataFrame, data_test: pd.DataFrame, output_dir: Pa
         col for col in data_train.columns if (set(data_train[col].unique()).issubset({0, 1}) and (not col in ['time', 'event']))
     ]
     data_train, mean, std = normalize(data_train, skip_cols=skip_cols)
+    data_val, _, _ = normalize(data_val, mean=mean, std=std, skip_cols=skip_cols)
     data_test, _, _ = normalize(data_test, mean=mean, std=std, skip_cols=skip_cols)
-
-    data_train, data_val = train_test_split(data_train, test_size=0.1, stratify=data_train['event'], random_state=42)
 
     train_loader = create_dataloader(data_train, time_bins)
     val_loader = create_dataloader(data_val, time_bins)
