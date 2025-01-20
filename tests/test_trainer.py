@@ -70,7 +70,7 @@ def test_run_method_classification(classification_data, tmpdir):
     X, y = classification_data
     data = pd.concat([X, y], axis=1)
     trainer = TrainerSupervised(task='binary', output_dir=str(tmpdir))
-    trainer.run(data=data, target_variable='target', save_data=True)
+    trainer.run(data=data, target_variable='target')
     data_dir = tmpdir / 'data'
     assert (data_dir / 'X_train.csv').exists()
     assert (data_dir / 'X_test.csv').exists()
@@ -82,7 +82,7 @@ def test_run_method_regression(regression_data, tmpdir):
     X, y = regression_data
     data = pd.concat([X, y], axis=1)
     trainer = TrainerSupervised(task='regression', output_dir=str(tmpdir))
-    trainer.run(data=data, target_variable='target', save_data=True)
+    trainer.run(data=data, target_variable='target')
     data_dir = tmpdir / 'data'
     assert (data_dir / 'X_train.csv').exists()
     assert (data_dir / 'X_test.csv').exists()
@@ -93,7 +93,7 @@ def test_run_method_regression(regression_data, tmpdir):
 def test_run_method_time_to_event(time_to_event_data, tmpdir):
     data = time_to_event_data
     trainer = TrainerSupervised(task='time_to_event', output_dir=str(tmpdir))
-    trainer.run(data=data, target_variable=["time", "event"], save_data=True)
+    trainer.run(data=data, target_variable=["time", "event"])
     data_dir = tmpdir / 'data'
     assert (data_dir / 'X_train.csv').exists()
     assert (data_dir / 'X_test.csv').exists()
@@ -105,13 +105,13 @@ def test_load_trainer_autogluon(classification_data, tmpdir):
     X, y = classification_data
     data = pd.concat([X, y], axis=1)
     trainer = TrainerSupervised(task='binary', output_dir=str(tmpdir))
-    trainer.run(data=data, target_variable='target', save_data=True)
+    trainer.run(data=data, target_variable='target')
     loaded_trainer = TrainerSupervised.load_trainer(project_dir=str(tmpdir))
     assert loaded_trainer.predictor is not None
 
 def test_load_trainer_time_to_event(time_to_event_data, tmpdir):
     data = time_to_event_data
     trainer = TrainerSupervised(task='time_to_event', output_dir=str(tmpdir))
-    trainer.run(data=data, target_variable=["time", "event"], save_data=True)
+    trainer.run(data=data, target_variable=["time", "event"])
     loaded_trainer = TrainerSupervised.load_trainer(project_dir=str(tmpdir))
     assert loaded_trainer.predictor is not None
