@@ -1,4 +1,4 @@
-import json
+import yaml
 import pickle
 from pathlib import Path
 from typing import List
@@ -126,6 +126,7 @@ class TrainerSupervised:
         )
 
         self.predictor = self.predictors[self.best_fold]
+        self.trainer_config['best_fold'] = self.best_fold
 
         # Update train data to remove validation
         self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
@@ -212,9 +213,18 @@ class TrainerSupervised:
                 Default is 5.
             kwargs (dict, optional): Additional arguments passed to the AutoGluon predictor's `fit` method.
         """
+        self.trainer_config = dict()
+        self.trainer_config['task'] = self.task
+        self.trainer_config['output_dir'] = self.output_dir.as_posix()
+
         self.target_variable = target_variable
+        self.trainer_config['target_variable'] = target_variable
         self.k_folds = k_folds
+        self.trainer_config['k_folds'] = k_folds
         self.kwargs = kwargs
+
+        self.trainer_config['test_size'] = test_size
+        self.trainer_config['stratify_on'] = stratify_on
 
         # Initialize mutable defaults
         if exclude is None:
@@ -238,6 +248,8 @@ class TrainerSupervised:
             print(f"Features retained: {list(X.columns)}")
 
             self.feature_names = list(X.columns)
+            self.trainer_config['reduction_method'] = self.reduction_method
+            self.trainer_config['reduced_feature_set'] = self.feature_names
 
         if self.task in {'binary', 'multiclass'}:
             stratify_col = (
@@ -253,8 +265,14 @@ class TrainerSupervised:
 
         if self.task == 'time_to_event':
             self.predictors, scores, data_train, data_val = train_survival_models(
-                self.X_train, self.y_train, self.X_test, self.y_test, self.output_dir)
+                self.X_train, 
+                self.y_train, 
+                self.X_test, 
+                self.y_test, 
+                self.output_dir
+            )
             self.predictor = self.predictors[max(scores, key=scores.get)]
+            self.trainer_config['survival_models_info'] = scores
 
             self.X_train, self.y_train = data_train.drop(columns=['time', 'event']), data_train[['time', 'event']] 
             self.X_val, self.y_val = data_val.drop(columns=['time', 'event']), data_val[['time', 'event']] 
@@ -294,6 +312,9 @@ class TrainerSupervised:
         self.y_train.to_csv((self.data_dir / 'y_train.csv'), index=False)
         self.y_test.to_csv((self.data_dir / 'y_test.csv'), index=False)
         self.y_val.to_csv((self.data_dir / 'y_val.csv'), index=False)
+
+        with (self.output_dir / 'trainer_config.yaml').open('w') as f:
+            yaml.dump(self.trainer_config, f)
 
         if explain:
             explainer = Explainer.from_trainer(self)
@@ -335,15 +356,17 @@ class TrainerSupervised:
             TrainerSupervised: The loaded Trainer.
         """
         project_dir = Path(project_dir)
+        with (project_dir / 'trainer_config.yaml').open('r') as f:
+            trainer_config = yaml.safe_load(f)
 
         trainer = cls()
-
-        if (project_dir / 'survival_models').exists():
+        trainer.task = trainer_config['task']
+        
+        if trainer.task == 'time_to_event':
             model_dir = (project_dir / 'survival_models')
-            with open(model_dir / "model_info.json", "r") as f:
-                model_info = json.load(f)
-
+            
             trainer.predictors = {}
+            model_info = trainer_config['survival_models_info']
             for model_name, _ in model_info.items():
                 if model_name == 'MTLR':
                     trainer.predictors[model_name] = LitMTLR.load_from_checkpoint(model_dir / "MTLR.ckpt")
@@ -354,11 +377,9 @@ class TrainerSupervised:
                         pickle.load(f)
 
             trainer.predictor = trainer.predictors[max(model_info, key=model_info.get)]
-            trainer.task = 'time_to_event'
         else:
             model_dir = (project_dir / 'autogluon_models' / 'autogluon_models_best_fold')
             trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
-            trainer.task = trainer.predictor.problem_type
         
         trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv', index_col=0)
         trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv', index_col=0)
