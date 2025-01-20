@@ -255,12 +255,12 @@ class TrainerSupervised:
             X, y, test_size=test_size, stratify=stratify_col, random_state=42)
 
         if self.task == 'time_to_event':
-            self.X_val = pd.DataFrame()
-            self.y_val = pd.DataFrame()
-
-            self.predictors, scores = train_survival_models(
+            self.predictors, scores, data_train, data_val = train_survival_models(
                 self.X_train, self.y_train, self.X_test, self.y_test, self.output_dir)
             self.predictor = self.predictors[max(scores, key=scores.get)]
+
+            self.X_train, self.y_train = data_train.drop(columns=['time', 'event']), data_train[['time', 'event']] 
+            self.X_val, self.y_val = data_val.drop(columns=['time', 'event']), data_val[['time', 'event']] 
         else:
             (self.output_dir / 'autogluon_models').mkdir(exist_ok=True, parents=True)
 
@@ -368,14 +368,8 @@ class TrainerSupervised:
         trainer.X_train = pd.read_csv(project_dir / 'data' / 'X_train.csv', index_col=0)
         trainer.y_test = pd.read_csv(project_dir / 'data' / 'y_test.csv', index_col=0).squeeze()
         trainer.y_train = pd.read_csv(project_dir / 'data' / 'y_train.csv', index_col=0).squeeze()
-        
-        # There was no validation data for time_to_event
-        if trainer.task == 'time_to_event':
-            trainer.X_val = pd.DataFrame()
-            trainer.y_val = pd.Series()
-        else: 
-            trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv', index_col=0)
-            trainer.y_val = pd.read_csv(project_dir / 'data' / 'y_val.csv', index_col=0).squeeze()
+        trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv', index_col=0)
+        trainer.y_val = pd.read_csv(project_dir / 'data' / 'y_val.csv', index_col=0).squeeze()
   
         return trainer
 
