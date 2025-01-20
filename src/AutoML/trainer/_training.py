@@ -155,7 +155,7 @@ def train_survival_models(
     for model_name, cindex in cindex_scores.items():
         print(f"{model_name}: {cindex:.4f}")
 
-    with open(output_dir/ "survival_models" / "model_info.json", "w") as f:
-        json.dump(cindex_scores, f, indent=4)
+    # For later saving to yaml
+    cindex_scores = {key: float(value) for key, value in cindex_scores.items()}
 
     return fitted_models, cindex_scores, data_train, data_val
