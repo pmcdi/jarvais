@@ -130,6 +130,25 @@ def plot_corr(
         size (float): Size of the heatmap figure.
         output_dir (Path): Directory to save the output image.
         file_name (str): Name of the saved image file. Defaults to 'correlation_matrix.png'.
+
+    Example:
+        ```python
+        import pandas as pd
+        from pathlib import Path
+
+        # Sample data
+        df = pd.DataFrame({
+            'A': [1, 2, 3, 4, 5],
+            'B': [5, 4, 3, 2, 1],
+            'C': [2, 3, 4, 5, 6]
+        })
+
+        # Compute Spearman correlation
+        corr_matrix = df.corr(method='spearman')
+
+        # Plot and save the heatmap
+        plot_corr(corr=corr_matrix, size=6, output_dir=Path('./output'))
+        ```
     """
     fig, ax = plt.subplots(1, 1, figsize=(size, size))
     mask = np.triu(np.ones_like(corr, dtype=bool)) # Keep only lower triangle
@@ -323,21 +342,22 @@ def plot_feature_importance(df: pd.DataFrame, output_dir: Path, model_name: str=
 
     Args:
         df (pd.DataFrame): DataFrame containing the feature importance data. 
-            Look below for required format.
+            Look at example for required format.
         output_dir (Path): Directory to save the feature importance plot.
         model_name (str): Optional name of the model, included in the plot title.
 
     Example:
-        The `df` DataFrame should look like this:
-
         ```python
         import pandas as pd
+        from pathlib import Path
 
         df = pd.DataFrame({
             'importance': [0.25, 0.18, 0.12, 0.10],
             'stddev': [0.03, 0.02, 0.01, 0.015],
             'p_value': [0.03, 0.07, 0.01, 0.2]
         }, index=['Feature A', 'Feature B', 'Feature C', 'Feature D'])
+
+        plot_feature_importance(df, Path('./output'))
         ```
     """
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
