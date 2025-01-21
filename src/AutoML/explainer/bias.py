@@ -1,9 +1,6 @@
 import inspect, re
 from typing import List
-<<<<<<< HEAD
 from pathlib import Path
-=======
->>>>>>> ea62221 (feat: updated bias to plot log rank and fit OLS)
 
 from functools import partial
 import pandas as pd
@@ -42,7 +39,6 @@ def get_metric(metric, sensitive_features=None):
     return partial(fn, sensitive_features=sensitive_features) if 'sensitive_features' in params and sensitive_features else fn
 
 class BiasExplainer():
-<<<<<<< HEAD
     """
     A class for explaining and analyzing bias in a predictive model's outcomes based on sensitive features.
 
@@ -51,23 +47,6 @@ class BiasExplainer():
     of bias in the model's predictions based on sensitive features. If the p-value is less than 0.05, indicating potential bias, 
     the class generates visualizations (such as violin plots) and calculates fairness metrics (e.g., demographic parity, equalized odds). 
     The results are presented for each sensitive feature, with optional relative fairness comparisons.
-=======
-    def __init__(
-            self, 
-            y_true: pd.DataFrame, 
-            y_pred: pd.DataFrame, 
-            sensitive_features: dict, 
-            metrics: list = ['mean_prediction', 'false_positive_rate', 'true_positive_rate'], 
-            **kwargs: dict
-        ) -> None:
-        """
-    A class for explaining and analyzing bias in a predictive model's outcomes based on sensitive features.
-
-    This class performs various fairness audits by evaluating predictive outcomes with respect to sensitive features such as
-    gender, age, race, and more. It calculates fairness metrics (e.g., demographic parity, equalized odds), generates visualizations
-    (e.g., violin plots), and runs statistical analyses (e.g., OLS regression) to assess any bias in model predictions. The
-    results are presented for each sensitive feature, with optional relative fairness comparisons.
->>>>>>> ea62221 (feat: updated bias to plot log rank and fit OLS)
 
     Attributes:
         y_true (pd.DataFrame):
@@ -83,7 +62,6 @@ class BiasExplainer():
         kwargs (dict):
             Additional parameters passed to various methods, such as metric calculation and plot generation.
     """
-<<<<<<< HEAD
     def __init__(
             self, 
             y_true: pd.DataFrame, 
@@ -96,11 +74,6 @@ class BiasExplainer():
         self.y_true = y_true
         self.y_pred = y_pred
         self.output_dir = output_dir
-=======
-
-        self.y_true = y_true
-        self.y_pred = y_pred
->>>>>>> ea62221 (feat: updated bias to plot log rank and fit OLS)
         self.mapper = {"mean_prediction": "Demographic Parity",
                        "false_positive_rate": "(FPR) Equalized Odds",
                        "true_positive_rate": "(TPR) Equalized Odds or Equal Opportunity"}
@@ -139,16 +112,10 @@ class BiasExplainer():
         plt.xticks(rotation=45, ha='right')
 
         plt.tight_layout()  
-<<<<<<< HEAD
         plt.savefig(self.output_dir / f'{sensitive_feature}_logloss.png') 
         plt.show()
 
     def _fit_OLS(self, sensitive_feature: str, log_loss_per_patient:np.ndarray) -> float:
-=======
-        plt.show()
-
-    def _fit_OLS(self, sensitive_feature: str, log_loss_per_patient:np.ndarray) -> None:
->>>>>>> ea62221 (feat: updated bias to plot log rank and fit OLS)
         """Fit a statsmodels OLS model to the log loss data."""
         one_hot_encoded = pd.get_dummies(self.sensitive_features[sensitive_feature], prefix=sensitive_feature)
 
@@ -160,7 +127,6 @@ class BiasExplainer():
 
         model = sm.OLS(y, X).fit()
 
-<<<<<<< HEAD
         if model.f_pvalue < 0.05:
             summary = model.summary(xname=['const'] + X_columns.tolist())
             print(f'Possible Bias in {sensitive_feature.title()}:\n')
@@ -170,9 +136,6 @@ class BiasExplainer():
                 f.write(summary.as_text())
 
         return model.f_pvalue
-=======
-        print(model.summary(xname=['const'] + X_columns.tolist()))
->>>>>>> ea62221 (feat: updated bias to plot log rank and fit OLS)
     
     def _calculate_fair_metrics(
             self, 
@@ -206,7 +169,6 @@ class BiasExplainer():
             self, 
             relative: bool = False, 
             fairness_threshold: float = 1.2
-<<<<<<< HEAD
         ) -> None:
         """
         Runs the bias explainer analysis on the provided data. It first evaluates the potential bias in the model's predictions
@@ -220,24 +182,6 @@ class BiasExplainer():
                 A threshold for determining fairness based on relative metrics. If the relative metric exceeds this threshold, 
                 a warning flag will be applied.
         """
-=======
-        ) -> List[pd.DataFrame]:
-        """
-    Runs the bias explainer analysis on the provided data, calculating fairness metrics and generating plots 
-    for each sensitive feature in the dataset.
-
-    Args:
-        relative (bool): 
-            If True, the metrics will be presented relative to the most frequent value of each sensitive feature.
-        fairness_threshold (float): 
-            A threshold for determining fairness based on relative metrics. If the relative metric exceeds this threshold, 
-            a warning flag will be applied.
-
-    Returns:
-        List[pd.DataFrame]: 
-            A list of DataFrames, where each DataFrame contains fairness metrics for each sensitive feature.
-    """
->>>>>>> ea62221 (feat: updated bias to plot log rank and fit OLS)
         log_loss_per_patient = self.y_true.index.map(
             lambda idx: log_loss([self.y_true[idx]], [self.y_pred[idx]], labels=self.y_true.unique())
         )
@@ -246,7 +190,6 @@ class BiasExplainer():
 
         self.results = []
         for sensitive_feature in self.sensitive_features.columns:
-<<<<<<< HEAD
             f_pvalue = self._fit_OLS(sensitive_feature, log_loss_per_patient)
             if f_pvalue < 0.05:
                 self._generate_violin(sensitive_feature, log_loss_per_patient)
@@ -255,14 +198,3 @@ class BiasExplainer():
                 print(f"Subgroup Analysis({sensitive_feature.title()})")
                 print(f"{tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')}\n")
                 result.to_csv(self.output_dir / f'{sensitive_feature}_fm_metrics.csv')
-=======
-            self._generate_violin(sensitive_feature, log_loss_per_patient)
-            self._fit_OLS(sensitive_feature, log_loss_per_patient)
-            result = self._calculate_fair_metrics(sensitive_feature, fairness_threshold, relative)
-
-            self.results.append(result)
-            print(f"Subgroup Analysis({sensitive_feature.title()})")
-            print(f'{tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')}\n')
-
-        return self.results
->>>>>>> ea62221 (feat: updated bias to plot log rank and fit OLS)
