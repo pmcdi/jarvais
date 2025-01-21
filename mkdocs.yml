@@ -6,10 +6,11 @@ theme:
         scheme: slate
 
 plugins:
-- mkdocstrings
-- mkdocs-jupyter:
-    theme: dark
-- mkdocs-pdf
+  - search
+  - mkdocstrings
+  - mkdocs-jupyter:
+      theme: dark
+  - mkdocs-pdf
 
 markdown_extensions:
   - attr_list
