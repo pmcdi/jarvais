@@ -4,6 +4,10 @@ pixi.toml
 ./data
 data/
 tests/tmp
+*.bak
+*.test
+
+.DS_Store
 
 **/*.pkl
 
@@ -16,3 +20,4 @@ __pycache__
 AutogluonModels# pixi environments
 .pixi
 *.egg-info
+*/.DS_Store

@@ -13,7 +13,7 @@ from ..utils.plot import (
     plot_shap_values,
     plot_violin_of_bootsrapped_metrics,
 )
-from ..utils.bias import BiasExplainer, infer_sensitive_features
+from .bias import BiasExplainer, infer_sensitive_features
 
 class Explainer():
     """
@@ -61,17 +61,11 @@ class Explainer():
                 self.X_train,
                 self.trainer.y_train,
                 output_dir=self.output_dir / 'figures'
-            )
+            )            
 
-        if self.trainer.task != 'time_to_event':
-            self.bias_results = self._run_bias_audit()
-
-            (self.output_dir / 'bias').mkdir(parents=True, exist_ok=True)
-            for result in self.bias_results:
-                result.to_csv((self.output_dir / 'bias' / f'{result.columns.name}.csv'))
-
-        # Plot diagnostics
         if self.trainer.task in ['binary', 'multiclass']:
+            self._run_bias_audit()
+
             plot_classification_diagnostics(
                 self.y_test,
                 self.predictor.predict_proba(self.X_test).iloc[:, 1],
@@ -87,6 +81,7 @@ class Explainer():
                 self.X_test,
                 output_dir=self.output_dir / 'figures'
             )
+
         elif self.trainer.task == 'regression':
             plot_regression_diagnostics(
                 self.y_test,
@@ -120,10 +115,16 @@ class Explainer():
     def _run_bias_audit(self) -> List[pd.DataFrame]:
 
         self.sensitive_features = infer_sensitive_features(self.X_test) if self.sensitive_features is None else self.sensitive_features
-        metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate']
+        bias_output_dir = self.output_dir / 'bias'
+        bias_output_dir.mkdir(parents=True, exist_ok=True)
 
-        bias = BiasExplainer(self.y_test, self.predictor.predict(self.X_test), self.sensitive_features, metrics=metrics)
-        return bias.run(relative=True)
+        bias = BiasExplainer(
+            self.y_test, 
+            self.predictor.predict_proba(self.X_test).iloc[:, 1], 
+            self.sensitive_features, 
+            bias_output_dir,
+            metrics=['mean_prediction', 'false_positive_rate'])
+        bias.run(relative=True)
 
     @classmethod
     def from_trainer(cls, trainer, **kwargs):
