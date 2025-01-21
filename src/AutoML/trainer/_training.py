@@ -7,7 +7,7 @@ from typing import Tuple
 
 import pandas as pd
 from autogluon.tabular import TabularPredictor
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, train_test_split
 from sksurv.ensemble import GradientBoostingSurvivalAnalysis, RandomSurvivalForest
 from sksurv.linear_model import CoxnetSurvivalAnalysis
 from sksurv.metrics import concordance_index_censored
@@ -104,7 +104,7 @@ def train_survival_models(
         X_test: pd.DataFrame, 
         y_test: pd.DataFrame, 
         output_dir: Path
-    ) -> Tuple[dict, dict]:
+    ):
     """Train both deep and traditional survival models, consolidate fitted models and C-index scores."""
     (output_dir / 'survival_models').mkdir(exist_ok=True, parents=True)
 
@@ -112,12 +112,17 @@ def train_survival_models(
     cindex_scores = {}
 
     # Deep Models
+
+    data_train, data_val = train_test_split(pd.concat([X_train, y_train], axis=1), test_size=0.1, stratify=y_train['event'], random_state=42)
+
     fitted_models['MTLR'], cindex_scores['MTLR'] = train_mtlr(
-        pd.concat([X_train, y_train], axis=1),
+        data_train,
+        data_val,
         pd.concat([X_test, y_test], axis=1),
         output_dir / 'survival_models')
     fitted_models['DeepSurv'], cindex_scores['DeepSurv'] = train_deepsurv(
-        pd.concat([X_train, y_train], axis=1),
+        data_train,
+        data_val,
         pd.concat([X_test, y_test], axis=1),
         output_dir / 'survival_models')
 
@@ -150,7 +155,7 @@ def train_survival_models(
     for model_name, cindex in cindex_scores.items():
         print(f"{model_name}: {cindex:.4f}")
 
-    with open(output_dir/ "survival_models" / "model_info.json", "w") as f:
-        json.dump(cindex_scores, f, indent=4)
+    # For later saving to yaml
+    cindex_scores = {key: float(value) for key, value in cindex_scores.items()}
 
-    return fitted_models, cindex_scores
+    return fitted_models, cindex_scores, data_train, data_val

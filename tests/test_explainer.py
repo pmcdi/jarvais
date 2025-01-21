@@ -86,7 +86,7 @@ def trained_regression_model(regression_data, tmpdir):
     X, y = regression_data
     data = pd.concat([X, y], axis=1)
     trainer = TrainerSupervised(task='regression', output_dir=str(tmpdir))
-    trainer.run(data=data, target_variable='target', save_data=True)
+    trainer.run(data=data, target_variable='target')
     return trainer 
 
 def test_explainer_run_regression(trained_regression_model, tmpdir):
