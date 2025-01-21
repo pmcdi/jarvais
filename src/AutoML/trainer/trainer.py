@@ -374,7 +374,7 @@ class TrainerSupervised:
                     trainer.predictors[model_name] = LitDeepSurv.load_from_checkpoint(model_dir / "DeepSurv.ckpt")
                 else:
                     with (model_dir / f'{model_name}.pkl').open("rb") as f:
-                        pickle.load(f)
+                        trainer.predictors[model_name] = pickle.load(f)
 
             trainer.predictor = trainer.predictors[max(model_info, key=model_info.get)]
         else:
