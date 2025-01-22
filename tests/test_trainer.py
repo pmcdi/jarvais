@@ -4,7 +4,7 @@ import numpy as np
 import shutil
 from pathlib import Path
 from sklearn.datasets import make_classification, make_regression
-from AutoML.trainer import TrainerSupervised
+from jarvais.trainer import TrainerSupervised
 
 @pytest.fixture
 def classification_data():
