@@ -1,12 +1,12 @@
-name: CI-CD
+# name: CI-CD
 
-# only run on pushes to main or pull requests
-on:
-  workflow_run:
-    workflows: ["CI tests"]
-    types:
-      - completed
-jobs:
+# # only run on pushes to main or pull requests
+# on:
+#   workflow_run:
+#     workflows: ["CI tests"]
+#     types:
+#       - completed
+# jobs:
   ################################################################################################
   # Semantic-Release: Run semantic-release to automate versioning and publishing
   ################################################################################################
