@@ -5,7 +5,7 @@ The `Analyzer` module is designed for data visualization and exploration. It hel
 ## Example Usage
 
 ```python
-from AutoML.analyzer import Analyzer
+from jarvais.analyzer import Analyzer
 
 analyzer = Analyzer(data, target_variable='target', output_dir='.')
 analyzer.run()

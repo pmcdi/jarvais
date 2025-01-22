@@ -1,35 +1,3 @@
-classifier:
-  models:
-    logr: LogisticRegression
-    logr_pen: LogisticRegression
-    boost_c: GradientBoostingClassifier
-    rf_c: RandomForestClassifier
-    tree_c: DecisionTreeClassifier
-    svc: SVC
-    mlp_c: MLPClassifier
-    knn_c: KNeighborsClassifier
-  metrics: ['accuracy', 'average_precision', 'recall', 'f1', 'roc_auc']
-
-regression:
-  models:
-    linr: LinearRegression
-    linr_pen: LinearRegression
-    boost_r: GradientBoostingRegressor
-    rf_r: RandomForestRegressor
-    tree_r: DecisionTreeRegressor
-    svr: SVR
-    knn_r: KNeighborsRegressor
-  metrics: ['neg_mean_squared_error', 'r2']
-
-
-cluster:
-  models:
-    km: KMeans
-    ap: AffinityPropagation
-    sc: SpectralClustering
-  metrics: ['adjusted_rand_score', 'adjusted_mutual_info_score']
-
-
 # The lookback window prior to visit date for each feature category. Records taken within this time window are valid.
 lab_lookback_window: 5 # days
 symp_lookback_window: 30 # days
