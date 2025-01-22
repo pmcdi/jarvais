@@ -1,4 +1,4 @@
-import json
+import yaml
 import pickle
 from pathlib import Path
 from typing import List
@@ -126,6 +126,7 @@ class TrainerSupervised:
         )
 
         self.predictor = self.predictors[self.best_fold]
+        self.trainer_config['best_fold'] = self.best_fold
 
         # Update train data to remove validation
         self.X_train = self.X_train[~self.X_train.index.isin(self.X_val.index)]
@@ -191,7 +192,6 @@ class TrainerSupervised:
             exclude: List[str] | None = None,
             stratify_on: str | None = None,
             explain: bool = False,
-            save_data: bool = True,
             k_folds: int = 5,
             **kwargs:dict
         ) -> None:
@@ -209,15 +209,22 @@ class TrainerSupervised:
                 Must be compatible with `target_variable`.
             explain (bool, optional): Whether to generate explainability reports for the model. 
                 Default is False.
-            save_data (bool, optional): Whether to save train/test/validation data to disk. 
-                Default is True.
             k_folds (int, optional): Number of folds for cross-validation. If 1, uses AutoGluon-specific validation. 
                 Default is 5.
             kwargs (dict, optional): Additional arguments passed to the AutoGluon predictor's `fit` method.
         """
+        self.trainer_config = dict()
+        self.trainer_config['task'] = self.task
+        self.trainer_config['output_dir'] = self.output_dir.as_posix()
+
         self.target_variable = target_variable
+        self.trainer_config['target_variable'] = target_variable
         self.k_folds = k_folds
+        self.trainer_config['k_folds'] = k_folds
         self.kwargs = kwargs
+
+        self.trainer_config['test_size'] = test_size
+        self.trainer_config['stratify_on'] = stratify_on
 
         # Initialize mutable defaults
         if exclude is None:
@@ -241,6 +248,8 @@ class TrainerSupervised:
             print(f"Features retained: {list(X.columns)}")
 
             self.feature_names = list(X.columns)
+            self.trainer_config['reduction_method'] = self.reduction_method
+            self.trainer_config['reduced_feature_set'] = self.feature_names
 
         if self.task in {'binary', 'multiclass'}:
             stratify_col = (
@@ -255,12 +264,18 @@ class TrainerSupervised:
             X, y, test_size=test_size, stratify=stratify_col, random_state=42)
 
         if self.task == 'time_to_event':
-            self.X_val = pd.DataFrame()
-            self.y_val = pd.DataFrame()
-
-            self.predictors, scores = train_survival_models(
-                self.X_train, self.y_train, self.X_test, self.y_test, self.output_dir)
+            self.predictors, scores, data_train, data_val = train_survival_models(
+                self.X_train, 
+                self.y_train, 
+                self.X_test, 
+                self.y_test, 
+                self.output_dir
+            )
             self.predictor = self.predictors[max(scores, key=scores.get)]
+            self.trainer_config['survival_models_info'] = scores
+
+            self.X_train, self.y_train = data_train.drop(columns=['time', 'event']), data_train[['time', 'event']] 
+            self.X_val, self.y_val = data_val.drop(columns=['time', 'event']), data_val[['time', 'event']] 
         else:
             (self.output_dir / 'autogluon_models').mkdir(exist_ok=True, parents=True)
 
@@ -289,15 +304,17 @@ class TrainerSupervised:
             else:
                 self._train_autogluon()
 
-        if save_data:
-            self.data_dir = self.output_dir / 'data'
-            self.data_dir.mkdir(parents=True, exist_ok=True)
-            self.X_train.to_csv((self.data_dir / 'X_train.csv'), index=False)
-            self.X_test.to_csv((self.data_dir / 'X_test.csv'), index=False)
-            self.X_val.to_csv((self.data_dir / 'X_val.csv'), index=False)
-            self.y_train.to_csv((self.data_dir / 'y_train.csv'), index=False)
-            self.y_test.to_csv((self.data_dir / 'y_test.csv'), index=False)
-            self.y_val.to_csv((self.data_dir / 'y_val.csv'), index=False)
+        self.data_dir = self.output_dir / 'data'
+        self.data_dir.mkdir(parents=True, exist_ok=True)
+        self.X_train.to_csv((self.data_dir / 'X_train.csv'), index=False)
+        self.X_test.to_csv((self.data_dir / 'X_test.csv'), index=False)
+        self.X_val.to_csv((self.data_dir / 'X_val.csv'), index=False)
+        self.y_train.to_csv((self.data_dir / 'y_train.csv'), index=False)
+        self.y_test.to_csv((self.data_dir / 'y_test.csv'), index=False)
+        self.y_val.to_csv((self.data_dir / 'y_val.csv'), index=False)
+
+        with (self.output_dir / 'trainer_config.yaml').open('w') as f:
+            yaml.dump(self.trainer_config, f)
 
         if explain:
             explainer = Explainer.from_trainer(self)
@@ -326,49 +343,51 @@ class TrainerSupervised:
                 inference = self.predictors[model].predict(data)
 
         return inference
-
+    
     @classmethod
-    def load_model(cls,
-                   model_dir: str | Path = None,
-                   project_dir: str | Path = None):
+    def load_trainer(cls, project_dir: str | Path):
         """
-        Load a trained model from the specified directory.
+        Load a trained TrainerSupervised from the specified directory.
 
         Args:
-            model_dir (str or Path, optional): The directory where the model is saved.
             project_dir (str or Path, optional): The directory where the trainer was run.
 
         Returns:
-            TrainerSupervised: The loaded model.
+            TrainerSupervised: The loaded Trainer.
         """
-        if not (model_dir or project_dir):
-            raise ValueError('model_dir or project_dir must be provided')
-
-        if model_dir is None and project_dir is not None:
-            model_dir = (Path(project_dir) / 'autogluon_models' / 'autogluon_models_best_fold'
-             if (Path(project_dir) / 'autogluon_models' / 'autogluon_models_best_fold').exists()
-             else Path(project_dir) / 'survival_models')
+        project_dir = Path(project_dir)
+        with (project_dir / 'trainer_config.yaml').open('r') as f:
+            trainer_config = yaml.safe_load(f)
 
         trainer = cls()
-
-        if 'survival' in str(model_dir):
-            with open(model_dir / "model_info.json", "r") as f:
-                model_info = json.load(f)
-
+        trainer.task = trainer_config['task']
+        
+        if trainer.task == 'time_to_event':
+            model_dir = (project_dir / 'survival_models')
+            
             trainer.predictors = {}
+            model_info = trainer_config['survival_models_info']
             for model_name, _ in model_info.items():
                 if model_name == 'MTLR':
-                    trainer.predictors[model_name] = LitMTLR.load_from_checkpoint("MTLR.ckpt")
+                    trainer.predictors[model_name] = LitMTLR.load_from_checkpoint(model_dir / "MTLR.ckpt")
                 elif model_name == 'DeepSurv':
-                    trainer.predictors[model_name] = LitDeepSurv.load_from_checkpoint("DeepSurv.ckpt")
+                    trainer.predictors[model_name] = LitDeepSurv.load_from_checkpoint(model_dir / "DeepSurv.ckpt")
                 else:
                     with (model_dir / f'{model_name}.pkl').open("rb") as f:
-                        pickle.load(f)
+                        trainer.predictors[model_name] = pickle.load(f)
 
             trainer.predictor = trainer.predictors[max(model_info, key=model_info.get)]
         else:
+            model_dir = (project_dir / 'autogluon_models' / 'autogluon_models_best_fold')
             trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
-
+        
+        trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv', index_col=0)
+        trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv', index_col=0)
+        trainer.X_train = pd.read_csv(project_dir / 'data' / 'X_train.csv', index_col=0)
+        trainer.y_test = pd.read_csv(project_dir / 'data' / 'y_test.csv', index_col=0).squeeze()
+        trainer.y_val = pd.read_csv(project_dir / 'data' / 'y_val.csv', index_col=0).squeeze()
+        trainer.y_train = pd.read_csv(project_dir / 'data' / 'y_train.csv', index_col=0).squeeze()
+  
         return trainer
 
 

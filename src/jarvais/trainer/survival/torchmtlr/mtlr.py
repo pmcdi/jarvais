@@ -95,6 +95,7 @@ class MTLR(nn.Module):
 class LitMTLR(pl.LightningModule):
     def __init__(self, in_channel: int, num_time_bins: int, dims: List[int], dropout: float, C1: float):
         super(LitMTLR, self).__init__()
+        self.save_hyperparameters() 
 
         self.in_channel = in_channel
         self.num_time_bins = num_time_bins
@@ -124,7 +125,7 @@ class LitMTLR(pl.LightningModule):
             y_pred = self.model(torch.tensor(x.drop(["time", "event"], axis=1).values, dtype=torch.float))
             risk_pred = mtlr_risk(y_pred)
 
-        return -risk_pred
+        return risk_pred
 
     def configure_optimizers(self) -> optim.Optimizer:
         return make_optimizer(optim.Adam, self.model, lr=.005, weight_decay=1e-5)
