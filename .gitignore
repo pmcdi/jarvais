@@ -4,6 +4,7 @@ pixi.toml
 ./data
 data/
 tests/tmp
+tutorials
 
 **/*.pkl
 
