@@ -1,16 +1,16 @@
-# AutoML for Oncology
+# jarvAIs
 
 ## Overview
 
-AutoML for Oncology is a Python package designed to automate and enhance machine learning workflows. The primary goal of this project is to reduce redundancy in repetitive tasks, improve consistency, and elevate the quality of standardized processes in oncology research.
+jarvAIs is a Python package designed to automate and enhance machine learning workflows. The primary goal of this project is to reduce redundancy in repetitive tasks, improve consistency, and elevate the quality of standardized processes in oncology research.
 
 Follow pixi installation process found [here](https://pixi.sh/latest/)
 
 1. **Clone Repo and Navigate**
 
     ```bash
-    git clone https://github.com/pmcdi/AutoML.git
-    cd AutoML
+    git clone https://github.com/pmcdi/jarvais.git
+    cd jarvais
     ```
 
 2. **Install Dependencies**
@@ -33,7 +33,7 @@ The **Analyzer** module is designed for data visualization and exploration. It h
 #### Example Usage
 
 ```python
-from AutoML.analyzer import Analyzer
+from jarvais.analyzer import Analyzer
 
 analyzer = Analyzer(data, target_variable='target', output_dir='.')
 analyzer.run()
@@ -99,7 +99,7 @@ The **Trainer** module simplifies and automates the process of feature reduction
 #### Example Usage
 
 ```python
-from AutoML.trainer import TrainerSupervised
+from jarvais.trainer import TrainerSupervised
 
 trainer = TrainerSupervised(task='binary', output_dir='./trainer_outputs')
 trainer.run(data=data, target_variable='target', save_data=True)
@@ -145,7 +145,7 @@ The module provides an easy-to-use interface for model diagnostics, bias analysi
 #### Example Usage
 
 ```python
-from AutoML.explainer import Explainer
+from jarvais.explainer import Explainer
 
 # Prefered method is to initialize from trainer
 exp = Explainer.from_trainer(trainer)
