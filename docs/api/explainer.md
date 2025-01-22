@@ -12,7 +12,7 @@ The `Explainer` class is part of the `jarvais.explainer` module. It generates ex
 
 The `BiasExplainer` class is used by the `Explainer` class to run a bias audit.
 
-::: AutoML.explainer.BiasExplainer
+::: jarvais.explainer.BiasExplainer
     options:
         heading_level: 3
         members_order: source
