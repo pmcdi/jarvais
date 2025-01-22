@@ -21,7 +21,7 @@ from .survival import LitDeepSurv, LitMTLR
 
 class TrainerSupervised:
     """
-    TrainerSupervised class for supervised AutoML workflows.
+    TrainerSupervised class for supervised jarvAIs workflows.
 
     This class provides functionality for feature reduction, training models (e.g., AutoGluon, survival models), 
     and performing inference. It supports various tasks such as binary/multiclass classification, regression, 
@@ -36,7 +36,7 @@ class TrainerSupervised:
         
     Example:
         ```python
-        from AutoML.trainer import TrainerSupervised
+        from jarvais.trainer import TrainerSupervised
 
         trainer = TrainerSupervised(
             task="binary",
@@ -196,7 +196,7 @@ class TrainerSupervised:
             **kwargs:dict
         ) -> None:
         """
-        Execute the AutoML pipeline on the given dataset.
+        Execute the jarvAIs Trainer pipeline on the given dataset.
 
         Args:
             data (pd.DataFrame): The input dataset containing features and target.

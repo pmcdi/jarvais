@@ -47,7 +47,7 @@ class Analyzer:
 
     Example:
         ```python
-        from AutoML.analyzer import Analyzer
+        from jarvais.analyzer import Analyzer
         import pandas as pd
 
         data = pd.DataFrame({

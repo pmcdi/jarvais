@@ -14,7 +14,7 @@ The `Trainer` module simplifies and automates the process of feature reduction, 
 ## Example Usage
 
 ```python
-from AutoML.trainer import TrainerSupervised
+from jarvais.trainer import TrainerSupervised
 
 trainer = TrainerSupervised(task='binary', output_dir='./trainer_outputs')
 trainer.run(data=data, target_variable='target', save_data=True)
