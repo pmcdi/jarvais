@@ -1,4 +1,4 @@
-from AutoML.analyzer import Analyzer
+from jarvais.analyzer import Analyzer
 from pathlib import Path
 import pytest
 import numpy as np
