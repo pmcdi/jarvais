@@ -1,5 +1,0 @@
-,Female,Male
-mean_prediction,0.01583873290136789,0.027517564402810304
-false_positive_rate,0.003924646781789639,0.010946555054732776
-Relative mean_prediction,0.5755862935220502 ✅,1.0 ✅
-Relative false_positive_rate,0.35852802659525346 ✅,1.0 ✅
