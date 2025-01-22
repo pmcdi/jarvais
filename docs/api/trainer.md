@@ -1,8 +1,8 @@
 # TrainerSupervised
 
-The `TrainerSupervised` class is part of the `AutoML.trainer` module. It supports supervised AutoML workflows.
+The `TrainerSupervised` class is part of the `jarvais.trainer` module.
 
-::: AutoML.trainer.TrainerSupervised
+::: jarvais.trainer.TrainerSupervised
     options:
         heading_level: 3
         members_order: source

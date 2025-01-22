@@ -1,19 +1,19 @@
-# Welcome to AutoML
+# Welcome to jarvAIs
 
-Official Github [here](https://github.com/pmcdi/AutoML/).
+Official Github [here](https://github.com/pmcdi/jarvais/).
 
 ## Overview
 
-AutoML for Oncology is a Python package designed to automate and enhance machine learning workflows. The primary goal of this project is to reduce redundancy in repetitive tasks, improve consistency, and elevate the quality of standardized processes in oncology research.
+`jarvAIs` is a Python package designed to automate and enhance machine learning workflows. The primary goal of this project is to reduce redundancy in repetitive tasks, improve consistency, and elevate the quality of standardized processes in oncology research.
 
 Follow pixi installation process found [here](https://pixi.sh/latest/)
 
 ```bash
 # Clone Repo
-git clone https://github.com/pmcdi/AutoML.git
+git clone https://github.com/pmcdi/jarvais.git
 
 # Navigate to project
-cd AutoML
+cd jarvais
 
 # Install dependencies
 pixi install

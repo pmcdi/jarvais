@@ -1,8 +1,8 @@
 # Explainer
 
-The `Explainer` class is part of the `AutoML.explainer` module. It generates explainability reports for trained models.
+The `Explainer` class is part of the `jarvais.explainer` module. It generates explainability reports for trained models.
 
-::: AutoML.explainer.Explainer
+::: jarvais.explainer.Explainer
     options:
         heading_level: 3
         members_order: source
