@@ -15,8 +15,10 @@ from sklearn.metrics import (
     roc_auc_score,
     root_mean_squared_error,
 )
-from sksurv.nonparametric import kaplan_meier_estimator
 from umap import UMAP
+
+from lifelines.statistics import multivariate_logrank_test
+from sksurv.nonparametric import kaplan_meier_estimator
 
 from .functional import auprc, bootstrap_metric
 from ._plot_epic import plot_epic_copy
@@ -305,7 +307,16 @@ def plot_kaplan_meier_by_category(
                 )
             except Exception as _:
                 pass
+        
+        results_multivariate = multivariate_logrank_test(
+            data_y['time'], 
+            data_x[cat_col], 
+            data_y['event']
+        )
+        multivariate_p_value = results_multivariate.p_value
 
+        plt.text(0.6, 0.1, f"Multivariate log-rank p-value: {multivariate_p_value:.4e}",
+                 fontsize=10, transform=plt.gca().transAxes, bbox=dict(facecolor='white', alpha=0.8))
         plt.ylim(0, 1)
         plt.ylabel(r"Estimated Probability of Survival $\hat{S}(t)$")
         plt.xlabel("Time $t$")
