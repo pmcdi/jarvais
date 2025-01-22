@@ -246,7 +246,7 @@ class Analyzer:
 
     @classmethod
     def dry_run(cls, data: pd.DataFrame) -> dict:
-        """Simply Return generated config and displays TableOne."""
+        """Simply returns generated config and displays TableOne."""
         analyzer = cls(data)
         analyzer._create_config()
 
