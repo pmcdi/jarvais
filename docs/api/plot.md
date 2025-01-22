@@ -1,7 +1,7 @@
 # Plot
 
 
-::: AutoML.utils.plot
+::: jarvais.utils.plot
     options:
         heading_level: 3
         members_order: source

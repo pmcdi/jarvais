@@ -15,7 +15,7 @@ The module provides an easy-to-use interface for model diagnostics, bias analysi
 ## Example Usage
 
 ```python
-from AutoML.explainer import Explainer
+from jarvais.explainer import Explainer
 
 # Prefered method is to initialize from trainer
 exp = Explainer.from_trainer(trainer)

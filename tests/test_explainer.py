@@ -3,8 +3,8 @@ import shutil
 import pandas as pd
 from pathlib import Path
 from sklearn.datasets import make_classification, make_regression
-from AutoML.explainer import Explainer
-from AutoML.trainer import TrainerSupervised
+from jarvais.explainer import Explainer
+from jarvais.trainer import TrainerSupervised
 
 @pytest.fixture
 def classification_data():

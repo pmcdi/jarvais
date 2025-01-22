@@ -1,7 +1,7 @@
 [project]
-name = "AutoML"
+name = "jarvais"
 version = "0.1.0"
-description = "AutoML for Oncology, developed by the Princess Margaret Cancer Digital Intelligence Team"
+description = "jarvAIs, developed by the Princess Margaret Cancer Digital Intelligence Team"
 authors = [
     { name = "Joshua Siraj", email = "joshua.siraj@ryerson.ca" },
     { name = "Sejin Kim", email = "hello@sejin.kim" }
@@ -39,7 +39,7 @@ mkdocs = ">=1.6.1,<2"
 scikit-learn = ">=1.5.2,<2"
 
 [tool.pixi.pypi-dependencies]
-AutoML = { path = ".", editable = true }
+jarvais = { path = ".", editable = true }
 mrmr-selection = "==0.2.8"
 umap-learn = ">=0.5.6, <0.6"
 scikit-survival = ">=0.23.1,<0.24"
