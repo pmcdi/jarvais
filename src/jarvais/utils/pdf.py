@@ -6,7 +6,7 @@ from fpdf.enums import Align
 
 # UTILS
 
-def add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list) -> FPDF:
+def _add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list) -> FPDF:
     for plot, cat in zip(multiplots, categorical_columns):
         pdf.add_page()
 
@@ -22,7 +22,7 @@ def add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list) -> FP
 
     return pdf
 
-def add_table(pdf: FPDF, csv_df: pd.DataFrame) -> FPDF:
+def _add_table(pdf: FPDF, csv_df: pd.DataFrame) -> FPDF:
     headers = csv_df.columns.tolist()
     # Keep empty header entries
     headers = ['' if 'Unnamed:' in header else header for header in headers]
@@ -46,7 +46,18 @@ def generate_analysis_report_pdf(
         categorical_columns: list,
         output_dir: str | Path
     ) -> None:
-    """Generate a PDF report of the analysis with plots and tables."""
+    """
+    Generate a PDF report for the analysis, including plots, tables, and outlier analysis.
+
+    Args:
+        outlier_analysis (str): Text summary of outlier analysis to include in the report.
+        multiplots (list): A list of paths to plots to include in the multiplots section.
+        categorical_columns (list): A list of categorical columns to use for multiplots.
+        output_dir (str | Path): The directory where the generated PDF report will be saved.
+
+    Returns:
+        None: The function saves the generated PDF to the specified output directory.
+    """
     output_dir = Path(output_dir)
     figures_dir = output_dir / 'figures'
 
@@ -82,13 +93,13 @@ def generate_analysis_report_pdf(
 
     # Add multiplots
     if multiplots and categorical_columns:
-        pdf = add_multiplots(pdf, multiplots, categorical_columns)
+        pdf = _add_multiplots(pdf, multiplots, categorical_columns)
 
     # Add demographic breakdown "table one"
     path_tableone = output_dir / 'tableone.csv'
     if path_tableone.exists():
         csv_df = pd.read_csv(path_tableone, na_filter=False).astype(str)
-        pdf = add_table(pdf, csv_df)
+        pdf = _add_table(pdf, csv_df)
 
     # Save PDF
     pdf.output(output_dir / 'analysis_report.pdf')
@@ -97,7 +108,23 @@ def generate_explainer_report_pdf(
         problem_type: str,
         output_dir: str | Path
     ) -> None:
-    """Generate a PDF report of the explainer with plots."""
+    """
+    Generate a PDF report for the explainer with visualizations and metrics.
+
+    This function creates a PDF report that includes plots and metrics 
+    relevant to the specified problem type. The report is saved in the 
+    specified output directory.
+
+    Args:
+        problem_type (str): The type of machine learning problem. 
+            Supported values are 'binary', 'multiclass', 'regression', 
+            and 'time_to_event'.
+        output_dir (str | Path): The directory where the generated PDF 
+            report will be saved.
+
+    Returns:
+        None: The function saves the generated PDF to the specified output directory.
+    """
     output_dir = Path(output_dir)
     figures_dir = output_dir / 'figures'
 
