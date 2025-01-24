@@ -47,6 +47,8 @@ nav:
       - Explainer: api/explainer.md
       - Utils:
         - Plotting: api/plot.md
+        - Functional: api/functional.md
+        - PDF: api/pdf.md
 
 extra_css:
   - assets/styles.css
