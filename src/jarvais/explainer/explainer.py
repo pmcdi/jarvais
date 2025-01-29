@@ -61,11 +61,11 @@ class Explainer():
                 self.X_train,
                 self.trainer.y_train,
                 output_dir=self.output_dir / 'figures'
-            )            
+            )      
+
+            self._run_bias_audit()      
 
         if self.trainer.task in ['binary', 'multiclass']:
-            self._run_bias_audit()
-
             plot_classification_diagnostics(
                 self.y_test,
                 self.predictor.predict_proba(self.X_test).iloc[:, 1],
@@ -118,12 +118,16 @@ class Explainer():
         bias_output_dir = self.output_dir / 'bias'
         bias_output_dir.mkdir(parents=True, exist_ok=True)
 
+        metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate'] 
+
         bias = BiasExplainer(
             self.y_test, 
-            self.predictor.predict_proba(self.X_test).iloc[:, 1], 
-            self.sensitive_features, 
+            self.trainer.infer(self.X_test), 
+            self.sensitive_features,
+            self.trainer.task, 
             bias_output_dir,
-            metrics=['mean_prediction', 'false_positive_rate'])
+            metrics
+        )
         bias.run(relative=True)
 
     @classmethod
