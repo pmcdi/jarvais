@@ -67,12 +67,14 @@ class BiasExplainer():
             y_true: pd.DataFrame, 
             y_pred: pd.DataFrame, 
             sensitive_features: dict, 
+            task: str,
             output_dir: Path,
             metrics: list = ['mean_prediction', 'false_positive_rate', 'true_positive_rate'], 
             **kwargs: dict
         ) -> None:
         self.y_true = y_true
         self.y_pred = y_pred
+        self.task = task
         self.output_dir = output_dir
         self.mapper = {"mean_prediction": "Demographic Parity",
                        "false_positive_rate": "(FPR) Equalized Odds",
@@ -93,34 +95,36 @@ class BiasExplainer():
         else:
             raise ValueError("sensitive_features must be a pandas DataFrame, Series, dictionary or list")
         
-    def _generate_violin(self, sensitive_feature: str, log_loss_per_patient:np.ndarray) -> None:
-        """Generate a violin plot for log loss distribution."""
+    def _generate_violin(self, sensitive_feature: str, bias_metric:np.ndarray) -> None:
+        """Generate a violin plot for the bias metric."""
         plt.figure(figsize=(8, 6)) 
         sns.set_theme(style="whitegrid")  
 
         sns.violinplot(
             x=self.sensitive_features[sensitive_feature], 
-            y=log_loss_per_patient, 
+            y=bias_metric, 
             palette="muted",  
             inner="quart", 
             linewidth=1.25 
         )
 
-        plt.title(f'Log Loss Distribution by {sensitive_feature}', fontsize=16, weight='bold')  
+        bias_metric_name = 'log_loss' if self.task == 'binary' else 'mean_squared_error'
+
+        plt.title(f'{bias_metric_name.title()} Distribution by {sensitive_feature}', fontsize=16, weight='bold')  
         plt.xlabel(f'{sensitive_feature}', fontsize=14)  
-        plt.ylabel('Log Loss per Patient', fontsize=14) 
+        plt.ylabel(f'{bias_metric_name.title()} per Patient', fontsize=14) 
         plt.xticks(rotation=45, ha='right')
 
         plt.tight_layout()  
-        plt.savefig(self.output_dir / f'{sensitive_feature}_logloss.png') 
+        plt.savefig(self.output_dir / f'{sensitive_feature}_{bias_metric_name}.png') 
         plt.show()
 
-    def _fit_OLS(self, sensitive_feature: str, log_loss_per_patient:np.ndarray) -> float:
-        """Fit a statsmodels OLS model to the log loss data."""
+    def _fit_OLS(self, sensitive_feature: str, bias_metric:np.ndarray) -> float:
+        """Fit a statsmodels OLS model to the bias metric data."""
         one_hot_encoded = pd.get_dummies(self.sensitive_features[sensitive_feature], prefix=sensitive_feature)
 
         X = one_hot_encoded.values  
-        y = log_loss_per_patient  
+        y = bias_metric  
 
         X_columns = one_hot_encoded.columns  
         X = sm.add_constant(X.astype(float), has_constant='add')
@@ -182,17 +186,20 @@ class BiasExplainer():
                 A threshold for determining fairness based on relative metrics. If the relative metric exceeds this threshold, 
                 a warning flag will be applied.
         """
-        log_loss_per_patient = self.y_true.index.map(
-            lambda idx: log_loss([self.y_true[idx]], [self.y_pred[idx]], labels=self.y_true.unique())
-        )
-        log_loss_per_patient = np.array(log_loss_per_patient)
-        self.y_pred = (self.y_pred >= .5).astype(int)
+        if self.task == 'binary':
+            log_loss_per_patient = self.y_true.index.map(
+                lambda idx: log_loss([self.y_true[idx]], [self.y_pred[idx]], labels=self.y_true.unique())
+            )
+            bias_metric = np.array(log_loss_per_patient)
+            self.y_pred = (self.y_pred >= .5).astype(int)
+        else: # Regression(mean_squared_error)
+            bias_metric = (self.y_true.to_numpy() - self.y_pred.to_numpy()) ** 2
 
         self.results = []
         for sensitive_feature in self.sensitive_features.columns:
-            f_pvalue = self._fit_OLS(sensitive_feature, log_loss_per_patient)
+            f_pvalue = self._fit_OLS(sensitive_feature, bias_metric)
             if f_pvalue < 0.05:
-                self._generate_violin(sensitive_feature, log_loss_per_patient)
+                self._generate_violin(sensitive_feature, bias_metric)
                 result = self._calculate_fair_metrics(sensitive_feature, fairness_threshold, relative)
 
                 print(f"Subgroup Analysis({sensitive_feature.title()})")
