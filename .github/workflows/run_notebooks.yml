@@ -9,10 +9,10 @@ on:
   push:
     branches:
       - test-github-action  # Replace with your test branch
-      
+
 jobs:
   if_merged:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == false
     runs-on: ubuntu-latest
     timeout-minutes: 30
 
