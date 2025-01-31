@@ -108,7 +108,7 @@ class BiasExplainer():
             linewidth=1.25 
         )
 
-        bias_metric_name = 'log_loss' if self.task == 'binary' else 'mean_squared_error'
+        bias_metric_name = 'log_loss' if self.task == 'binary' else 'root_mean_squared_error'
 
         plt.title(f'{bias_metric_name.title()} Distribution by {sensitive_feature}', fontsize=16, weight='bold')  
         plt.xlabel(f'{sensitive_feature}', fontsize=14)  
@@ -192,8 +192,8 @@ class BiasExplainer():
             )
             bias_metric = np.array(log_loss_per_patient)
             self.y_pred = (self.y_pred >= .5).astype(int)
-        else: # Regression(mean_squared_error)
-            bias_metric = (self.y_true.to_numpy() - self.y_pred.to_numpy()) ** 2
+        else: # Regression(root mean_squared_error)
+            bias_metric = np.sqrt((self.y_true.to_numpy() - self.y_pred.to_numpy()) ** 2)
 
         self.results = []
         for sensitive_feature in self.sensitive_features.columns:
