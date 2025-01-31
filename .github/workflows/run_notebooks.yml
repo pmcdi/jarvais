@@ -13,24 +13,24 @@ on:
 jobs:
   # if_merged:
   #   if: github.event.pull_request.merged == true
-    runs-on: ubuntu-latest
-    timeout-minutes: 30
+  runs-on: ubuntu-latest
+  timeout-minutes: 30
 
-    steps:
-      - name: Checkout main branch
-        uses: actions/checkout@v4
-        with:
-          ref: main  # Ensure we run on the latest main branch
+  steps:
+    - name: Checkout main branch
+      uses: actions/checkout@v4
+      with:
+        ref: main  # Ensure we run on the latest main branch
 
-      - name: Install Pixi
-        uses: prefix-dev/setup-pixi@v0.8.1
-        with:
-          environments: "py310"
-          pixi-version: v0.39.0
-          cache: true
+    - name: Install Pixi
+      uses: prefix-dev/setup-pixi@v0.8.1
+      with:
+        environments: "py310"
+        pixi-version: v0.39.0
+        cache: true
 
-      - name: Run all notebooks in docs/tutorials
-        run: |
-          for notebook in docs/tutorials/*.ipynb; do
-            pixi run jupyter nbconvert --execute --to notebook --inplace "$notebook"
-          done
+    - name: Run all notebooks in docs/tutorials
+      run: |
+        for notebook in docs/tutorials/*.ipynb; do
+          pixi run jupyter nbconvert --execute --to notebook --inplace "$notebook"
+        done
