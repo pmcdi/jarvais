@@ -333,9 +333,9 @@ class TrainerSupervised:
         """
         if hasattr(self.predictor, 'can_predict_proba'): # Autogluon
             if self.predictor.can_predict_proba:
-                inference =  self.predictor.predict_proba(data, model)
+                inference =  self.predictor.predict_proba(data, model).iloc[:, 1]
             else:
-                self.predictor.predict(data, model)
+                inference = self.predictor.predict(data, model)
         else: # Survival models
             if model is None:
                 inference = self.predictor.predict(data)
@@ -381,12 +381,12 @@ class TrainerSupervised:
             model_dir = (project_dir / 'autogluon_models' / 'autogluon_models_best_fold')
             trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
         
-        trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv', index_col=0)
-        trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv', index_col=0)
-        trainer.X_train = pd.read_csv(project_dir / 'data' / 'X_train.csv', index_col=0)
-        trainer.y_test = pd.read_csv(project_dir / 'data' / 'y_test.csv', index_col=0).squeeze()
-        trainer.y_val = pd.read_csv(project_dir / 'data' / 'y_val.csv', index_col=0).squeeze()
-        trainer.y_train = pd.read_csv(project_dir / 'data' / 'y_train.csv', index_col=0).squeeze()
+        trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv')
+        trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv')
+        trainer.X_train = pd.read_csv(project_dir / 'data' / 'X_train.csv')
+        trainer.y_test = pd.read_csv(project_dir / 'data' / 'y_test.csv').squeeze()
+        trainer.y_val = pd.read_csv(project_dir / 'data' / 'y_val.csv').squeeze()
+        trainer.y_train = pd.read_csv(project_dir / 'data' / 'y_train.csv').squeeze()
   
         return trainer
 
