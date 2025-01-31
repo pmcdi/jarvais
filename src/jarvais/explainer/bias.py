@@ -14,6 +14,7 @@ import fairlearn.metrics as fm
 
 from sklearn.metrics import log_loss
 import statsmodels.api as sm
+from lifelines import CoxPHFitter
 
 def infer_sensitive_features(data: pd.DataFrame) -> dict:
     """
@@ -120,7 +121,7 @@ class BiasExplainer():
         plt.show()
 
     def _fit_OLS(self, sensitive_feature: str, bias_metric:np.ndarray) -> float:
-        """Fit a statsmodels OLS model to the bias metric data."""
+        """Fit a statsmodels OLS model to the bias metric data, using the sensitive feature and print summary based on p_val."""
         one_hot_encoded = pd.get_dummies(self.sensitive_features[sensitive_feature], prefix=sensitive_feature)
 
         X = one_hot_encoded.values  
@@ -140,6 +141,18 @@ class BiasExplainer():
                 f.write(summary.as_text())
 
         return model.f_pvalue
+
+    def _fit_CoxPH(self, sensitive_feature: str) -> None:
+        """Fit a CoxPH model using the sensitive feature and print summary based on p_val."""
+        one_hot_encoded = pd.get_dummies(self.sensitive_features[sensitive_feature], prefix=sensitive_feature)
+        df_encoded = self.y_true.join(one_hot_encoded)
+
+        cph = CoxPHFitter(penalizer=0.0001)
+        cph.fit(df_encoded, duration_col='time', event_col='event')            
+        
+        if cph.log_likelihood_ratio_test().p_value < 0.05:
+            print(f'Possible Bias in {sensitive_feature.title()}:\n')
+            cph.print_summary()
     
     def _calculate_fair_metrics(
             self, 
@@ -192,16 +205,19 @@ class BiasExplainer():
             )
             bias_metric = np.array(log_loss_per_patient)
             self.y_pred = (self.y_pred >= .5).astype(int)
-        else: # Regression(mean_squared_error)
-            bias_metric = (self.y_true.to_numpy() - self.y_pred.to_numpy()) ** 2
+        elif self.task == 'regression': # Regression(mean_squared_error)
+            bias_metric = np.sqrt((self.y_true.to_numpy() - self.y_pred.to_numpy()) ** 2)
 
         self.results = []
         for sensitive_feature in self.sensitive_features.columns:
-            f_pvalue = self._fit_OLS(sensitive_feature, bias_metric)
-            if f_pvalue < 0.05:
-                self._generate_violin(sensitive_feature, bias_metric)
-                result = self._calculate_fair_metrics(sensitive_feature, fairness_threshold, relative)
+            if self.task == 'time_to_event':
+                self._fit_CoxPH(sensitive_feature)
+            else:
+                f_pvalue = self._fit_OLS(sensitive_feature, bias_metric)
+                if f_pvalue < 0.05:
+                    self._generate_violin(sensitive_feature, bias_metric)
+                    result = self._calculate_fair_metrics(sensitive_feature, fairness_threshold, relative)
 
-                print(f"Subgroup Analysis({sensitive_feature.title()})")
-                print(f"{tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')}\n")
-                result.to_csv(self.output_dir / f'{sensitive_feature}_fm_metrics.csv')
+                    print(f"Subgroup Analysis({sensitive_feature.title()})")
+                    print(f"{tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')}\n")
+                    result.to_csv(self.output_dir / f'{sensitive_feature}_fm_metrics.csv')
