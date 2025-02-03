@@ -25,10 +25,10 @@ class TrainerSupervised:
 
     This class provides functionality for feature reduction, training models (e.g., AutoGluon, survival models), 
     and performing inference. It supports various tasks such as binary/multiclass classification, regression, 
-    and time-to-event analysis.
+    and survival analysis.
 
     Attributes:
-        task (str, optional): Type of task. Must be one of {'binary', 'multiclass', 'regression', 'time_to_event'}. 
+        task (str, optional): Type of task. Must be one of {'binary', 'multiclass', 'regression', 'survival'}. 
         reduction_method (str | None, optional): Feature reduction method. Supported methods include 
             {'mrmr', 'variance_threshold', 'corr', 'chi2'}.
         keep_k (int, optional): Number of features to retain during reduction.
@@ -61,8 +61,8 @@ class TrainerSupervised:
         self.reduction_method = reduction_method
         self.keep_k = keep_k
 
-        if task not in ['binary', 'multiclass', 'regression', 'time_to_event', None]:
-            raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression', 'time_to_event'. Providing None defaults to Autogluon infering.")
+        if task not in ['binary', 'multiclass', 'regression', 'survival', None]:
+            raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression', 'survival'. Providing None defaults to Autogluon infering.")
 
         self.output_dir = Path.cwd() if output_dir is None else Path(output_dir)
         self.output_dir.mkdir(exist_ok=True, parents=True)
@@ -230,7 +230,7 @@ class TrainerSupervised:
         if exclude is None:
             exclude = []
 
-        if isinstance(target_variable, list): # Happens for time_to_event data
+        if isinstance(target_variable, list): # Happens for survival data
             exclude += target_variable
         else:
             exclude.append(target_variable)
@@ -263,7 +263,7 @@ class TrainerSupervised:
         self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
             X, y, test_size=test_size, stratify=stratify_col, random_state=42)
 
-        if self.task == 'time_to_event':
+        if self.task == 'survival':
             self.predictors, scores, data_train, data_val = train_survival_models(
                 self.X_train, 
                 self.y_train, 
@@ -362,7 +362,7 @@ class TrainerSupervised:
         trainer = cls()
         trainer.task = trainer_config['task']
         
-        if trainer.task == 'time_to_event':
+        if trainer.task == 'survival':
             model_dir = (project_dir / 'survival_models')
             
             trainer.predictors = {}
