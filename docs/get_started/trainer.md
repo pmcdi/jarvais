@@ -9,7 +9,7 @@ The `Trainer` module simplifies and automates the process of feature reduction, 
 
 2. Automated Model Training:
     - Integrates with AutoGluon for model training, selection, and optimization.
-    - Handles tasks such as binary classification, multiclass classification, regression, and time-to-event.
+    - Handles tasks such as binary classification, multiclass classification, regression, and survival.
 
 ## Example Usage
 
@@ -75,11 +75,10 @@ Displays values in `mean [min, max]` format across training folds.
 │   │   ├── ...
 ```
 
-**Time-To-Event**:
+**Survival**:
 
 ```bash
 └── survival_models
-    ├── model_info.json
     ├── CoxPH.pkl
     ├── GradientBoosting.pkl
     ├── RandomForest.pkl

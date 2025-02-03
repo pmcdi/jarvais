@@ -118,7 +118,7 @@ def generate_explainer_report_pdf(
     Args:
         problem_type (str): The type of machine learning problem. 
             Supported values are 'binary', 'multiclass', 'regression', 
-            and 'time_to_event'.
+            and 'survival'.
         output_dir (str | Path): The directory where the generated PDF 
             report will be saved.
 
@@ -143,7 +143,7 @@ def generate_explainer_report_pdf(
     # Title
     pdf.write(5, "Explainer Report\n\n")
 
-    if problem_type != 'time_to_event':
+    if problem_type != 'survival':
         pdf.image((figures_dir / 'test_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
         pdf.image((figures_dir / 'validation_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
         pdf.image((figures_dir /  'train_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)

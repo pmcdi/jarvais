@@ -1,6 +1,6 @@
 # Explainer Module
 
-The `Explainer` module is designed to evaluate trained models by generating diagnostic plots, auditing bias, and producing comprehensive reports. It supports various supervised learning tasks, including classification, regression, and time-to-event models. 
+The `Explainer` module is designed to evaluate trained models by generating diagnostic plots, auditing bias, and producing comprehensive reports. It supports various supervised learning tasks, including classification, regression, and survival models. 
 
 The module provides an easy-to-use interface for model diagnostics, bias analysis, and feature importance visualization, facilitating deeper insights into the model's performance and fairness.
 
