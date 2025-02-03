@@ -92,7 +92,7 @@ class Explainer():
             )
 
         # Plot feature importance
-        if self.trainer.task == 'survival': # NEEDS TO BE UPDATED
+        if self.trainer.task == 'time_to_event': # NEEDS TO BE UPDATED
             model = self.trainer.predictors['CoxPH']
             result = permutation_importance(model, self.X_test,
                                             Surv.from_dataframe('event', 'time', self.y_test),
