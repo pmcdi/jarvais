@@ -33,7 +33,7 @@ class Analyzer:
     Features:
         - Handles missing values and outliers.
         - Infers column types (categorical, continuous, date).
-        - Supports one-hot encoding and time-to-event analysis.
+        - Supports one-hot encoding and survival analysis.
         - Generates summary statistics and correlation plots.
         - Produces a comprehensive PDF analysis report.
 
@@ -75,8 +75,8 @@ class Analyzer:
         self.task = task
         self.one_hot_encode = one_hot_encode
 
-        assert_message = "When setting task to 'time_to_event', target_variable must be 'event' and 'time' must be in data"
-        if self.task == 'time_to_event':
+        assert_message = "When setting task to 'survival', target_variable must be 'event' and 'time' must be in data"
+        if self.task == 'survival':
             assert target_variable == 'event' and 'time' in data.columns, assert_message
 
         self.output_dir = Path.cwd() if output_dir is None else Path(output_dir)
@@ -195,7 +195,7 @@ class Analyzer:
         figures_dir = self.output_dir / 'figures'
         figures_dir.mkdir(exist_ok=True, parents=True)
 
-        if self.task == 'time_to_event':
+        if self.task == 'survival':
             data_x = self.data.drop(columns=['time', 'event'])
             data_y = self.data[['time', 'event']]
             categorical_columns  = [cat for cat in self.categorical_columns if cat != 'event']

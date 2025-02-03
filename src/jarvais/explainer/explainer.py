@@ -51,7 +51,7 @@ class Explainer():
 
     def run(self) -> None:
         """Generate diagnostic plots and reports for the trained model."""
-        if self.trainer.task != 'time_to_event':
+        if self.trainer.task != 'survival':
             plot_violin_of_bootsrapped_metrics(
                 self.predictor,
                 self.X_test,
@@ -90,7 +90,7 @@ class Explainer():
             )
 
         # Plot feature importance
-        if self.trainer.task == 'time_to_event': # NEEDS TO BE UPDATED
+        if self.trainer.task == 'survival': # NEEDS TO BE UPDATED
             model = self.trainer.predictors['CoxPH']
             result = permutation_importance(model, self.X_test,
                                             Surv.from_dataframe('event', 'time', self.y_test),
