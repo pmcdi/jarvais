@@ -40,7 +40,7 @@ nav:
   - Tutorials:
       - Classification: tutorials/classification.ipynb
       - Regression: tutorials/regression.ipynb
-      - Time-To-Event: tutorials/radcure_time_to_event.ipynb
+      - Survival: tutorials/survival.ipynb
   - API:
       - Analyzer: api/analyzer.md
       - Trainer: api/trainer.md
