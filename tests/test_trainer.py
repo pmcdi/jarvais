@@ -25,8 +25,8 @@ def regression_data():
     return X, y
 
 @pytest.fixture
-def time_to_event_data():
-    """Synthetic time-to-event data generation."""
+def survival_data():
+    """Synthetic survival data generation."""
     n_samples = 50
     np.random.seed(42)
     X = np.random.normal(size=(n_samples, 5))  # Covariates
@@ -90,9 +90,9 @@ def test_run_method_regression(regression_data, tmpdir):
     assert hasattr(trainer, 'X_train')
     assert hasattr(trainer, 'X_test')
 
-def test_run_method_time_to_event(time_to_event_data, tmpdir):
-    data = time_to_event_data
-    trainer = TrainerSupervised(task='time_to_event', output_dir=str(tmpdir))
+def test_run_method_survival(survival_data, tmpdir):
+    data = survival_data
+    trainer = TrainerSupervised(task='survival', output_dir=str(tmpdir))
     trainer.run(data=data, target_variable=["time", "event"])
     data_dir = tmpdir / 'data'
     assert (data_dir / 'X_train.csv').exists()
@@ -109,9 +109,9 @@ def test_load_trainer_autogluon(classification_data, tmpdir):
     loaded_trainer = TrainerSupervised.load_trainer(project_dir=str(tmpdir))
     assert loaded_trainer.predictor is not None
 
-def test_load_trainer_time_to_event(time_to_event_data, tmpdir):
-    data = time_to_event_data
-    trainer = TrainerSupervised(task='time_to_event', output_dir=str(tmpdir))
+def test_load_trainer_survival(survival_data, tmpdir):
+    data = survival_data
+    trainer = TrainerSupervised(task='survival', output_dir=str(tmpdir))
     trainer.run(data=data, target_variable=["time", "event"])
     loaded_trainer = TrainerSupervised.load_trainer(project_dir=str(tmpdir))
     assert loaded_trainer.predictor is not None

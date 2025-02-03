@@ -205,12 +205,12 @@ class BiasExplainer():
             )
             bias_metric = np.array(log_loss_per_patient)
             self.y_pred = (self.y_pred >= .5).astype(int)
-        else: # Regression(root mean_squared_error)
+        elif self.task == 'regression':
             bias_metric = np.sqrt((self.y_true.to_numpy() - self.y_pred.to_numpy()) ** 2)
 
         self.results = []
         for sensitive_feature in self.sensitive_features.columns:
-            if self.task == 'time_to_event':
+            if self.task == 'survival':
                 self._fit_CoxPH(sensitive_feature)
             else:
                 f_pvalue = self._fit_OLS(sensitive_feature, bias_metric)

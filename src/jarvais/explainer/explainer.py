@@ -55,7 +55,7 @@ class Explainer():
 
         self._run_bias_audit()
 
-        if self.trainer.task != 'time_to_event':
+        if self.trainer.task != 'survival':
             plot_violin_of_bootsrapped_metrics(
                 self.predictor,
                 self.X_test,
@@ -92,7 +92,7 @@ class Explainer():
             )
 
         # Plot feature importance
-        if self.trainer.task == 'time_to_event': # NEEDS TO BE UPDATED
+        if self.trainer.task == 'survival': # NEEDS TO BE UPDATED
             model = self.trainer.predictors['CoxPH']
             result = permutation_importance(model, self.X_test,
                                             Surv.from_dataframe('event', 'time', self.y_test),
@@ -120,12 +120,12 @@ class Explainer():
         bias_output_dir.mkdir(parents=True, exist_ok=True)
 
         if self.sensitive_features is None:
-            if self.trainer.task == 'time_to_event': # Data needs to be not be one hot encoded
+            if self.trainer.task == 'survival': # Data needs to be not be one hot encoded
                 self.sensitive_features = infer_sensitive_features(undummify(self.X_test, prefix_sep='|'))
             else:
                 self.sensitive_features = infer_sensitive_features(self.X_test)
         
-        y_pred = None if self.trainer.task == 'time_to_event' else self.trainer.infer(self.X_test) 
+        y_pred = None if self.trainer.task == 'survival' else self.trainer.infer(self.X_test) 
         metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate'] 
 
         bias = BiasExplainer(
