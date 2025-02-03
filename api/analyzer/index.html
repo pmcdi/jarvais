@@ -9,22 +9,22 @@
       
       
       
-        <link rel="prev" href="../../tutorials/radcure_time_to_event/">
+        <link rel="prev" href="../../tutorials/survival/">
       
       
         <link rel="next" href="../trainer/">
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.49">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
     
     
       
-        <title>Analyzer - AutoML Documentation</title>
+        <title>Analyzer - jarvAIs Documentation</title>
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.6f8fc17f.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.a40c8224.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -62,6 +62,8 @@
   
     
     
+      
+    
     
     
     
@@ -88,9 +90,9 @@
 
   
 
-<header class="md-header md-header--shadow" data-md-component="header">
+<header class="md-header md-header--shadow md-header--lifted" data-md-component="header">
   <nav class="md-header__inner md-grid" aria-label="Header">
-    <a href="../.." title="AutoML Documentation" class="md-header__button md-logo" aria-label="AutoML Documentation" data-md-component="logo">
+    <a href="../.." title="jarvAIs Documentation" class="md-header__button md-logo" aria-label="jarvAIs Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
@@ -104,7 +106,7 @@
       <div class="md-header__ellipsis">
         <div class="md-header__topic">
           <span class="md-ellipsis">
-            AutoML Documentation
+            jarvAIs Documentation
           </span>
         </div>
         <div class="md-header__topic" data-md-component="header-topic">
@@ -118,20 +120,165 @@
     </div>
     
       
+        <form class="md-header__option" data-md-component="palette">
+  
     
     
     
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="slate" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to light mode"  type="radio" name="__palette" id="__palette_0">
+    
+      <label class="md-header__button md-icon" title="Switch to light mode" for="__palette_1" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 0-7 7c0 2.38 1.19 4.47 3 5.74V17a1 1 0 0 0 1 1h6a1 1 0 0 0 1-1v-2.26c1.81-1.27 3-3.36 3-5.74a7 7 0 0 0-7-7M9 21a1 1 0 0 0 1 1h4a1 1 0 0 0 1-1v-1H9z"/></svg>
+      </label>
+    
+  
+    
+    
+    
+    <input class="md-option" data-md-color-media="" data-md-color-scheme="default" data-md-color-primary="indigo" data-md-color-accent="indigo"  aria-label="Switch to dark mode"  type="radio" name="__palette" id="__palette_1">
+    
+      <label class="md-header__button md-icon" title="Switch to dark mode" for="__palette_0" hidden>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 2a7 7 0 0 1 7 7c0 2.38-1.19 4.47-3 5.74V17a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1v-2.26C6.19 13.47 5 11.38 5 9a7 7 0 0 1 7-7M9 21v-1h6v1a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1m3-17a5 5 0 0 0-5 5c0 2.05 1.23 3.81 3 4.58V16h4v-2.42c1.77-.77 3-2.53 3-4.58a5 5 0 0 0-5-5"/></svg>
+      </label>
+    
+  
+</form>
+      
+    
+    
+      <script>var palette=__md_get("__palette");if(palette&&palette.color){if("(prefers-color-scheme)"===palette.color.media){var media=matchMedia("(prefers-color-scheme: light)"),input=document.querySelector(media.matches?"[data-md-color-media='(prefers-color-scheme: light)']":"[data-md-color-media='(prefers-color-scheme: dark)']");palette.color.media=input.getAttribute("data-md-color-media"),palette.color.scheme=input.getAttribute("data-md-color-scheme"),palette.color.primary=input.getAttribute("data-md-color-primary"),palette.color.accent=input.getAttribute("data-md-color-accent")}for(var[key,value]of Object.entries(palette.color))document.body.setAttribute("data-md-color-"+key,value)}</script>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.52 6.52 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5"/></svg>
+        
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" tabindex="0" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
     
     
   </nav>
+  
+    
+      
+<nav class="md-tabs" aria-label="Tabs" data-md-component="tabs">
+  <div class="md-grid">
+    <ul class="md-tabs__list">
+      
+        
+  
+  
+  
+    <li class="md-tabs__item">
+      <a href="../.." class="md-tabs__link">
+        
+  
+    
+  
+  Introduction
+
+      </a>
+    </li>
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../get_started/analyzer/" class="md-tabs__link">
+          
+  
+  Get Started
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+  
+    
+    
+      <li class="md-tabs__item">
+        <a href="../../tutorials/classification/" class="md-tabs__link">
+          
+  
+  Tutorials
+
+        </a>
+      </li>
+    
+  
+
+      
+        
+  
+  
+    
+  
+  
+    
+    
+      <li class="md-tabs__item md-tabs__item--active">
+        <a href="./" class="md-tabs__link">
+          
+  
+  API
+
+        </a>
+      </li>
+    
+  
+
+      
+    </ul>
+  </div>
+</nav>
+    
   
 </header>
     
     <div class="md-container" data-md-component="container">
       
       
-        
-          
         
       
       <main class="md-main" data-md-component="main">
@@ -145,16 +292,18 @@
                     
 
 
+  
 
-<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+
+<nav class="md-nav md-nav--primary md-nav--lifted" aria-label="Navigation" data-md-level="0">
   <label class="md-nav__title" for="__drawer">
-    <a href="../.." title="AutoML Documentation" class="md-nav__button md-logo" aria-label="AutoML Documentation" data-md-component="logo">
+    <a href="../.." title="jarvAIs Documentation" class="md-nav__button md-logo" aria-label="jarvAIs Documentation" data-md-component="logo">
       
   
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54"/></svg>
 
     </a>
-    AutoML Documentation
+    jarvAIs Documentation
   </label>
   
   <ul class="md-nav__list" data-md-scrollfix>
@@ -170,7 +319,7 @@
         
   
   <span class="md-ellipsis">
-    AutoML Docs
+    Introduction
   </span>
   
 
@@ -181,20 +330,108 @@
     
       
       
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_2" >
+        
+          
+          <label class="md-nav__link" for="__nav_2" id="__nav_2_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Get Started
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="1" aria-labelledby="__nav_2_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_2">
+            <span class="md-nav__icon md-icon"></span>
+            Get Started
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
   
   
   
   
     <li class="md-nav__item">
-      <a href="../../get_started/" class="md-nav__link">
+      <a href="../../get_started/analyzer/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Get started
+    Analyzer Quick Start
   </span>
   
 
       </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../get_started/trainer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Trainer Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../get_started/explainer/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Explainer Quick Start
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
     </li>
   
 
@@ -207,6 +444,9 @@
   
     
     
+    
+      
+      
     
     
     <li class="md-nav__item md-nav__item--nested">
@@ -241,7 +481,7 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/a2r_example/" class="md-nav__link">
+      <a href="../../tutorials/classification/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
@@ -262,11 +502,32 @@
   
   
     <li class="md-nav__item">
-      <a href="../../tutorials/radcure_time_to_event/" class="md-nav__link">
+      <a href="../../tutorials/regression/" class="md-nav__link">
         
   
   <span class="md-ellipsis">
-    Time-To-Event
+    Regression
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/survival/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Survival
   </span>
   
 
@@ -294,15 +555,21 @@
     
     
     
+      
+        
+        
+      
+      
     
-    <li class="md-nav__item md-nav__item--active md-nav__item--nested">
+    
+    <li class="md-nav__item md-nav__item--active md-nav__item--section md-nav__item--nested">
       
         
         
         <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4" checked>
         
           
-          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="0">
+          <label class="md-nav__link" for="__nav_4" id="__nav_4_label" tabindex="">
             
   
   <span class="md-ellipsis">
@@ -373,29 +640,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#AutoML.analyzer.analyzer.Analyzer" class="md-nav__link">
+  <a href="#jarvais.analyzer.Analyzer" class="md-nav__link">
     <span class="md-ellipsis">
       Analyzer
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Analyzer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.analyzer.Analyzer.run" class="md-nav__link">
+    <span class="md-ellipsis">
+      run
+    </span>
+  </a>
+  
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#AutoML.analyzer.analyzer.Analyzer.dry_run" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.analyzer.Analyzer.dry_run" class="md-nav__link">
     <span class="md-ellipsis">
       dry_run
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#AutoML.analyzer.analyzer.Analyzer.run" class="md-nav__link">
-    <span class="md-ellipsis">
-      run
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -450,6 +723,115 @@
 
               
             
+              
+                
+  
+  
+  
+  
+    
+    
+    
+      
+      
+    
+    
+    <li class="md-nav__item md-nav__item--nested">
+      
+        
+        
+        <input class="md-nav__toggle md-toggle " type="checkbox" id="__nav_4_4" >
+        
+          
+          <label class="md-nav__link" for="__nav_4_4" id="__nav_4_4_label" tabindex="0">
+            
+  
+  <span class="md-ellipsis">
+    Utils
+  </span>
+  
+
+            <span class="md-nav__icon md-icon"></span>
+          </label>
+        
+        <nav class="md-nav" data-md-level="2" aria-labelledby="__nav_4_4_label" aria-expanded="false">
+          <label class="md-nav__title" for="__nav_4_4">
+            <span class="md-nav__icon md-icon"></span>
+            Utils
+          </label>
+          <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../plot/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Plotting
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../functional/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Functional
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../pdf/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    PDF
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
+            
+          </ul>
+        </nav>
+      
+    </li>
+  
+
+              
+            
           </ul>
         </nav>
       
@@ -484,29 +866,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#AutoML.analyzer.analyzer.Analyzer" class="md-nav__link">
+  <a href="#jarvais.analyzer.Analyzer" class="md-nav__link">
     <span class="md-ellipsis">
       Analyzer
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Analyzer">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.analyzer.Analyzer.run" class="md-nav__link">
+    <span class="md-ellipsis">
+      run
+    </span>
+  </a>
+  
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#AutoML.analyzer.analyzer.Analyzer.dry_run" class="md-nav__link">
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.analyzer.Analyzer.dry_run" class="md-nav__link">
     <span class="md-ellipsis">
       dry_run
     </span>
   </a>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#AutoML.analyzer.analyzer.Analyzer.run" class="md-nav__link">
-    <span class="md-ellipsis">
-      run
-    </span>
-  </a>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -525,15 +913,21 @@
                   
 
 
-<h1 id="analyzer">Analyzer</h1>
-<p>The <code>Analyzer</code> class is part of the <code>AutoML.analyzer</code> module. It provides tools for exploring datasets and identifying issues.</p>
+<div><h1 id="analyzer">Analyzer</h1>
+<p>The <code>Analyzer</code> class is part of the <code>jarvais.analyzer</code> module. It provides tools for exploring datasets and identifying issues.</p>
 
 
 <div class="doc doc-object doc-class">
 
 
 
-<a id="AutoML.analyzer.analyzer.Analyzer"></a>
+<h3 id="jarvais.analyzer.Analyzer" class="doc doc-heading">
+            <code>jarvais.analyzer.Analyzer</code>
+
+
+</h3>
+
+
     <div class="doc doc-contents first">
 
 
@@ -545,27 +939,24 @@
   <ul>
 <li>Handles missing values and outliers.</li>
 <li>Infers column types (categorical, continuous, date).</li>
-<li>Supports one-hot encoding and time-to-event analysis.</li>
+<li>Supports one-hot encoding and survival analysis.</li>
 <li>Generates summary statistics and correlation plots.</li>
 <li>Produces a comprehensive PDF analysis report.</li>
 </ul>
 </details>
 
-<p><span class="doc-section-title">Parameters:</span></p>
+<p><span class="doc-section-title">Attributes:</span></p>
     <table>
       <thead>
         <tr>
           <th>Name</th>
           <th>Type</th>
           <th>Description</th>
-          <th>Default</th>
         </tr>
       </thead>
       <tbody>
           <tr class="doc-section-item">
-            <td>
-                <code>data</code>
-            </td>
+            <td><code><span title="jarvais.analyzer.Analyzer.data">data</span></code></td>
             <td>
                   <code><span title="pandas.DataFrame">DataFrame</span></code>
             </td>
@@ -574,14 +965,9 @@
                 <p>Input dataset.</p>
               </div>
             </td>
-            <td>
-                <em>required</em>
-            </td>
           </tr>
           <tr class="doc-section-item">
-            <td>
-                <code>target_variable</code>
-            </td>
+            <td><code><span title="jarvais.analyzer.Analyzer.target_variable">target_variable</span></code></td>
             <td>
                   <code>str</code>
             </td>
@@ -590,14 +976,9 @@
                 <p>Target variable in the dataset.</p>
               </div>
             </td>
-            <td>
-                  <code>None</code>
-            </td>
           </tr>
           <tr class="doc-section-item">
-            <td>
-                <code>task</code>
-            </td>
+            <td><code><span title="jarvais.analyzer.Analyzer.task">task</span></code></td>
             <td>
                   <code>str</code>
             </td>
@@ -606,14 +987,9 @@
                 <p>Type of analysis task.</p>
               </div>
             </td>
-            <td>
-                  <code>None</code>
-            </td>
           </tr>
           <tr class="doc-section-item">
-            <td>
-                <code>one_hot_encode</code>
-            </td>
+            <td><code><span title="jarvais.analyzer.Analyzer.one_hot_encode">one_hot_encode</span></code></td>
             <td>
                   <code>bool</code>
             </td>
@@ -622,14 +998,9 @@
                 <p>Whether to one-hot encode categorical columns.</p>
               </div>
             </td>
-            <td>
-                  <code>False</code>
-            </td>
           </tr>
           <tr class="doc-section-item">
-            <td>
-                <code>config</code>
-            </td>
+            <td><code><span title="jarvais.analyzer.Analyzer.config">config</span></code></td>
             <td>
                   <code>str | <span title="pathlib.Path">Path</span></code>
             </td>
@@ -638,14 +1009,9 @@
                 <p>Path to a YAML configuration file.</p>
               </div>
             </td>
-            <td>
-                  <code>None</code>
-            </td>
           </tr>
           <tr class="doc-section-item">
-            <td>
-                <code>output_dir</code>
-            </td>
+            <td><code><span title="jarvais.analyzer.Analyzer.output_dir">output_dir</span></code></td>
             <td>
                   <code>str | <span title="pathlib.Path">Path</span></code>
             </td>
@@ -654,9 +1020,6 @@
                 <p>Directory to save outputs. Default is the current directory.</p>
               </div>
             </td>
-            <td>
-                  <code>None</code>
-            </td>
           </tr>
       </tbody>
     </table>
@@ -664,16 +1027,16 @@
 
 <details class="example" open>
   <summary>Example</summary>
-  <pre><code class="language-python">from AutoML.analyzer import Analyzer
+  <pre><code class="language-python">from jarvais.analyzer import Analyzer
 import pandas as pd
 
 data = pd.DataFrame({
-    &quot;age&quot;: [25, 32, 40],
-    &quot;income&quot;: [50000, 60000, 75000],
-    &quot;category&quot;: [&quot;A&quot;, &quot;B&quot;, &quot;A&quot;]
+    "age": [25, 32, 40],
+    "income": [50000, 60000, 75000],
+    "category": ["A", "B", "A"]
 })
 
-analyzer = Analyzer(data, target_variable=&quot;income&quot;, task=&quot;regression&quot;)
+analyzer = Analyzer(data, target_variable="income", task="regression")
 analyzer.run()
 </code></pre>
 </details>
@@ -683,8 +1046,9 @@ analyzer.run()
 
 
               <details class="quote">
-                <summary>Source code in <code>src/AutoML/analyzer/analyzer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 30</span>
+                <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 29</span>
+<span class="normal"> 30</span>
 <span class="normal"> 31</span>
 <span class="normal"> 32</span>
 <span class="normal"> 33</span>
@@ -915,30 +1279,18 @@ analyzer.run()
 <span class="normal">258</span>
 <span class="normal">259</span>
 <span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="normal">261</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A data analysis and cleaning tool for preprocessing datasets, generating reports, and visualizations.</span>
 
 <span class="sd">    Features:</span>
 <span class="sd">        - Handles missing values and outliers.</span>
 <span class="sd">        - Infers column types (categorical, continuous, date).</span>
-<span class="sd">        - Supports one-hot encoding and time-to-event analysis.</span>
+<span class="sd">        - Supports one-hot encoding and survival analysis.</span>
 <span class="sd">        - Generates summary statistics and correlation plots.</span>
 <span class="sd">        - Produces a comprehensive PDF analysis report.</span>
 
-<span class="sd">    Args:</span>
+<span class="sd">    Attributes:</span>
 <span class="sd">        data (pd.DataFrame): Input dataset.</span>
 <span class="sd">        target_variable (str, optional): Target variable in the dataset.</span>
 <span class="sd">        task (str, optional): Type of analysis task.</span>
@@ -948,19 +1300,19 @@ analyzer.run()
 
 <span class="sd">    Example:</span>
 <span class="sd">        ```python</span>
-<span class="sd">        from AutoML.analyzer import Analyzer</span>
+<span class="sd">        from jarvais.analyzer import Analyzer</span>
 <span class="sd">        import pandas as pd</span>
 
 <span class="sd">        data = pd.DataFrame({</span>
-<span class="sd">            &quot;age&quot;: [25, 32, 40],</span>
-<span class="sd">            &quot;income&quot;: [50000, 60000, 75000],</span>
-<span class="sd">            &quot;category&quot;: [&quot;A&quot;, &quot;B&quot;, &quot;A&quot;]</span>
+<span class="sd">            "age": [25, 32, 40],</span>
+<span class="sd">            "income": [50000, 60000, 75000],</span>
+<span class="sd">            "category": ["A", "B", "A"]</span>
 <span class="sd">        })</span>
 
-<span class="sd">        analyzer = Analyzer(data, target_variable=&quot;income&quot;, task=&quot;regression&quot;)</span>
+<span class="sd">        analyzer = Analyzer(data, target_variable="income", task="regression")</span>
 <span class="sd">        analyzer.run()</span>
 <span class="sd">        ```</span>
-<span class="sd">    &quot;&quot;&quot;</span>
+<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -976,9 +1328,9 @@ analyzer.run()
         <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">one_hot_encode</span> <span class="o">=</span> <span class="n">one_hot_encode</span>
 
-        <span class="n">assert_message</span> <span class="o">=</span> <span class="s2">&quot;When setting task to &#39;time_to_event&#39;, target_variable must be &#39;event&#39; and &#39;time&#39; must be in data&quot;</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">&#39;time_to_event&#39;</span><span class="p">:</span>
-            <span class="k">assert</span> <span class="n">target_variable</span> <span class="o">==</span> <span class="s1">&#39;event&#39;</span> <span class="ow">and</span> <span class="s1">&#39;time&#39;</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">assert_message</span>
+        <span class="n">assert_message</span> <span class="o">=</span> <span class="s2">"When setting task to 'survival', target_variable must be 'event' and 'time' must be in data"</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span>
+            <span class="k">assert</span> <span class="n">target_variable</span> <span class="o">==</span> <span class="s1">'event'</span> <span class="ow">and</span> <span class="s1">'time'</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="n">assert_message</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -986,17 +1338,17 @@ analyzer.run()
         <span class="k">if</span> <span class="n">config</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">config</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
             <span class="k">if</span> <span class="n">config</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
-                <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">&#39;r&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
+                <span class="k">with</span> <span class="n">config</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'r'</span><span class="p">)</span> <span class="k">as</span> <span class="n">file</span><span class="p">:</span>
                     <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">yaml</span><span class="o">.</span><span class="n">safe_load</span><span class="p">(</span><span class="n">file</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Config file does not exist at </span><span class="si">{</span><span class="n">config</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
+                <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s1">'Config file does not exist at </span><span class="si">{</span><span class="n">config</span><span class="si">}</span><span class="s1">'</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="n">config</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span> <span class="c1"># Used later when writing to PDF</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span> <span class="o">=</span> <span class="s1">''</span> <span class="c1"># Used later when writing to PDF</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""</span>
 <span class="sd">        Create and save a configuration file for column types, outlier handling, and missing value strategies.</span>
 
 <span class="sd">        Steps:</span>
@@ -1004,57 +1356,57 @@ analyzer.run()
 <span class="sd">        2. **Handle NaN Columns**: Drops columns entirely filled with NaN and updates the continuous column list.</span>
 <span class="sd">        3. **Outlier Detection**: Identifies outliers in categorical columns and stores the mappings.</span>
 <span class="sd">        4. **Missing Value Strategy**: Sets default imputation strategies for categorical and continuous variables.</span>
-<span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Config file not found. Creating custom...&#39;</span><span class="p">)</span>
+<span class="sd">        """</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Config file not found. Creating custom...'</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">columns</span> <span class="o">=</span> <span class="p">{}</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_columns</span> <span class="o">=</span> <span class="n">infer_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
         <span class="c1"># Replace all non numerical values with NaN</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">'coerce'</span><span class="p">)</span>
 
         <span class="n">nan_</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">col</span><span class="p">:</span> <span class="n">col</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">all</span><span class="p">())</span>
         <span class="n">nan_columns</span> <span class="o">=</span> <span class="n">nan_</span><span class="p">[</span><span class="n">nan_</span><span class="p">]</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">tolist</span><span class="p">()</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">nan_columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Columns that are all NaN(probably ID columns) dropping...: &quot;</span><span class="p">,</span> <span class="n">nan_columns</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s2">"Columns that are all NaN(probably ID columns) dropping...: "</span><span class="p">,</span> <span class="n">nan_columns</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">nan_columns</span><span class="p">))</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Used a heuristic to define categorical and continuous columns. Please review!&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">"Used a heuristic to define categorical and continuous columns. Please review!"</span><span class="p">)</span>
 
-        <span class="n">columns</span><span class="p">[</span><span class="s1">&#39;categorical&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span>
-        <span class="n">columns</span><span class="p">[</span><span class="s1">&#39;continuous&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span>
-        <span class="n">columns</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_columns</span>
-        <span class="n">columns</span><span class="p">[</span><span class="s1">&#39;other&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">nan_columns</span>
+        <span class="n">columns</span><span class="p">[</span><span class="s1">'categorical'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span>
+        <span class="n">columns</span><span class="p">[</span><span class="s1">'continuous'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span>
+        <span class="n">columns</span><span class="p">[</span><span class="s1">'date'</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">date_columns</span>
+        <span class="n">columns</span><span class="p">[</span><span class="s1">'other'</span><span class="p">]</span> <span class="o">=</span> <span class="n">nan_columns</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">columns</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">]</span> <span class="o">=</span> <span class="n">columns</span>
 
         <span class="n">outlier_analysis</span><span class="p">,</span> <span class="n">mapping</span> <span class="o">=</span> <span class="n">get_outliers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span> <span class="o">+=</span> <span class="n">outlier_analysis</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'mapping'</span><span class="p">]</span> <span class="o">=</span> <span class="n">mapping</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;missingness_strategy&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'missingness_strategy'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="c1"># Defining default replacement for each missing categorical variable</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;missingness_strategy&#39;</span><span class="p">][</span><span class="s1">&#39;categorical&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cat</span> <span class="p">:</span><span class="s1">&#39;Unknown&#39;</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'missingness_strategy'</span><span class="p">][</span><span class="s1">'categorical'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cat</span> <span class="p">:</span><span class="s1">'Unknown'</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">}</span>
         <span class="c1"># Defining default replacement for each missing continuous variable</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;missingness_strategy&#39;</span><span class="p">][</span><span class="s1">&#39;continuous&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cont</span> <span class="p">:</span><span class="s1">&#39;median&#39;</span> <span class="k">for</span> <span class="n">cont</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">}</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'missingness_strategy'</span><span class="p">][</span><span class="s1">'continuous'</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="n">cont</span> <span class="p">:</span><span class="s1">'median'</span> <span class="k">for</span> <span class="n">cont</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">}</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_apply_config</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Applying changes from config...</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">'Applying changes from config...</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
 
-        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mapping&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
-            <span class="k">assert</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> in mapping file not found data&quot;</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;mapping&#39;</span><span class="p">][</span><span class="n">key</span><span class="p">])</span>
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'mapping'</span><span class="p">]</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="k">assert</span> <span class="n">key</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> in mapping file not found data"</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="p">[</span><span class="n">key</span><span class="p">]]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span> <span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'mapping'</span><span class="p">][</span><span class="n">key</span><span class="p">])</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">replace_missing</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_create_multiplots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">figures_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Generate and save multiplots for each categorical variable against all continuous variables.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Generate and save multiplots for each categorical variable against all continuous variables."""</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multiplots</span> <span class="o">=</span> <span class="p">[]</span> <span class="c1"># Used to save in PDF later</span>
 
-        <span class="p">(</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">&#39;multiplots&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="p">(</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'multiplots'</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">multiplots</span> <span class="o">=</span> <span class="n">Parallel</span><span class="p">(</span><span class="n">n_jobs</span><span class="o">=-</span><span class="mi">1</span><span class="p">)(</span>
             <span class="n">delayed</span><span class="p">(</span><span class="n">plot_one_multiplot</span><span class="p">)(</span>
@@ -1067,20 +1419,20 @@ analyzer.run()
         <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Run the data cleaning and visualization process.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Run the data cleaning and visualization process."""</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_create_config</span><span class="p">()</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">][</span><span class="s1">&#39;continuous&#39;</span><span class="p">]</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">][</span><span class="s1">&#39;categorical&#39;</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'continuous'</span><span class="p">]</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'categorical'</span><span class="p">]</span>
             <span class="c1"># Replace all non numerical values with NaN</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">'coerce'</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_outliers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">)</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feature Types:</span><span class="se">\n</span><span class="s2">  - Categorical: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="si">}</span><span class="se">\n</span><span class="s2">  - Continuous: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Feature Types:</span><span class="se">\n</span><span class="s2">  - Categorical: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="si">}</span><span class="se">\n</span><span class="s2">  - Continuous: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'config.yaml'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
             <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">_apply_config</span><span class="p">()</span>
@@ -1089,52 +1441,41 @@ analyzer.run()
         <span class="n">df_keep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">&quot;fancy_grid&quot;</span><span class="p">))</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">&#39;tableone.csv&#39;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"fancy_grid"</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'tableone.csv'</span><span class="p">)</span>
 
         <span class="c1"># PLOTS</span>
-        <span class="n">figures_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">&#39;figures&#39;</span>
+        <span class="n">figures_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
         <span class="n">figures_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">&#39;time_to_event&#39;</span><span class="p">:</span>
-            <span class="n">data_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">])</span>
-            <span class="n">data_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">]]</span>
-            <span class="n">categorical_columns</span>  <span class="o">=</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span> <span class="k">if</span> <span class="n">cat</span> <span class="o">!=</span> <span class="s1">&#39;event&#39;</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span>
+            <span class="n">data_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'time'</span><span class="p">,</span> <span class="s1">'event'</span><span class="p">])</span>
+            <span class="n">data_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s1">'time'</span><span class="p">,</span> <span class="s1">'event'</span><span class="p">]]</span>
+            <span class="n">categorical_columns</span>  <span class="o">=</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span> <span class="k">if</span> <span class="n">cat</span> <span class="o">!=</span> <span class="s1">'event'</span><span class="p">]</span>
             <span class="n">plot_kaplan_meier_by_category</span><span class="p">(</span>
                 <span class="n">data_x</span><span class="p">,</span> <span class="n">data_y</span><span class="p">,</span>
                 <span class="n">categorical_columns</span><span class="p">,</span>
-                <span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">&#39;kaplan_meier&#39;</span>
+                <span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'kaplan_meier'</span>
             <span class="p">)</span>
 
         <span class="c1"># Correlation Plots</span>
-        <span class="n">p_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">)</span>
-        <span class="n">s_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;spearman&quot;</span><span class="p">)</span>
+        <span class="n">p_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"pearson"</span><span class="p">)</span>
+        <span class="n">s_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"spearman"</span><span class="p">)</span>
         <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span><span class="o">*</span><span class="mf">1.5</span>
-        <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;pearson_correlation.png&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
-        <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;spearman_correlation.png&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+        <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'pearson_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+        <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'spearman_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
 
         <span class="c1"># Categorical cross frequency table</span>
         <span class="n">plot_frequency_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">figures_dir</span><span class="p">)</span>
 
         <span class="c1"># UMAP reduced data + Plots</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">umap_data</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">])</span>
-        <span class="n">plot_umap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">umap_data</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">umap_data</span> <span class="o">=</span> <span class="n">plot_umap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="n">figures_dir</span><span class="p">)</span>
 
         <span class="c1"># Plot pairplot: keeping only the top ten correlated pairs in the pair plot</span>
-        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
-            <span class="n">corr_pairs</span> <span class="o">=</span> <span class="n">s_corr</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
-                <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;quicksort&quot;</span><span class="p">,</span>
-                <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
-            <span class="n">top_10_pairs</span> <span class="o">=</span> <span class="n">corr_pairs</span><span class="p">[</span><span class="n">corr_pairs</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">nlargest</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-            <span class="n">columns_to_plot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">index</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">top_10_pairs</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">})</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">columns_to_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span>
-
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">:</span>
-            <span class="n">plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns_to_plot</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">,</span> <span class="n">target_variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_variable</span><span class="p">)</span>
+            <span class="n">plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">,</span> <span class="n">target_variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_variable</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
-            <span class="n">plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns_to_plot</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+            <span class="n">plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
 
         <span class="c1"># Create Multiplots</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_multiplots</span><span class="p">(</span><span class="n">figures_dir</span><span class="p">)</span>
@@ -1146,7 +1487,7 @@ analyzer.run()
                 <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
             <span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">&#39;updated_data.csv&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'updated_data.csv'</span><span class="p">)</span>
 
         <span class="c1"># Create Output PDF</span>
         <span class="n">generate_analysis_report_pdf</span><span class="p">(</span>
@@ -1158,17 +1499,17 @@ analyzer.run()
 
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">dry_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">&quot;&quot;&quot;Simply Return generated config and displays TableOne.&quot;&quot;&quot;</span>
+<span class="w">        </span><span class="sd">"""Simply returns generated config and displays TableOne."""</span>
         <span class="n">analyzer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="n">analyzer</span><span class="o">.</span><span class="n">_create_config</span><span class="p">()</span>
 
         <span class="n">df_keep</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">analyzer</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">+</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">]</span>
 
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Feature Types:</span><span class="se">\n</span><span class="s2">  - Categorical: </span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="si">}</span><span class="se">\n</span><span class="s2">  - Continuous: </span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">continuous_columns</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Feature Types:</span><span class="se">\n</span><span class="s2">  - Categorical: </span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="si">}</span><span class="se">\n</span><span class="s2">  - Continuous: </span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">continuous_columns</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">&quot;fancy_grid&quot;</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"fancy_grid"</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">config</span>
 </code></pre></div></td></tr></table></div>
@@ -1189,64 +1530,10 @@ analyzer.run()
 <div class="doc doc-object doc-function">
 
 
-<h3 id="AutoML.analyzer.analyzer.Analyzer.dry_run" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">dry_run</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
-
-  <span class="doc doc-labels">
-      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
-  </span>
-
-</h3>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Simply Return generated config and displays TableOne.</p>
-
-            <details class="quote">
-              <summary>Source code in <code>src/AutoML/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span>
-<span class="normal">269</span>
-<span class="normal">270</span>
-<span class="normal">271</span>
-<span class="normal">272</span>
-<span class="normal">273</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">dry_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Simply Return generated config and displays TableOne.&quot;&quot;&quot;</span>
-    <span class="n">analyzer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
-    <span class="n">analyzer</span><span class="o">.</span><span class="n">_create_config</span><span class="p">()</span>
-
-    <span class="n">df_keep</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">analyzer</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">+</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">]</span>
-
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Feature Types:</span><span class="se">\n</span><span class="s2">  - Categorical: </span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="si">}</span><span class="se">\n</span><span class="s2">  - Continuous: </span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">continuous_columns</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-
-    <span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">&quot;fancy_grid&quot;</span><span class="p">))</span>
-
-    <span class="k">return</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">config</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h3 id="AutoML.analyzer.analyzer.Analyzer.run" class="doc doc-heading">
+<h4 id="jarvais.analyzer.Analyzer.run" class="doc doc-heading">
             <code class="highlight language-python"><span class="n">run</span><span class="p">()</span></code>
 
-</h3>
+</h4>
 
 
     <div class="doc doc-contents ">
@@ -1254,8 +1541,9 @@ analyzer.run()
         <p>Run the data cleaning and visualization process.</p>
 
             <details class="quote">
-              <summary>Source code in <code>src/AutoML/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">169</span>
+              <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
+<span class="normal">169</span>
 <span class="normal">170</span>
 <span class="normal">171</span>
 <span class="normal">172</span>
@@ -1331,33 +1619,21 @@ analyzer.run()
 <span class="normal">242</span>
 <span class="normal">243</span>
 <span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">&quot;&quot;&quot;Run the data cleaning and visualization process.&quot;&quot;&quot;</span>
+<span class="normal">245</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Run the data cleaning and visualization process."""</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_config</span><span class="p">()</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">][</span><span class="s1">&#39;continuous&#39;</span><span class="p">]</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">&#39;columns&#39;</span><span class="p">][</span><span class="s1">&#39;categorical&#39;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'continuous'</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'categorical'</span><span class="p">]</span>
         <span class="c1"># Replace all non numerical values with NaN</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">&#39;coerce&#39;</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_numeric</span><span class="p">,</span> <span class="n">errors</span><span class="o">=</span><span class="s1">'coerce'</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">get_outliers</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">)</span>
 
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Feature Types:</span><span class="se">\n</span><span class="s2">  - Categorical: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="si">}</span><span class="se">\n</span><span class="s2">  - Continuous: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Feature Types:</span><span class="se">\n</span><span class="s2">  - Categorical: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="si">}</span><span class="se">\n</span><span class="s2">  - Continuous: </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
-    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">&#39;config.yaml&#39;</span><span class="p">,</span> <span class="s1">&#39;w&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+    <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'config.yaml'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
         <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">_apply_config</span><span class="p">()</span>
@@ -1366,52 +1642,41 @@ analyzer.run()
     <span class="n">df_keep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">]</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">&quot;fancy_grid&quot;</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">&#39;tableone.csv&#39;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"fancy_grid"</span><span class="p">))</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'tableone.csv'</span><span class="p">)</span>
 
     <span class="c1"># PLOTS</span>
-    <span class="n">figures_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">&#39;figures&#39;</span>
+    <span class="n">figures_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
     <span class="n">figures_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">&#39;time_to_event&#39;</span><span class="p">:</span>
-        <span class="n">data_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">])</span>
-        <span class="n">data_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s1">&#39;time&#39;</span><span class="p">,</span> <span class="s1">&#39;event&#39;</span><span class="p">]]</span>
-        <span class="n">categorical_columns</span>  <span class="o">=</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span> <span class="k">if</span> <span class="n">cat</span> <span class="o">!=</span> <span class="s1">&#39;event&#39;</span><span class="p">]</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span>
+        <span class="n">data_x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'time'</span><span class="p">,</span> <span class="s1">'event'</span><span class="p">])</span>
+        <span class="n">data_y</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[[</span><span class="s1">'time'</span><span class="p">,</span> <span class="s1">'event'</span><span class="p">]]</span>
+        <span class="n">categorical_columns</span>  <span class="o">=</span> <span class="p">[</span><span class="n">cat</span> <span class="k">for</span> <span class="n">cat</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span> <span class="k">if</span> <span class="n">cat</span> <span class="o">!=</span> <span class="s1">'event'</span><span class="p">]</span>
         <span class="n">plot_kaplan_meier_by_category</span><span class="p">(</span>
             <span class="n">data_x</span><span class="p">,</span> <span class="n">data_y</span><span class="p">,</span>
             <span class="n">categorical_columns</span><span class="p">,</span>
-            <span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">&#39;kaplan_meier&#39;</span>
+            <span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'kaplan_meier'</span>
         <span class="p">)</span>
 
     <span class="c1"># Correlation Plots</span>
-    <span class="n">p_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;pearson&quot;</span><span class="p">)</span>
-    <span class="n">s_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">&quot;spearman&quot;</span><span class="p">)</span>
+    <span class="n">p_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"pearson"</span><span class="p">)</span>
+    <span class="n">s_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"spearman"</span><span class="p">)</span>
     <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span><span class="o">*</span><span class="mf">1.5</span>
-    <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;pearson_correlation.png&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
-    <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">&#39;spearman_correlation.png&#39;</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+    <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'pearson_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+    <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'spearman_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
 
     <span class="c1"># Categorical cross frequency table</span>
     <span class="n">plot_frequency_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">figures_dir</span><span class="p">)</span>
 
     <span class="c1"># UMAP reduced data + Plots</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">umap_data</span> <span class="o">=</span> <span class="n">UMAP</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">])</span>
-    <span class="n">plot_umap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">umap_data</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">umap_data</span> <span class="o">=</span> <span class="n">plot_umap</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="n">figures_dir</span><span class="p">)</span>
 
     <span class="c1"># Plot pairplot: keeping only the top ten correlated pairs in the pair plot</span>
-    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">10</span><span class="p">:</span>
-        <span class="n">corr_pairs</span> <span class="o">=</span> <span class="n">s_corr</span><span class="o">.</span><span class="n">abs</span><span class="p">()</span><span class="o">.</span><span class="n">unstack</span><span class="p">()</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span>
-            <span class="n">kind</span><span class="o">=</span><span class="s2">&quot;quicksort&quot;</span><span class="p">,</span>
-            <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">()</span>
-        <span class="n">top_10_pairs</span> <span class="o">=</span> <span class="n">corr_pairs</span><span class="p">[</span><span class="n">corr_pairs</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">nlargest</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-        <span class="n">columns_to_plot</span> <span class="o">=</span> <span class="nb">list</span><span class="p">({</span><span class="n">index</span> <span class="k">for</span> <span class="n">pair</span> <span class="ow">in</span> <span class="n">top_10_pairs</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">index</span> <span class="ow">in</span> <span class="n">pair</span><span class="p">})</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">columns_to_plot</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span>
-
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">:</span>
-        <span class="n">plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns_to_plot</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">,</span> <span class="n">target_variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_variable</span><span class="p">)</span>
+        <span class="n">plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">,</span> <span class="n">target_variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_variable</span><span class="p">)</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="n">columns_to_plot</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+        <span class="n">plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
 
     <span class="c1"># Create Multiplots</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">_create_multiplots</span><span class="p">(</span><span class="n">figures_dir</span><span class="p">)</span>
@@ -1423,7 +1688,7 @@ analyzer.run()
             <span class="n">dtype</span><span class="o">=</span><span class="nb">float</span>
         <span class="p">)</span>
 
-    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">&#39;updated_data.csv&#39;</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'updated_data.csv'</span><span class="p">)</span>
 
     <span class="c1"># Create Output PDF</span>
     <span class="n">generate_analysis_report_pdf</span><span class="p">(</span>
@@ -1438,13 +1703,67 @@ analyzer.run()
 
 </div>
 
+<div class="doc doc-object doc-function">
+
+
+<h4 id="jarvais.analyzer.Analyzer.dry_run" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">dry_run</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+  <span class="doc doc-labels">
+      <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
+  </span>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Simply returns generated config and displays TableOne.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">dry_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Simply returns generated config and displays TableOne."""</span>
+    <span class="n">analyzer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+    <span class="n">analyzer</span><span class="o">.</span><span class="n">_create_config</span><span class="p">()</span>
+
+    <span class="n">df_keep</span> <span class="o">=</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="n">analyzer</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">+</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">]</span>
+
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Feature Types:</span><span class="se">\n</span><span class="s2">  - Categorical: </span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="si">}</span><span class="se">\n</span><span class="s2">  - Continuous: </span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">continuous_columns</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
+
+    <span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"fancy_grid"</span><span class="p">))</span>
+
+    <span class="k">return</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">config</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
 
 
   </div>
 
     </div>
 
-</div>
+</div></div>
 
 
 
@@ -1491,10 +1810,10 @@ analyzer.run()
     </div>
     
     
-    <script id="__config" type="application/json">{"base": "../..", "features": [], "search": "../../assets/javascripts/workers/search.6ce7567c.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.tracking", "announce.dismiss"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.88dd0f4e.min.js"></script>
+      <script src="../../assets/javascripts/bundle.60a45f97.min.js"></script>
       
     
   </body>
