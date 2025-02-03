@@ -94,7 +94,7 @@ The **Trainer** module simplifies and automates the process of feature reduction
    - Supports methods such as `mrmr`, `variance_threshold`, `corr`, and `chi2` to identify and retain relevant features.
 2. **Automated Model Training**:
    - Integrates with AutoGluon for model training, selection, and optimization.
-   - Handles tasks such as binary classification, multiclass classification, regression, and time-to-event.
+   - Handles tasks such as binary classification, multiclass classification, regression, and survival.
 
 #### Example Usage
 
@@ -130,7 +130,7 @@ Displays values in `mean [min, max]` format across training folds.
 
 ### Explainer Module
 
-The **Explainer** module is designed to evaluate trained models by generating diagnostic plots, auditing bias, and producing comprehensive reports. It supports various supervised learning tasks, including classification, regression, and time-to-event models. 
+The **Explainer** module is designed to evaluate trained models by generating diagnostic plots, auditing bias, and producing comprehensive reports. It supports various supervised learning tasks, including classification, regression, and survival models. 
 
 The module provides an easy-to-use interface for model diagnostics, bias analysis, and feature importance visualization, facilitating deeper insights into the model's performance and fairness.
 
