@@ -122,7 +122,10 @@ class LitMTLR(pl.LightningModule):
     def predict(self, x):
         self.model.eval()
         with torch.no_grad():
-            y_pred = self.model(torch.tensor(x.drop(["time", "event"], axis=1).values, dtype=torch.float))
+            y_pred = self.model(
+                torch.tensor(x.drop(["time", "event"], axis=1, errors='ignore').values, 
+                dtype=torch.float)
+            )
             risk_pred = mtlr_risk(y_pred)
 
         return risk_pred
