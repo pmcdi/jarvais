@@ -65,8 +65,8 @@ class BiasExplainer():
     """
     def __init__(
             self, 
-            y_true: pd.DataFrame, 
-            y_pred: pd.DataFrame, 
+            y_true: pd.Series, 
+            y_pred: np.ndarray, 
             sensitive_features: dict, 
             task: str,
             output_dir: Path,
@@ -200,13 +200,14 @@ class BiasExplainer():
                 a warning flag will be applied.
         """
         if self.task == 'binary':
-            log_loss_per_patient = self.y_true.index.map(
-                lambda idx: log_loss([self.y_true[idx]], [self.y_pred[idx]], labels=self.y_true.unique())
-            )
-            bias_metric = np.array(log_loss_per_patient)
+            y_true_array = self.y_true.to_numpy()
+            bias_metric = np.array([
+                log_loss([y_true_array[idx]], [self.y_pred[idx]], labels=np.unique(y_true_array))
+                for idx in range(len(y_true_array))
+            ])
             self.y_pred = (self.y_pred >= .5).astype(int)
         elif self.task == 'regression':
-            bias_metric = np.sqrt((self.y_true.to_numpy() - self.y_pred.to_numpy()) ** 2)
+            bias_metric = np.sqrt((self.y_true.to_numpy() - self.y_pred) ** 2)
 
         self.results = []
         for sensitive_feature in self.sensitive_features.columns:
