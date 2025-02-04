@@ -5,6 +5,8 @@
 
 from typing import List
 
+import numpy as np
+
 import torch
 import torch.nn as nn
 import torch.optim as optim
@@ -95,8 +97,19 @@ class LitDeepSurv(pl.LightningModule):
     
     def predict(self, x):
         self.model.eval()
+        
         with torch.no_grad():
-            y_pred = self.model(torch.tensor(x.drop(["time", "event"], axis=1).values, dtype=torch.float))
+            x = x.drop(columns=['time', 'event'], errors='ignore').to_numpy(dtype=np.float32)
+            
+            # Normalize input
+            min_vals = x.min(axis=0)
+            range_vals = x.max(axis=0) - min_vals
+            range_vals[range_vals == 0] = 1  # Prevent division by zero
+            
+            x = (x - min_vals) / range_vals
+            x = torch.from_numpy(x)
+            
+            y_pred = self.model(x).ravel()
 
         return y_pred
 
