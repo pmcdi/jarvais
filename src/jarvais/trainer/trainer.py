@@ -378,7 +378,6 @@ class TrainerSupervised:
                 inference = self.predictor.predict_proba(data, model, as_pandas=False)[:, 1]
             else:
                 inference = self.predictor.predict(data, model, as_pandas=False)
-            print(inference)
 
         return inference
     
