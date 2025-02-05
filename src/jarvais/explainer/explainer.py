@@ -12,7 +12,7 @@ from ..utils.plot import (
     plot_feature_importance,
     plot_regression_diagnostics,
     plot_shap_values,
-    plot_violin_of_bootsrapped_metrics,
+    plot_violin_of_bootstrapped_metrics,
 )
 from .bias import BiasExplainer, infer_sensitive_features
 
@@ -55,7 +55,7 @@ class Explainer():
 
         self._run_bias_audit()
 
-        plot_violin_of_bootsrapped_metrics(
+        plot_violin_of_bootstrapped_metrics(
             self.trainer,
             self.X_test,
             self.y_test,
