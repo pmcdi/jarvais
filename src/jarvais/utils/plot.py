@@ -21,7 +21,7 @@ from umap import UMAP
 from lifelines.statistics import multivariate_logrank_test
 from sksurv.nonparametric import kaplan_meier_estimator
 
-from .functional import auprc, ci_wraper, bootstrap_metric
+from .functional import auprc, ci_wrapper, bootstrap_metric
 from ._plot_epic import plot_epic_copy
 
 sns.set_theme(style="darkgrid", font="Arial")
@@ -438,7 +438,7 @@ def plot_shap_values(
     fig.savefig(output_dir / 'shap_barplot.png')
     plt.close()
 
-def plot_violin_of_bootsrapped_metrics(
+def plot_violin_of_bootstrapped_metrics(
         trainer,
         X_test: pd.Series,
         y_test: pd.Series,
@@ -467,7 +467,7 @@ def plot_violin_of_bootsrapped_metrics(
     elif trainer.task == 'binary':
         metrics = [('AUROC', roc_auc_score), ('AUPRC', auprc)]
     elif trainer.task == 'survival':
-        metrics = [('Concordance Index', ci_wraper)]
+        metrics = [('Concordance Index', ci_wrapper)]
 
     # Prepare lists for DataFrame
     results = []

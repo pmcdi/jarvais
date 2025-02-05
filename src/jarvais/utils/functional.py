@@ -20,7 +20,7 @@ def auprc(y_true: np.ndarray, y_scores: np.ndarray) -> float:
     precision, recall, _ = precision_recall_curve(y_true, y_scores)
     return auc(recall, precision)
 
-def ci_wraper(y_true: np.ndarray, y_pred: np.ndarray) -> float:
+def ci_wrapper(y_true: np.ndarray, y_pred: np.ndarray) -> float:
     """
     Wrapper for `sksurv.metrics.concordance_index_censored` to ensure compatibility 
     with `bootstrap_metric`.
@@ -44,7 +44,7 @@ def ci_wraper(y_true: np.ndarray, y_pred: np.ndarray) -> float:
 def bootstrap_metric(
         y_true: np.ndarray,
         y_pred: np.ndarray,
-        f: Callable[[np.ndarray, np.ndarray], float],
+        metric_func: Callable[[np.ndarray, np.ndarray], float],
         nsamples: int = 100
     ) -> List[float]:
     """
@@ -66,7 +66,7 @@ def bootstrap_metric(
         idx = np.random.randint(len(y_true), size=len(y_true))
         pred_sample = y_pred[idx]
         y_true_sample = y_true[idx]
-        val = f(y_true_sample, pred_sample)
+        val = metric_func(y_true_sample, pred_sample)
         values.append(val)
 
     return values
