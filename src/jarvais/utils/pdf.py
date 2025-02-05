@@ -4,6 +4,7 @@ import pandas as pd
 # from fpdf import FPDF
 from fpdf.enums import Align, YPos
 from ._design import PDFRounded as FPDF
+from ast import literal_eval
 
 # UTILS
 def _add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list, continuous_columns: list) -> FPDF:
@@ -59,7 +60,7 @@ def _add_table(pdf: FPDF, data: pd.DataFrame) -> FPDF:
 
     # table starts here
     pdf.set_font('inter', '', 10)
-    with pdf.table(col_widths=(1.75, 1, 1, 1), text_align=['LEFT', 'RIGHT', 'RIGHT', 'RIGHT']) as table:
+    with pdf.table(col_widths=(1.5, 1, 1, 1), text_align=['LEFT', 'RIGHT', 'RIGHT', 'RIGHT']) as table:
         # header row
         row = table.row()
         row.cell('Feature Name')
@@ -89,7 +90,7 @@ def _add_table(pdf: FPDF, data: pd.DataFrame) -> FPDF:
 
     # table starts here
     pdf.set_font('inter', '', 10)
-    with pdf.table(col_widths=(1.75, 1, 1, 1), text_align=['LEFT', 'LEFT', 'RIGHT', 'RIGHT']) as table:
+    with pdf.table(col_widths=(1.5, 1, 1, 1), text_align=['LEFT', 'LEFT', 'RIGHT', 'RIGHT']) as table:
         # header row
         row = table.row()
         row.cell('Feature Name')
@@ -118,10 +119,42 @@ def _add_table(pdf: FPDF, data: pd.DataFrame) -> FPDF:
     return pdf
 
 def _add_outlier_analysis(pdf: FPDF, outlier_analysis: str) -> FPDF:
-    pdf.set_font('inter', '', 12)
-    pdf.write(5, "Outlier Analysis:\n")
+    pdf.set_font('inter', 'B', 36)
+    pdf.cell(text="Outlier Analysis", new_y=YPos.NEXT)
     pdf.set_font('inter', '', 10)
-    pdf.write(5, outlier_analysis)
+
+    outliers = {}
+    for line in outlier_analysis.splitlines():
+        var = line.split("found in")[1].split(": [")[0]
+        print("LINE", line, var)
+        if "No Outliers" in line:
+            outliers[var] = "✅ No outliers found"
+        else:
+            outliers[var] = literal_eval(line.split(f"{var}: ")[1])
+    
+    # table starts here
+    pdf.set_font('inter', '', 10)
+    with pdf.table(col_widths=(1, 2), text_align=['LEFT', 'LEFT']) as table:
+        # header row
+        row = table.row()
+        row.cell('Feature Name')
+        row.cell('Outlier')
+
+        # iterate through each categorical variable and render its data on a table
+        for var in outliers:
+            var_outs = outliers[var]
+            if isinstance(var_outs, str):
+                row = table.row()
+                row.cell(var)
+                row.cell(var_outs)
+            else:
+                for n, val in enumerate(var_outs): 
+                    row = table.row()
+                    if n == 0:
+                        row.cell(var, rowspan=len(var_outs))
+                    row.cell(val)
+
+    # pdf.write(5, outlier_analysis)
 
     return pdf
 
@@ -160,8 +193,8 @@ def generate_analysis_report_pdf(
     pdf.add_font("inter", style="b", fname=font_path)
     
     # Title
-    pdf.set_font('inter', 'B', 24)
-    pdf.write(5, "Analysis Report\n\n")
+    pdf.set_font('inter', 'B', 48)
+    pdf.cell(text="jarvAIs Analyzer Report\n\n", new_y=YPos.NEXT) 
 
     # Add outlier analysis
     if outlier_analysis != '':
