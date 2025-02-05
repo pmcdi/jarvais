@@ -1,6 +1,7 @@
 from typing import Union, List
 
 import numpy as np
+import pandas as pd
 from scipy.interpolate import interp1d
 
 import torch
@@ -9,7 +10,7 @@ from torch import optim
 
 import lightning.pytorch as pl
 
-from .utils import make_optimizer
+from .utils import make_optimizer, normalize
 
 class MTLR(nn.Module):
     """Multi-task logistic regression for individualised
@@ -93,7 +94,16 @@ class MTLR(nn.Module):
                 f" num_time_bins={self.num_time_bins})")
 
 class LitMTLR(pl.LightningModule):
-    def __init__(self, in_channel: int, num_time_bins: int, dims: List[int], dropout: float, C1: float):
+    def __init__(
+            self, 
+            in_channel: int, 
+            num_time_bins: int, 
+            dims: List[int], 
+            dropout: float, 
+            C1: float,
+            mean: pd.Series | None = None,
+            std: pd.Series | None = None,
+        ):
         super(LitMTLR, self).__init__()
         self.save_hyperparameters() 
 
@@ -102,6 +112,9 @@ class LitMTLR(pl.LightningModule):
         self.dims = [in_channel] + dims
         self.dropout = dropout
         self.C1 = C1
+
+        self.training_mean = mean.drop(['time', 'event']) if not mean is None else mean
+        self.training_std = std.drop(['time', 'event']) if not std is None else std
 
         self._build_model()
 
@@ -119,13 +132,14 @@ class LitMTLR(pl.LightningModule):
     def forward(self, x):
         return self.model(x)
     
-    def predict(self, x):
+    def predict(self, x: pd.DataFrame):
+        x = x.drop(["time", "event"], axis=1, errors='ignore')
+        skip_cols = [col for col in x.columns if (set(x[col].unique()).issubset({0, 1}))]
+        x, _, _ = normalize(x, mean=self.training_mean, std=self.training_std, skip_cols=skip_cols)
+
         self.model.eval()
         with torch.no_grad():
-            y_pred = self.model(
-                torch.tensor(x.drop(["time", "event"], axis=1, errors='ignore').values, 
-                dtype=torch.float)
-            )
+            y_pred = self.model(torch.tensor(x.values, dtype=torch.float))
             risk_pred = mtlr_risk(y_pred)
 
         return risk_pred
