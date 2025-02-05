@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.5.50">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.1">
     
     
       
@@ -320,6 +320,7 @@
   
   <span class="md-ellipsis">
     Introduction
+    
   </span>
   
 
@@ -353,6 +354,7 @@
   
   <span class="md-ellipsis">
     Get Started
+    
   </span>
   
 
@@ -378,6 +380,7 @@
   
   <span class="md-ellipsis">
     Analyzer Quick Start
+    
   </span>
   
 
@@ -399,6 +402,7 @@
   
   <span class="md-ellipsis">
     Trainer Quick Start
+    
   </span>
   
 
@@ -420,6 +424,7 @@
   
   <span class="md-ellipsis">
     Explainer Quick Start
+    
   </span>
   
 
@@ -461,6 +466,7 @@
   
   <span class="md-ellipsis">
     Tutorials
+    
   </span>
   
 
@@ -486,6 +492,7 @@
   
   <span class="md-ellipsis">
     Classification
+    
   </span>
   
 
@@ -507,6 +514,7 @@
   
   <span class="md-ellipsis">
     Regression
+    
   </span>
   
 
@@ -528,6 +536,7 @@
   
   <span class="md-ellipsis">
     Survival
+    
   </span>
   
 
@@ -574,6 +583,7 @@
   
   <span class="md-ellipsis">
     API
+    
   </span>
   
 
@@ -599,6 +609,7 @@
   
   <span class="md-ellipsis">
     Analyzer
+    
   </span>
   
 
@@ -620,6 +631,7 @@
   
   <span class="md-ellipsis">
     Trainer
+    
   </span>
   
 
@@ -641,6 +653,7 @@
   
   <span class="md-ellipsis">
     Explainer
+    
   </span>
   
 
@@ -677,6 +690,7 @@
   
   <span class="md-ellipsis">
     Utils
+    
   </span>
   
 
@@ -711,6 +725,7 @@
   
   <span class="md-ellipsis">
     Plotting
+    
   </span>
   
 
@@ -722,6 +737,7 @@
   
   <span class="md-ellipsis">
     Plotting
+    
   </span>
   
 
@@ -816,9 +832,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#jarvais.utils.plot.plot_violin_of_bootsrapped_metrics" class="md-nav__link">
+  <a href="#jarvais.utils.plot.plot_violin_of_bootstrapped_metrics" class="md-nav__link">
     <span class="md-ellipsis">
-      plot_violin_of_bootsrapped_metrics
+      plot_violin_of_bootstrapped_metrics
     </span>
   </a>
   
@@ -868,6 +884,7 @@
   
   <span class="md-ellipsis">
     Functional
+    
   </span>
   
 
@@ -889,6 +906,7 @@
   
   <span class="md-ellipsis">
     PDF
+    
   </span>
   
 
@@ -1013,9 +1031,9 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#jarvais.utils.plot.plot_violin_of_bootsrapped_metrics" class="md-nav__link">
+  <a href="#jarvais.utils.plot.plot_violin_of_bootstrapped_metrics" class="md-nav__link">
     <span class="md-ellipsis">
-      plot_violin_of_bootsrapped_metrics
+      plot_violin_of_bootstrapped_metrics
     </span>
   </a>
   
@@ -1057,6 +1075,7 @@
               <article class="md-content__inner md-typeset">
                 
                   
+
 
 
 <div><h1 id="plot">Plot</h1>
@@ -1205,8 +1224,7 @@ plot_corr(corr=corr_matrix, size=6, output_dir=Path('./output'))
 </details>
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">121</span>
-<span class="normal">122</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">122</span>
 <span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
@@ -1248,7 +1266,8 @@ plot_corr(corr=corr_matrix, size=6, output_dir=Path('./output'))
 <span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span>
-<span class="normal">164</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_corr</span><span class="p">(</span>
+<span class="normal">164</span>
+<span class="normal">165</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_corr</span><span class="p">(</span>
         <span class="n">corr</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">size</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -1376,8 +1395,7 @@ plot_corr(corr=corr_matrix, size=6, output_dir=Path('./output'))
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">166</span>
-<span class="normal">167</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">167</span>
 <span class="normal">168</span>
 <span class="normal">169</span>
 <span class="normal">170</span>
@@ -1400,7 +1418,8 @@ plot_corr(corr=corr_matrix, size=6, output_dir=Path('./output'))
 <span class="normal">187</span>
 <span class="normal">188</span>
 <span class="normal">189</span>
-<span class="normal">190</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_frequency_table</span><span class="p">(</span>
+<span class="normal">190</span>
+<span class="normal">191</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_frequency_table</span><span class="p">(</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span>
@@ -1542,8 +1561,7 @@ If exceeded, the most correlated columns are selected. Defaults to 10.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">192</span>
-<span class="normal">193</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">193</span>
 <span class="normal">194</span>
 <span class="normal">195</span>
 <span class="normal">196</span>
@@ -1581,7 +1599,8 @@ If exceeded, the most correlated columns are selected. Defaults to 10.</p>
 <span class="normal">228</span>
 <span class="normal">229</span>
 <span class="normal">230</span>
-<span class="normal">231</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_pairplot</span><span class="p">(</span>
+<span class="normal">231</span>
+<span class="normal">232</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_pairplot</span><span class="p">(</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">continuous_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
@@ -1729,8 +1748,7 @@ to be included in the UMAP projection.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">233</span>
-<span class="normal">234</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">234</span>
 <span class="normal">235</span>
 <span class="normal">236</span>
 <span class="normal">237</span>
@@ -1756,7 +1774,8 @@ to be included in the UMAP projection.</p>
 <span class="normal">257</span>
 <span class="normal">258</span>
 <span class="normal">259</span>
-<span class="normal">260</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_umap</span><span class="p">(</span>
+<span class="normal">260</span>
+<span class="normal">261</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_umap</span><span class="p">(</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">continuous_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span>
@@ -1884,8 +1903,7 @@ to be included in the UMAP projection.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">262</span>
-<span class="normal">263</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">263</span>
 <span class="normal">264</span>
 <span class="normal">265</span>
 <span class="normal">266</span>
@@ -1948,7 +1966,8 @@ to be included in the UMAP projection.</p>
 <span class="normal">323</span>
 <span class="normal">324</span>
 <span class="normal">325</span>
-<span class="normal">326</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_kaplan_meier_by_category</span><span class="p">(</span>
+<span class="normal">326</span>
+<span class="normal">327</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_kaplan_meier_by_category</span><span class="p">(</span>
         <span class="n">data_x</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">data_y</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">categorical_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -2113,8 +2132,7 @@ plot_feature_importance(df, Path('./output'))
 </details>
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">350</span>
-<span class="normal">351</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">351</span>
 <span class="normal">352</span>
 <span class="normal">353</span>
 <span class="normal">354</span>
@@ -2163,7 +2181,8 @@ plot_feature_importance(df, Path('./output'))
 <span class="normal">397</span>
 <span class="normal">398</span>
 <span class="normal">399</span>
-<span class="normal">400</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_feature_importance</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">''</span><span class="p">):</span>
+<span class="normal">400</span>
+<span class="normal">401</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_feature_importance</span><span class="p">(</span><span class="n">df</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span> <span class="n">model_name</span><span class="p">:</span> <span class="nb">str</span><span class="o">=</span><span class="s1">''</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Plots feature importance with standard deviation and p-value significance.</span>
 
@@ -2330,8 +2349,7 @@ plot_feature_importance(df, Path('./output'))
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">402</span>
-<span class="normal">403</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">403</span>
 <span class="normal">404</span>
 <span class="normal">405</span>
 <span class="normal">406</span>
@@ -2366,7 +2384,8 @@ plot_feature_importance(df, Path('./output'))
 <span class="normal">435</span>
 <span class="normal">436</span>
 <span class="normal">437</span>
-<span class="normal">438</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_shap_values</span><span class="p">(</span>
+<span class="normal">438</span>
+<span class="normal">439</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_shap_values</span><span class="p">(</span>
         <span class="n">predictor</span><span class="p">:</span> <span class="n">TabularPredictor</span><span class="p">,</span>
         <span class="n">X_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">X_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -2412,8 +2431,8 @@ plot_feature_importance(df, Path('./output'))
 <div class="doc doc-object doc-function">
 
 
-<h4 id="jarvais.utils.plot.plot_violin_of_bootsrapped_metrics" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">plot_violin_of_bootsrapped_metrics</span><span class="p">(</span><span class="n">predictor</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span></code>
+<h4 id="jarvais.utils.plot.plot_violin_of_bootstrapped_metrics" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">plot_violin_of_bootstrapped_metrics</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">X_test</span><span class="p">,</span> <span class="n">y_test</span><span class="p">,</span> <span class="n">X_val</span><span class="p">,</span> <span class="n">y_val</span><span class="p">,</span> <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span></code>
 
 </h4>
 
@@ -2436,10 +2455,10 @@ plot_feature_importance(df, Path('./output'))
       <tbody>
           <tr class="doc-section-item">
             <td>
-                <code>predictor</code>
+                <code>trainer</code>
             </td>
             <td>
-                  <code><span title="autogluon.tabular.TabularPredictor">TabularPredictor</span></code>
+                  <code><a class="autorefs autorefs-internal" title="jarvais.trainer.TrainerSupervised" href="../trainer/#jarvais.trainer.TrainerSupervised">TrainerSupervised</a></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2455,7 +2474,7 @@ plot_feature_importance(df, Path('./output'))
                 <code>X_test</code>
             </td>
             <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+                  <code><span title="pandas.Series">Series</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2471,7 +2490,7 @@ plot_feature_importance(df, Path('./output'))
                 <code>y_test</code>
             </td>
             <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+                  <code><span title="pandas.Series">Series</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2487,7 +2506,7 @@ plot_feature_importance(df, Path('./output'))
                 <code>X_val</code>
             </td>
             <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+                  <code><span title="pandas.Series">Series</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2503,7 +2522,7 @@ plot_feature_importance(df, Path('./output'))
                 <code>y_val</code>
             </td>
             <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+                  <code><span title="pandas.Series">Series</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2519,7 +2538,7 @@ plot_feature_importance(df, Path('./output'))
                 <code>X_train</code>
             </td>
             <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+                  <code><span title="pandas.Series">Series</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2535,7 +2554,7 @@ plot_feature_importance(df, Path('./output'))
                 <code>y_train</code>
             </td>
             <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
+                  <code><span title="pandas.Series">Series</span></code>
             </td>
             <td>
               <div class="doc-md-description">
@@ -2567,8 +2586,7 @@ plot_feature_importance(df, Path('./output'))
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">440</span>
-<span class="normal">441</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">441</span>
 <span class="normal">442</span>
 <span class="normal">443</span>
 <span class="normal">444</span>
@@ -2672,59 +2690,54 @@ plot_feature_importance(df, Path('./output'))
 <span class="normal">542</span>
 <span class="normal">543</span>
 <span class="normal">544</span>
-<span class="normal">545</span>
-<span class="normal">546</span>
-<span class="normal">547</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_violin_of_bootsrapped_metrics</span><span class="p">(</span>
-        <span class="n">predictor</span><span class="p">:</span> <span class="n">TabularPredictor</span><span class="p">,</span>
-        <span class="n">X_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">y_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">X_val</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">y_val</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">X_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-        <span class="n">y_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
+<span class="normal">545</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_violin_of_bootstrapped_metrics</span><span class="p">(</span>
+        <span class="n">trainer</span><span class="p">,</span>
+        <span class="n">X_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+        <span class="n">y_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+        <span class="n">X_val</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+        <span class="n">y_val</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+        <span class="n">X_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+        <span class="n">y_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generates violin plots for bootstrapped model performance metrics across train, validation, and test datasets.</span>
 
 <span class="sd">    Args:</span>
-<span class="sd">        predictor (TabularPredictor): The trained model predictor for evaluating performance metrics.</span>
-<span class="sd">        X_test (pd.DataFrame): Test features dataset.</span>
-<span class="sd">        y_test (pd.DataFrame): Test target values.</span>
-<span class="sd">        X_val (pd.DataFrame): Validation features dataset.</span>
-<span class="sd">        y_val (pd.DataFrame): Validation target values.</span>
-<span class="sd">        X_train (pd.DataFrame): Training features dataset.</span>
-<span class="sd">        y_train (pd.DataFrame): Training target values.</span>
+<span class="sd">        trainer (TrainerSupervised): The trained model predictor for evaluating performance metrics.</span>
+<span class="sd">        X_test (pd.Series): Test features dataset.</span>
+<span class="sd">        y_test (pd.Series): Test target values.</span>
+<span class="sd">        X_val (pd.Series): Validation features dataset.</span>
+<span class="sd">        y_val (pd.Series): Validation target values.</span>
+<span class="sd">        X_train (pd.Series): Training features dataset.</span>
+<span class="sd">        y_train (pd.Series): Training target values.</span>
 <span class="sd">        output_dir (Path): Directory to save the generated violin plots.</span>
 <span class="sd">    """</span>
     <span class="c1"># Define metrics based on the problem type</span>
-    <span class="k">if</span> <span class="n">predictor</span><span class="o">.</span><span class="n">problem_type</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
         <span class="n">metrics</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">'R Squared'</span><span class="p">,</span> <span class="n">r2_score</span><span class="p">),</span> <span class="p">(</span><span class="s1">'Root Mean Squared Error'</span><span class="p">,</span> <span class="n">root_mean_squared_error</span><span class="p">)]</span>
-    <span class="k">else</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'binary'</span><span class="p">:</span>
         <span class="n">metrics</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">'AUROC'</span><span class="p">,</span> <span class="n">roc_auc_score</span><span class="p">),</span> <span class="p">(</span><span class="s1">'AUPRC'</span><span class="p">,</span> <span class="n">auprc</span><span class="p">)]</span>
+    <span class="k">elif</span> <span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[(</span><span class="s1">'Concordance Index'</span><span class="p">,</span> <span class="n">ci_wrapper</span><span class="p">)]</span>
 
     <span class="c1"># Prepare lists for DataFrame</span>
     <span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
 
     <span class="c1"># Loop through models and metrics to compute bootstrapped values</span>
-    <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">predictor</span><span class="o">.</span><span class="n">model_names</span><span class="p">():</span>
-        <span class="k">if</span> <span class="n">predictor</span><span class="o">.</span><span class="n">problem_type</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
-            <span class="n">y_pred_test</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
-            <span class="n">y_pred_val</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
-            <span class="n">y_pred_train</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">y_pred_test</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="n">y_pred_val</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
-            <span class="n">y_pred_train</span> <span class="o">=</span> <span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+    <span class="k">for</span> <span class="n">model_name</span> <span class="ow">in</span> <span class="n">trainer</span><span class="o">.</span><span class="n">model_names</span><span class="p">():</span>
+        <span class="n">y_pred_test</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">X_test</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="n">y_pred_val</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">X_val</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
+        <span class="n">y_pred_train</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">model</span><span class="o">=</span><span class="n">model_name</span><span class="p">)</span>
 
         <span class="k">for</span> <span class="n">metric_name</span><span class="p">,</span> <span class="n">metric_func</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">:</span>
-            <span class="n">test_values</span> <span class="o">=</span> <span class="n">bootstrap_metric</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">y_pred_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">metric_func</span><span class="p">)</span>
+            <span class="n">test_values</span> <span class="o">=</span> <span class="n">bootstrap_metric</span><span class="p">(</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">y_pred_test</span><span class="p">,</span> <span class="n">metric_func</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="s1">'Test'</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">test_values</span><span class="p">])</span>
 
-            <span class="n">val_values</span> <span class="o">=</span> <span class="n">bootstrap_metric</span><span class="p">(</span><span class="n">y_val</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">y_pred_val</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">metric_func</span><span class="p">)</span>
+            <span class="n">val_values</span> <span class="o">=</span> <span class="n">bootstrap_metric</span><span class="p">(</span><span class="n">y_val</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">y_pred_val</span><span class="p">,</span> <span class="n">metric_func</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="s1">'Validation'</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">val_values</span><span class="p">])</span>
 
-            <span class="n">train_values</span> <span class="o">=</span> <span class="n">bootstrap_metric</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">y_pred_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">metric_func</span><span class="p">)</span>
+            <span class="n">train_values</span> <span class="o">=</span> <span class="n">bootstrap_metric</span><span class="p">(</span><span class="n">y_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span> <span class="n">y_pred_train</span><span class="p">,</span> <span class="n">metric_func</span><span class="p">)</span>
             <span class="n">results</span><span class="o">.</span><span class="n">extend</span><span class="p">([(</span><span class="n">model_name</span><span class="p">,</span> <span class="n">metric_name</span><span class="p">,</span> <span class="s1">'Train'</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span> <span class="k">for</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">train_values</span><span class="p">])</span>
 
     <span class="c1"># Create a results DataFrame</span>
@@ -2755,7 +2768,7 @@ plot_feature_importance(df, Path('./output'))
             <span class="n">margin_titles</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
             <span class="n">height</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span>
             <span class="n">aspect</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span>
-            <span class="n">xlim</span><span class="o">=</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span><span class="mf">1.1</span><span class="p">)</span>
+            <span class="n">sharex</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="p">)</span>
 
         <span class="c1"># Create violin plots with sorted models</span>
@@ -2768,7 +2781,7 @@ plot_feature_importance(df, Path('./output'))
 
         <span class="c1"># Adjust the titles and axis labels</span>
         <span class="n">g</span><span class="o">.</span><span class="n">set_titles</span><span class="p">(</span><span class="n">col_template</span><span class="o">=</span><span class="s2">"</span><span class="si">{col_name}</span><span class="s2">"</span><span class="p">)</span>
-        <span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">"Metric Value"</span><span class="p">,</span> <span class="s2">"Model"</span><span class="p">)</span>
+        <span class="n">g</span><span class="o">.</span><span class="n">set_axis_labels</span><span class="p">(</span><span class="s2">""</span><span class="p">,</span> <span class="s2">"Model"</span><span class="p">)</span>
 
         <span class="c1"># Add overall title and adjust layout</span>
         <span class="n">g</span><span class="o">.</span><span class="n">figure</span><span class="o">.</span><span class="n">suptitle</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Model Performance of </span><span class="si">{</span><span class="n">data_split</span><span class="si">}</span><span class="s2"> Data (Bootstrapped)"</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
@@ -2875,7 +2888,9 @@ plot_feature_importance(df, Path('./output'))
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">549</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">547</span>
+<span class="normal">548</span>
+<span class="normal">549</span>
 <span class="normal">550</span>
 <span class="normal">551</span>
 <span class="normal">552</span>
@@ -2922,9 +2937,7 @@ plot_feature_importance(df, Path('./output'))
 <span class="normal">593</span>
 <span class="normal">594</span>
 <span class="normal">595</span>
-<span class="normal">596</span>
-<span class="normal">597</span>
-<span class="normal">598</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_regression_diagnostics</span><span class="p">(</span>
+<span class="normal">596</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_regression_diagnostics</span><span class="p">(</span>
         <span class="n">y_true</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
         <span class="n">y_pred</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
         <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span>
@@ -3130,7 +3143,9 @@ plot_feature_importance(df, Path('./output'))
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">600</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">598</span>
+<span class="normal">599</span>
+<span class="normal">600</span>
 <span class="normal">601</span>
 <span class="normal">602</span>
 <span class="normal">603</span>
@@ -3171,9 +3186,7 @@ plot_feature_importance(df, Path('./output'))
 <span class="normal">638</span>
 <span class="normal">639</span>
 <span class="normal">640</span>
-<span class="normal">641</span>
-<span class="normal">642</span>
-<span class="normal">643</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_classification_diagnostics</span><span class="p">(</span>
+<span class="normal">641</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">plot_classification_diagnostics</span><span class="p">(</span>
         <span class="n">y_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">y_test_pred</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">y_val</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
@@ -3279,7 +3292,7 @@ plot_feature_importance(df, Path('./output'))
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.tracking", "announce.dismiss"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.60a45f97.min.js"></script>
+      <script src="../../assets/javascripts/bundle.5090c770.min.js"></script>
       
     
   </body>
