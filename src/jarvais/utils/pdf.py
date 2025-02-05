@@ -1,49 +1,136 @@
 from pathlib import Path
 
 import pandas as pd
-from fpdf import FPDF
-from fpdf.enums import Align
+# from fpdf import FPDF
+from fpdf.enums import Align, YPos
+from ._design import PDFRounded as FPDF
 
 # UTILS
+def _add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list, continuous_columns: list) -> FPDF:
+    n_continuous = len(continuous_columns) + 2
+    if n_continuous < 11:
+        n_rows = 19 // n_continuous
+    else:
+        n_rows = 1
 
-def _add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list) -> FPDF:
-    for plot, cat in zip(multiplots, categorical_columns):
-        pdf.add_page()
+    # start first page of multiplots
+    current_y = pdf.t_margin
+    for n, (plot, cat) in enumerate(zip(multiplots, categorical_columns)):
+        if n % n_rows == 0:
+            print("NEW PAGE")
+            pdf.add_page()
+            current_y = pdf.get_y()
+        
+        pdf.set_font('inter', 'B', 24)
+        pdf.set_y(current_y)
+        pdf.cell(text=f"{cat.title()} Multiplots", new_y=YPos.NEXT)
 
-        pdf.set_font('inter', '', 12)
-        pdf.write(5, f"{cat.title()} Multiplots\n")
+        current_y = pdf.get_y() + 2
 
-        current_y = pdf.get_y()
-
-        img_width = pdf.epw - 20
-        img_height = pdf.eph - current_y - 20
-
-        pdf.image(plot, x=10, y=current_y + 5, w=img_width, h=img_height, keep_aspect_ratio=True)
+        img_width = pdf.epw
+        img = pdf.image(
+            plot, 
+            x=pdf.l_margin, 
+            y=current_y, 
+            w=img_width, 
+            keep_aspect_ratio=True
+        )
+        current_y += img.rendered_height + 6
+        pdf.set_y(current_y)    
 
     return pdf
 
-def _add_table(pdf: FPDF, csv_df: pd.DataFrame) -> FPDF:
-    headers = csv_df.columns.tolist()
+def _add_table(pdf: FPDF, data: pd.DataFrame) -> FPDF:
     # Keep empty header entries
-    headers = ['' if 'Unnamed:' in header else header for header in headers]
-    data = [headers, *csv_df.values.tolist()]
+    data.columns = [f"col_{n}" if 'Unnamed:' in header else header for n, header in enumerate(data.columns)]
+    
+    # save 
+    n = data.iloc[0]['Overall']
+    data = data.iloc[1:]
+    
+    continuous_columns = [col.replace(', mean (SD)', '') for col in data['col_0'].unique() if 'mean (SD)' in col]
+    categorical_columns = [col.replace(', n (%)', '') for col in data['col_0'].unique() if 'n (%)' in col]
+    print(continuous_columns, categorical_columns)
 
+    # new page for continuous variables + title 
     pdf.add_page()
+    pdf.set_font('inter', 'B', 24)
+    pdf.cell(h=pdf.t_margin, text='Table 1: Continuous Variables', new_y=YPos.NEXT)
+
+    # table starts here
     pdf.set_font('inter', '', 10)
-    with pdf.table() as table:
-        for data_row in data:
+    with pdf.table(col_widths=(1.75, 1, 1, 1), text_align=['LEFT', 'RIGHT', 'RIGHT', 'RIGHT']) as table:
+        # header row
+        row = table.row()
+        row.cell('Feature Name')
+        row.cell(f'Missing (n={n})')
+        row.cell('Mean')
+        row.cell('SD')
+
+        # iterate through each continuous variable and render its data on a table
+        for col in continuous_columns:
+            data_row = data[data["col_0"].str.startswith(f"{col},")].iloc[0]
+
+            # separate mean/sd columns
+            data_row['Mean'] = data_row['Overall'].split(" (")[0]
+            data_row['SD'] = data_row['Overall'].split(" (")[1].split(")")[0]
+
+            # one row of continuous variable
             row = table.row()
-            for datum in data_row:
-                row.cell(datum)
+            row.cell(col)
+            row.cell(data_row['Missing'])
+            row.cell(data_row['Mean'])
+            row.cell(data_row['SD'])
+    
+    # start next table 10mm after
+    pdf.set_y(pdf.get_y() + 10)
+    pdf.set_font('inter', 'B', 24)
+    pdf.cell(h=pdf.t_margin, text='Table 2: Categorical Variables', new_y=YPos.NEXT)
+
+    # table starts here
+    pdf.set_font('inter', '', 10)
+    with pdf.table(col_widths=(1.75, 1, 1, 1), text_align=['LEFT', 'LEFT', 'RIGHT', 'RIGHT']) as table:
+        # header row
+        row = table.row()
+        row.cell('Feature Name')
+        row.cell('Value')
+        row.cell(f'Count (n={n})')
+        row.cell('%')
+
+        # iterate through each categorical variable and render its data on a table
+        for col in categorical_columns:
+            rows = data[data["col_0"].str.startswith(f"{col},")].reset_index(drop=True)
+            # print(col, "\n", rows, "\n")
+            
+            # separate mean/sd columns
+            rows['n'] = rows['Overall'].apply(lambda x: x.split(" (")[0])
+            rows['%'] = rows['Overall'].apply(lambda x: x.split(" (")[1].split(")")[0])
+    
+            # iterate through each value of the categorical variable
+            for n, data_row in rows.iterrows():
+                row = table.row()
+                if n == 0:
+                    row.cell(col, rowspan=len(rows))
+                row.cell(data_row['col_1'])
+                row.cell(data_row['n'])
+                row.cell(data_row['%'])
+
+    return pdf
+
+def _add_outlier_analysis(pdf: FPDF, outlier_analysis: str) -> FPDF:
+    pdf.set_font('inter', '', 12)
+    pdf.write(5, "Outlier Analysis:\n")
+    pdf.set_font('inter', '', 10)
+    pdf.write(5, outlier_analysis)
 
     return pdf
 
 # Reports
-
 def generate_analysis_report_pdf(
         outlier_analysis: str,
         multiplots: list,
         categorical_columns: list,
+        continuous_columns: list,
         output_dir: str | Path
     ) -> None:
     """
@@ -71,29 +158,34 @@ def generate_analysis_report_pdf(
     pdf.add_font("inter", style="", fname=font_path)
     font_path = (script_dir / 'fonts/Inter_28pt-Bold.ttf')
     pdf.add_font("inter", style="b", fname=font_path)
-    pdf.set_font('inter', '', 24)
-
+    
     # Title
+    pdf.set_font('inter', 'B', 24)
     pdf.write(5, "Analysis Report\n\n")
 
     # Add outlier analysis
     if outlier_analysis != '':
-        pdf.set_font('inter', '', 12)
-        pdf.write(5, "Outlier Analysis:\n")
-        pdf.set_font('inter', '', 10)
-        pdf.write(5, outlier_analysis)
+        pdf = _add_outlier_analysis(pdf, outlier_analysis)
 
     # Add page-wide pairplots
-    pdf.image((figures_dir / 'pairplot.png'), Align.C, w=pdf.epw-20)
     pdf.add_page()
+    pdf.set_font('inter', 'B', 24)
+    pdf.cell(h=pdf.t_margin, text='Pair Plot of Continuous Variables', new_y=YPos.NEXT)
+    img = pdf.image((figures_dir / 'pairplot.png'), Align.C, w=pdf.epw)
+    pdf.set_y(pdf.t_margin + img.rendered_height + 15)
 
     # Add correlation plots
-    pdf.image((figures_dir / 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
-    pdf.image((figures_dir / 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
+    pdf.set_font('inter', 'B', 24)
+    pdf.cell(h=pdf.t_margin, text='Pearson and Spearman Correlation Plots', new_y=YPos.NEXT)
+
+    corr_y = pdf.get_y() + 5
+
+    pdf.image((figures_dir / 'pearson_correlation.png'), Align.L, corr_y, w=pdf.epw*.45)
+    pdf.image((figures_dir / 'spearman_correlation.png'), Align.R, corr_y,w=pdf.epw*.45)
 
     # Add multiplots
     if multiplots and categorical_columns:
-        pdf = _add_multiplots(pdf, multiplots, categorical_columns)
+        pdf = _add_multiplots(pdf, multiplots, categorical_columns, continuous_columns)
 
     # Add demographic breakdown "table one"
     path_tableone = output_dir / 'tableone.csv'
@@ -143,10 +235,11 @@ def generate_explainer_report_pdf(
     # Title
     pdf.write(5, "Explainer Report\n\n")
 
+    # Plots for non-survival problems  
     if problem_type != 'survival':
         pdf.image((figures_dir / 'test_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
         pdf.image((figures_dir / 'validation_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
-        pdf.image((figures_dir /  'train_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
+        pdf.image((figures_dir / 'train_metrics_bootstrap.png'), Align.C, h=pdf.eph//3.5, w=pdf.epw-20)
         pdf.add_page()
 
     pdf.image((figures_dir / 'feature_importance.png'), Align.C, w=pdf.epw-20)
