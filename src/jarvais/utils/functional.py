@@ -53,7 +53,7 @@ def bootstrap_metric(
     Args:
         y_true (np.ndarray): True labels. Shape (n_samples,).
         y_pred (np.ndarray): Predicted values. Shape (n_samples,).
-        f (Callable[[np.ndarray, np.ndarray], float]): A function that calculates the metric.
+        metric_func (Callable[[np.ndarray, np.ndarray], float]): A function that calculates the metric.
         nsamples (int, optional): The number of bootstrap samples. Defaults to 100.
 
     Returns:
@@ -83,7 +83,7 @@ def undummify(df, prefix_sep="_"):
             Defaults to "_".
 
     Returns:
-        pandas.DataFrame: A new DataFrame with the undummified (reconstructed) categorical columns.
+        undummified_df (pandas.DataFrame): A new DataFrame with the undummified (reconstructed) categorical columns.
     """
     dummy_cols = {
         item.split(prefix_sep)[0]: (prefix_sep in item) for item in df.columns
