@@ -120,29 +120,40 @@ class BiasExplainer():
         plt.savefig(self.output_dir / f'{sensitive_feature}_{bias_metric_name}.png') 
         plt.show()
 
-    def _fit_OLS(self, sensitive_feature: str, bias_metric:np.ndarray) -> float:
+    def _subgroup_analysis_OLS(self, sensitive_feature: str, bias_metric:np.ndarray) -> float:
         """Fit a statsmodels OLS model to the bias metric data, using the sensitive feature and print summary based on p_val."""
         one_hot_encoded = pd.get_dummies(self.sensitive_features[sensitive_feature], prefix=sensitive_feature)
+        X_columns = one_hot_encoded.columns
 
         X = one_hot_encoded.values  
         y = bias_metric  
 
-        X_columns = one_hot_encoded.columns  
         X = sm.add_constant(X.astype(float), has_constant='add')
-
         model = sm.OLS(y, X).fit()
 
         if model.f_pvalue < 0.05:
-            summary = model.summary(xname=['const'] + X_columns.tolist())
-            print(f'Possible Bias in {sensitive_feature.title()}:\n')
-            print(summary)
+            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.title()}** ⚠️\n")
+            print(f"=== Subgroup Analysis for '{sensitive_feature.title()}' Using OLS Regression ===\n")
 
-            with (self.output_dir / f'{sensitive_feature}_model_summary.txt').open('w') as f:
-                f.write(summary.as_text())
+            print("Model Statistics:")
+            print(f"    R-squared:                  {model.rsquared:.3f}")
+            print(f"    F-statistic:                {model.fvalue:.3f}")
+            print(f"    F-statistic p-value:        {model.f_pvalue:.4f}")
+            print(f"    AIC:                        {model.aic:.2f}")
+            print(f"    Log-Likelihood:             {model.llf:.2f}")
+
+            summary_df = pd.DataFrame({
+                'Feature': ['const'] + X_columns.tolist(),     # Predictor names (includes 'const' if added)
+                'Coefficient': model.params,    # Coefficients
+                'Standard Error': model.bse     # Standard Errors
+            })
+            table_output = tabulate(summary_df, headers='keys', tablefmt='fancy_grid', showindex=False, floatfmt=".3f")
+            print("Model Coefficients:")
+            print('\n'.join(['    ' + line for line in table_output.split('\n')]))
 
         return model.f_pvalue
 
-    def _fit_CoxPH(self, sensitive_feature: str) -> None:
+    def _subgroup_analysis_CoxPH(self, sensitive_feature: str) -> None:
         """Fit a CoxPH model using the sensitive feature and print summary based on p_val."""
         one_hot_encoded = pd.get_dummies(self.sensitive_features[sensitive_feature], prefix=sensitive_feature)
         df_encoded = self.y_true.join(one_hot_encoded)
@@ -151,9 +162,24 @@ class BiasExplainer():
         cph.fit(df_encoded, duration_col='time', event_col='event')            
         
         if cph.log_likelihood_ratio_test().p_value < 0.05:
-            print(f'Possible Bias in {sensitive_feature.title()}:\n')
-            cph.print_summary()
-    
+            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.title()}** ⚠️")
+            print(f"=== Subgroup Analysis for '{sensitive_feature.title()}' Using Cox Proportional Hazards Model ===\n")
+
+            print("Model Statistics:")
+            print(f"    AIC (Partial):               {cph.AIC_partial_:.2f}")
+            print(f"    Log-Likelihood:              {cph.log_likelihood_:.2f}")
+            print(f"    Log-Likelihood Ratio p-value: {cph.log_likelihood_ratio_test().p_value:.4f}")
+            print(f"    Concordance Index (C-index):   {cph.concordance_index_:.2f}")
+
+            summary_df = pd.DataFrame({
+                'Feature': cph.summary.index.to_list(),
+                'Coefficient': cph.summary['coef'].to_list(),
+                'Standard Error': cph.summary['se(coef)'].to_list()
+            })
+            table_output = tabulate(summary_df, headers='keys', tablefmt='fancy_grid', showindex=False, floatfmt=".3f")
+            print("Model Coefficients:")
+            print('\n'.join(['    ' + line for line in table_output.split('\n')]))
+
     def _calculate_fair_metrics(
             self, 
             sensitive_feature: str, 
@@ -212,13 +238,15 @@ class BiasExplainer():
         self.results = []
         for sensitive_feature in self.sensitive_features.columns:
             if self.task == 'survival':
-                self._fit_CoxPH(sensitive_feature)
+                self._subgroup_analysis_CoxPH(sensitive_feature)
             else:
-                f_pvalue = self._fit_OLS(sensitive_feature, bias_metric)
+                f_pvalue = self._subgroup_analysis_OLS(sensitive_feature, bias_metric)
                 if f_pvalue < 0.05:
                     self._generate_violin(sensitive_feature, bias_metric)
                     result = self._calculate_fair_metrics(sensitive_feature, fairness_threshold, relative)
 
-                    print(f"Subgroup Analysis({sensitive_feature.title()})")
-                    print(f"{tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')}\n")
+                    print(f"\n=== Subgroup Analysis for '{sensitive_feature.title()}' using FairLearn ===\n")
+                    table_output = tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')
+                    print('\n'.join(['    ' + line for line in table_output.split('\n')]), '\n')
+
                     result.to_csv(self.output_dir / f'{sensitive_feature}_fm_metrics.csv')
