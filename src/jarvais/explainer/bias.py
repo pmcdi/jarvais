@@ -132,24 +132,32 @@ class BiasExplainer():
         model = sm.OLS(y, X).fit()
 
         if model.f_pvalue < 0.05:
-            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.title()}** ⚠️\n")
-            print(f"=== Subgroup Analysis for '{sensitive_feature.title()}' Using OLS Regression ===\n")
+            output = []
 
-            print("Model Statistics:")
-            print(f"    R-squared:                  {model.rsquared:.3f}")
-            print(f"    F-statistic:                {model.fvalue:.3f}")
-            print(f"    F-statistic p-value:        {model.f_pvalue:.4f}")
-            print(f"    AIC:                        {model.aic:.2f}")
-            print(f"    Log-Likelihood:             {model.llf:.2f}")
+            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.title()}** ⚠️\n")
+            output.append(f"=== Subgroup Analysis for '{sensitive_feature.title()}' Using OLS Regression ===\n")
+
+            output.append("Model Statistics:")
+            output.append(f"    R-squared:                  {model.rsquared:.3f}")
+            output.append(f"    F-statistic:                {model.fvalue:.3f}")
+            output.append(f"    F-statistic p-value:        {model.f_pvalue:.4f}")
+            output.append(f"    AIC:                        {model.aic:.2f}")
+            output.append(f"    Log-Likelihood:             {model.llf:.2f}")
 
             summary_df = pd.DataFrame({
                 'Feature': ['const'] + X_columns.tolist(),     # Predictor names (includes 'const' if added)
                 'Coefficient': model.params,    # Coefficients
                 'Standard Error': model.bse     # Standard Errors
             })
-            table_output = tabulate(summary_df, headers='keys', tablefmt='fancy_grid', showindex=False, floatfmt=".3f")
-            print("Model Coefficients:")
-            print('\n'.join(['    ' + line for line in table_output.split('\n')]))
+            table_output = tabulate(summary_df, headers='keys', tablefmt='simple_grid', showindex=False, floatfmt=".3f")
+            output.append("Model Coefficients:")
+            output.append('\n'.join(['    ' + line for line in table_output.split('\n')]))
+
+            output_text = '\n'.join(output)
+            print(output_text)
+
+            with open(self.output_dir / f'{sensitive_feature}_Cox_model_summary.txt', 'w') as f:
+                f.write(output_text)
 
         return model.f_pvalue
 
@@ -162,23 +170,31 @@ class BiasExplainer():
         cph.fit(df_encoded, duration_col='time', event_col='event')            
         
         if cph.log_likelihood_ratio_test().p_value < 0.05:
-            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.title()}** ⚠️")
-            print(f"=== Subgroup Analysis for '{sensitive_feature.title()}' Using Cox Proportional Hazards Model ===\n")
+            output = []
 
-            print("Model Statistics:")
-            print(f"    AIC (Partial):               {cph.AIC_partial_:.2f}")
-            print(f"    Log-Likelihood:              {cph.log_likelihood_:.2f}")
-            print(f"    Log-Likelihood Ratio p-value: {cph.log_likelihood_ratio_test().p_value:.4f}")
-            print(f"    Concordance Index (C-index):   {cph.concordance_index_:.2f}")
+            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.title()}** ⚠️")
+            output.append(f"=== Subgroup Analysis for '{sensitive_feature.title()}' Using Cox Proportional Hazards Model ===\n")
+
+            output.append("Model Statistics:")
+            output.append(f"    AIC (Partial):               {cph.AIC_partial_:.2f}")
+            output.append(f"    Log-Likelihood:              {cph.log_likelihood_:.2f}")
+            output.append(f"    Log-Likelihood Ratio p-value: {cph.log_likelihood_ratio_test().p_value:.4f}")
+            output.append(f"    Concordance Index (C-index):   {cph.concordance_index_:.2f}")
 
             summary_df = pd.DataFrame({
                 'Feature': cph.summary.index.to_list(),
                 'Coefficient': cph.summary['coef'].to_list(),
                 'Standard Error': cph.summary['se(coef)'].to_list()
             })
-            table_output = tabulate(summary_df, headers='keys', tablefmt='fancy_grid', showindex=False, floatfmt=".3f")
-            print("Model Coefficients:")
-            print('\n'.join(['    ' + line for line in table_output.split('\n')]))
+            table_output = tabulate(summary_df, headers='keys', tablefmt='grid', showindex=False, floatfmt=".3f")
+            output.append("Model Coefficients:")
+            output.append('\n'.join(['    ' + line for line in table_output.split('\n')]))
+
+            output_text = '\n'.join(output)
+            print(output_text)
+
+            with open(self.output_dir / f'{sensitive_feature}_OLS_model_summary.txt', 'w') as f:
+                f.write(output_text)
 
     def _calculate_fair_metrics(
             self, 
