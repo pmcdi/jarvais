@@ -390,7 +390,7 @@ class TrainerSupervised:
             project_dir (str or Path, optional): The directory where the trainer was run.
 
         Returns:
-            TrainerSupervised: The loaded Trainer.
+            trainer (TrainerSupervised): The loaded Trainer.
         """
         project_dir = Path(project_dir)
         with (project_dir / 'trainer_config.yaml').open('r') as f:
