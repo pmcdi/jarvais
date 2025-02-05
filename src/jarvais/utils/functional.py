@@ -85,11 +85,11 @@ def undummify(df, prefix_sep="_"):
     Returns:
         pandas.DataFrame: A new DataFrame with the undummified (reconstructed) categorical columns.
     """
-    cols2collapse = {
+    dummy_cols = {
         item.split(prefix_sep)[0]: (prefix_sep in item) for item in df.columns
     }
     series_list = []
-    for col, needs_to_collapse in cols2collapse.items():
+    for col, needs_to_collapse in dummy_cols.items():
         if needs_to_collapse:
             undummified = (
                 df.filter(like=col)
