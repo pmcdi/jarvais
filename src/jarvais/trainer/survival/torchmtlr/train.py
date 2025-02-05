@@ -46,8 +46,9 @@ def train_mtlr(data_train: pd.DataFrame, data_val:pd.DataFrame, data_test: pd.Da
     time_bins = make_time_bins(data_train["time"].values, event=data_train["event"].values)
 
     skip_cols = [
-        col for col in data_train.columns if (set(data_train[col].unique()).issubset({0, 1}) and (not col in ['time', 'event']))
+        col for col in data_train.columns if (set(data_train[col].unique()).issubset({0, 1}) or (col in ['time', 'event']))
     ]
+    print(skip_cols)
     data_train, mean, std = normalize(data_train, skip_cols=skip_cols)
     data_val, _, _ = normalize(data_val, mean=mean, std=std, skip_cols=skip_cols)
     data_test, _, _ = normalize(data_test, mean=mean, std=std, skip_cols=skip_cols)
@@ -89,7 +90,7 @@ def train_mtlr(data_train: pd.DataFrame, data_val:pd.DataFrame, data_test: pd.Da
         print("      {}: {}".format(key, value))
 
     # Train the final model with the best parameters
-    model = LitMTLR(in_channel=in_channel, num_time_bins=len(time_bins), **trial.params)
+    model = LitMTLR(in_channel=in_channel, num_time_bins=len(time_bins), mean=mean, std=std, **trial.params)
 
     trainer = pl.Trainer(
         default_root_dir=output_dir,
