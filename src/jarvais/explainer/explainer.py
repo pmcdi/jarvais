@@ -12,7 +12,7 @@ from ..utils.plot import (
     plot_feature_importance,
     plot_regression_diagnostics,
     plot_shap_values,
-    plot_violin_of_bootsrapped_metrics,
+    plot_violin_of_bootstrapped_metrics,
 )
 from .bias import BiasExplainer, infer_sensitive_features
 
@@ -55,17 +55,16 @@ class Explainer():
 
         self._run_bias_audit()
 
-        if self.trainer.task != 'survival':
-            plot_violin_of_bootsrapped_metrics(
-                self.predictor,
-                self.X_test,
-                self.y_test,
-                self.trainer.X_val,
-                self.trainer.y_val,
-                self.X_train,
-                self.trainer.y_train,
-                output_dir=self.output_dir / 'figures'
-            )            
+        plot_violin_of_bootstrapped_metrics(
+            self.trainer,
+            self.X_test,
+            self.y_test,
+            self.trainer.X_val,
+            self.trainer.y_val,
+            self.X_train,
+            self.trainer.y_train,
+            output_dir=self.output_dir / 'figures'
+        )            
 
         if self.trainer.task in ['binary', 'multiclass']:
             plot_classification_diagnostics(
@@ -92,7 +91,7 @@ class Explainer():
             )
 
         # Plot feature importance
-        if self.trainer.task == 'time_to_event': # NEEDS TO BE UPDATED
+        if self.trainer.task == 'survival': # NEEDS TO BE UPDATED
             model = self.trainer.predictors['CoxPH']
             result = permutation_importance(model, self.X_test,
                                             Surv.from_dataframe('event', 'time', self.y_test),
@@ -125,7 +124,7 @@ class Explainer():
             else:
                 self.sensitive_features = infer_sensitive_features(self.X_test)
         
-        y_pred = None if self.trainer.task == 'survival' else self.trainer.infer(self.X_test) 
+        y_pred = None if self.trainer.task == 'survival' else pd.Series(self.trainer.infer(self.X_test) )
         metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate'] 
 
         bias = BiasExplainer(
