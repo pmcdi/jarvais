@@ -22,11 +22,10 @@ from sksurv.nonparametric import kaplan_meier_estimator
 
 from .functional import auprc, bootstrap_metric
 from ._plot_epic import plot_epic_copy
-
-sns.set_theme(style="darkgrid", font="Arial")
+from ._design import config_plot
 
 # ANALYZER
-
+@config_plot(plot_type='multi')
 def plot_one_multiplot(
         data: pd.DataFrame,
         umap_data: pd.DataFrame,
@@ -61,22 +60,34 @@ def plot_one_multiplot(
 
     # setting number of rows/columns for subplots
     n = len(continuous_columns) + 2
-    rows = int(np.ceil(np.sqrt(n)))
-    cols = int(np.ceil((n) / rows))
+    if n < 21:
+        cols = 4
+    elif n < 36:
+        cols = 5
+    elif n < 49:
+        cols = 6
+    elif n < 71:
+        cols = 7
+    elif n < 89: 
+        cols = 8
+    else: # i hope it never gets to this
+        cols = 9
+
+    rows = int(np.ceil(n / cols))  # int(np.ceil(np.sqrt(n)))
     scaler = 6
 
     # create subplot grid
-    fig, ax = plt.subplots(rows, cols, figsize=(rows*scaler, cols*scaler))
+    fig, ax = plt.subplots(rows, cols, figsize=((cols-0.5)*scaler, rows*scaler), dpi=300)
     ax = ax.flatten()
 
     # Pie plot of categorical variable
     ax[0].pie(values,
-                labels=labels,
-                autopct=autopct,
-                startangle=90,
-                counterclock=False,
-                textprops={'fontsize': fontsize},
-                colors=plt.cm.Set2.colors) # 90 = 12 o'clock, 0 = 3 o'clock, 180 = 9 o'clock
+              labels=labels,
+              autopct=autopct,
+              startangle=90,   # 90 = 12 o'clock, 0 = 3 o'clock, 180 = 9 o'clock
+              counterclock=False,
+              textprops={'fontsize': fontsize},
+              colors=plt.cm.Set2.colors)
     ax[0].set_title(f"{var} Distribution. N: {data[var].count()}")
 
     # UMAP colored by variable
@@ -91,22 +102,21 @@ def plot_one_multiplot(
     for col in continuous_columns:
         unique_values = data[var].unique()
 
-        if len(unique_values) == 2: # If binary classification, use t-test
-            group1 = data[data[var] == unique_values[0]][col]
-            group2 = data[data[var] == unique_values[1]][col]
-            _, p_value = ttest_ind(group1, group2, equal_var=False)
-        else: # For more than two categories, use ANOVA
-            groups = [data[data[var] == value][col] for value in unique_values]
-            _, p_value = f_oneway(*groups)
+        if len(unique_values) > 1:
+            if len(unique_values) == 2: # If binary classification, use t-test
+                group1 = data[data[var] == unique_values[0]][col]
+                group2 = data[data[var] == unique_values[1]][col]
+                _, p_value = ttest_ind(group1, group2, equal_var=False)
+            else: # For more than two categories, use ANOVA
+                groups = [data[data[var] == value][col] for value in unique_values]
+                _, p_value = f_oneway(*groups)
+            p_values[col] = p_value
+            sorted_columns = sorted(p_values, key=p_values.get)
 
-        p_values[col] = p_value
-
-    sorted_columns = sorted(p_values, key=p_values.get)
-
-    for i, col in enumerate(sorted_columns):
-        sns.violinplot(x=var, y=col, data=data, ax=ax[i+2], inner="point")
-        ax[i+2].tick_params(axis='x', labelrotation=67.5)
-        ax[i+2].set_title(f"{var} vs {col} (p-value: {p_values[col]:.4f})")
+            for i, col in enumerate(sorted_columns):
+                sns.violinplot(x=var, y=col, data=data, ax=ax[i+2], inner="point")
+                ax[i+2].tick_params(axis='x', labelrotation=67.5)
+                ax[i+2].set_title(f"{var} vs {col} (p-value: {p_values[col]:.4f})")
 
     # Turn off unused axes
     for j in range(n, len(ax)):
@@ -118,6 +128,7 @@ def plot_one_multiplot(
 
     return multiplot_path
 
+@config_plot()
 def plot_corr(
         corr: pd.DataFrame,
         size: float,
@@ -163,6 +174,7 @@ def plot_corr(
     fig.savefig(figure_path)
     plt.close()
 
+@config_plot(plot_type='ft')
 def plot_frequency_table(
         data: pd.DataFrame,
         columns: list,
@@ -189,6 +201,7 @@ def plot_frequency_table(
         plt.savefig(frequency_dir / f'{column_1}_vs_{column_2}.png')
         plt.close()
 
+@config_plot()
 def plot_pairplot(
         data: pd.DataFrame,
         continuous_columns: list,
@@ -230,6 +243,7 @@ def plot_pairplot(
     plt.savefig(figure_path)
     plt.close()
 
+@config_plot()
 def plot_umap(
         data: pd.DataFrame,
         continuous_columns: list,
@@ -249,16 +263,15 @@ def plot_umap(
     """
     umap_data = UMAP(n_components=2).fit_transform(data[continuous_columns])
 
-    fig, ax = plt.subplots(figsize=(8, 8), dpi=72)
-    sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7, ax=ax)
+    plt.figure(figsize=(8, 8))
+    sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], alpha=.7)
     plt.title('UMAP of Continuous Variables')
-
-    figure_path = output_dir / 'umap_continuous_data.png'
-    fig.savefig(figure_path)
+    plt.savefig(output_dir / 'umap_continuous_data.png')
     plt.close()
 
     return umap_data
 
+@config_plot()
 def plot_kaplan_meier_by_category(
         data_x: pd.DataFrame,
         data_y: pd.DataFrame,
@@ -347,6 +360,7 @@ class ModelWrapper:
             preds = self.ag_model.predict(X)
         return preds
 
+@config_plot()
 def plot_feature_importance(df: pd.DataFrame, output_dir: Path, model_name: str=''):
     """
     Plots feature importance with standard deviation and p-value significance.
@@ -399,6 +413,7 @@ def plot_feature_importance(df: pd.DataFrame, output_dir: Path, model_name: str=
     fig.savefig(output_dir / 'feature_importance.png')
     plt.close()
 
+@config_plot()
 def plot_shap_values(
         predictor: TabularPredictor,
         X_train: pd.DataFrame,
@@ -437,6 +452,7 @@ def plot_shap_values(
     fig.savefig(output_dir / 'shap_barplot.png')
     plt.close()
 
+@config_plot()
 def plot_violin_of_bootsrapped_metrics(
         predictor: TabularPredictor,
         X_test: pd.DataFrame,
@@ -546,6 +562,7 @@ def plot_violin_of_bootsrapped_metrics(
     create_violin_plot('Validation', output_dir / 'validation_metrics_bootstrap.png')
     create_violin_plot('Train', output_dir / 'train_metrics_bootstrap.png')
 
+@config_plot()
 def plot_regression_diagnostics(
         y_true: np.ndarray, 
         y_pred: np.ndarray, 
@@ -597,6 +614,7 @@ def plot_regression_diagnostics(
     plt.savefig(output_dir / 'residual_hist.png')
     plt.close()
 
+@config_plot()
 def plot_classification_diagnostics(
         y_test: pd.DataFrame,
         y_test_pred: pd.DataFrame,
