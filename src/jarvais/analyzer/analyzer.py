@@ -231,7 +231,8 @@ class Analyzer:
             self.data = pd.get_dummies(
                 self.data,
                 columns=[cat for cat in self.categorical_columns if cat != self.target_variable],
-                dtype=float
+                dtype=float,
+                prefix_sep='|' # Using this to make it obvious OHE features
             )
 
         self.data.to_csv(self.output_dir / 'updated_data.csv')

@@ -6,12 +6,13 @@ from sklearn.inspection import permutation_importance
 from sksurv.util import Surv
 
 from ..utils.pdf import generate_explainer_report_pdf
+from ..utils.functional import undummify
 from ..utils.plot import (
     plot_classification_diagnostics,
     plot_feature_importance,
     plot_regression_diagnostics,
     plot_shap_values,
-    plot_violin_of_bootsrapped_metrics,
+    plot_violin_of_bootstrapped_metrics,
 )
 from .bias import BiasExplainer, infer_sensitive_features
 
@@ -51,19 +52,19 @@ class Explainer():
 
     def run(self) -> None:
         """Generate diagnostic plots and reports for the trained model."""
-        if self.trainer.task != 'survival':
-            plot_violin_of_bootsrapped_metrics(
-                self.predictor,
-                self.X_test,
-                self.y_test,
-                self.trainer.X_val,
-                self.trainer.y_val,
-                self.X_train,
-                self.trainer.y_train,
-                output_dir=self.output_dir / 'figures'
-            )      
 
-            self._run_bias_audit()      
+        self._run_bias_audit()
+
+        plot_violin_of_bootstrapped_metrics(
+            self.trainer,
+            self.X_test,
+            self.y_test,
+            self.trainer.X_val,
+            self.trainer.y_val,
+            self.X_train,
+            self.trainer.y_train,
+            output_dir=self.output_dir / 'figures'
+        )            
 
         if self.trainer.task in ['binary', 'multiclass']:
             plot_classification_diagnostics(
@@ -114,15 +115,21 @@ class Explainer():
 
     def _run_bias_audit(self) -> List[pd.DataFrame]:
 
-        self.sensitive_features = infer_sensitive_features(self.X_test) if self.sensitive_features is None else self.sensitive_features
         bias_output_dir = self.output_dir / 'bias'
         bias_output_dir.mkdir(parents=True, exist_ok=True)
 
+        if self.sensitive_features is None:
+            if self.trainer.task == 'survival': # Data needs to be not be one hot encoded
+                self.sensitive_features = infer_sensitive_features(undummify(self.X_test, prefix_sep='|'))
+            else:
+                self.sensitive_features = infer_sensitive_features(self.X_test)
+        
+        y_pred = None if self.trainer.task == 'survival' else pd.Series(self.trainer.infer(self.X_test) )
         metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate'] 
 
         bias = BiasExplainer(
             self.y_test, 
-            self.trainer.infer(self.X_test), 
+            y_pred, 
             self.sensitive_features,
             self.trainer.task, 
             bias_output_dir,

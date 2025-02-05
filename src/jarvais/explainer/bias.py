@@ -14,6 +14,7 @@ import fairlearn.metrics as fm
 
 from sklearn.metrics import log_loss
 import statsmodels.api as sm
+from lifelines import CoxPHFitter
 
 def infer_sensitive_features(data: pd.DataFrame) -> dict:
     """
@@ -64,8 +65,8 @@ class BiasExplainer():
     """
     def __init__(
             self, 
-            y_true: pd.DataFrame, 
-            y_pred: pd.DataFrame, 
+            y_true: pd.Series, 
+            y_pred: np.ndarray, 
             sensitive_features: dict, 
             task: str,
             output_dir: Path,
@@ -119,28 +120,82 @@ class BiasExplainer():
         plt.savefig(self.output_dir / f'{sensitive_feature}_{bias_metric_name}.png') 
         plt.show()
 
-    def _fit_OLS(self, sensitive_feature: str, bias_metric:np.ndarray) -> float:
-        """Fit a statsmodels OLS model to the bias metric data."""
+    def _subgroup_analysis_OLS(self, sensitive_feature: str, bias_metric:np.ndarray) -> float:
+        """Fit a statsmodels OLS model to the bias metric data, using the sensitive feature and print summary based on p_val."""
         one_hot_encoded = pd.get_dummies(self.sensitive_features[sensitive_feature], prefix=sensitive_feature)
+        X_columns = one_hot_encoded.columns
 
         X = one_hot_encoded.values  
         y = bias_metric  
 
-        X_columns = one_hot_encoded.columns  
         X = sm.add_constant(X.astype(float), has_constant='add')
-
         model = sm.OLS(y, X).fit()
 
         if model.f_pvalue < 0.05:
-            summary = model.summary(xname=['const'] + X_columns.tolist())
-            print(f'Possible Bias in {sensitive_feature.title()}:\n')
-            print(summary)
+            output = []
 
-            with (self.output_dir / f'{sensitive_feature}_model_summary.txt').open('w') as f:
-                f.write(summary.as_text())
+            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.title()}** ⚠️\n")
+            output.append(f"=== Subgroup Analysis for '{sensitive_feature.title()}' Using OLS Regression ===\n")
+
+            output.append("Model Statistics:")
+            output.append(f"    R-squared:                  {model.rsquared:.3f}")
+            output.append(f"    F-statistic:                {model.fvalue:.3f}")
+            output.append(f"    F-statistic p-value:        {model.f_pvalue:.4f}")
+            output.append(f"    AIC:                        {model.aic:.2f}")
+            output.append(f"    Log-Likelihood:             {model.llf:.2f}")
+
+            summary_df = pd.DataFrame({
+                'Feature': ['const'] + X_columns.tolist(),     # Predictor names (includes 'const' if added)
+                'Coefficient': model.params,    # Coefficients
+                'Standard Error': model.bse     # Standard Errors
+            })
+            table_output = tabulate(summary_df, headers='keys', tablefmt='simple_grid', showindex=False, floatfmt=".3f")
+            output.append("Model Coefficients:")
+            output.append('\n'.join(['    ' + line for line in table_output.split('\n')]))
+
+            output_text = '\n'.join(output)
+            print(output_text)
+
+            with open(self.output_dir / f'{sensitive_feature}_Cox_model_summary.txt', 'w') as f:
+                f.write(output_text)
 
         return model.f_pvalue
-    
+
+    def _subgroup_analysis_CoxPH(self, sensitive_feature: str) -> None:
+        """Fit a CoxPH model using the sensitive feature and print summary based on p_val."""
+        one_hot_encoded = pd.get_dummies(self.sensitive_features[sensitive_feature], prefix=sensitive_feature)
+        df_encoded = self.y_true.join(one_hot_encoded)
+
+        cph = CoxPHFitter(penalizer=0.0001)
+        cph.fit(df_encoded, duration_col='time', event_col='event')            
+        
+        if cph.log_likelihood_ratio_test().p_value < 0.05:
+            output = []
+
+            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.title()}** ⚠️")
+            output.append(f"=== Subgroup Analysis for '{sensitive_feature.title()}' Using Cox Proportional Hazards Model ===\n")
+
+            output.append("Model Statistics:")
+            output.append(f"    AIC (Partial):               {cph.AIC_partial_:.2f}")
+            output.append(f"    Log-Likelihood:              {cph.log_likelihood_:.2f}")
+            output.append(f"    Log-Likelihood Ratio p-value: {cph.log_likelihood_ratio_test().p_value:.4f}")
+            output.append(f"    Concordance Index (C-index):   {cph.concordance_index_:.2f}")
+
+            summary_df = pd.DataFrame({
+                'Feature': cph.summary.index.to_list(),
+                'Coefficient': cph.summary['coef'].to_list(),
+                'Standard Error': cph.summary['se(coef)'].to_list()
+            })
+            table_output = tabulate(summary_df, headers='keys', tablefmt='grid', showindex=False, floatfmt=".3f")
+            output.append("Model Coefficients:")
+            output.append('\n'.join(['    ' + line for line in table_output.split('\n')]))
+
+            output_text = '\n'.join(output)
+            print(output_text)
+
+            with open(self.output_dir / f'{sensitive_feature}_OLS_model_summary.txt', 'w') as f:
+                f.write(output_text)
+
     def _calculate_fair_metrics(
             self, 
             sensitive_feature: str, 
@@ -187,21 +242,27 @@ class BiasExplainer():
                 a warning flag will be applied.
         """
         if self.task == 'binary':
-            log_loss_per_patient = self.y_true.index.map(
-                lambda idx: log_loss([self.y_true[idx]], [self.y_pred[idx]], labels=self.y_true.unique())
-            )
-            bias_metric = np.array(log_loss_per_patient)
+            y_true_array = self.y_true.to_numpy()
+            bias_metric = np.array([
+                log_loss([y_true_array[idx]], [self.y_pred[idx]], labels=np.unique(y_true_array))
+                for idx in range(len(y_true_array))
+            ])
             self.y_pred = (self.y_pred >= .5).astype(int)
-        else: # Regression(root mean_squared_error)
-            bias_metric = np.sqrt((self.y_true.to_numpy() - self.y_pred.to_numpy()) ** 2)
+        elif self.task == 'regression':
+            bias_metric = np.sqrt((self.y_true.to_numpy() - self.y_pred) ** 2)
 
         self.results = []
         for sensitive_feature in self.sensitive_features.columns:
-            f_pvalue = self._fit_OLS(sensitive_feature, bias_metric)
-            if f_pvalue < 0.05:
-                self._generate_violin(sensitive_feature, bias_metric)
-                result = self._calculate_fair_metrics(sensitive_feature, fairness_threshold, relative)
+            if self.task == 'survival':
+                self._subgroup_analysis_CoxPH(sensitive_feature)
+            else:
+                f_pvalue = self._subgroup_analysis_OLS(sensitive_feature, bias_metric)
+                if f_pvalue < 0.05:
+                    self._generate_violin(sensitive_feature, bias_metric)
+                    result = self._calculate_fair_metrics(sensitive_feature, fairness_threshold, relative)
 
-                print(f"Subgroup Analysis({sensitive_feature.title()})")
-                print(f"{tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')}\n")
-                result.to_csv(self.output_dir / f'{sensitive_feature}_fm_metrics.csv')
+                    print(f"\n=== Subgroup Analysis for '{sensitive_feature.title()}' using FairLearn ===\n")
+                    table_output = tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')
+                    print('\n'.join(['    ' + line for line in table_output.split('\n')]), '\n')
+
+                    result.to_csv(self.output_dir / f'{sensitive_feature}_fm_metrics.csv')
