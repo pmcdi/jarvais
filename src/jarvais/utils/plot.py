@@ -1,4 +1,5 @@
 from itertools import combinations
+from typing import TYPE_CHECKING
 from pathlib import Path
 
 import numpy as np
@@ -20,7 +21,7 @@ from umap import UMAP
 from lifelines.statistics import multivariate_logrank_test
 from sksurv.nonparametric import kaplan_meier_estimator
 
-from .functional import auprc, bootstrap_metric
+from .functional import auprc, ci_wrapper, bootstrap_metric
 from ._plot_epic import plot_epic_copy
 from ._design import config_plot
 
@@ -453,58 +454,54 @@ def plot_shap_values(
     fig.savefig(output_dir / 'shap_barplot.png')
     plt.close()
 
-@config_plot()
-def plot_violin_of_bootsrapped_metrics(
-        predictor: TabularPredictor,
-        X_test: pd.DataFrame,
-        y_test: pd.DataFrame,
-        X_val: pd.DataFrame,
-        y_val: pd.DataFrame,
-        X_train: pd.DataFrame,
-        y_train: pd.DataFrame,
+def plot_violin_of_bootstrapped_metrics(
+        trainer,
+        X_test: pd.Series,
+        y_test: pd.Series,
+        X_val: pd.Series,
+        y_val: pd.Series,
+        X_train: pd.Series,
+        y_train: pd.Series,
         output_dir: Path
     ) -> None:
     """
     Generates violin plots for bootstrapped model performance metrics across train, validation, and test datasets.
 
     Args:
-        predictor (TabularPredictor): The trained model predictor for evaluating performance metrics.
-        X_test (pd.DataFrame): Test features dataset.
-        y_test (pd.DataFrame): Test target values.
-        X_val (pd.DataFrame): Validation features dataset.
-        y_val (pd.DataFrame): Validation target values.
-        X_train (pd.DataFrame): Training features dataset.
-        y_train (pd.DataFrame): Training target values.
+        trainer (TrainerSupervised): The trained model predictor for evaluating performance metrics.
+        X_test (pd.Series): Test features dataset.
+        y_test (pd.Series): Test target values.
+        X_val (pd.Series): Validation features dataset.
+        y_val (pd.Series): Validation target values.
+        X_train (pd.Series): Training features dataset.
+        y_train (pd.Series): Training target values.
         output_dir (Path): Directory to save the generated violin plots.
     """
     # Define metrics based on the problem type
-    if predictor.problem_type == 'regression':
+    if trainer.task == 'regression':
         metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
-    else:
+    elif trainer.task == 'binary':
         metrics = [('AUROC', roc_auc_score), ('AUPRC', auprc)]
+    elif trainer.task == 'survival':
+        metrics = [('Concordance Index', ci_wrapper)]
 
     # Prepare lists for DataFrame
     results = []
 
     # Loop through models and metrics to compute bootstrapped values
-    for model_name in predictor.model_names():
-        if predictor.problem_type == 'regression':
-            y_pred_test = predictor.predict(X_test, model=model_name)
-            y_pred_val = predictor.predict(X_val, model=model_name)
-            y_pred_train = predictor.predict(X_train, model=model_name)
-        else:
-            y_pred_test = predictor.predict_proba(X_test, model=model_name).iloc[:, 1]
-            y_pred_val = predictor.predict_proba(X_val, model=model_name).iloc[:, 1]
-            y_pred_train = predictor.predict_proba(X_train, model=model_name).iloc[:, 1]
+    for model_name in trainer.model_names():
+        y_pred_test = trainer.infer(X_test, model=model_name)
+        y_pred_val = trainer.infer(X_val, model=model_name)
+        y_pred_train = trainer.infer(X_train, model=model_name)
 
         for metric_name, metric_func in metrics:
-            test_values = bootstrap_metric(y_test.to_numpy(), y_pred_test.to_numpy(), metric_func)
+            test_values = bootstrap_metric(y_test.to_numpy(), y_pred_test, metric_func)
             results.extend([(model_name, metric_name, 'Test', value) for value in test_values])
 
-            val_values = bootstrap_metric(y_val.to_numpy(), y_pred_val.to_numpy(), metric_func)
+            val_values = bootstrap_metric(y_val.to_numpy(), y_pred_val, metric_func)
             results.extend([(model_name, metric_name, 'Validation', value) for value in val_values])
 
-            train_values = bootstrap_metric(y_train.to_numpy(), y_pred_train.to_numpy(), metric_func)
+            train_values = bootstrap_metric(y_train.to_numpy(), y_pred_train, metric_func)
             results.extend([(model_name, metric_name, 'Train', value) for value in train_values])
 
     # Create a results DataFrame
@@ -535,7 +532,7 @@ def plot_violin_of_bootsrapped_metrics(
             margin_titles=True,
             height=4,
             aspect=1.5,
-            xlim=(0,1.1)
+            sharex=False,
         )
 
         # Create violin plots with sorted models
@@ -548,7 +545,7 @@ def plot_violin_of_bootsrapped_metrics(
 
         # Adjust the titles and axis labels
         g.set_titles(col_template="{col_name}")
-        g.set_axis_labels("Metric Value", "Model")
+        g.set_axis_labels("", "Model")
 
         # Add overall title and adjust layout
         g.figure.suptitle(f"Model Performance of {data_split} Data (Bootstrapped)", fontsize=16)
