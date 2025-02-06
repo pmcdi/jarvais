@@ -303,6 +303,8 @@ class TrainerSupervised:
                 self._train_autogluon_with_cv()
             else:
                 self._train_autogluon()
+        
+        self.trained = True
 
         self.data_dir = self.output_dir / 'data'
         self.data_dir.mkdir(parents=True, exist_ok=True)
@@ -320,27 +322,62 @@ class TrainerSupervised:
             explainer = Explainer.from_trainer(self)
             explainer.run()
 
-    def infer(self, data: pd.DataFrame, model: str = None) -> pd.DataFrame | pd.Series | np.ndarray:
+    def model_names(self) -> List[str]:
+        """
+        Returns all trainer model names.
+
+        This method retrieves the names of all models associated with the 
+        current predictor. It requires that the predictor has been trained.
+
+        Returns:
+            list: A list of model names available in the predictor.
+
+        Raises:
+            ValueError: If the model has not been trained (`self.trained` is False).
+        """
+        if not self.trained:
+            raise ValueError("The model must be trained before accessing model names.")
+
+        if self.task == 'survival':
+            return list(self.predictors.keys())
+        else:        
+            return self.predictor.model_names()
+
+    def infer(self, data: pd.DataFrame, model: str = None) -> np.ndarray:
         """
         Perform inference using the trained predictor on the provided data.
 
+        This method generates predictions based on the input data using the 
+        specified model. If no model is provided, the default model is used. 
+        The predictor must be trained before inference can be performed.
+
         Args:
             data (pd.DataFrame): The input data for which inference is to be performed.
-            model (str, optional): The name of the model to use for inference. If None, the default model is used.
+            model (str, optional): The name of the model to use for inference. 
+                If None, the default model is used.
 
         Returns:
-            pd.DataFrame, pd.Series, or np.ndarray: The prediction results from the model.
+            np.ndarray: The prediction results from the model.
+
+        Raises:
+            ValueError: If the model has not been trained (`self.trained` is False).
+            ValueError: If the specified model name is not found in the predictor.
         """
-        if hasattr(self.predictor, 'can_predict_proba'): # Autogluon
-            if self.predictor.can_predict_proba:
-                inference =  self.predictor.predict_proba(data, model).iloc[:, 1]
-            else:
-                inference = self.predictor.predict(data, model)
-        else: # Survival models
+        if not self.trained:
+            raise ValueError("The model must be trained before performing inference.")
+        if not model is None and not model in self.model_names():
+            raise ValueError(f"Model '{model}' not in trainer. Use model_names() to list valid available models.")
+
+        if self.task == 'survival':
             if model is None:
                 inference = self.predictor.predict(data)
             else:
                 inference = self.predictors[model].predict(data)
+        else:
+            if self.predictor.can_predict_proba:
+                inference = self.predictor.predict_proba(data, model, as_pandas=False)[:, 1]
+            else:
+                inference = self.predictor.predict(data, model, as_pandas=False)
 
         return inference
     
@@ -353,7 +390,7 @@ class TrainerSupervised:
             project_dir (str or Path, optional): The directory where the trainer was run.
 
         Returns:
-            TrainerSupervised: The loaded Trainer.
+            trainer (TrainerSupervised): The loaded Trainer.
         """
         project_dir = Path(project_dir)
         with (project_dir / 'trainer_config.yaml').open('r') as f:
@@ -361,6 +398,7 @@ class TrainerSupervised:
 
         trainer = cls()
         trainer.task = trainer_config['task']
+        trainer.output_dir = project_dir
         
         if trainer.task == 'survival':
             model_dir = (project_dir / 'survival_models')
@@ -380,6 +418,8 @@ class TrainerSupervised:
         else:
             model_dir = (project_dir / 'autogluon_models' / 'autogluon_models_best_fold')
             trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
+
+        trainer.trained = True
         
         trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv')
         trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv')

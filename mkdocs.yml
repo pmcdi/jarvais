@@ -25,7 +25,8 @@ theme:
 plugins:
   - search
   - mkdocstrings
-  - mkdocs-jupyter
+  - mkdocs-jupyter:
+      execute: True
   - mkdocs-pdf
 
 markdown_extensions:
