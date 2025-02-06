@@ -72,7 +72,6 @@ pytest-xdist = "*"
 [tool.pixi.feature.test.tasks.test]
 cmd = [
   "pytest",
-  "--numprocesses=auto",
   "-s",
   "--verbose",
   "--cov=readii",
