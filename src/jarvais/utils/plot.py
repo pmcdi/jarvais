@@ -133,7 +133,8 @@ def plot_corr(
         corr: pd.DataFrame,
         size: float,
         output_dir: Path,
-        file_name: str = 'correlation_matrix.png'
+        file_name: str = 'correlation_matrix.png',
+        title: str = "Correlation Matrix"
     ) -> None:
     """
     Plots a lower-triangle heatmap of the correlation matrix and saves it as an image file.
@@ -163,11 +164,11 @@ def plot_corr(
         plot_corr(corr=corr_matrix, size=6, output_dir=Path('./output'))
         ```
     """
-    fig, ax = plt.subplots(1, 1, figsize=(size, size))
+    fig, ax = plt.subplots(1, 1, figsize=(size*1.2, size))
     mask = np.triu(np.ones_like(corr, dtype=bool)) # Keep only lower triangle
     np.fill_diagonal(mask, False)
     sns.heatmap(corr, mask=mask, annot=True, cmap='coolwarm', vmin=-1, vmax=1, linewidth=.5, fmt="1.2f", ax=ax)
-    plt.title('Correlation Matrix')
+    plt.title(title)
     plt.tight_layout()
 
     figure_path = output_dir / file_name
