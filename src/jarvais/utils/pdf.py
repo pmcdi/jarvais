@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pandas as pd
-# from fpdf import FPDF
 from fpdf.enums import Align, YPos
 from ._design import PDFRounded as FPDF
 from ast import literal_eval
@@ -18,7 +17,6 @@ def _add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list, cont
     current_y = pdf.t_margin
     for n, (plot, cat) in enumerate(zip(multiplots, categorical_columns)):
         if n % n_rows == 0:
-            print("NEW PAGE")
             pdf.add_page()
             current_y = pdf.get_y()
         
@@ -154,8 +152,6 @@ def _add_outlier_analysis(pdf: FPDF, outlier_analysis: str) -> FPDF:
                         row.cell(var, rowspan=len(var_outs))
                     row.cell(val)
 
-    # pdf.write(5, outlier_analysis)
-
     return pdf
 
 # Reports
@@ -173,6 +169,7 @@ def generate_analysis_report_pdf(
         outlier_analysis (str): Text summary of outlier analysis to include in the report.
         multiplots (list): A list of paths to plots to include in the multiplots section.
         categorical_columns (list): A list of categorical columns to use for multiplots.
+        continuous_columns (list): A list of continuous columns to use for multiplots.
         output_dir (str | Path): The directory where the generated PDF report will be saved.
 
     Returns:

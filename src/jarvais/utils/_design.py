@@ -2,13 +2,15 @@
 Helper functions and classes for aesthetic design.
 """
 
+from typing import Callable
 from fpdf import FPDF
 from math import sqrt
 from pathlib import Path
 import seaborn as sns
 
-def config_plot(plot_type=None):
-    def decorator(func):
+def config_plot(plot_type: str | None=None) -> Callable:
+    """A decorator to configure plot settings using Seaborn and Matplotlib."""
+    def decorator(func: Callable) -> Callable:
         def wrapper(*args, **kwargs):
             from matplotlib.font_manager import fontManager, FontProperties
             script_dir = Path(__file__).resolve().parent
@@ -41,9 +43,13 @@ def config_plot(plot_type=None):
         return wrapper
     return decorator
 
-class PDFRounded (FPDF):
-    def rounded_rect(self, x, y, w, h, r, style = '', corners = '1234'):
-    
+class PDFRounded(FPDF):
+    """A subclass of FPDF that adds support for drawing rounded rectangles."""
+    def rounded_rect(
+        self, x: float, y: float, w: float, h: float, r: float, 
+        style: str = '', corners: str = '1234'
+    ) -> None:
+        """Draws a rounded rectangle."""
         k = self.k
         hp = self.h
         if(style=='F'):
@@ -89,9 +95,8 @@ class PDFRounded (FPDF):
             self._arc(xc - r, yc - r*myArc, xc - r*myArc, yc - r, xc, yc - r)
         self._out(op)
     
-
-    def _arc(self, x1, y1, x2, y2, x3, y3):
-    
+    def _arc(self, x1: float, y1: float, x2: float, y2: float, x3: float, y3: float) -> None:
+        """Draws a Bézier curve arc for rounded corners."""    
         h = self.h
         self._out('%.2F %.2F %.2F %.2F %.2F %.2F c ' % (x1*self.k, (h-y1)*self.k,
             x2*self.k, (h-y2)*self.k, x3*self.k, (h-y3)*self.k))
