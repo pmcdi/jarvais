@@ -209,8 +209,8 @@ class Analyzer:
         p_corr = self.data[self.continuous_columns].corr(method="pearson")
         s_corr = self.data[self.continuous_columns].corr(method="spearman")
         size = 1 + len(self.continuous_columns)*1.2
-        plot_corr(p_corr, size, file_name='pearson_correlation.png', output_dir=figures_dir)
-        plot_corr(s_corr, size, file_name='spearman_correlation.png', output_dir=figures_dir)
+        plot_corr(p_corr, size, file_name='pearson_correlation.png', output_dir=figures_dir, title="Pearson Correlation")
+        plot_corr(s_corr, size, file_name='spearman_correlation.png', output_dir=figures_dir, title="Spearman Correlation")
 
         # Categorical cross frequency table
         plot_frequency_table(self.data, self.categorical_columns, figures_dir)
