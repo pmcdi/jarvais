@@ -149,7 +149,7 @@ class BiasExplainer():
                 'Coefficient': model.params,    # Coefficients
                 'Standard Error': model.bse     # Standard Errors
             })
-            table_output = tabulate(summary_df, headers='keys', tablefmt='simple_grid', showindex=False, floatfmt=".3f")
+            table_output = tabulate(summary_df, headers='keys', tablefmt='fancy_grid', showindex=False, floatfmt=".3f")
             output.append("Model Coefficients:")
             output.append('\n'.join(['    ' + line for line in table_output.split('\n')]))
 
@@ -186,7 +186,7 @@ class BiasExplainer():
                 'Coefficient': cph.summary['coef'].to_list(),
                 'Standard Error': cph.summary['se(coef)'].to_list()
             })
-            table_output = tabulate(summary_df, headers='keys', tablefmt='grid', showindex=False, floatfmt=".3f")
+            table_output = tabulate(summary_df, headers='keys', tablefmt='fancy_grid', showindex=False, floatfmt=".3f")
             output.append("Model Coefficients:")
             output.append('\n'.join(['    ' + line for line in table_output.split('\n')]))
 
