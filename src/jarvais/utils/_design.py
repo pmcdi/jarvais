@@ -8,6 +8,9 @@ from math import sqrt
 from pathlib import Path
 import seaborn as sns
 
+import PIL
+PIL.Image.MAX_IMAGE_PIXELS = None # Doing this to prevent PIL.Image.DecompressionBombError on large images
+
 def config_plot(plot_type: str | None=None) -> Callable:
     """A decorator to configure plot settings using Seaborn and Matplotlib."""
     def decorator(func: Callable) -> Callable:
