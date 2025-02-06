@@ -1,7 +1,6 @@
 from pathlib import Path
 
 import pandas as pd
-# from fpdf import FPDF
 from fpdf.enums import Align, YPos
 from ._design import PDFRounded as FPDF
 from ast import literal_eval
@@ -18,7 +17,6 @@ def _add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list, cont
     current_y = pdf.t_margin
     for n, (plot, cat) in enumerate(zip(multiplots, categorical_columns)):
         if n % n_rows == 0:
-            print("NEW PAGE")
             pdf.add_page()
             current_y = pdf.get_y()
         
@@ -51,7 +49,6 @@ def _add_table(pdf: FPDF, data: pd.DataFrame) -> FPDF:
     
     continuous_columns = [col.replace(', mean (SD)', '') for col in data['col_0'].unique() if 'mean (SD)' in col]
     categorical_columns = [col.replace(', n (%)', '') for col in data['col_0'].unique() if 'n (%)' in col]
-    print(continuous_columns, categorical_columns)
 
     # new page for continuous variables + title 
     pdf.add_page()
@@ -101,7 +98,6 @@ def _add_table(pdf: FPDF, data: pd.DataFrame) -> FPDF:
         # iterate through each categorical variable and render its data on a table
         for col in categorical_columns:
             rows = data[data["col_0"].str.startswith(f"{col},")].reset_index(drop=True)
-            # print(col, "\n", rows, "\n")
             
             # separate mean/sd columns
             rows['n'] = rows['Overall'].apply(lambda x: x.split(" (")[0])
@@ -126,7 +122,6 @@ def _add_outlier_analysis(pdf: FPDF, outlier_analysis: str) -> FPDF:
     outliers = {}
     for line in outlier_analysis.splitlines():
         var = line.split("found in")[1].split(": [")[0]
-        print("LINE", line, var)
         if "No Outliers" in line:
             outliers[var] = "✅ No outliers found"
         else:
@@ -154,8 +149,6 @@ def _add_outlier_analysis(pdf: FPDF, outlier_analysis: str) -> FPDF:
                         row.cell(var, rowspan=len(var_outs))
                     row.cell(val)
 
-    # pdf.write(5, outlier_analysis)
-
     return pdf
 
 # Reports
@@ -173,6 +166,7 @@ def generate_analysis_report_pdf(
         outlier_analysis (str): Text summary of outlier analysis to include in the report.
         multiplots (list): A list of paths to plots to include in the multiplots section.
         categorical_columns (list): A list of categorical columns to use for multiplots.
+        continuous_columns (list): A list of continuous columns to use for multiplots.
         output_dir (str | Path): The directory where the generated PDF report will be saved.
 
     Returns:
