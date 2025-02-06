@@ -1,6 +1,4 @@
 .pixi/
-pixi.lock
-pixi.toml
 ./data
 data/
 tests/tmp
