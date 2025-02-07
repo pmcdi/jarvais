@@ -1,11 +1,30 @@
 # CHANGELOG
 
 
+## v0.10.1 (2025-02-07)
+
+### Bug Fixes
+
+- Run semantic and pypi only if tests passed or skipped
+  ([`7ce8395`](https://github.com/pmcdi/jarvais/commit/7ce839582b81d1bf57302af4c27ae77c442ad0fe))
+
+- **ci**: Revert to running tests on all files
+  ([`ee706bb`](https://github.com/pmcdi/jarvais/commit/ee706bb77f2424a4b279226effcfb510ad5025ee))
+
+### Build System
+
+- Update lock file
+  ([`6e8e8e0`](https://github.com/pmcdi/jarvais/commit/6e8e8e0874cac607cbe3770b426e36bed04f6e0e))
+
+
 ## v0.10.0 (2025-02-07)
 
 ### Bug Fixes
 
 - Ci ([`7044759`](https://github.com/pmcdi/jarvais/commit/70447590f0d39c3914f9c2d0ebf46b1f55ce7a81))
+
+- Ignore tests for docs/worflow and update to correct token
+  ([`d71b29b`](https://github.com/pmcdi/jarvais/commit/d71b29bc967d36560f7f4b12a457d2848c5ac485))
 
 - Pillow max image loading size
   ([`8df45fd`](https://github.com/pmcdi/jarvais/commit/8df45fdbdd26126859a5ec7b5a26544bc4e86721))
