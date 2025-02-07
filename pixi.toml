@@ -42,6 +42,7 @@ optuna-integration = { version = "==4.1.0", extras = ["pytorch-lightning"] }
 
 [environments]
 dev = { features = ["test", "style"], solve-group = "default" }
+publish = { features = ["build", "release"], solve-group = "default" }
 py310 = ["py310", "test"]
 py311 = ["py311", "test"]
 py312 = ["py312", "test"]
