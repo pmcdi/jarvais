@@ -14584,8 +14584,8 @@ packages:
   timestamp: 1733746481844
 - pypi: .
   name: jarvais
-  version: 0.10.0
-  sha256: 39d97959734ec0da253fff6f9c695093c3d36b471741b77435d978a3978ac52d
+  version: 0.10.1
+  sha256: eb0b934f0fc3fab68137034a379cc7d08a12fdcbd2c897badcd413c1e1c79949
   requires_dist:
   - pyyaml>=6.0.2,<7
   - fpdf2>=2.8.1,<3
