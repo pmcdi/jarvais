@@ -1,27 +1,42 @@
 # jarvAIs
 
 [![DOI](https://zenodo.org/badge/813671188.svg)](https://doi.org/10.5281/zenodo.14827357)
+![GitHub Release](https://img.shields.io/github/v/release/pmcdi/jarvais)
 [![BUILD DOCS](https://github.com/pmcdi/jarvais/actions/workflows/build_docs.yml/badge.svg)](https://github.com/pmcdi/jarvais/actions/workflows/build_docs.yml)
-[![CI tests](https://github.com/pmcdi/jarvais/actions/workflows/ci.yml/badge.svg)](https://github.com/pmcdi/jarvais/actions/workflows/ci.yml)
+[![CI tests](https://github.com/pmcdi/jarvais/actions/workflows/main.yml/badge.svg)](https://github.com/pmcdi/jarvais/actions/workflows/main.yml)
 
-## Overview
+[![pixi-badge](https://img.shields.io/endpoint?url=https://raw.githubusercontent.com/prefix-dev/pixi/main/assets/badge/v0.json&style=flat-square)](https://github.com/prefix-dev/pixi)
+
+[![PyPI - Python Version](https://img.shields.io/pypi/pyversions/jarvais)](https://pypi.org/project/jarvais/)
+[![PyPI - Version](https://img.shields.io/pypi/v/jarvais)](https://pypi.org/project/jarvais/)
+[![PyPI - Format](https://img.shields.io/pypi/format/jarvais)](https://pypi.org/project/jarvais/)
+
+**J**ust **A** **R**eally **V**ersatile **AI** **S**ervice
 
 jarvAIs is a Python package designed to automate and enhance machine learning workflows. The primary goal of this project is to reduce redundancy in repetitive tasks, improve consistency, and elevate the quality of standardized processes in oncology research.
 
-Follow pixi installation process found [here](https://pixi.sh/latest/)
+## Installation
 
-1. **Clone Repo and Navigate**
+```bash
+$ pip install jarvais
+```
 
-    ```bash
-    git clone https://github.com/pmcdi/jarvais.git
-    cd jarvais
-    ```
+### (recommended) Create new `pixi` environment for a project
 
-2. **Install Dependencies**
+```bash
+mkdir my_project
+cd my_project
+pixi init
+pixi add --pypi jarvais
+```
 
-    ```bash
-    pixi install
-    ```
+### (recommended) Create new conda virtual environment
+
+```bash
+conda create -n jarvais python=3.11
+conda activate jarvais
+pip install jarvais
+```
 
 ## Modules
 
@@ -168,3 +183,31 @@ The **Explainer** module generates the following files and directories:
   - `model_evaluation.png`: A visual summary of model evaluation.
   - `shap_barplot.png`: SHAP value bar plot for model interpretability.
   - `shap_heatmap.png`: SHAP value heatmap for model interpretability.
+
+## Contributing
+
+Please use the following angular commit message format:
+
+```text
+<type>(optional scope): short summary in present tense
+
+(optional body: explains motivation for the change)
+
+(optional footer: note BREAKING CHANGES here, and issues to be closed)
+
+```
+
+`<type>` refers to the kind of change made and is usually one of:
+
+- `feat`: A new feature.
+- `fix`: A bug fix.
+- `docs`: Documentation changes.
+- `style`: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc).
+- `refactor`: A code change that neither fixes a bug nor adds a feature.
+- `perf`: A code change that improves performance.
+- `test`: Changes to the test framework.
+- `build`: Changes to the build process or tools.
+
+`scope` is an optional keyword that provides context for where the change was made. It can be anything relevant to your package or development workflow (e.g., it could be the module or function - name affected by the change).
+
+Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.
