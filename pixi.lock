@@ -119,7 +119,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/fontconfig-2.15.0-h7e30c49_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.55.8-py312h178313f_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.56.0-py312h178313f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -628,7 +628,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/fontconfig-2.15.0-h37eeddb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.55.8-py312h3520af0_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.56.0-py312h3520af0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -1089,7 +1089,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/fontconfig-2.15.0-h765892d_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.55.8-py312h31fea79_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.56.0-py312h31fea79_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -1556,7 +1556,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/fontconfig-2.15.0-h7e30c49_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.55.8-py312h178313f_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.56.0-py312h178313f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -2074,7 +2074,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/fontconfig-2.15.0-h37eeddb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.55.8-py312h3520af0_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.56.0-py312h3520af0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -2543,7 +2543,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/fontconfig-2.15.0-h765892d_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.55.8-py312h31fea79_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.56.0-py312h31fea79_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -3017,7 +3017,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/fontconfig-2.15.0-h7e30c49_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.55.8-py310h89163eb_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.56.0-py310h89163eb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -3529,7 +3529,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/fontconfig-2.15.0-h37eeddb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.55.8-py310h8e2f543_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.56.0-py310h8e2f543_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -3992,7 +3992,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/fontconfig-2.15.0-h765892d_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.55.8-py310h38315fa_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.56.0-py310h38315fa_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -4461,7 +4461,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/fontconfig-2.15.0-h7e30c49_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.55.8-py311h2dc5d0c_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.56.0-py311h2dc5d0c_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -4973,7 +4973,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/fontconfig-2.15.0-h37eeddb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.55.8-py311ha3cf9ac_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.56.0-py311ha3cf9ac_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -5437,7 +5437,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/fontconfig-2.15.0-h765892d_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.55.8-py311h5082efb_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.56.0-py311h5082efb_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -5906,7 +5906,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/fontconfig-2.15.0-h7e30c49_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.55.8-py312h178313f_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.56.0-py312h178313f_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -6418,7 +6418,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/fontconfig-2.15.0-h37eeddb_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.55.8-py312h3520af0_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.56.0-py312h3520af0_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -6882,7 +6882,7 @@ environments:
       - conda: https://conda.anaconda.org/conda-forge/win-64/fontconfig-2.15.0-h765892d_1.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-ecosystem-1-0.tar.bz2
       - conda: https://conda.anaconda.org/conda-forge/noarch/fonts-conda-forge-1-0.tar.bz2
-      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.55.8-py312h31fea79_0.conda
+      - conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.56.0-py312h31fea79_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fpdf2-2.8.2-pyhd8ed1ab_0.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/fqdn-1.5.1-pyhd8ed1ab_1.conda
@@ -11567,9 +11567,9 @@ packages:
   purls: []
   size: 4102
   timestamp: 1566932280397
-- conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.55.8-py310h89163eb_0.conda
-  sha256: a8f42d57da278a713516dfaaf87a8d46e7c36c0408daebe86ad5ffcaa59efc3a
-  md5: 207d5014bda2e000fab3c1e6f17f1a84
+- conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.56.0-py310h89163eb_0.conda
+  sha256: 751599162ba980477e9267b67d82e116465d0cf69efc52e016e8f72e7f9cdfcd
+  md5: cd3125e1924bd8699dac9989652bca74
   depends:
   - __glibc >=2.17,<3.0.a0
   - brotli
@@ -11583,12 +11583,12 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/fonttools?source=hash-mapping
-  size: 2316915
-  timestamp: 1738204150211
-- conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.55.8-py311h2dc5d0c_0.conda
-  sha256: 62d7b38802d6812c33987c6797791aa0c72b6aceefab93499b69fa49655b490b
-  md5: baafc38a3ab0029d7cfbb609b3823ab8
+  - pkg:pypi/fonttools?source=compressed-mapping
+  size: 2328237
+  timestamp: 1738940663021
+- conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.56.0-py311h2dc5d0c_0.conda
+  sha256: de9c238166cbff1b06c679395d3e3b0cf1e56969289ccdfb54404ed0a52256c7
+  md5: ca3692015a53c7fcc248a324a540c54c
   depends:
   - __glibc >=2.17,<3.0.a0
   - brotli
@@ -11602,12 +11602,12 @@ packages:
   license: MIT
   license_family: MIT
   purls:
-  - pkg:pypi/fonttools?source=hash-mapping
-  size: 2878342
-  timestamp: 1738204270911
-- conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.55.8-py312h178313f_0.conda
-  sha256: f1faed016e9452161e8e07177f7c97109f9db2e23c60fcbcde7c1de0b76e1d33
-  md5: 0fd0743b6d43989c07e41da61f67c41c
+  - pkg:pypi/fonttools?source=compressed-mapping
+  size: 2896040
+  timestamp: 1738940522395
+- conda: https://conda.anaconda.org/conda-forge/linux-64/fonttools-4.56.0-py312h178313f_0.conda
+  sha256: 76ca95b4111fe27e64d74111b416b3462ad3db99f7109cbdf50e6e4b67dcf5b7
+  md5: 2f8a66f2f9eb931cdde040d02c6ab54c
   depends:
   - __glibc >=2.17,<3.0.a0
   - brotli
@@ -11622,11 +11622,11 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/fonttools?source=hash-mapping
-  size: 2831662
-  timestamp: 1738203898698
-- conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.55.8-py310h8e2f543_0.conda
-  sha256: 456a5d094cce555e9132544dbcf4547d2afbb938e52a3f81db8ec7304fb67052
-  md5: 7273d1b3f2d4b19f14f23fe76d1d2c31
+  size: 2834054
+  timestamp: 1738940929849
+- conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.56.0-py310h8e2f543_0.conda
+  sha256: 126e0b405f7e46697b36f80b0d5e3e3e2304e9689b17356f3a79cb13e690106c
+  md5: 98846fa6058b450fa96890789695cb89
   depends:
   - __osx >=10.13
   - brotli
@@ -11640,11 +11640,11 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/fonttools?source=hash-mapping
-  size: 2296832
-  timestamp: 1738204019081
-- conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.55.8-py311ha3cf9ac_0.conda
-  sha256: b9c75543afec4e9c4858549c3500ed16e0c1d4c58af88162cdb30bb711913171
-  md5: b597b38f903a789c2dd41a40926d5be2
+  size: 2324197
+  timestamp: 1738940576422
+- conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.56.0-py311ha3cf9ac_0.conda
+  sha256: 60ebd24ca32e31425117947c783b6b40d28748bd673da4731f1fad46730c4556
+  md5: 7f8677276e7a361d0202c8240e1f8130
   depends:
   - __osx >=10.13
   - brotli
@@ -11658,11 +11658,11 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/fonttools?source=hash-mapping
-  size: 2828821
-  timestamp: 1738203946830
-- conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.55.8-py312h3520af0_0.conda
-  sha256: 3ff84d883e5abd275f28e1a6aa59bbedaf83fe4f62812ad07d5614254773a4aa
-  md5: b6bdcc7cad1bc4c4e762ec15dd238308
+  size: 2798979
+  timestamp: 1738940622370
+- conda: https://conda.anaconda.org/conda-forge/osx-64/fonttools-4.56.0-py312h3520af0_0.conda
+  sha256: 9b206989c9d5e68120d264b6798b9afdfbca6b9a8705cdd71b68a75ce58f81b7
+  md5: 9b603b2fa3072c966ef2ff119e8203f3
   depends:
   - __osx >=10.13
   - brotli
@@ -11676,11 +11676,11 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/fonttools?source=hash-mapping
-  size: 2725256
-  timestamp: 1738203922442
-- conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.55.8-py310h38315fa_0.conda
-  sha256: 3b447e0cb8702547ea87a13b18ca26683c8d4c5cfd7c2cbdd820370be0d0e9a0
-  md5: a750a264b574322892be8a088834bd0d
+  size: 2761261
+  timestamp: 1738940558929
+- conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.56.0-py310h38315fa_0.conda
+  sha256: 2a431938b39c0ba7edf884c5a03ad6ef5f4ce67cb70f34a9bfac5730114f267f
+  md5: fd7c0f52022a6bbd9bc7f71c11faf59c
   depends:
   - brotli
   - munkres
@@ -11696,11 +11696,11 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/fonttools?source=hash-mapping
-  size: 1941910
-  timestamp: 1738204041739
-- conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.55.8-py311h5082efb_0.conda
-  sha256: 1e2741f8329aca8c6ed203272003e469352604dc6b251e5834368581277c76b0
-  md5: a32e32f16500f99010975d7ad30e6a65
+  size: 1938220
+  timestamp: 1738941078981
+- conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.56.0-py311h5082efb_0.conda
+  sha256: bcfd53b83419d7a891eb77947dc1997c7b4133629988c0797404f76bdf2fe289
+  md5: 0ecd51b246e243291c68c7380e09b274
   depends:
   - brotli
   - munkres
@@ -11716,11 +11716,11 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/fonttools?source=hash-mapping
-  size: 2474299
-  timestamp: 1738204050010
-- conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.55.8-py312h31fea79_0.conda
-  sha256: 19f4e1a1aab998da7fad286d0d0ecf8f28c2e973cfe26d1bc8310c83ed442c6a
-  md5: 8b79d28350253447ec3102c8f49f8883
+  size: 2466258
+  timestamp: 1738940937712
+- conda: https://conda.anaconda.org/conda-forge/win-64/fonttools-4.56.0-py312h31fea79_0.conda
+  sha256: 31f245d4ceb7a8e9df8d292ff1efdb4be9a8fa7a9be7a1d0394465aa7f824d50
+  md5: 7c08698c54ca6390314c19167c16745e
   depends:
   - brotli
   - munkres
@@ -11736,8 +11736,8 @@ packages:
   license_family: MIT
   purls:
   - pkg:pypi/fonttools?source=hash-mapping
-  size: 2444290
-  timestamp: 1738204427067
+  size: 2413563
+  timestamp: 1738940929060
 - conda: https://conda.anaconda.org/conda-forge/noarch/formulaic-1.1.1-pyhd8ed1ab_0.conda
   sha256: 206a18acfcb138af5ebc77ca114bcd7d6f98d0e012474e4e5a48f9dd76edc59a
   md5: 37e89ac78ca1cbcf6c27e3f4c00cb145
@@ -13480,7 +13480,7 @@ packages:
 - pypi: .
   name: jarvais
   version: 0.1.0
-  sha256: 4d72a4ad1fe35184b9b3f49336c68e2cee58d4ab46670803b4adbcfedaa1344d
+  sha256: f29e16986dd83f6a57f5579ab268fac3fbbdc2d7b1bdbce03c1d3e4c49117dc9
   requires_dist:
   - optuna-integration[pytorch-lightning]==4.1.0
   - mkdocstrings[python]>=0.27.0,<0.28
