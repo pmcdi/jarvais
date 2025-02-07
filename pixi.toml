@@ -64,7 +64,7 @@ pytest = "*"
 [feature.test.tasks.test]
 cmd = [
   "pytest",
-  "--numprocesses=auto",
+  "--verbose,
   "-s",
 ]
 inputs = ["src", "tests"]
