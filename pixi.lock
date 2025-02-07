@@ -14584,8 +14584,8 @@ packages:
   timestamp: 1733746481844
 - pypi: .
   name: jarvais
-  version: 1.0.0
-  sha256: 9ccaad2d6fa242549a3509a211fe9cb858ee09f2e5778668c9863f10da5a385a
+  version: 0.10.0
+  sha256: 39d97959734ec0da253fff6f9c695093c3d36b471741b77435d978a3978ac52d
   requires_dist:
   - pyyaml>=6.0.2,<7
   - fpdf2>=2.8.1,<3
@@ -29423,8 +29423,6 @@ packages:
   - libstdcxx >=13
   constrains:
   - __glibc >=2.17
-  arch: x86_64
-  platform: linux
   license: Apache-2.0 OR MIT
   purls: []
   size: 11548170
@@ -29437,8 +29435,6 @@ packages:
   - libcxx >=18
   constrains:
   - __osx >=10.13
-  arch: x86_64
-  platform: osx
   license: Apache-2.0 OR MIT
   purls: []
   size: 10972534
@@ -29450,8 +29446,6 @@ packages:
   - ucrt >=10.0.20348.0
   - vc >=14.2,<15
   - vc14_runtime >=14.29.30139
-  arch: x86_64
-  platform: win
   license: Apache-2.0 OR MIT
   purls: []
   size: 12078740
