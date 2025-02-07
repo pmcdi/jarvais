@@ -88,44 +88,17 @@ description = "Run ruff formatter, use `--diff` to see changes only"
 
 #################################### RELEASE & BUILD ###############################################
 
-[tool.pixi.feature.release.dependencies]
+[feature.release.dependencies]
 python-semantic-release = "*"
 
-[tool.pixi.feature.release.tasks]
+[feature.release.tasks]
 semver = 'echo "Next Version is: $(semantic-release version --print)"'
 release = "semantic-release version"
 
-[tool.semantic_release]
-version_variables = ["src/jarvais/__init__.py:__version__"]
-version_toml = ["pyproject.toml:project.version"]          # version location
-changelog_file = "CHANGELOG.md"                            # changelog file
-dist_path = "dist/"                                        # where to put dists
-upload_to_release = true                                   # auto-create GitHub release
-remove_dist = false                                        # don't remove dists
-patch_without_tag = true                                   # patch release by default
-
-[tool.semantic_release.branches.main]
-match = "(main)"
-
-[tool.pixi.feature.build.dependencies]
+[feature.build.dependencies]
 hatch = "*"
 
-[build-system]
-build-backend = "hatchling.build"
-requires = ["hatchling"]
-
-[tool.hatch.build]
-directory = "dist"
-
-[tool.hatch.build.targets.wheel]
-packages = ["src/jarvais"]
-include = ["pyproject.toml", "README.md", "src/**"]
-
-[tool.hatch.build.targets.sdist]
-include = ["pyproject.toml", "README.md", "src/"]
-exclude = ["tests/**"]
-
-[tool.pixi.feature.build.tasks]
+[feature.build.tasks]
 # Builds the package
 build = { cmd = [
   "hatch",
