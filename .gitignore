@@ -1,13 +1,16 @@
 .pixi/
-./data
-data/
 tests/tmp
 *.bak
 *.test
 
+data/*
+!data/RADCURE_Clinical_v04_20241219.csv
+!data/RADCURE_processed_clinical.csv
+
 .DS_Store
 docs/tutorials/*
 !docs/tutorials/*.ipynb
+!docs/tutorials/*.md
 
 **/*.pkl
 
