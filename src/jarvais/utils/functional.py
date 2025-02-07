@@ -102,3 +102,27 @@ def undummify(df, prefix_sep="_"):
             series_list.append(df[col])
     undummified_df = pd.concat(series_list, axis=1)
     return undummified_df
+
+def process_RADCURE_clinical(df):
+    """
+    Processes RADCURE clinical data.
+
+    Raw data found here: https://www.cancerimagingarchive.net/collection/radcure/
+    """
+    df_converted = pd.DataFrame({
+        'Study ID': df['patient_id'],
+        'survival_time': df['Length FU'],
+        'death': df['Status'].apply(lambda x: 1 if x == 'Dead' else 0),
+        'age at dx': df['Age'],
+        'Sex': df['Sex'],
+        'T Stage': df['T'],
+        'N Stage': df['N'],
+        'Stage': df['Stage'],
+        'Dose': df['Dose'],
+        'Chemotherapy': df['Chemo'].apply(lambda x: 1 if x != 'none' else 0),
+        'HPV Combined': df['HPV'].apply(lambda x: 1 if isinstance(x, str) and 'positive' in x.lower() else None),
+        'Smoking Status': df['Smoking Status'],
+        'Disease Site': df['Ds Site'].str.lower()
+    })
+    
+    return df_converted
