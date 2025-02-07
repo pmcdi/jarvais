@@ -47,6 +47,7 @@ classifiers = [
 [project.urls]
 Homepage = "https://github.com/pmcdi/jarvais/"
 Source = "https://github.com/pmcdi/jarvais/"
+Documentation = "https://pmcdi.github.io/jarvais/"
 
 [build-system]
 build-backend = "hatchling.build"
