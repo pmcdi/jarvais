@@ -135,7 +135,7 @@ class TrainerSupervised:
         print('\nModel Leaderboard (Displays values in "mean [min, max]" format across training folds)\n------------------------------------------------------------------------------------')
         print(tabulate(
             leaderboard.sort_values(by='score_test', ascending=False)[self.show_leaderboard],
-            tablefmt = "fancy_grid",
+            tablefmt = "grid",
             headers="keys",
             showindex=False
         ))
@@ -180,7 +180,7 @@ class TrainerSupervised:
         print('\nModel Leaderboard\n----------------')
         print(tabulate(
             leaderboard.sort_values(by='score_test', ascending=False)[self.show_leaderboard],
-            tablefmt = "fancy_grid",
+            tablefmt = "grid",
             headers="keys",
             showindex=False))
 
