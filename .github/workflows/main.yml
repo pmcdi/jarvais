@@ -71,6 +71,9 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
+    paths-ignore:
+      - 'docs/**'
+      - '.github/workflows/**'
 
     steps:
       - uses: actions/checkout@v4
@@ -89,16 +92,13 @@ jobs:
   ################################################################################################
   Semantic-Release:
     permissions:
-      # Read releases read-all
       contents: write
       packages: write
       issues: write
       pull-requests: write
 
-    needs: [Unit-Tests, Ruff]
-
-    # if pulling to main, deploy to PyPI
-    if: github.ref == 'refs/heads/main'
+    needs: [Unit-Tests]
+    if: (needs.Unit-Tests.result == 'success' || needs.Unit-Tests.result == 'skipped') && github.ref == 'refs/heads/main'
 
     env:
       PIXI_ENV: "publish"
