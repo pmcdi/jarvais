@@ -33,14 +33,6 @@ jobs:
         run: |
           pixi run -e ${{ matrix.env }} test
 
-      # - name: Upload coverage report artifact to be used by Codecov
-      #   # only upload if matrix.os is ubuntu-latest and matrix.python-version is 3.12
-      #   if: matrix.os == 'ubuntu-latest' && matrix.env == 'py312'
-      #   uses: actions/upload-artifact@v4
-      #   with:
-      #     name: coverage-report
-      #     path: coverage-report
-
   ################################################################################################
   # Codecov: Run codecov to check coverage
   ################################################################################################
