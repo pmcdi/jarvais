@@ -26,7 +26,7 @@ plugins:
   - search
   - mkdocstrings
   - mkdocs-jupyter:
-      execute: True
+      execute: False
   - mkdocs-pdf
 
 markdown_extensions:
@@ -39,6 +39,7 @@ nav:
     - Trainer Quick Start: get_started/trainer.md
     - Explainer Quick Start: get_started/explainer.md
   - Tutorials:
+      - tutorials/index.md
       - Classification: tutorials/classification.ipynb
       - Regression: tutorials/regression.ipynb
       - Survival: tutorials/survival.ipynb

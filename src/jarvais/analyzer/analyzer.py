@@ -188,7 +188,7 @@ class Analyzer:
         df_keep = self.data[self.continuous_columns + self.categorical_columns]
 
         self.mytable = TableOne(df_keep, categorical=self.categorical_columns, pval=False)
-        print(self.mytable.tabulate(tablefmt = "fancy_grid"))
+        print(self.mytable.tabulate(tablefmt = "grid"))
         self.mytable.to_csv(self.output_dir / 'tableone.csv')
 
         # PLOTS
@@ -258,7 +258,7 @@ class Analyzer:
         print(f"\n\nOutlier Analysis:\n{analyzer.outlier_analysis}")
 
         mytable = TableOne(df_keep, categorical=analyzer.categorical_columns, pval=False)
-        print(mytable.tabulate(tablefmt = "fancy_grid"))
+        print(mytable.tabulate(tablefmt = "grid"))
 
         return analyzer.config
 
