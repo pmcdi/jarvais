@@ -149,7 +149,7 @@ class BiasExplainer():
                 'Coefficient': model.params,    # Coefficients
                 'Standard Error': model.bse     # Standard Errors
             })
-            table_output = tabulate(summary_df, headers='keys', tablefmt='simple_grid', showindex=False, floatfmt=".3f")
+            table_output = tabulate(summary_df, headers='keys', tablefmt='grid', showindex=False, floatfmt=".3f")
             output.append("Model Coefficients:")
             output.append('\n'.join(['    ' + line for line in table_output.split('\n')]))
 
@@ -262,7 +262,7 @@ class BiasExplainer():
                     result = self._calculate_fair_metrics(sensitive_feature, fairness_threshold, relative)
 
                     print(f"\n=== Subgroup Analysis for '{sensitive_feature.title()}' using FairLearn ===\n")
-                    table_output = tabulate(result.iloc[:, :4], headers='keys', tablefmt='fancy_grid')
+                    table_output = tabulate(result.iloc[:, :4], headers='keys', tablefmt='grid')
                     print('\n'.join(['    ' + line for line in table_output.split('\n')]), '\n')
 
                     result.to_csv(self.output_dir / f'{sensitive_feature}_fm_metrics.csv')

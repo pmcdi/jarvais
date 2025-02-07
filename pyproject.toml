@@ -66,28 +66,15 @@ python = "3.12.*"
 
 [tool.pixi.feature.test.dependencies]
 pytest = "*"
-pytest-cov = "*"
-pytest-xdist = "*"
 
 [tool.pixi.feature.test.tasks.test]
 cmd = [
   "pytest",
-  "--numprocesses=auto",
   "-s",
   "--verbose",
-  "--cov=readii",
-  "--cov-report=xml:coverage-report/coverage.xml",
-  "--cov-config=configs/coverage.toml",
 ]
-inputs = ["src", "tests", "configs/coverage.toml"]
-outputs = ["coverage-report/coverage.xml"]
-description = "Run pytest (Note: run `coverage` task to do both)"
-
-[tool.pixi.feature.test.tasks.coverage]
-cmd = "coverage report --rcfile=configs/coverage.toml"
-inputs = ["coverage-report/coverage.xml", "configs/coverage.toml"]
-depends-on = ["test"]
-description = "Run pytest and generate coverage report"
+inputs = ["tests"]
+description = "Run pytest"
 
 ############################################## STYLE ###############################################
 # See configs/ruff.toml for the configuration
