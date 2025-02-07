@@ -1,6 +1,6 @@
 [project]
 name = "jarvais"
-version = "0.1.0"
+version = "1.0.0"
 description = "jarvAIs: just a really versatile AI service"
 authors = [
     { name = "Joshua Siraj", email = "joshua.siraj@uhn.ca" },
@@ -57,7 +57,7 @@ directory = "dist"
 
 [tool.hatch.build.targets.wheel]
 # Automatically discovers packages in `src/`
-packages = ["src/jarvAIs"]
+packages = ["src/jarvais"]
 include = [
     "pyproject.toml",
     "README.md",
