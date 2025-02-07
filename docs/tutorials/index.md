@@ -8,7 +8,7 @@ All of the notebooks below use clinical data from [RADCURE](https://www.cancerim
     planning and retrospectively reconstructed for quantitative imaging research.  
 
 ### Accessing the Data  
-You can find the raw and processed clinical data **[here](https://github.com/pmcdi/jarvais/data/).**  
+You can find the raw and processed clinical data **[here](https://github.com/pmcdi/jarvais/tree/main/data).**  
 
 ### Data Processing  
 The following function was used to process the raw data:
