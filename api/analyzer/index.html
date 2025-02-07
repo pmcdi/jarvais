@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.3">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.a40c8224.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.d7758b05.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -238,7 +238,7 @@
     
     
       <li class="md-tabs__item">
-        <a href="../../tutorials/classification/" class="md-tabs__link">
+        <a href="../../tutorials/" class="md-tabs__link">
           
   
   Tutorials
@@ -479,6 +479,28 @@
             Tutorials
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../../tutorials/" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Navigating Our Tutorial Notebooks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1461,7 +1483,7 @@ analyzer.run()
         <span class="n">df_keep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">]</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"fancy_grid"</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"grid"</span><span class="p">))</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'tableone.csv'</span><span class="p">)</span>
 
         <span class="c1"># PLOTS</span>
@@ -1530,7 +1552,7 @@ analyzer.run()
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
         <span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"fancy_grid"</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"grid"</span><span class="p">))</span>
 
         <span class="k">return</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">config</span>
 </code></pre></div></td></tr></table></div>
@@ -1664,7 +1686,7 @@ analyzer.run()
     <span class="n">df_keep</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">]</span>
 
     <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"fancy_grid"</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"grid"</span><span class="p">))</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">mytable</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'tableone.csv'</span><span class="p">)</span>
 
     <span class="c1"># PLOTS</span>
@@ -1771,7 +1793,7 @@ analyzer.run()
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n\n</span><span class="s2">Outlier Analysis:</span><span class="se">\n</span><span class="si">{</span><span class="n">analyzer</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="n">mytable</span> <span class="o">=</span> <span class="n">TableOne</span><span class="p">(</span><span class="n">df_keep</span><span class="p">,</span> <span class="n">categorical</span><span class="o">=</span><span class="n">analyzer</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">pval</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-    <span class="nb">print</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"fancy_grid"</span><span class="p">))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">mytable</span><span class="o">.</span><span class="n">tabulate</span><span class="p">(</span><span class="n">tablefmt</span> <span class="o">=</span> <span class="s2">"grid"</span><span class="p">))</span>
 
     <span class="k">return</span> <span class="n">analyzer</span><span class="o">.</span><span class="n">config</span>
 </code></pre></div></td></tr></table></div>
@@ -1836,7 +1858,7 @@ analyzer.run()
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.tracking", "announce.dismiss"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5090c770.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
       
     
   </body>
