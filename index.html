@@ -361,11 +361,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
+      Installation
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-create-new-pixi-environment-for-a-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      (recommended) Create new pixi environment for a project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-create-new-conda-virtual-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      (recommended) Create new conda virtual environment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -373,6 +397,15 @@
   <a href="#modules" class="md-nav__link">
     <span class="md-ellipsis">
       Modules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
     </span>
   </a>
   
@@ -884,11 +917,35 @@
     <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#overview" class="md-nav__link">
+  <a href="#installation" class="md-nav__link">
     <span class="md-ellipsis">
-      Overview
+      Installation
     </span>
   </a>
+  
+    <nav class="md-nav" aria-label="Installation">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#recommended-create-new-pixi-environment-for-a-project" class="md-nav__link">
+    <span class="md-ellipsis">
+      (recommended) Create new pixi environment for a project
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#recommended-create-new-conda-virtual-environment" class="md-nav__link">
+    <span class="md-ellipsis">
+      (recommended) Create new conda virtual environment
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -896,6 +953,15 @@
   <a href="#modules" class="md-nav__link">
     <span class="md-ellipsis">
       Modules
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#contributing" class="md-nav__link">
+    <span class="md-ellipsis">
+      Contributing
     </span>
   </a>
   
@@ -918,18 +984,21 @@
 
 
 <div><h1 id="welcome-to-jarvais">Welcome to jarvAIs</h1>
-<p>Official Github <a href="https://github.com/pmcdi/jarvais/">here</a>.</p>
-<h2 id="overview">Overview</h2>
-<p><code>jarvAIs</code> is a Python package designed to automate and enhance machine learning workflows. The primary goal of this project is to reduce redundancy in repetitive tasks, improve consistency, and elevate the quality of standardized processes in oncology research.</p>
-<p>Follow pixi installation process found <a href="https://pixi.sh/latest/">here</a></p>
-<pre><code class="language-bash"># Clone Repo
-git clone https://github.com/pmcdi/jarvais.git
-
-# Navigate to project
-cd jarvais
-
-# Install dependencies
-pixi install
+<p><strong>j</strong>ust <strong>a</strong> <strong>r</strong>eally <strong>v</strong>ersatile <strong>AI</strong> <strong>s</strong>ervice</p>
+<p>jarvAIs is a Python package designed to automate and enhance machine learning workflows. The primary goal of this project is to reduce redundancy in repetitive tasks, improve consistency, and elevate the quality of standardized processes in oncology research.</p>
+<h2 id="installation">Installation</h2>
+<pre><code class="language-bash">$ pip install jarvais
+</code></pre>
+<h3 id="recommended-create-new-pixi-environment-for-a-project">(recommended) Create new <code>pixi</code> environment for a project</h3>
+<pre><code class="language-bash">mkdir my_project
+cd my_project
+pixi init
+pixi add --pypi jarvais
+</code></pre>
+<h3 id="recommended-create-new-conda-virtual-environment">(recommended) Create new conda virtual environment</h3>
+<pre><code class="language-bash">conda create -n jarvais python=3.11
+conda activate jarvais
+pip install jarvais
 </code></pre>
 <h2 id="modules">Modules</h2>
 <p>This package consists of 3 different modules:</p>
@@ -937,7 +1006,29 @@ pixi install
 <li><a href="get_started/analyzer/"><strong>Analyzer</strong></a>: A module that analyzes and processes data, providing valuable insights for downstream tasks.</li>
 <li><a href="get_started/trainer/"><strong>Trainer</strong></a>: A module for training machine learning models, designed to be flexible and efficient.</li>
 <li><a href="get_started/explainer/"><strong>Explainer</strong></a>: A module that explains model predictions, offering interpretability and transparency in decision-making.</li>
-</ul></div>
+</ul>
+<h2 id="contributing">Contributing</h2>
+<p>Please use the following angular commit message format:</p>
+<pre><code class="language-text">&lt;type&gt;(optional scope): short summary in present tense
+
+(optional body: explains motivation for the change)
+
+(optional footer: note BREAKING CHANGES here, and issues to be closed)
+
+</code></pre>
+<p><code>&lt;type&gt;</code> refers to the kind of change made and is usually one of:</p>
+<ul>
+<li><code>feat</code>: A new feature.</li>
+<li><code>fix</code>: A bug fix.</li>
+<li><code>docs</code>: Documentation changes.</li>
+<li><code>style</code>: Changes that do not affect the meaning of the code (white-space, formatting, missing semi-colons, etc).</li>
+<li><code>refactor</code>: A code change that neither fixes a bug nor adds a feature.</li>
+<li><code>perf</code>: A code change that improves performance.</li>
+<li><code>test</code>: Changes to the test framework.</li>
+<li><code>build</code>: Changes to the build process or tools.</li>
+</ul>
+<p><code>scope</code> is an optional keyword that provides context for where the change was made. It can be anything relevant to your package or development workflow (e.g., it could be the module or function - name affected by the change).</p>
+<p>Interested in contributing? Check out the contributing guidelines. Please note that this project is released with a Code of Conduct. By contributing to this project, you agree to abide by its terms.</p></div>
 
 
 
