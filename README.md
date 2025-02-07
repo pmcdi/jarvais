@@ -1,5 +1,9 @@
 # jarvAIs
 
+[![DOI](https://zenodo.org/badge/813671188.svg)](https://doi.org/10.5281/zenodo.14827357)
+[![BUILD DOCS](https://github.com/pmcdi/jarvais/actions/workflows/build_docs.yml/badge.svg)](https://github.com/pmcdi/jarvais/actions/workflows/build_docs.yml)
+[![CI tests](https://github.com/pmcdi/jarvais/actions/workflows/ci.yml/badge.svg)](https://github.com/pmcdi/jarvais/actions/workflows/ci.yml)
+
 ## Overview
 
 jarvAIs is a Python package designed to automate and enhance machine learning workflows. The primary goal of this project is to reduce redundancy in repetitive tasks, improve consistency, and elevate the quality of standardized processes in oncology research.
