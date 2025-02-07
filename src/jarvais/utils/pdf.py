@@ -1,49 +1,17 @@
 from pathlib import Path
-
 import pandas as pd
-from fpdf import FPDF
-from fpdf.enums import Align
 
-# UTILS
+from fpdf.enums import Align, YPos
+from ._design import PDFRounded as FPDF
 
-def _add_multiplots(pdf: FPDF, multiplots: list, categorical_columns: list) -> FPDF:
-    for plot, cat in zip(multiplots, categorical_columns):
-        pdf.add_page()
-
-        pdf.set_font('inter', '', 12)
-        pdf.write(5, f"{cat.title()} Multiplots\n")
-
-        current_y = pdf.get_y()
-
-        img_width = pdf.epw - 20
-        img_height = pdf.eph - current_y - 20
-
-        pdf.image(plot, x=10, y=current_y + 5, w=img_width, h=img_height, keep_aspect_ratio=True)
-
-    return pdf
-
-def _add_table(pdf: FPDF, csv_df: pd.DataFrame) -> FPDF:
-    headers = csv_df.columns.tolist()
-    # Keep empty header entries
-    headers = ['' if 'Unnamed:' in header else header for header in headers]
-    data = [headers, *csv_df.values.tolist()]
-
-    pdf.add_page()
-    pdf.set_font('inter', '', 10)
-    with pdf.table() as table:
-        for data_row in data:
-            row = table.row()
-            for datum in data_row:
-                row.cell(datum)
-
-    return pdf
+from ._elements_analyzer import _add_multiplots, _add_outlier_analysis, _add_tableone
 
 # Reports
-
 def generate_analysis_report_pdf(
         outlier_analysis: str,
         multiplots: list,
         categorical_columns: list,
+        continuous_columns: list,
         output_dir: str | Path
     ) -> None:
     """
@@ -53,6 +21,7 @@ def generate_analysis_report_pdf(
         outlier_analysis (str): Text summary of outlier analysis to include in the report.
         multiplots (list): A list of paths to plots to include in the multiplots section.
         categorical_columns (list): A list of categorical columns to use for multiplots.
+        continuous_columns (list): A list of continuous columns to use for multiplots.
         output_dir (str | Path): The directory where the generated PDF report will be saved.
 
     Returns:
@@ -71,35 +40,43 @@ def generate_analysis_report_pdf(
     pdf.add_font("inter", style="", fname=font_path)
     font_path = (script_dir / 'fonts/Inter_28pt-Bold.ttf')
     pdf.add_font("inter", style="b", fname=font_path)
-    pdf.set_font('inter', '', 24)
-
+    
     # Title
-    pdf.write(5, "Analysis Report\n\n")
+    pdf.set_font('inter', 'B', 36)
+    pdf.cell(text="jarvAIs Analyzer Report\n\n", new_y=YPos.NEXT) 
 
     # Add outlier analysis
     if outlier_analysis != '':
-        pdf.set_font('inter', '', 12)
-        pdf.write(5, "Outlier Analysis:\n")
-        pdf.set_font('inter', '', 10)
-        pdf.write(5, outlier_analysis)
+        pdf.set_y(pdf.get_y() + 10)
+        pdf.set_font('inter', 'B', 24)
+        pdf.cell(text="Outlier Analysis", new_y=YPos.NEXT)
+        pdf = _add_outlier_analysis(pdf, outlier_analysis)
 
     # Add page-wide pairplots
-    pdf.image((figures_dir / 'pairplot.png'), Align.C, w=pdf.epw-20)
     pdf.add_page()
+    pdf.set_font('inter', 'B', 24)
+    pdf.cell(h=pdf.t_margin, text='Pair Plot of Continuous Variables', new_y=YPos.NEXT)
+    img = pdf.image((figures_dir / 'pairplot.png'), Align.C, h=pdf.eph*.5)
+    pdf.set_y(pdf.t_margin + img.rendered_height + 25)
 
     # Add correlation plots
-    pdf.image((figures_dir / 'pearson_correlation.png'), Align.C, h=pdf.eph/2)
-    pdf.image((figures_dir / 'spearman_correlation.png'), Align.C, h=pdf.eph/2)
+    pdf.set_font('inter', 'B', 24)
+    pdf.cell(h=pdf.t_margin, text='Pearson and Spearman Correlation Plots', new_y=YPos.NEXT)
+
+    corr_y = pdf.get_y() + 5
+
+    pdf.image((figures_dir / 'pearson_correlation.png'), Align.L, corr_y, w=pdf.epw*.475)
+    pdf.image((figures_dir / 'spearman_correlation.png'), Align.R, corr_y, w=pdf.epw*.475)
 
     # Add multiplots
     if multiplots and categorical_columns:
-        pdf = _add_multiplots(pdf, multiplots, categorical_columns)
+        pdf = _add_multiplots(pdf, multiplots, categorical_columns, continuous_columns)
 
     # Add demographic breakdown "table one"
     path_tableone = output_dir / 'tableone.csv'
     if path_tableone.exists():
         csv_df = pd.read_csv(path_tableone, na_filter=False).astype(str)
-        pdf = _add_table(pdf, csv_df)
+        pdf = _add_tableone(pdf, csv_df)
 
     # Save PDF
     pdf.output(output_dir / 'analysis_report.pdf')
