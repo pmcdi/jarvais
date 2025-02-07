@@ -59,28 +59,15 @@ python = "3.12.*"
 
 [feature.test.dependencies]
 pytest = "*"
-pytest-cov = "*"
-pytest-xdist = "*"
 
 [feature.test.tasks.test]
 cmd = [
   "pytest",
   "--numprocesses=auto",
   "-s",
-  "--verbose",
-  "--cov=readii",
-  "--cov-report=xml:coverage-report/coverage.xml",
-  "--cov-config=configs/coverage.toml",
 ]
-inputs = ["src", "tests", "configs/coverage.toml"]
-outputs = ["coverage-report/coverage.xml"]
-description = "Run pytest (Note: run `coverage` task to do both)"
-
-[feature.test.tasks.coverage]
-cmd = "coverage report --rcfile=configs/coverage.toml"
-inputs = ["coverage-report/coverage.xml", "configs/coverage.toml"]
-depends-on = ["test"]
-description = "Run pytest and generate coverage report"
+inputs = ["src", "tests"]
+description = "Run pytest"
 
 ############################################## STYLE ###############################################
 # See configs/ruff.toml for the configuration
@@ -98,3 +85,68 @@ description = "Run ruff linter"
 cmd = "ruff format --config=configs/ruff.toml"
 inputs = ["src", "configs/ruff.toml"]
 description = "Run ruff formatter, use `--diff` to see changes only"
+
+#################################### RELEASE & BUILD ###############################################
+
+[tool.pixi.feature.release.dependencies]
+python-semantic-release = "*"
+
+[tool.pixi.feature.release.tasks]
+semver = 'echo "Next Version is: $(semantic-release version --print)"'
+release = "semantic-release version"
+
+[tool.semantic_release]
+version_variables = ["src/jarvais/__init__.py:__version__"]
+version_toml = ["pyproject.toml:project.version"]          # version location
+changelog_file = "CHANGELOG.md"                            # changelog file
+dist_path = "dist/"                                        # where to put dists
+upload_to_release = true                                   # auto-create GitHub release
+remove_dist = false                                        # don't remove dists
+patch_without_tag = true                                   # patch release by default
+
+[tool.semantic_release.branches.main]
+match = "(main)"
+
+[tool.pixi.feature.build.dependencies]
+hatch = "*"
+
+[build-system]
+build-backend = "hatchling.build"
+requires = ["hatchling"]
+
+[tool.hatch.build]
+directory = "dist"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/jarvais"]
+include = ["pyproject.toml", "README.md", "src/**"]
+
+[tool.hatch.build.targets.sdist]
+include = ["pyproject.toml", "README.md", "src/"]
+exclude = ["tests/**"]
+
+[tool.pixi.feature.build.tasks]
+# Builds the package
+build = { cmd = [
+  "hatch",
+  "build",
+  "--clean",
+], inputs = [
+  "src",
+  "pyproject.toml",
+], outputs = [
+  "dist/*",
+], description = "Build the package" }
+
+# Publishes the package to the main PYPI repository, depends on the build task
+publish-pypi = { cmd = [
+  "hatch",
+  "publish",
+  "--yes",
+  "--repo",
+  "main",
+], inputs = [
+  "dist/*",
+], depends-on = [
+  "build",
+], description = "Publish to main PyPI" }

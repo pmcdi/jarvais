@@ -20,7 +20,8 @@ __pycache__
 .ipynb_checkpoints
 
 #analysis_*
-AutogluonModels# pixi environments
+AutogluonModel
 .pixi
 *.egg-info
 */.DS_Store
+dist
