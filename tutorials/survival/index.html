@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.1">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.3">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.a40c8224.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.d7758b05.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -235,7 +235,7 @@
     
     
       <li class="md-tabs__item md-tabs__item--active">
-        <a href="../classification/" class="md-tabs__link">
+        <a href="../" class="md-tabs__link">
           
   
   Tutorials
@@ -479,6 +479,28 @@
             Tutorials
           </label>
           <ul class="md-nav__list" data-md-scrollfix>
+            
+              
+                
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../" class="md-nav__link">
+        
+  
+  <span class="md-ellipsis">
+    Navigating Our Tutorial Notebooks
+    
+  </span>
+  
+
+      </a>
+    </li>
+  
+
+              
             
               
                 
@@ -1276,24 +1298,28 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 </clipboard-copy>
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">sys</span>
-
+<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
 <span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
 
-<span class="c1"># Get the absolute path of the project root directory</span>
 <span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"../../"</span><span class="p">))</span>
 
-<span class="c1"># Add the project root directory to the Python path</span>
 <span class="n">sys</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">project_root</span><span class="p">)</span>
+<span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">)</span>
+
+<span class="n">data_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">'RADCURE_processed_clinical.csv'</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_file_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-1">import sys
-
+import pandas as pd
 import os
 
-# Get the absolute path of the project root directory
 project_root = os.path.abspath(os.path.join(os.getcwd(), "../../"))
 
-# Add the project root directory to the Python path
-sys.path.append(project_root)</div>
+sys.path.append(project_root)
+data_dir = os.path.join(project_root, 'data')
+
+data_file_path = os.path.join(data_dir, 'RADCURE_processed_clinical.csv')
+df = pd.read_csv(data_file_path, index_col=0)</div>
 </div>
 </div>
 </div>
@@ -1318,29 +1344,25 @@ sys.path.append(project_root)</div>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analyzer</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
 
+<span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Study ID"</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'survival_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">,</span> <span class="s1">'death'</span><span class="p">:</span><span class="s1">'event'</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">project_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">(),</span> <span class="s2">"../../"</span><span class="p">))</span>
+<span class="n">config</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="o">.</span><span class="n">dry_run</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
 
-<span class="c1"># Define the path to the data directory</span>
-<span class="n">data_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">project_root</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">)</span>
-
-<span class="c1"># Example: Access a specific data file in the data directory</span>
-<span class="n">data_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">'RADCURE_challenge_clinical.csv'</span><span class="p">)</span>
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_file_path</span><span class="p">)</span>
+<span class="n">pprint</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-2">import pandas as pd
+<div class="clipboard-copy-txt" id="cell-2">from jarvais.analyzer import Analyzer
+from pprint import pprint
 
+df.drop(columns=["Study ID"], inplace=True)
+df.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
 
-project_root = os.path.abspath(os.path.join(os.getcwd(), "../../"))
+config = Analyzer.dry_run(df)
 
-# Define the path to the data directory
-data_dir = os.path.join(project_root, 'data')
-
-# Example: Access a specific data file in the data directory
-data_file_path = os.path.join(data_dir, 'RADCURE_challenge_clinical.csv')
-df = pd.read_csv(data_file_path)</div>
+pprint(config)</div>
 </div>
 </div>
 </div>
@@ -1352,70 +1374,345 @@ df = pd.read_csv(data_file_path)</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[2], line 11</span>
-<span class="ansi-green-intense-fg ansi-bold">      9</span> <span style="color: rgb(95,135,135)"># Example: Access a specific data file in the data directory</span>
-<span class="ansi-green-intense-fg ansi-bold">     10</span> data_file_path <span style="color: rgb(98,98,98)">=</span> os<span style="color: rgb(98,98,98)">.</span>path<span style="color: rgb(98,98,98)">.</span>join(data_dir, <span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">RADCURE_challenge_clinical.csv</span><span style="color: rgb(175,0,0)">'</span>)
-<span class="ansi-green-fg">---&gt; 11</span> df <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">pd</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">read_csv</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">data_file_path</span><span class="ansi-yellow-bg">)</span>
+<pre>/home/joshua-siraj/Documents/CDI/jarvais/.pixi/envs/default/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+  from .autonotebook import tqdm as notebook_tqdm
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Config file not found. Creating custom...
+Used a heuristic to define categorical and continuous columns. Please review!
 
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/parsers/readers.py:1026</span>, in <span class="ansi-cyan-fg">read_csv</span><span class="ansi-blue-fg">(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, date_format, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options, dtype_backend)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1013</span> kwds_defaults <span style="color: rgb(98,98,98)">=</span> _refine_defaults_read(
-<span class="ansi-green-intense-fg ansi-bold">   1014</span>     dialect,
-<span class="ansi-green-intense-fg ansi-bold">   1015</span>     delimiter,
-<span class="ansi-green-fg">   (...)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1022</span>     dtype_backend<span style="color: rgb(98,98,98)">=</span>dtype_backend,
-<span class="ansi-green-intense-fg ansi-bold">   1023</span> )
-<span class="ansi-green-intense-fg ansi-bold">   1024</span> kwds<span style="color: rgb(98,98,98)">.</span>update(kwds_defaults)
-<span class="ansi-green-fg">-&gt; 1026</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">_read</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">filepath_or_buffer</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">kwds</span><span class="ansi-yellow-bg">)</span>
 
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/parsers/readers.py:620</span>, in <span class="ansi-cyan-fg">_read</span><span class="ansi-blue-fg">(filepath_or_buffer, kwds)</span>
-<span class="ansi-green-intense-fg ansi-bold">    617</span> _validate_names(kwds<span style="color: rgb(98,98,98)">.</span>get(<span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">names</span><span style="color: rgb(175,0,0)">"</span>, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>))
-<span class="ansi-green-intense-fg ansi-bold">    619</span> <span style="color: rgb(95,135,135)"># Create the parser.</span>
-<span class="ansi-green-fg">--&gt; 620</span> parser <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">TextFileReader</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">filepath_or_buffer</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">kwds</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    622</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> chunksize <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> iterator:
-<span class="ansi-green-intense-fg ansi-bold">    623</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> parser
+Feature Types:
+  - Categorical: ['N Stage', 'Smoking Status', 'Sex', 'T Stage', 'Disease Site', 'Stage', 'Dose', 'HPV Combined', 'event', 'Chemotherapy']
+  - Continuous: ['time', 'age at dx']
 
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/parsers/readers.py:1620</span>, in <span class="ansi-cyan-fg">TextFileReader.__init__</span><span class="ansi-blue-fg">(self, f, engine, **kwds)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1617</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>options[<span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">has_index_names</span><span style="color: rgb(175,0,0)">"</span>] <span style="color: rgb(98,98,98)">=</span> kwds[<span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">has_index_names</span><span style="color: rgb(175,0,0)">"</span>]
-<span class="ansi-green-intense-fg ansi-bold">   1619</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>handles: IOHandles <span style="color: rgb(98,98,98)">|</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
-<span class="ansi-green-fg">-&gt; 1620</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_engine <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_make_engine</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">f</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">engine</span><span class="ansi-yellow-bg">)</span>
 
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/parsers/readers.py:1880</span>, in <span class="ansi-cyan-fg">TextFileReader._make_engine</span><span class="ansi-blue-fg">(self, f, engine)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1878</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">b</span><span style="color: rgb(175,0,0)">"</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> mode:
-<span class="ansi-green-intense-fg ansi-bold">   1879</span>         mode <span style="color: rgb(98,98,98)">+</span><span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">b</span><span style="color: rgb(175,0,0)">"</span>
-<span class="ansi-green-fg">-&gt; 1880</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>handles <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">get_handle</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-intense-fg ansi-bold">   1881</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">f</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1882</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">mode</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1883</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">encoding</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">None</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1884</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">compression</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">compression</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">None</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1885</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">memory_map</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">memory_map</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1886</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">is_text</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">is_text</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1887</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">errors</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">encoding_errors</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">strict</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1888</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">storage_options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">storage_options</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">None</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1889</span> <span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1890</span> <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>handles <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
-<span class="ansi-green-intense-fg ansi-bold">   1891</span> f <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>handles<span style="color: rgb(98,98,98)">.</span>handle
+Outlier Analysis:
+  - Outliers found in N Stage: ['N3b: 28 out of 3333', 'N3a: 13 out of 3333', 'NX: 1 out of 3333']
+  - No Outliers found in Smoking Status
+  - No Outliers found in Sex
+  - Outliers found in T Stage: ['T2b: 5 out of 3334', 'T2a: 4 out of 3334', 'TX: 4 out of 3334', 'T3 (2): 3 out of 3334', 'T2 (2): 1 out of 3334', 'rT0: 1 out of 3334', 'T1 (2): 1 out of 3334']
+  - Outliers found in Disease Site: ['paranasal sinus: 28 out of 3346', 'skin: 24 out of 3346', 'sarcoma: 20 out of 3346', 'paraganglioma: 7 out of 3346', 'salivary glands: 4 out of 3346', 'other: 2 out of 3346', 'benign tumor: 1 out of 3346', 'orbit: 1 out of 3346', 'lacrimal gland: 1 out of 3346']
+  - Outliers found in Stage: ['IV: 12 out of 3319', 'X: 6 out of 3319', 'IIIC: 2 out of 3319', 'IIA: 2 out of 3319', 'IIIA: 2 out of 3319', 'IVC: 2 out of 3319', 'IB: 1 out of 3319', 'IIB: 1 out of 3319']
+  - Outliers found in Dose: ['50.0: 28 out of 3346', '68.0: 6 out of 3346', '69.96: 2 out of 3346', '62.0: 2 out of 3346', '74.0: 1 out of 3346', '52.8: 1 out of 3346', '53.55: 1 out of 3346', '52.0: 1 out of 3346', '55.0: 1 out of 3346', '50.8: 1 out of 3346', '67.6: 1 out of 3346', '62.4: 1 out of 3346', '69.6: 1 out of 3346', '54.4: 1 out of 3346', '59.4: 1 out of 3346']
+  - No Outliers found in HPV Combined
+  - No Outliers found in event
+  - No Outliers found in Chemotherapy
 
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/common.py:873</span>, in <span class="ansi-cyan-fg">get_handle</span><span class="ansi-blue-fg">(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)</span>
-<span class="ansi-green-intense-fg ansi-bold">    868</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> <span style="color: rgb(0,135,0)">isinstance</span>(handle, <span style="color: rgb(0,135,0)">str</span>):
-<span class="ansi-green-intense-fg ansi-bold">    869</span>     <span style="color: rgb(95,135,135)"># Check whether the filename is to be opened in binary mode.</span>
-<span class="ansi-green-intense-fg ansi-bold">    870</span>     <span style="color: rgb(95,135,135)"># Binary mode does not support 'encoding' and 'newline'.</span>
-<span class="ansi-green-intense-fg ansi-bold">    871</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> ioargs<span style="color: rgb(98,98,98)">.</span>encoding <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> <span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">b</span><span style="color: rgb(175,0,0)">"</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> ioargs<span style="color: rgb(98,98,98)">.</span>mode:
-<span class="ansi-green-intense-fg ansi-bold">    872</span>         <span style="color: rgb(95,135,135)"># Encoding</span>
-<span class="ansi-green-fg">--&gt; 873</span>         handle <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">open</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-intense-fg ansi-bold">    874</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">handle</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    875</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">ioargs</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">mode</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    876</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">ioargs</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    877</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">errors</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">errors</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    878</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">newline</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    879</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    880</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
-<span class="ansi-green-intense-fg ansi-bold">    881</span>         <span style="color: rgb(95,135,135)"># Binary mode</span>
-<span class="ansi-green-intense-fg ansi-bold">    882</span>         handle <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">open</span>(handle, ioargs<span style="color: rgb(98,98,98)">.</span>mode)
-
-<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: '/home/runner/work/jarvais/jarvais/data/RADCURE_challenge_clinical.csv'</pre>
+╒═══════════════════════╤═══════════════════╤═══════════╤═════════════╕
+│                       │                   │ Missing   │ Overall     │
+╞═══════════════════════╪═══════════════════╪═══════════╪═════════════╡
+│ n                     │                   │           │ 3346        │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ time, mean (SD)       │                   │ 0         │ 4.1 (2.7)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ age at dx, mean (SD)  │                   │ 0         │ 62.3 (11.6) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ N Stage, n (%)        │ N0                │           │ 1147 (34.3) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N1                │           │ 344 (10.3)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N2                │           │ 182 (5.4)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N2a               │           │ 125 (3.7)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N2b               │           │ 791 (23.6)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N2c               │           │ 532 (15.9)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N3                │           │ 170 (5.1)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N3a               │           │ 13 (0.4)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N3b               │           │ 28 (0.8)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ NX                │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ None              │           │ 13 (0.4)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Smoking Status, n (%) │ Current           │           │ 1139 (34.0) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Ex-smoker         │           │ 1290 (38.6) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Non-smoker        │           │ 872 (26.1)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ unknown           │           │ 45 (1.3)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Sex, n (%)            │ Female            │           │ 686 (20.5)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Male              │           │ 2660 (79.5) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ T Stage, n (%)        │ None              │           │ 12 (0.4)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T0                │           │ 167 (5.0)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T1                │           │ 454 (13.6)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T1 (2)            │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T1a               │           │ 179 (5.3)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T1b               │           │ 88 (2.6)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T2                │           │ 927 (27.7)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T2 (2)            │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T2a               │           │ 4 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T2b               │           │ 5 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T3                │           │ 861 (25.7)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T3 (2)            │           │ 3 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T4                │           │ 116 (3.5)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T4a               │           │ 358 (10.7)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T4b               │           │ 121 (3.6)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ TX                │           │ 4 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Tis               │           │ 44 (1.3)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ rT0               │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Disease Site, n (%)   │ benign tumor      │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ esophagus         │           │ 33 (1.0)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ hypopharynx       │           │ 162 (4.8)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ lacrimal gland    │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ larynx            │           │ 877 (26.2)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ lip &amp; oral cavity │           │ 100 (3.0)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ nasal cavity      │           │ 62 (1.9)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ nasopharynx       │           │ 355 (10.6)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ orbit             │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ oropharynx        │           │ 1501 (44.9) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ other             │           │ 2 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ paraganglioma     │           │ 7 (0.2)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ paranasal sinus   │           │ 28 (0.8)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ salivary glands   │           │ 4 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ sarcoma           │           │ 20 (0.6)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ skin              │           │ 24 (0.7)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ unknown           │           │ 168 (5.0)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Stage, n (%)          │ 0                 │           │ 44 (1.3)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ I                 │           │ 352 (10.5)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IB                │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ II                │           │ 400 (12.0)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IIA               │           │ 2 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IIB               │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ III               │           │ 605 (18.1)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IIIA              │           │ 2 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IIIC              │           │ 2 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IV                │           │ 12 (0.4)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IVA               │           │ 1581 (47.3) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IVB               │           │ 309 (9.2)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IVC               │           │ 2 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ None              │           │ 27 (0.8)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ X                 │           │ 6 (0.2)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Dose, n (%)           │ 50.0              │           │ 28 (0.8)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 50.8              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 51.0              │           │ 227 (6.8)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 52.0              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 52.8              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 53.55             │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 54.4              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 55.0              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 59.4              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 60.0              │           │ 418 (12.5)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 62.0              │           │ 2 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 62.4              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 64.0              │           │ 267 (8.0)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 66.0              │           │ 95 (2.8)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 67.6              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 68.0              │           │ 6 (0.2)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 69.6              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 69.96             │           │ 2 (0.1)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 70.0              │           │ 2290 (68.4) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 74.0              │           │ 1 (0.0)     │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ HPV Combined, n (%)   │ 1.0               │           │ 1139 (34.0) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ None              │           │ 2207 (66.0) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ event, n (%)          │ 0                 │           │ 2288 (68.4) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 1                 │           │ 1058 (31.6) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Chemotherapy, n (%)   │ 0                 │           │ 1923 (57.5) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 1                 │           │ 1423 (42.5) │
+╘═══════════════════════╧═══════════════════╧═══════════╧═════════════╛
+{'columns': {'categorical': ['N Stage',
+                             'Smoking Status',
+                             'Sex',
+                             'T Stage',
+                             'Disease Site',
+                             'Stage',
+                             'Dose',
+                             'HPV Combined',
+                             'event',
+                             'Chemotherapy'],
+             'continuous': ['time', 'age at dx'],
+             'date': [],
+             'other': []},
+ 'mapping': {'Chemotherapy': {'0': '0', '1': '1'},
+             'Disease Site': {'benign tumor': 'Other',
+                              'esophagus': 'esophagus',
+                              'hypopharynx': 'hypopharynx',
+                              'lacrimal gland': 'Other',
+                              'larynx': 'larynx',
+                              'lip &amp; oral cavity': 'lip &amp; oral cavity',
+                              'nasal cavity': 'nasal cavity',
+                              'nasopharynx': 'nasopharynx',
+                              'orbit': 'Other',
+                              'oropharynx': 'oropharynx',
+                              'other': 'Other',
+                              'paraganglioma': 'Other',
+                              'paranasal sinus': 'Other',
+                              'salivary glands': 'Other',
+                              'sarcoma': 'Other',
+                              'skin': 'Other',
+                              'unknown': 'unknown'},
+             'Dose': {'50.0': 'Other',
+                      '50.8': 'Other',
+                      '51.0': '51.0',
+                      '52.0': 'Other',
+                      '52.8': 'Other',
+                      '53.55': 'Other',
+                      '54.4': 'Other',
+                      '55.0': 'Other',
+                      '59.4': 'Other',
+                      '60.0': '60.0',
+                      '62.0': 'Other',
+                      '62.4': 'Other',
+                      '64.0': '64.0',
+                      '66.0': '66.0',
+                      '67.6': 'Other',
+                      '68.0': 'Other',
+                      '69.6': 'Other',
+                      '69.96': 'Other',
+                      '70.0': '70.0',
+                      '74.0': 'Other'},
+             'HPV Combined': {'1.0': '1.0', 'nan': 'nan'},
+             'N Stage': {'N0': 'N0',
+                         'N1': 'N1',
+                         'N2': 'N2',
+                         'N2a': 'N2a',
+                         'N2b': 'N2b',
+                         'N2c': 'N2c',
+                         'N3': 'N3',
+                         'N3a': 'Other',
+                         'N3b': 'Other',
+                         'NX': 'Other',
+                         'nan': 'nan'},
+             'Sex': {'Female': 'Female', 'Male': 'Male'},
+             'Smoking Status': {'Current': 'Current',
+                                'Ex-smoker': 'Ex-smoker',
+                                'Non-smoker': 'Non-smoker',
+                                'unknown': 'unknown'},
+             'Stage': {'0': '0',
+                       'I': 'I',
+                       'IB': 'Other',
+                       'II': 'II',
+                       'IIA': 'Other',
+                       'IIB': 'Other',
+                       'III': 'III',
+                       'IIIA': 'Other',
+                       'IIIC': 'Other',
+                       'IV': 'Other',
+                       'IVA': 'IVA',
+                       'IVB': 'IVB',
+                       'IVC': 'Other',
+                       'X': 'Other',
+                       'nan': 'nan'},
+             'T Stage': {'T0': 'T0',
+                         'T1': 'T1',
+                         'T1 (2)': 'Other',
+                         'T1a': 'T1a',
+                         'T1b': 'T1b',
+                         'T2': 'T2',
+                         'T2 (2)': 'Other',
+                         'T2a': 'Other',
+                         'T2b': 'Other',
+                         'T3': 'T3',
+                         'T3 (2)': 'Other',
+                         'T4': 'T4',
+                         'T4a': 'T4a',
+                         'T4b': 'T4b',
+                         'TX': 'Other',
+                         'Tis': 'Tis',
+                         'nan': 'nan',
+                         'rT0': 'Other'},
+             'event': {'0': '0', '1': '1'}},
+ 'missingness_strategy': {'categorical': {'Chemotherapy': 'Unknown',
+                                          'Disease Site': 'Unknown',
+                                          'Dose': 'Unknown',
+                                          'HPV Combined': 'Unknown',
+                                          'N Stage': 'Unknown',
+                                          'Sex': 'Unknown',
+                                          'Smoking Status': 'Unknown',
+                                          'Stage': 'Unknown',
+                                          'T Stage': 'Unknown',
+                                          'event': 'Unknown'},
+                          'continuous': {'age at dx': 'median',
+                                         'time': 'median'}}}
+</pre>
 </div>
 </div>
 </div>
@@ -1440,25 +1737,33 @@ File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/p
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analyzer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
 
-<span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Study ID"</span><span class="p">,</span> <span class="s2">"split"</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'survival_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">,</span> <span class="s1">'death'</span><span class="p">:</span><span class="s1">'event'</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">config</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="o">.</span><span class="n">dry_run</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'categorical'</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'Dose'</span><span class="p">)</span>
+<span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'continuous'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Dose'</span><span class="p">)</span> 
 
 <span class="n">pprint</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+
+<span class="n">analyzer_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'radcure_outputs/analyzer'</span><span class="p">)</span>
+<span class="n">analyzer_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">analyzer_path</span> <span class="o">/</span> <span class="s1">'config.yaml'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-3">from jarvais.analyzer import Analyzer
-from pprint import pprint
+<div class="clipboard-copy-txt" id="cell-3">import yaml
+from pathlib import Path
 
-df.drop(columns=["Study ID", "split"], inplace=True)
-df.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
+config['columns']['categorical'].remove('Dose')
+config['columns']['continuous'].append('Dose') 
 
-config = Analyzer.dry_run(df)
+pprint(config)
 
-pprint(config)</div>
+analyzer_path = Path('radcure_outputs/analyzer')
+analyzer_path.mkdir(parents=True, exist_ok=True)
+
+with open(analyzer_path / 'config.yaml', 'w') as f:
+            yaml.dump(config, f)</div>
 </div>
 </div>
 </div>
@@ -1469,26 +1774,121 @@ pprint(config)</div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>/home/runner/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
-  from .autonotebook import tqdm as notebook_tqdm
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>{'columns': {'categorical': ['N Stage',
+                             'Smoking Status',
+                             'Sex',
+                             'T Stage',
+                             'Disease Site',
+                             'Stage',
+                             'HPV Combined',
+                             'event',
+                             'Chemotherapy'],
+             'continuous': ['time', 'age at dx', 'Dose'],
+             'date': [],
+             'other': []},
+ 'mapping': {'Chemotherapy': {'0': '0', '1': '1'},
+             'Disease Site': {'benign tumor': 'Other',
+                              'esophagus': 'esophagus',
+                              'hypopharynx': 'hypopharynx',
+                              'lacrimal gland': 'Other',
+                              'larynx': 'larynx',
+                              'lip &amp; oral cavity': 'lip &amp; oral cavity',
+                              'nasal cavity': 'nasal cavity',
+                              'nasopharynx': 'nasopharynx',
+                              'orbit': 'Other',
+                              'oropharynx': 'oropharynx',
+                              'other': 'Other',
+                              'paraganglioma': 'Other',
+                              'paranasal sinus': 'Other',
+                              'salivary glands': 'Other',
+                              'sarcoma': 'Other',
+                              'skin': 'Other',
+                              'unknown': 'unknown'},
+             'Dose': {'50.0': 'Other',
+                      '50.8': 'Other',
+                      '51.0': '51.0',
+                      '52.0': 'Other',
+                      '52.8': 'Other',
+                      '53.55': 'Other',
+                      '54.4': 'Other',
+                      '55.0': 'Other',
+                      '59.4': 'Other',
+                      '60.0': '60.0',
+                      '62.0': 'Other',
+                      '62.4': 'Other',
+                      '64.0': '64.0',
+                      '66.0': '66.0',
+                      '67.6': 'Other',
+                      '68.0': 'Other',
+                      '69.6': 'Other',
+                      '69.96': 'Other',
+                      '70.0': '70.0',
+                      '74.0': 'Other'},
+             'HPV Combined': {'1.0': '1.0', 'nan': 'nan'},
+             'N Stage': {'N0': 'N0',
+                         'N1': 'N1',
+                         'N2': 'N2',
+                         'N2a': 'N2a',
+                         'N2b': 'N2b',
+                         'N2c': 'N2c',
+                         'N3': 'N3',
+                         'N3a': 'Other',
+                         'N3b': 'Other',
+                         'NX': 'Other',
+                         'nan': 'nan'},
+             'Sex': {'Female': 'Female', 'Male': 'Male'},
+             'Smoking Status': {'Current': 'Current',
+                                'Ex-smoker': 'Ex-smoker',
+                                'Non-smoker': 'Non-smoker',
+                                'unknown': 'unknown'},
+             'Stage': {'0': '0',
+                       'I': 'I',
+                       'IB': 'Other',
+                       'II': 'II',
+                       'IIA': 'Other',
+                       'IIB': 'Other',
+                       'III': 'III',
+                       'IIIA': 'Other',
+                       'IIIC': 'Other',
+                       'IV': 'Other',
+                       'IVA': 'IVA',
+                       'IVB': 'IVB',
+                       'IVC': 'Other',
+                       'X': 'Other',
+                       'nan': 'nan'},
+             'T Stage': {'T0': 'T0',
+                         'T1': 'T1',
+                         'T1 (2)': 'Other',
+                         'T1a': 'T1a',
+                         'T1b': 'T1b',
+                         'T2': 'T2',
+                         'T2 (2)': 'Other',
+                         'T2a': 'Other',
+                         'T2b': 'Other',
+                         'T3': 'T3',
+                         'T3 (2)': 'Other',
+                         'T4': 'T4',
+                         'T4a': 'T4a',
+                         'T4b': 'T4b',
+                         'TX': 'Other',
+                         'Tis': 'Tis',
+                         'nan': 'nan',
+                         'rT0': 'Other'},
+             'event': {'0': '0', '1': '1'}},
+ 'missingness_strategy': {'categorical': {'Chemotherapy': 'Unknown',
+                                          'Disease Site': 'Unknown',
+                                          'Dose': 'Unknown',
+                                          'HPV Combined': 'Unknown',
+                                          'N Stage': 'Unknown',
+                                          'Sex': 'Unknown',
+                                          'Smoking Status': 'Unknown',
+                                          'Stage': 'Unknown',
+                                          'T Stage': 'Unknown',
+                                          'event': 'Unknown'},
+                          'continuous': {'age at dx': 'median',
+                                         'time': 'median'}}}
 </pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[3], line 4</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,0,255)">jarvais</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">analyzer</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Analyzer
-<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,0,255)">pprint</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> pprint
-<span class="ansi-green-fg">----&gt; 4</span> <span class="ansi-yellow-bg">df</span><span style="color: rgb(98,98,98)">.</span>drop(columns<span style="color: rgb(98,98,98)">=</span>[<span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">Study ID</span><span style="color: rgb(175,0,0)">"</span>, <span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">split</span><span style="color: rgb(175,0,0)">"</span>], inplace<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-intense-fg ansi-bold">      5</span> df<span style="color: rgb(98,98,98)">.</span>rename(columns<span style="color: rgb(98,98,98)">=</span>{<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">survival_time</span><span style="color: rgb(175,0,0)">'</span>: <span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">time</span><span style="color: rgb(175,0,0)">'</span>, <span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">death</span><span style="color: rgb(175,0,0)">'</span>:<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">event</span><span style="color: rgb(175,0,0)">'</span>}, inplace<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-intense-fg ansi-bold">      7</span> config <span style="color: rgb(98,98,98)">=</span> Analyzer<span style="color: rgb(98,98,98)">.</span>dry_run(df)
-
-<span class="ansi-red-fg">NameError</span>: name 'df' is not defined</pre>
 </div>
 </div>
 </div>
@@ -1513,33 +1913,17 @@ Cell <span class="ansi-green-fg">In[3], line 4</span>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analyzer</span>
 
-<span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'categorical'</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'Dose'</span><span class="p">)</span>
-<span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'continuous'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Dose'</span><span class="p">)</span> 
+<span class="n">analyzer</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">'survival'</span><span class="p">,</span> <span class="n">target_variable</span><span class="o">=</span><span class="s1">'event'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./radcure_outputs/analyzer'</span><span class="p">,</span> <span class="n">one_hot_encode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="s1">'radcure_outputs/analyzer/config.yaml'</span><span class="p">)</span>
 
-<span class="n">pprint</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-
-<span class="n">analyzer_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'radcure_outputs/analyzer'</span><span class="p">)</span>
-<span class="n">analyzer_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">analyzer_path</span> <span class="o">/</span> <span class="s1">'config.yaml'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="n">analyzer</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-4">import yaml
-from pathlib import Path
+<div class="clipboard-copy-txt" id="cell-4">from jarvais.analyzer import Analyzer
 
-config['columns']['categorical'].remove('Dose')
-config['columns']['continuous'].append('Dose') 
+analyzer = Analyzer(df, task='survival', target_variable='event', output_dir='./radcure_outputs/analyzer', one_hot_encode=True, config='radcure_outputs/analyzer/config.yaml')
 
-pprint(config)
-
-analyzer_path = Path('radcure_outputs/analyzer')
-analyzer_path.mkdir(parents=True, exist_ok=True)
-
-with open(analyzer_path / 'config.yaml', 'w') as f:
-            yaml.dump(config, f)</div>
+analyzer.run()</div>
 </div>
 </div>
 </div>
@@ -1550,18 +1934,137 @@ with open(analyzer_path / 'config.yaml', 'w') as f:
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[4], line 4</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">import</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,0,255)">yaml</span>
-<span class="ansi-green-intense-fg ansi-bold">      2</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,0,255)">pathlib</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Path
-<span class="ansi-green-fg">----&gt; 4</span> <span class="ansi-yellow-bg">config</span>[<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">columns</span><span style="color: rgb(175,0,0)">'</span>][<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">categorical</span><span style="color: rgb(175,0,0)">'</span>]<span style="color: rgb(98,98,98)">.</span>remove(<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">Dose</span><span style="color: rgb(175,0,0)">'</span>)
-<span class="ansi-green-intense-fg ansi-bold">      5</span> config[<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">columns</span><span style="color: rgb(175,0,0)">'</span>][<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">continuous</span><span style="color: rgb(175,0,0)">'</span>]<span style="color: rgb(98,98,98)">.</span>append(<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">Dose</span><span style="color: rgb(175,0,0)">'</span>) 
-<span class="ansi-green-intense-fg ansi-bold">      7</span> pprint(config)
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Feature Types:
+  - Categorical: ['N Stage', 'Smoking Status', 'Sex', 'T Stage', 'Disease Site', 'Stage', 'HPV Combined', 'event', 'Chemotherapy']
+  - Continuous: ['time', 'age at dx', 'Dose']
 
-<span class="ansi-red-fg">NameError</span>: name 'config' is not defined</pre>
+
+Outlier Analysis:
+  - Outliers found in N Stage: ['N3b: 28 out of 3333', 'N3a: 13 out of 3333', 'NX: 1 out of 3333']
+  - No Outliers found in Smoking Status
+  - No Outliers found in Sex
+  - Outliers found in T Stage: ['T2b: 5 out of 3334', 'T2a: 4 out of 3334', 'TX: 4 out of 3334', 'T3 (2): 3 out of 3334', 'T2 (2): 1 out of 3334', 'rT0: 1 out of 3334', 'T1 (2): 1 out of 3334']
+  - Outliers found in Disease Site: ['paranasal sinus: 28 out of 3346', 'skin: 24 out of 3346', 'sarcoma: 20 out of 3346', 'paraganglioma: 7 out of 3346', 'salivary glands: 4 out of 3346', 'other: 2 out of 3346', 'benign tumor: 1 out of 3346', 'orbit: 1 out of 3346', 'lacrimal gland: 1 out of 3346']
+  - Outliers found in Stage: ['IV: 12 out of 3319', 'X: 6 out of 3319', 'IIIC: 2 out of 3319', 'IIA: 2 out of 3319', 'IIIA: 2 out of 3319', 'IVC: 2 out of 3319', 'IB: 1 out of 3319', 'IIB: 1 out of 3319']
+  - No Outliers found in HPV Combined
+  - No Outliers found in event
+  - No Outliers found in Chemotherapy
+
+Applying changes from config...
+
+╒═══════════════════════╤═══════════════════╤═══════════╤═════════════╕
+│                       │                   │ Missing   │ Overall     │
+╞═══════════════════════╪═══════════════════╪═══════════╪═════════════╡
+│ n                     │                   │           │ 3346        │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ time, mean (SD)       │                   │ 0         │ 4.1 (2.7)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ age at dx, mean (SD)  │                   │ 0         │ 62.3 (11.6) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Dose, mean (SD)       │                   │ 0         │ 66.7 (5.8)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ N Stage, n (%)        │ N0                │           │ 1147 (34.3) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N1                │           │ 344 (10.3)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N2                │           │ 182 (5.4)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N2a               │           │ 125 (3.7)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N2b               │           │ 791 (23.6)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N2c               │           │ 532 (15.9)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ N3                │           │ 170 (5.1)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Other             │           │ 42 (1.3)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Unknown           │           │ 13 (0.4)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Smoking Status, n (%) │ Current           │           │ 1139 (34.0) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Ex-smoker         │           │ 1290 (38.6) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Non-smoker        │           │ 872 (26.1)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ unknown           │           │ 45 (1.3)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Sex, n (%)            │ Female            │           │ 686 (20.5)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Male              │           │ 2660 (79.5) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ T Stage, n (%)        │ Other             │           │ 19 (0.6)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T0                │           │ 167 (5.0)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T1                │           │ 454 (13.6)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T1a               │           │ 179 (5.3)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T1b               │           │ 88 (2.6)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T2                │           │ 927 (27.7)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T3                │           │ 861 (25.7)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T4                │           │ 116 (3.5)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T4a               │           │ 358 (10.7)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ T4b               │           │ 121 (3.6)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Tis               │           │ 44 (1.3)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Unknown           │           │ 12 (0.4)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Disease Site, n (%)   │ Other             │           │ 88 (2.6)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ esophagus         │           │ 33 (1.0)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ hypopharynx       │           │ 162 (4.8)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ larynx            │           │ 877 (26.2)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ lip &amp; oral cavity │           │ 100 (3.0)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ nasal cavity      │           │ 62 (1.9)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ nasopharynx       │           │ 355 (10.6)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ oropharynx        │           │ 1501 (44.9) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ unknown           │           │ 168 (5.0)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Stage, n (%)          │ 0                 │           │ 44 (1.3)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ I                 │           │ 352 (10.5)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ II                │           │ 400 (12.0)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ III               │           │ 605 (18.1)  │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IVA               │           │ 1581 (47.3) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ IVB               │           │ 309 (9.2)   │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Other             │           │ 28 (0.8)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Unknown           │           │ 27 (0.8)    │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ HPV Combined, n (%)   │ 1.0               │           │ 1139 (34.0) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ Unknown           │           │ 2207 (66.0) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ event, n (%)          │ 0                 │           │ 2288 (68.4) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 1                 │           │ 1058 (31.6) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│ Chemotherapy, n (%)   │ 0                 │           │ 1923 (57.5) │
+├───────────────────────┼───────────────────┼───────────┼─────────────┤
+│                       │ 1                 │           │ 1423 (42.5) │
+╘═══════════════════════╧═══════════════════╧═══════════╧═════════════╛
+</pre>
 </div>
 </div>
 </div>
@@ -1586,17 +2089,21 @@ Cell <span class="ansi-green-fg">In[4], line 4</span>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analyzer</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainerSupervised</span>
 
-<span class="n">analyzer</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">'survival'</span><span class="p">,</span> <span class="n">target_variable</span><span class="o">=</span><span class="s1">'event'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./radcure_outputs/analyzer'</span><span class="p">,</span> <span class="n">one_hot_encode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="s1">'radcure_outputs/analyzer/config.yaml'</span><span class="p">)</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'./radcure_outputs/analyzer/updated_data.csv'</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'survival_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">,</span> <span class="s1">'death'</span><span class="p">:</span><span class="s1">'event'</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">analyzer</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">TrainerSupervised</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">'survival'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./radcure_outputs/ED_trainer_explainer'</span><span class="p">,)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="s1">'event'</span><span class="p">,</span><span class="s1">'time'</span><span class="p">])</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-5">from jarvais.analyzer import Analyzer
+<div class="clipboard-copy-txt" id="cell-5">from jarvais.trainer import TrainerSupervised
 
-analyzer = Analyzer(df, task='survival', target_variable='event', output_dir='./radcure_outputs/analyzer', one_hot_encode=True, config='radcure_outputs/analyzer/config.yaml')
+df = pd.read_csv('./radcure_outputs/analyzer/updated_data.csv', index_col=0)
+df.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
 
-analyzer.run()</div>
+trainer = TrainerSupervised(task='survival', output_dir='./radcure_outputs/ED_trainer_explainer',)
+trainer.run(df, ['event','time'])</div>
 </div>
 </div>
 </div>
@@ -1607,16 +2114,46 @@ analyzer.run()</div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>Training MTLR...
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[5], line 3</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,0,255)">jarvais</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">analyzer</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Analyzer
-<span class="ansi-green-fg">----&gt; 3</span> analyzer <span style="color: rgb(98,98,98)">=</span> Analyzer(<span class="ansi-yellow-bg">df</span>, task<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">survival</span><span style="color: rgb(175,0,0)">'</span>, target_variable<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">event</span><span style="color: rgb(175,0,0)">'</span>, output_dir<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">./radcure_outputs/analyzer</span><span style="color: rgb(175,0,0)">'</span>, one_hot_encode<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>, config<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">radcure_outputs/analyzer/config.yaml</span><span style="color: rgb(175,0,0)">'</span>)
-<span class="ansi-green-intense-fg ansi-bold">      5</span> analyzer<span style="color: rgb(98,98,98)">.</span>run()
+<pre>[W 2025-02-06 15:47:30,167] Trial 6 failed with parameters: {'C1': 0.01, 'dropout': 0.322887614468196, 'dims': [512, 512]} because of the following error: The value nan is not acceptable.
+[W 2025-02-06 15:47:30,170] Trial 6 failed with value nan.
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>  Best trial:
+    Params: 
+      C1: 0.01
+      dropout: 0.35324720434582946
+      dims: [64, 64]
+Training DeepSurv...
+  Best trial:
+    Params: 
+      l2_reg: 0.00256531183447817
+      dropout: 0.2830909947364929
+      dims: [256, 256, 256]
+Training CoxPH...
+Training GradientBoosting...
+Training RandomForest...
+Training SVM...
 
-<span class="ansi-red-fg">NameError</span>: name 'df' is not defined</pre>
+Consolidated C-index Scores:
+MTLR: 0.6674
+DeepSurv: 0.7045
+CoxPH: 0.7224
+GradientBoosting: 0.7158
+RandomForest: 0.7126
+SVM: 0.7185
+</pre>
 </div>
 </div>
 </div>
@@ -1641,194 +2178,12 @@ Cell <span class="ansi-green-fg">In[5], line 3</span>
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainerSupervised</span>
-
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'./radcure_outputs/analyzer/updated_data.csv'</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'survival_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">,</span> <span class="s1">'death'</span><span class="p">:</span><span class="s1">'event'</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">trainer</span> <span class="o">=</span> <span class="n">TrainerSupervised</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">'survival'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./radcure_outputs/ED_trainer_explainer'</span><span class="p">,)</span>
-<span class="n">trainer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="s1">'event'</span><span class="p">,</span><span class="s1">'time'</span><span class="p">])</span>
-</pre></div>
-<div class="clipboard-copy-txt" id="cell-6">from jarvais.trainer import TrainerSupervised
-
-df = pd.read_csv('./radcure_outputs/analyzer/updated_data.csv', index_col=0)
-df.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
-
-trainer = TrainerSupervised(task='survival', output_dir='./radcure_outputs/ED_trainer_explainer',)
-trainer.run(df, ['event','time'])</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[6], line 3</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,0,255)">jarvais</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">trainer</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TrainerSupervised
-<span class="ansi-green-fg">----&gt; 3</span> df <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">pd</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">read_csv</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">'</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">./radcure_outputs/analyzer/updated_data.csv</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">'</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">index_col</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">0</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">      4</span> df<span style="color: rgb(98,98,98)">.</span>rename(columns<span style="color: rgb(98,98,98)">=</span>{<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">survival_time</span><span style="color: rgb(175,0,0)">'</span>: <span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">time</span><span style="color: rgb(175,0,0)">'</span>, <span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">death</span><span style="color: rgb(175,0,0)">'</span>:<span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">event</span><span style="color: rgb(175,0,0)">'</span>}, inplace<span style="color: rgb(98,98,98)">=</span><span class="ansi-bold" style="color: rgb(0,135,0)">True</span>)
-<span class="ansi-green-intense-fg ansi-bold">      6</span> trainer <span style="color: rgb(98,98,98)">=</span> TrainerSupervised(task<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">survival</span><span style="color: rgb(175,0,0)">'</span>, output_dir<span style="color: rgb(98,98,98)">=</span><span style="color: rgb(175,0,0)">'</span><span style="color: rgb(175,0,0)">./radcure_outputs/ED_trainer_explainer</span><span style="color: rgb(175,0,0)">'</span>,)
-
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/parsers/readers.py:1026</span>, in <span class="ansi-cyan-fg">read_csv</span><span class="ansi-blue-fg">(filepath_or_buffer, sep, delimiter, header, names, index_col, usecols, dtype, engine, converters, true_values, false_values, skipinitialspace, skiprows, skipfooter, nrows, na_values, keep_default_na, na_filter, verbose, skip_blank_lines, parse_dates, infer_datetime_format, keep_date_col, date_parser, date_format, dayfirst, cache_dates, iterator, chunksize, compression, thousands, decimal, lineterminator, quotechar, quoting, doublequote, escapechar, comment, encoding, encoding_errors, dialect, on_bad_lines, delim_whitespace, low_memory, memory_map, float_precision, storage_options, dtype_backend)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1013</span> kwds_defaults <span style="color: rgb(98,98,98)">=</span> _refine_defaults_read(
-<span class="ansi-green-intense-fg ansi-bold">   1014</span>     dialect,
-<span class="ansi-green-intense-fg ansi-bold">   1015</span>     delimiter,
-<span class="ansi-green-fg">   (...)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1022</span>     dtype_backend<span style="color: rgb(98,98,98)">=</span>dtype_backend,
-<span class="ansi-green-intense-fg ansi-bold">   1023</span> )
-<span class="ansi-green-intense-fg ansi-bold">   1024</span> kwds<span style="color: rgb(98,98,98)">.</span>update(kwds_defaults)
-<span class="ansi-green-fg">-&gt; 1026</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">_read</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">filepath_or_buffer</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">kwds</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/parsers/readers.py:620</span>, in <span class="ansi-cyan-fg">_read</span><span class="ansi-blue-fg">(filepath_or_buffer, kwds)</span>
-<span class="ansi-green-intense-fg ansi-bold">    617</span> _validate_names(kwds<span style="color: rgb(98,98,98)">.</span>get(<span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">names</span><span style="color: rgb(175,0,0)">"</span>, <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>))
-<span class="ansi-green-intense-fg ansi-bold">    619</span> <span style="color: rgb(95,135,135)"># Create the parser.</span>
-<span class="ansi-green-fg">--&gt; 620</span> parser <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">TextFileReader</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">filepath_or_buffer</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">*</span><span class="ansi-yellow-bg">kwds</span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    622</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> chunksize <span class="ansi-bold" style="color: rgb(175,0,255)">or</span> iterator:
-<span class="ansi-green-intense-fg ansi-bold">    623</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> parser
-
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/parsers/readers.py:1620</span>, in <span class="ansi-cyan-fg">TextFileReader.__init__</span><span class="ansi-blue-fg">(self, f, engine, **kwds)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1617</span>     <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>options[<span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">has_index_names</span><span style="color: rgb(175,0,0)">"</span>] <span style="color: rgb(98,98,98)">=</span> kwds[<span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">has_index_names</span><span style="color: rgb(175,0,0)">"</span>]
-<span class="ansi-green-intense-fg ansi-bold">   1619</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>handles: IOHandles <span style="color: rgb(98,98,98)">|</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span> <span style="color: rgb(98,98,98)">=</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
-<span class="ansi-green-fg">-&gt; 1620</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>_engine <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">_make_engine</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">f</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">engine</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/parsers/readers.py:1880</span>, in <span class="ansi-cyan-fg">TextFileReader._make_engine</span><span class="ansi-blue-fg">(self, f, engine)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1878</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">b</span><span style="color: rgb(175,0,0)">"</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> mode:
-<span class="ansi-green-intense-fg ansi-bold">   1879</span>         mode <span style="color: rgb(98,98,98)">+</span><span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">b</span><span style="color: rgb(175,0,0)">"</span>
-<span class="ansi-green-fg">-&gt; 1880</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>handles <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">get_handle</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-intense-fg ansi-bold">   1881</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">f</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1882</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">mode</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1883</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">encoding</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">None</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1884</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">compression</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">compression</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">None</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1885</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">memory_map</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">memory_map</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">False</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1886</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">is_text</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">is_text</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1887</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">errors</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">encoding_errors</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">strict</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1888</span> <span class="ansi-yellow-bg">    </span><span class="ansi-yellow-bg">storage_options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">options</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">get</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">storage_options</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg ansi-bold" style="color: rgb(0,135,0)">None</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">   1889</span> <span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1890</span> <span class="ansi-bold" style="color: rgb(0,135,0)">assert</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>handles <span class="ansi-bold" style="color: rgb(175,0,255)">is</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(0,135,0)">None</span>
-<span class="ansi-green-intense-fg ansi-bold">   1891</span> f <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">self</span><span style="color: rgb(98,98,98)">.</span>handles<span style="color: rgb(98,98,98)">.</span>handle
-
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/site-packages/pandas/io/common.py:873</span>, in <span class="ansi-cyan-fg">get_handle</span><span class="ansi-blue-fg">(path_or_buf, mode, encoding, compression, memory_map, is_text, errors, storage_options)</span>
-<span class="ansi-green-intense-fg ansi-bold">    868</span> <span class="ansi-bold" style="color: rgb(0,135,0)">elif</span> <span style="color: rgb(0,135,0)">isinstance</span>(handle, <span style="color: rgb(0,135,0)">str</span>):
-<span class="ansi-green-intense-fg ansi-bold">    869</span>     <span style="color: rgb(95,135,135)"># Check whether the filename is to be opened in binary mode.</span>
-<span class="ansi-green-intense-fg ansi-bold">    870</span>     <span style="color: rgb(95,135,135)"># Binary mode does not support 'encoding' and 'newline'.</span>
-<span class="ansi-green-intense-fg ansi-bold">    871</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> ioargs<span style="color: rgb(98,98,98)">.</span>encoding <span class="ansi-bold" style="color: rgb(175,0,255)">and</span> <span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">b</span><span style="color: rgb(175,0,0)">"</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> ioargs<span style="color: rgb(98,98,98)">.</span>mode:
-<span class="ansi-green-intense-fg ansi-bold">    872</span>         <span style="color: rgb(95,135,135)"># Encoding</span>
-<span class="ansi-green-fg">--&gt; 873</span>         handle <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg" style="color: rgb(0,135,0)">open</span><span class="ansi-yellow-bg">(</span>
-<span class="ansi-green-intense-fg ansi-bold">    874</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">handle</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    875</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">ioargs</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">mode</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    876</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">ioargs</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    877</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">errors</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg">errors</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    878</span> <span class="ansi-yellow-bg">            </span><span class="ansi-yellow-bg">newline</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">=</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">"</span><span class="ansi-yellow-bg">,</span>
-<span class="ansi-green-intense-fg ansi-bold">    879</span> <span class="ansi-yellow-bg">        </span><span class="ansi-yellow-bg">)</span>
-<span class="ansi-green-intense-fg ansi-bold">    880</span>     <span class="ansi-bold" style="color: rgb(0,135,0)">else</span>:
-<span class="ansi-green-intense-fg ansi-bold">    881</span>         <span style="color: rgb(95,135,135)"># Binary mode</span>
-<span class="ansi-green-intense-fg ansi-bold">    882</span>         handle <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">open</span>(handle, ioargs<span style="color: rgb(98,98,98)">.</span>mode)
-
-<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: './radcure_outputs/analyzer/updated_data.csv'</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [7]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="CodeMirror cm-s-jupyter">
-<div class="zeroclipboard-container">
-<clipboard-copy aria-label="Copy to Clipboard" for="cell-7">
-<div>
-<span class="notice" hidden="">Copied!</span>
-<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
-<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-</clipboard-copy>
-</div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainerSupervised</span>
-
-<span class="n">trainer</span> <span class="o">=</span> <span class="n">TrainerSupervised</span><span class="o">.</span><span class="n">load_trainer</span><span class="p">(</span><span class="s1">'./radcure_outputs/ED_trainer_explainer'</span><span class="p">)</span>
-</pre></div>
-<div class="clipboard-copy-txt" id="cell-7">from jarvais.trainer import TrainerSupervised
-
-trainer = TrainerSupervised.load_trainer('./radcure_outputs/ED_trainer_explainer')</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">FileNotFoundError</span>                         Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[7], line 3</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,0,255)">jarvais</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">trainer</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> TrainerSupervised
-<span class="ansi-green-fg">----&gt; 3</span> trainer <span style="color: rgb(98,98,98)">=</span> <span class="ansi-yellow-bg">TrainerSupervised</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">load_trainer</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">'</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">./radcure_outputs/ED_trainer_explainer</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">'</span><span class="ansi-yellow-bg">)</span>
-
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/src/jarvais/trainer/trainer.py:396</span>, in <span class="ansi-cyan-fg">TrainerSupervised.load_trainer</span><span class="ansi-blue-fg">(cls, project_dir)</span>
-<span class="ansi-green-intense-fg ansi-bold">    386</span> <span style="color: rgb(175,0,0)">"""</span>
-<span class="ansi-green-intense-fg ansi-bold">    387</span> <span style="color: rgb(175,0,0)">Load a trained TrainerSupervised from the specified directory.</span>
-<span class="ansi-green-intense-fg ansi-bold">    388</span> 
-<span class="ansi-green-fg">   (...)</span>
-<span class="ansi-green-intense-fg ansi-bold">    393</span> <span style="color: rgb(175,0,0)">    trainer (TrainerSupervised): The loaded Trainer.</span>
-<span class="ansi-green-intense-fg ansi-bold">    394</span> <span style="color: rgb(175,0,0)">"""</span>
-<span class="ansi-green-intense-fg ansi-bold">    395</span> project_dir <span style="color: rgb(98,98,98)">=</span> Path(project_dir)
-<span class="ansi-green-fg">--&gt; 396</span> <span class="ansi-bold" style="color: rgb(0,135,0)">with</span> <span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg">project_dir</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">/</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">'</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">trainer_config.yaml</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">'</span><span class="ansi-yellow-bg">)</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">'</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">r</span><span class="ansi-yellow-bg" style="color: rgb(175,0,0)">'</span><span class="ansi-yellow-bg">)</span> <span class="ansi-bold" style="color: rgb(0,135,0)">as</span> f:
-<span class="ansi-green-intense-fg ansi-bold">    397</span>     trainer_config <span style="color: rgb(98,98,98)">=</span> yaml<span style="color: rgb(98,98,98)">.</span>safe_load(f)
-<span class="ansi-green-intense-fg ansi-bold">    399</span> trainer <span style="color: rgb(98,98,98)">=</span> <span style="color: rgb(0,135,0)">cls</span>()
-
-File <span class="ansi-green-fg">~/work/jarvais/jarvais/.pixi/envs/default/lib/python3.12/pathlib.py:1013</span>, in <span class="ansi-cyan-fg">Path.open</span><span class="ansi-blue-fg">(self, mode, buffering, encoding, errors, newline)</span>
-<span class="ansi-green-intense-fg ansi-bold">   1011</span> <span class="ansi-bold" style="color: rgb(0,135,0)">if</span> <span style="color: rgb(175,0,0)">"</span><span style="color: rgb(175,0,0)">b</span><span style="color: rgb(175,0,0)">"</span> <span class="ansi-bold" style="color: rgb(175,0,255)">not</span> <span class="ansi-bold" style="color: rgb(175,0,255)">in</span> mode:
-<span class="ansi-green-intense-fg ansi-bold">   1012</span>     encoding <span style="color: rgb(98,98,98)">=</span> io<span style="color: rgb(98,98,98)">.</span>text_encoding(encoding)
-<span class="ansi-green-fg">-&gt; 1013</span> <span class="ansi-bold" style="color: rgb(0,135,0)">return</span> <span class="ansi-yellow-bg">io</span><span class="ansi-yellow-bg" style="color: rgb(98,98,98)">.</span><span class="ansi-yellow-bg">open</span><span class="ansi-yellow-bg">(</span><span class="ansi-yellow-bg" style="color: rgb(0,135,0)">self</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">mode</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">buffering</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">encoding</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">errors</span><span class="ansi-yellow-bg">,</span><span class="ansi-yellow-bg"> </span><span class="ansi-yellow-bg">newline</span><span class="ansi-yellow-bg">)</span>
-
-<span class="ansi-red-fg">FileNotFoundError</span>: [Errno 2] No such file or directory: 'radcure_outputs/ED_trainer_explainer/trainer_config.yaml'</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [8]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="CodeMirror cm-s-jupyter">
-<div class="zeroclipboard-container">
-<clipboard-copy aria-label="Copy to Clipboard" for="cell-8">
-<div>
-<span class="notice" hidden="">Copied!</span>
-<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
-<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-</clipboard-copy>
-</div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.explainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Explainer</span>
 
 <span class="n">exp</span> <span class="o">=</span> <span class="n">Explainer</span><span class="o">.</span><span class="n">from_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
 <span class="n">exp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-8">from jarvais.explainer import Explainer
+<div class="clipboard-copy-txt" id="cell-6">from jarvais.explainer import Explainer
 
 exp = Explainer.from_trainer(trainer)
 exp.run()</div>
@@ -1842,43 +2197,58 @@ exp.run()</div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>
-<span class="ansi-red-fg">---------------------------------------------------------------------------</span>
-<span class="ansi-red-fg">NameError</span>                                 Traceback (most recent call last)
-Cell <span class="ansi-green-fg">In[8], line 3</span>
-<span class="ansi-green-intense-fg ansi-bold">      1</span> <span class="ansi-bold" style="color: rgb(0,135,0)">from</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,0,255)">jarvais</span><span class="ansi-bold" style="color: rgb(0,0,255)">.</span><span class="ansi-bold" style="color: rgb(0,0,255)">explainer</span><span style="color: rgb(188,188,188)"> </span><span class="ansi-bold" style="color: rgb(0,135,0)">import</span> Explainer
-<span class="ansi-green-fg">----&gt; 3</span> exp <span style="color: rgb(98,98,98)">=</span> Explainer<span style="color: rgb(98,98,98)">.</span>from_trainer(<span class="ansi-yellow-bg">trainer</span>)
-<span class="ansi-green-intense-fg ansi-bold">      4</span> exp<span style="color: rgb(98,98,98)">.</span>run()
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
+<pre>⚠️  **Possible Bias Detected in Disease Site** ⚠️
+=== Subgroup Analysis for 'Disease Site' Using Cox Proportional Hazards Model ===
 
-<span class="ansi-red-fg">NameError</span>: name 'trainer' is not defined</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [ ]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="CodeMirror cm-s-jupyter">
-<div class="zeroclipboard-container">
-<clipboard-copy aria-label="Copy to Clipboard" for="cell-9">
-<div>
-<span class="notice" hidden="">Copied!</span>
-<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
-<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-</clipboard-copy>
-</div>
-<div class="highlight-ipynb hl-python"><pre><span></span>
-</pre></div>
-<div class="clipboard-copy-txt" id="cell-9"></div>
+Model Statistics:
+    AIC (Partial):               2393.09
+    Log-Likelihood:              -1187.55
+    Log-Likelihood Ratio p-value: 0.0003
+    Concordance Index (C-index):   0.59
+Model Coefficients:
+    ╒════════════════════════════════╤═══════════════╤══════════════════╕
+    │ Feature                        │   Coefficient │   Standard Error │
+    ╞════════════════════════════════╪═══════════════╪══════════════════╡
+    │ Disease Site_Other             │         0.424 │            4.571 │
+    ├────────────────────────────────┼───────────────┼──────────────────┤
+    │ Disease Site_esophagus         │         0.795 │            4.577 │
+    ├────────────────────────────────┼───────────────┼──────────────────┤
+    │ Disease Site_hypopharynx       │         0.746 │            4.556 │
+    ├────────────────────────────────┼───────────────┼──────────────────┤
+    │ Disease Site_larynx            │         0.202 │            4.552 │
+    ├────────────────────────────────┼───────────────┼──────────────────┤
+    │ Disease Site_lip &amp; oral cavity │         0.666 │            4.561 │
+    ├────────────────────────────────┼───────────────┼──────────────────┤
+    │ Disease Site_nasal cavity      │        -1.205 │            4.653 │
+    ├────────────────────────────────┼───────────────┼──────────────────┤
+    │ Disease Site_nasopharynx       │        -0.925 │            4.558 │
+    ├────────────────────────────────┼───────────────┼──────────────────┤
+    │ Disease Site_oropharynx        │        -0.046 │            4.551 │
+    ├────────────────────────────────┼───────────────┼──────────────────┤
+    │ Disease Site_unknown           │         0.142 │            4.557 │
+    ╘════════════════════════════════╧═══════════════╧══════════════════╛
+⚠️  **Possible Bias Detected in Smoking Status** ⚠️
+=== Subgroup Analysis for 'Smoking Status' Using Cox Proportional Hazards Model ===
+
+Model Statistics:
+    AIC (Partial):               2375.84
+    Log-Likelihood:              -1183.92
+    Log-Likelihood Ratio p-value: 0.0000
+    Concordance Index (C-index):   0.61
+Model Coefficients:
+    ╒═══════════════════════════╤═══════════════╤══════════════════╕
+    │ Feature                   │   Coefficient │   Standard Error │
+    ╞═══════════════════════════╪═══════════════╪══════════════════╡
+    │ Smoking Status_Current    │         0.508 │            4.720 │
+    ├───────────────────────────┼───────────────┼──────────────────┤
+    │ Smoking Status_Ex-smoker  │         0.070 │            4.720 │
+    ├───────────────────────────┼───────────────┼──────────────────┤
+    │ Smoking Status_Non-smoker │        -0.710 │            4.721 │
+    ├───────────────────────────┼───────────────┼──────────────────┤
+    │ Smoking Status_unknown    │         0.417 │            4.753 │
+    ╘═══════════════════════════╧═══════════════╧══════════════════╛
+</pre>
 </div>
 </div>
 </div>
@@ -1941,7 +2311,7 @@ Cell <span class="ansi-green-fg">In[8], line 3</span>
     <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.tracking", "announce.dismiss"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
     
     
-      <script src="../../assets/javascripts/bundle.5090c770.min.js"></script>
+      <script src="../../assets/javascripts/bundle.f1b6f286.min.js"></script>
       
     
   </body>
