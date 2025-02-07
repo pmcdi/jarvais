@@ -18,9 +18,6 @@ jobs:
       matrix:
         os: [ubuntu-latest, windows-latest]
         env: ["py310", "py311", "py312"]
-    paths-ignore:
-      - 'docs/**'
-      - '.github/workflows/**'
 
     steps:
       - uses: actions/checkout@v4
@@ -71,9 +68,6 @@ jobs:
     strategy:
       matrix:
         os: [ubuntu-latest]
-    paths-ignore:
-      - 'docs/**'
-      - '.github/workflows/**'
 
     steps:
       - uses: actions/checkout@v4
@@ -97,8 +91,8 @@ jobs:
       issues: write
       pull-requests: write
 
-    needs: [Unit-Tests]
-    if: (needs.Unit-Tests.result == 'success' || needs.Unit-Tests.result == 'skipped') && github.ref == 'refs/heads/main'
+    needs: [Unit-Tests, Ruff]
+    if: github.ref == 'refs/heads/main'
 
     env:
       PIXI_ENV: "publish"
