@@ -1321,7 +1321,8 @@ analyzer.run()
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
-<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">:</span>
+<span class="normal">262</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    A data analysis and cleaning tool for preprocessing datasets, generating reports, and visualizations.</span>
 
@@ -1503,9 +1504,9 @@ analyzer.run()
         <span class="c1"># Correlation Plots</span>
         <span class="n">p_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"pearson"</span><span class="p">)</span>
         <span class="n">s_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"spearman"</span><span class="p">)</span>
-        <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span><span class="o">*</span><span class="mf">1.5</span>
-        <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'pearson_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
-        <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'spearman_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+        <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span><span class="o">*</span><span class="mf">1.2</span>
+        <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'pearson_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Pearson Correlation"</span><span class="p">)</span>
+        <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'spearman_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Spearman Correlation"</span><span class="p">)</span>
 
         <span class="c1"># Categorical cross frequency table</span>
         <span class="n">plot_frequency_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">figures_dir</span><span class="p">)</span>
@@ -1537,6 +1538,7 @@ analyzer.run()
             <span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">multiplots</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span>
         <span class="p">)</span>
 
@@ -1663,7 +1665,8 @@ analyzer.run()
 <span class="normal">243</span>
 <span class="normal">244</span>
 <span class="normal">245</span>
-<span class="normal">246</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">246</span>
+<span class="normal">247</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Run the data cleaning and visualization process."""</span>
     <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">config</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_create_config</span><span class="p">()</span>
@@ -1706,9 +1709,9 @@ analyzer.run()
     <span class="c1"># Correlation Plots</span>
     <span class="n">p_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"pearson"</span><span class="p">)</span>
     <span class="n">s_corr</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">]</span><span class="o">.</span><span class="n">corr</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s2">"spearman"</span><span class="p">)</span>
-    <span class="n">size</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span><span class="o">*</span><span class="mf">1.5</span>
-    <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'pearson_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
-    <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'spearman_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+    <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">)</span><span class="o">*</span><span class="mf">1.2</span>
+    <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'pearson_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Pearson Correlation"</span><span class="p">)</span>
+    <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'spearman_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Spearman Correlation"</span><span class="p">)</span>
 
     <span class="c1"># Categorical cross frequency table</span>
     <span class="n">plot_frequency_table</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="n">figures_dir</span><span class="p">)</span>
@@ -1740,6 +1743,7 @@ analyzer.run()
         <span class="bp">self</span><span class="o">.</span><span class="n">outlier_analysis</span><span class="p">,</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">multiplots</span><span class="p">,</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span>
     <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
@@ -1767,8 +1771,7 @@ analyzer.run()
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">248</span>
-<span class="normal">249</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">249</span>
 <span class="normal">250</span>
 <span class="normal">251</span>
 <span class="normal">252</span>
@@ -1781,7 +1784,8 @@ analyzer.run()
 <span class="normal">259</span>
 <span class="normal">260</span>
 <span class="normal">261</span>
-<span class="normal">262</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">262</span>
+<span class="normal">263</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">dry_run</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""Simply returns generated config and displays TableOne."""</span>
     <span class="n">analyzer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
