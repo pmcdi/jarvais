@@ -1,6 +1,22 @@
 # CHANGELOG
 
 
+## v0.11.0 (2025-02-10)
+
+### Build System
+
+- Update lock
+  ([`0ee0dce`](https://github.com/pmcdi/jarvais/commit/0ee0dce8bf7b6b4a782321da0839c0cc3ec466ec))
+
+- **pypi**: Added documentation link to toml
+  ([`c96f4a1`](https://github.com/pmcdi/jarvais/commit/c96f4a1b94c5cbe366a730096c6f19804d4817d2))
+
+### Features
+
+- Trigger patch release with dummy update
+  ([`98ce02e`](https://github.com/pmcdi/jarvais/commit/98ce02eae92d9f01793dc370d3fb21b32deff837))
+
+
 ## v0.10.1 (2025-02-07)
 
 ### Bug Fixes
@@ -15,6 +31,11 @@
 
 - Update lock file
   ([`6e8e8e0`](https://github.com/pmcdi/jarvais/commit/6e8e8e0874cac607cbe3770b426e36bed04f6e0e))
+
+### Documentation
+
+- Update to readme and front page of docs
+  ([`ca275e1`](https://github.com/pmcdi/jarvais/commit/ca275e1ce98ba66543ae3b6edc6a546cf6e59a94))
 
 
 ## v0.10.0 (2025-02-07)
