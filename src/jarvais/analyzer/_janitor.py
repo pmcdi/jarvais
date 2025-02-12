@@ -47,7 +47,8 @@ def replace_missing(
     for cat in categorical_columns:
         filler = config['missingness_strategy']['categorical'].get(cat, 'Unknown')
         if config['missingness_strategy']['categorical'][cat].lower() != 'knn':
-            data[cat] = data[cat].fillna(filler)
+            # Adds filler as a new category
+            data[cat] = data[cat].astype(str).fillna(filler).astype('category')
 
     data_to_use = data[categorical_columns + continuous_columns]
     for cat in categorical_columns:
