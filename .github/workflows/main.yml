@@ -78,6 +78,7 @@ jobs:
           environments: ${{ env.PIXI_ENV }}
           pixi-version: v0.41.3
           cache: true
+          locked: false
 
       - name: Run Ruff
         run: pixi run lint
