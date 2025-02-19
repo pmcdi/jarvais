@@ -1,6 +1,42 @@
 # CHANGELOG
 
 
+## v0.11.1 (2025-02-19)
+
+### Bug Fixes
+
+- Cicd issues. Updating to latest pixi version
+  ([`5deadb8`](https://github.com/pmcdi/jarvais/commit/5deadb8fe10fd72ae610e0abe7c584e94ee1c70f))
+
+- For replacing missing, adds filler as a category before adding to df
+  ([`1ec4c6e`](https://github.com/pmcdi/jarvais/commit/1ec4c6ebc93d0813de53c3e9e1490367654b364f))
+
+- Trying cicd without lock file
+  ([`be94bf4`](https://github.com/pmcdi/jarvais/commit/be94bf4b9b8df169ce1ccc8fcba265723f0f8e6b))
+
+### Build System
+
+- Update pixi.lock
+  ([`4485301`](https://github.com/pmcdi/jarvais/commit/44853018a1669d8a7b0591b77917b0e71583077d))
+
+- Update pixi.lock
+  ([`2f2cb42`](https://github.com/pmcdi/jarvais/commit/2f2cb42ca6eb00f5bff1438ebb8b4c2463221d85))
+
+### Continuous Integration
+
+- Added depandabot and updated pixi setep version
+  ([`8b1d2b2`](https://github.com/pmcdi/jarvais/commit/8b1d2b24bd3d50730904dfb7ea0d5829eaccc9c8))
+
+- Pinning to stable pixi versions
+  ([`7a6a27b`](https://github.com/pmcdi/jarvais/commit/7a6a27b3f459e3b77044846c7135e27088482cba))
+
+- Updated pixi versions to 0.40.2
+  ([`7e45d99`](https://github.com/pmcdi/jarvais/commit/7e45d99cbe078e877f7978710aa0387bafd6a249))
+
+- Updated ruff action to be locked: false
+  ([`b31e73e`](https://github.com/pmcdi/jarvais/commit/b31e73e3553b3f8cd819391fec1285c9f2d3f318))
+
+
 ## v0.11.0 (2025-02-10)
 
 ### Build System
