@@ -24,7 +24,7 @@ jobs:
           git config user.email github-actions[bot]@users.noreply.github.com
 
       - name: Install Pixi
-        uses: prefix-dev/setup-pixi@v0.8.0
+        uses: prefix-dev/setup-pixi@v0.8.2
         with:
           environments: ${{ matrix.env }}
           pixi-version: v0.41.3
