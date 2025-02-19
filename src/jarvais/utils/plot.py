@@ -278,7 +278,8 @@ def plot_kaplan_meier_by_category(
         data_x: pd.DataFrame,
         data_y: pd.DataFrame,
         categorical_columns: list,
-        output_dir: Path
+        output_dir: Path,
+        show_figure: bool = False
     ) -> None:
     """
     Plots Kaplan-Meier survival curves for each category in the specified categorical columns.
@@ -338,7 +339,10 @@ def plot_kaplan_meier_by_category(
         plt.legend(loc="best")
         plt.grid(alpha=0.3)
         plt.savefig(output_dir / f'kaplan_meier_{cat_col}.png')
-        plt.close()
+        if show_figure:
+            plt.show
+        else:
+            plt.close()
 
 # EXPLAINER
 
