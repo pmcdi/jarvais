@@ -12,7 +12,6 @@ python = ">=3.10"
 [pypi-dependencies]
 jarvais = { path = ".", editable = true }
 
-
 [environments]
 dev = { features = ["test", "style", "dev"], solve-group = "default" }
 publish = { features = ["build", "release"], solve-group = "default" }
