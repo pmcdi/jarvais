@@ -7,46 +7,30 @@ platforms = ["linux-64", "win-64", "osx-64"]
 example = "jupyter lab"
 
 [dependencies]
-python = ">=3.10"
-pyyaml = ">=6.0.2,<7"
-fpdf2 = ">=2.8.1,<3"
-jupyterlab = ">=4.2.5,<5"
-seaborn = ">=0.13.2,<0.14"
-"autogluon.tabular" = ">=1.2"
-pandas = ">2.0"
-openpyxl = ">=3.1.5,<3.2"
-htmlmin = "==0.1.12"
-scipy = ">=1.11.4,<1.13"
-tableone = "==0.9.1"
-borb = ">=2.1.25,<3"
-prettytable = ">=3.12.0,<4"
-lifelines = ">=0.30.0,<0.31"
-lightning = ">=2.4.0,<3"
-optuna = "==4.1.0"
-fairlearn = ">=0.12.0,<0.13"
-shap = ">=0.46.0,<0.47"
-statsmodels = ">=0.14.4,<0.15"
-mkdocs = ">=1.6.1,<2"
-scikit-learn = ">=1.5.2,<2"
+python = ">=3.10,<=3.12"
 
 [pypi-dependencies]
 jarvais = { path = ".", editable = true }
-mrmr-selection = "==0.2.8"
-umap-learn = ">=0.5.6, <0.6"
-scikit-survival = ">=0.23.1,<0.24"
-mkdocs-material = ">=9.5.49,<10" 
-mkdocs-jupyter = ">=0.25.1,<0.26" 
-mkdocs-pdf = ">=0.1.2,<0.2"
-mkdocstrings = { version = ">=0.27.0, <0.28", extras = ["python"] }
-optuna-integration = { version = "==4.1.0", extras = ["pytorch-lightning"] }
 
 [environments]
-dev = { features = ["test", "style"], solve-group = "default" }
-publish = { features = ["build", "release"], solve-group = "default" }
+dev = ["test", "style", "dev"] 
+publish = ["build", "release"] 
 test = ["test"]
 py310 = { features = ["py310", "test"], no-default-feature = true }
 py311 = { features = ["py311", "test"], no-default-feature = true }
 py312 = { features = ["py312", "test"], no-default-feature = true }
+
+############################################## DEV ###############################################
+[feature.dev.pypi-dependencies]
+jarvais = { path = ".", editable = true }
+jupyterlab = ">=4.2.5,<5"
+mkdocs = ">=1.6.1,<2"
+mkdocs-material = ">=9.5.49,<10" 
+mkdocs-jupyter = ">=0.25.1,<0.26" 
+mkdocs-pdf = ">=0.1.2,<0.2"
+mkdocstrings = { version = ">=0.27.0, <0.28", extras = ["python"] }
+
+[feature.dev.dependencies]
 
 ############################################## python ###############################################
 
@@ -60,9 +44,10 @@ python = "3.12.*"
 ############################################## TEST ################################################
 [feature.test.pypi-dependencies]
 jarvais = { path = ".", editable = true }
+pytest = "*"
 
 [feature.test.dependencies]
-pytest = "*"
+
 
 [feature.test.tasks.test]
 cmd = [
@@ -92,14 +77,14 @@ description = "Run ruff formatter, use `--diff` to see changes only"
 
 #################################### RELEASE & BUILD ###############################################
 
-[feature.release.dependencies]
+[feature.release.pypi-dependencies]
 python-semantic-release = "*"
 
 [feature.release.tasks]
 semver = 'echo "Next Version is: $(semantic-release version --print)"'
 release = "semantic-release version"
 
-[feature.build.dependencies]
+[feature.build.pypi-dependencies]
 hatch = "*"
 
 [feature.build.tasks]
