@@ -30,4 +30,4 @@ jobs:
           pixi-version: v0.41.3
           cache: true
           locked: false # wont be the same because of the tag
-      - run: pixi run mkdocs gh-deploy --force
+      - run: pixi run -e dev mkdocs gh-deploy --force
