@@ -96,17 +96,16 @@ jobs:
     steps:
       - name: Release Please
         id: release
-        uses: google-github-actions/release-please-action@v4
+        uses: googleapis/release-please-action@v4
         with:
           release-type: python
-          package-name: jarvais
           token: ${{ secrets.RELEASE_PLEASE_TOKEN }}
 
   # --------------------------------------
   # Publish to PyPI when a release is tagged
   # --------------------------------------
   Publish-To-PyPi:
-    if: startsWith(github.ref, 'refs/tags/')
+    if: needs.Release-Please.outputs.released == 'true' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     env:
       PIXI_ENV: publish
