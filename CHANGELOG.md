@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## [0.11.2](https://github.com/pmcdi/jarvais/compare/v0.11.1...v0.11.2) (2025-04-24)
+
+
+### Bug Fixes
+
+* autogluon model dep issue + reorg ([eea6666](https://github.com/pmcdi/jarvais/commit/eea6666deecece83b81d57136f3a9d11faa65a79))
+* **dependencies:** autogluon import on some models ([7c39af1](https://github.com/pmcdi/jarvais/commit/7c39af19c5819f88c5e5afc5406cc9fc20b22da6))
+* upgrade autogluon to 1.2 for all models ([a19e78d](https://github.com/pmcdi/jarvais/commit/a19e78dca11e3746eaa966f336f3c40a76590669))
+
 ## v0.11.1 (2025-02-19)
 
 ### Bug Fixes
