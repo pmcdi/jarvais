@@ -1,6 +1,15 @@
 # CHANGELOG
 
 
+## [0.11.3](https://github.com/pmcdi/jarvais/compare/v0.11.2...v0.11.3) (2025-04-25)
+
+
+### Bug Fixes
+
+* **analyzer:** fix minor bugs in Analyzer class ([952c00e](https://github.com/pmcdi/jarvais/commit/952c00ec6922ce520fb9f50e2f0b631822ee8aa9))
+* remove side affect in plot_pairplot by using .copy ([5749ae0](https://github.com/pmcdi/jarvais/commit/5749ae0b88989b9b36c2551addf3b5ac885d44a0))
+* slicing when applying mapping ([de18c1e](https://github.com/pmcdi/jarvais/commit/de18c1e42e612594995548cd8a7fc09f0a17892f))
+
 ## [0.11.2](https://github.com/pmcdi/jarvais/compare/v0.11.1...v0.11.2) (2025-04-24)
 
 
