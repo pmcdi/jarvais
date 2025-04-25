@@ -1,76 +1,102 @@
-from jarvais.analyzer import Analyzer
-from pathlib import Path
 import pytest
-import numpy as np
-import pandas as pd
-import shutil
+import yaml
 
-@pytest.fixture
-def sample_data():
-    data = {
-        'A': [1, 2, 3, 4, 5],
-        'B': [5, 4, 3, 2, 1],
-        'C': ['a', 'b', 'a', 'a', 'b'],
-        'D': [None, 2, None, 4, 5]
-    }
-    df= pd.concat([pd.DataFrame(data), pd.DataFrame(data), pd.DataFrame(data)], axis=0)
-    return df.reset_index()
+from jarvais import Analyzer
 
-@pytest.fixture
-def tmpdir():
-    temp_path = Path("./tests/tmp")
-    temp_path.mkdir(parents=True, exist_ok=True)
 
-    for file in temp_path.iterdir():
-        file_path = temp_path / file
-        if file_path.is_file() or file_path.is_symlink():
-            file_path.unlink() 
-        elif file_path.is_dir():
-            shutil.rmtree(file_path) 
-                    
-    yield temp_path
+def test_analyzer_radcure(
+        radcure_clinical, 
+        tmp_path
+    ):
+    radcure_clinical.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
 
-@pytest.fixture
-def analyzer(sample_data, tmpdir):
-    config_file = tmpdir / 'config.yaml'
-    output_dir = tmpdir
-    if "data.csv" not in output_dir.iterdir():
-        sample_data.to_csv(output_dir / 'data.csv', index=False)
-    return Analyzer(data=sample_data, output_dir=output_dir)
+    config = Analyzer.dry_run(radcure_clinical)
+    config['columns']['categorical'].remove('Dose')
+    config['columns']['continuous'].append('Dose') 
 
-def test_analyzer_initialization(analyzer, sample_data):
-    assert analyzer.data.equals(sample_data)
-    assert analyzer.target_variable is None
-    assert analyzer.output_dir is not None
-    assert analyzer.config is None
+    with open(tmp_path / 'config.yaml', 'w') as f:
+        yaml.dump(config, f)
 
-def test_replace_missing(analyzer):
-    analyzer._create_config()
-    analyzer.config['missingness_strategy']['continuous']['D'] = 'mean'
-    analyzer._apply_config() # replace missing happens in here
-    
-    assert analyzer.data['D'].isna().sum() == 0
-    assert np.isclose(analyzer.data['D'].iloc[0], analyzer.data['D'].mean(), rtol=1e-4)
-
-def test_create_config(analyzer):
-    # _infer_types is always run inside _create_config
-    analyzer._create_config()
-    assert 'A' in analyzer.continuous_columns
-    assert 'B' in analyzer.continuous_columns
-    assert 'C' in analyzer.categorical_columns
-
-def test_create_multiplots(analyzer):
-    analyzer.categorical_columns = ['C']
-    analyzer.continuous_columns = ['A', 'B']
-    analyzer.umap_data = pd.DataFrame.from_dict({'UMAP1': [i for i in range(1, 16)], 'UMAP2': [j for j in range(15, 0, -1)]}).to_numpy()
-    analyzer._create_multiplots(figures_dir=analyzer.output_dir / 'figures')
-    assert len(analyzer.multiplots) > 0
-
-def test_run(analyzer):
+    analyzer = Analyzer(
+        radcure_clinical, 
+        output_dir=tmp_path, 
+        task='survival',
+        target_variable='event', 
+        config=tmp_path / 'config.yaml'
+    )
     analyzer.run()
+
+    expected_continuous_columns = {'time', 'age at dx', 'Dose'}
+    assert set(analyzer.continuous_columns) == expected_continuous_columns
+
+    expected_categorical_columns = {
+        'Smoking Status', 'Sex', 
+        'T Stage', 'N Stage', 
+        'Disease Site', 'Stage', 
+        'Chemotherapy', 'HPV Combined', 
+        'event'
+    }
+    assert set(analyzer.categorical_columns) == expected_categorical_columns
+
+    assert len(analyzer.multiplots) == len(analyzer.categorical_columns) # Should be 1 for each categorical column
+
+    assert (tmp_path / 'config.yaml').exists()
+    assert (tmp_path / 'tableone.csv').exists()
+    assert (tmp_path / 'updated_data.csv').exists()
+
     assert (analyzer.output_dir / 'tableone.csv').exists()
     assert (analyzer.output_dir / 'updated_data.csv').exists()
     assert (analyzer.output_dir / 'figures' / 'pearson_correlation.png').exists()
     assert (analyzer.output_dir / 'figures' / 'spearman_correlation.png').exists()
     assert (analyzer.output_dir / 'figures' / 'multiplots').exists()
     assert (analyzer.output_dir / 'figures' / 'frequency_tables').exists()
+    assert (analyzer.output_dir / 'figures' / 'kaplan_meier').exists()
+
+
+def test_analyzer_breast_cancer(
+        breast_cancer, 
+        tmp_path
+    ):
+    config = Analyzer.dry_run(breast_cancer)
+    config['columns']['categorical'].remove('Age')
+    config['columns']['continuous'].append('Age')
+    config['columns']['categorical'].remove('Regional Node Examined')
+    config['columns']['continuous'].append('Regional Node Examined')
+    config['columns']['categorical'].remove('Reginol Node Positive')
+    config['columns']['continuous'].append('Reginol Node Positive')
+
+    with open(tmp_path / 'config.yaml', 'w') as f:
+        yaml.dump(config, f)
+
+    analyzer = Analyzer(breast_cancer, output_dir=tmp_path, target_variable='Status', config=tmp_path / 'config.yaml')
+    analyzer.run()
+
+    expected_continuous_columns = {'Survival Months', 'Tumor Size', 'Age', 'Regional Node Examined', 'Reginol Node Positive'}
+    assert set(analyzer.continuous_columns) == expected_continuous_columns
+
+    expected_categorical_columns = {
+        'Progesterone Status', '6th Stage', 
+        'T Stage ', 'Race', 
+        'differentiate', 'Estrogen Status', 
+        'Marital Status', 'Grade', 
+        'A Stage', 'Status', 'N Stage'
+    }
+    assert set(analyzer.categorical_columns) == expected_categorical_columns
+
+    assert len(analyzer.multiplots) == len(analyzer.categorical_columns) # Should be 1 for each categorical column
+
+    assert (tmp_path / 'config.yaml').exists()
+    assert (tmp_path / 'tableone.csv').exists()
+    assert (tmp_path / 'updated_data.csv').exists()
+
+    assert (analyzer.output_dir / 'tableone.csv').exists()
+    assert (analyzer.output_dir / 'updated_data.csv').exists()
+    assert (analyzer.output_dir / 'figures' / 'pearson_correlation.png').exists()
+    assert (analyzer.output_dir / 'figures' / 'spearman_correlation.png').exists()
+    assert (analyzer.output_dir / 'figures' / 'multiplots').exists()
+    assert (analyzer.output_dir / 'figures' / 'frequency_tables').exists()
+
+
+
+
+
