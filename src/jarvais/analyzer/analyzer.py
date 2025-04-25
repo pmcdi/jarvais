@@ -145,7 +145,7 @@ class Analyzer:
 
         for key in self.config['mapping'].keys():
             assert key in self.data.columns, f"{key} in mapping file not found data"
-            self.data.loc[:, [key]] = self.data.loc[:, key].replace(self.config['mapping'][key])
+            self.data.loc[:, key] = self.data.loc[:, key].replace(self.config['mapping'][key])
 
         self.data = replace_missing(self.data, self.categorical_columns, self.continuous_columns, self.config)
 
