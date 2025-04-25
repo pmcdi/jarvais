@@ -102,7 +102,6 @@ def plot_one_multiplot(
     # Calculate p-values
     for col in continuous_columns:
         unique_values = data[var].unique()
-
         if len(unique_values) > 1:
             if len(unique_values) == 2: # If binary classification, use t-test
                 group1 = data[data[var] == unique_values[0]][col]
@@ -231,13 +230,13 @@ def plot_pairplot(
         top_10_pairs = corr_pairs[corr_pairs < 1].nlargest(5)
         columns_to_plot = list({index for pair in top_10_pairs.index for index in pair})
     else:
-        columns_to_plot = continuous_columns
+        columns_to_plot = continuous_columns.copy()
 
     hue = target_variable
     if target_variable is not None:
         columns_to_plot += [target_variable]
 
-    sns.set_theme(style="darkgrid", font="Arial")
+    sns.set_theme(style="darkgrid")
     g = sns.pairplot(data[columns_to_plot], hue=hue)
     g.figure.suptitle("Pair Plot", y=1.08)
 
@@ -443,7 +442,7 @@ def plot_shap_values(
     # Compute SHAP values for the test set
     shap_values = shap_exp(test_data)
 
-    sns.set_theme(style="darkgrid", font="Arial")
+    sns.set_theme(style="darkgrid")
     fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
     shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
     fig.savefig(output_dir / 'shap_heatmap.png')
@@ -524,7 +523,7 @@ def plot_violin_of_bootstrapped_metrics(
 
     # Function to create violin plots for a specific data split
     def create_violin_plot(data_split, save_path):
-        sns.set_theme(style="darkgrid", font="Arial")
+        sns.set_theme(style="darkgrid")
         subset = result_df[result_df['data_split'] == data_split]
         g = sns.FacetGrid(
             subset,
@@ -583,7 +582,7 @@ def plot_regression_diagnostics(
     
     # Regression Line
     plt.figure(figsize=(10, 6))
-    sns.set_theme(style="darkgrid", font="Arial")
+    sns.set_theme(style="darkgrid")
     sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
     sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
     plt.xlabel('True Values')
@@ -594,7 +593,7 @@ def plot_regression_diagnostics(
 
     # Residuals
     plt.figure(figsize=(10, 6))
-    sns.set_theme(style="darkgrid", font="Arial")
+    sns.set_theme(style="darkgrid")
     sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
     plt.axhline(0, color='red', linestyle='--')
     plt.xlabel('Fitted Values')
@@ -605,7 +604,7 @@ def plot_regression_diagnostics(
 
     # Residual Histogram
     plt.figure(figsize=(10, 6))
-    sns.set_theme(style="darkgrid", font="Arial")
+    sns.set_theme(style="darkgrid")
     sns.histplot(residuals, kde=True, bins=30)
     plt.xlabel('Residuals')
     plt.title('Histogram of Residuals')
