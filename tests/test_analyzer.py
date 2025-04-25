@@ -44,8 +44,6 @@ def test_analyzer_radcure(
     assert (tmp_path / 'tableone.csv').exists()
     assert (tmp_path / 'updated_data.csv').exists()
 
-    assert (analyzer.output_dir / 'tableone.csv').exists()
-    assert (analyzer.output_dir / 'updated_data.csv').exists()
     assert (analyzer.output_dir / 'figures' / 'pearson_correlation.png').exists()
     assert (analyzer.output_dir / 'figures' / 'spearman_correlation.png').exists()
     assert (analyzer.output_dir / 'figures' / 'multiplots').exists()
@@ -89,8 +87,6 @@ def test_analyzer_breast_cancer(
     assert (tmp_path / 'tableone.csv').exists()
     assert (tmp_path / 'updated_data.csv').exists()
 
-    assert (analyzer.output_dir / 'tableone.csv').exists()
-    assert (analyzer.output_dir / 'updated_data.csv').exists()
     assert (analyzer.output_dir / 'figures' / 'pearson_correlation.png').exists()
     assert (analyzer.output_dir / 'figures' / 'spearman_correlation.png').exists()
     assert (analyzer.output_dir / 'figures' / 'multiplots').exists()
