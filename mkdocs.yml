@@ -22,6 +22,9 @@ theme:
           icon: material/lightbulb-outline 
           name: Switch to dark mode
 
+repo_url: https://github.com/pmcdi/jarvais
+repo_name: GitHub
+
 plugins:
   - search
   - mkdocstrings
