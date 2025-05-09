@@ -11,6 +11,7 @@ python = ">=3.10,<=3.12"
 
 [pypi-dependencies]
 jarvais = { path = ".", editable = true }
+pydantic = ">=2.11.3, <3"
 
 [environments]
 dev = ["test", "style", "dev"] 
@@ -31,6 +32,9 @@ mkdocs-pdf = ">=0.1.2,<0.2"
 mkdocstrings = { version = ">=0.27.0, <0.28", extras = ["python"] }
 
 [feature.dev.dependencies]
+
+[feature.dev.activation]
+env = { JARVAIS_LOG_LEVEL = "DEBUG" }
 
 ############################################## python ###############################################
 
