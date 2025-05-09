@@ -6,6 +6,7 @@ tests/tmp
 data/*
 !data/RADCURE_Clinical_v04_20241219.csv
 !data/RADCURE_processed_clinical.csv
+temp_output
 
 .DS_Store
 docs/tutorials/*
@@ -19,7 +20,6 @@ __pycache__
 
 .ipynb_checkpoints
 
-#analysis_*
 AutogluonModel
 .pixi
 *.egg-info
