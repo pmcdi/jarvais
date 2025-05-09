@@ -75,7 +75,7 @@ class OutlierModule(BaseModel):
                 self._outlier_report += f'  - No Outliers found in {col}\n'
 
         if self._outlier_report:
-            logger.info(f"Outlier Report:\n{self._outlier_report}")
+            print(f"Outlier Report:\n{self._outlier_report}")
 
         return df
 
