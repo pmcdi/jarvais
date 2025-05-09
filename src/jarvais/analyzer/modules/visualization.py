@@ -67,6 +67,9 @@ class VisualizationModule(BaseModel):
         self._figures_dir = Path(self.output_dir) / "figures"
         self._figures_dir.mkdir(exist_ok=True)
 
+        plot_order = ["corr", "pairplot", "umap", "frequency_table", "multiplot", "kaplan_meier"]
+        self.plots = [p for p in plot_order if p in self.plots] # Need UMAP before frequency table
+
     @classmethod
     def validate_plots(cls, plots):
         plot_registry = ["corr", "pairplot", "frequency_table", "multiplot", "umap", "kaplan_meier"]
