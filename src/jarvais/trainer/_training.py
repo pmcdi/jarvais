@@ -62,7 +62,9 @@ def train_autogluon_with_cv(
         ).fit(
             train_data,
             tuning_data=val_data,
-            **kwargs)
+            use_bag_holdout=True,
+            **kwargs
+        )
 
         score = predictor.evaluate(val_data)[eval_metric]
         print(f"Fold {fold + 1} score: {score}")
