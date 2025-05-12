@@ -1,6 +1,7 @@
+from typing import Dict, Literal
+
 import pandas as pd
 from pydantic import BaseModel, Field, PrivateAttr
-from typing import Dict, Literal
 
 from jarvais.loggers import logger
 
@@ -10,12 +11,12 @@ class OutlierModule(BaseModel):
     categorical_strategy: Dict[str, Literal['frequency']] = Field(
         description="Outlier strategy for categorical columns.",
         title="Categorical Strategy",
-        examples={"treatment_type": "frequency"}
+        examples=[{"treatment_type": "frequency"}]
     )
     continuous_strategy: Dict[str, Literal['none']] = Field(
         description="Outlier strategy for continuous columns (currently unsupported).",
         title="Continuous Strategy",
-        examples={"age": "none"}
+        examples=[{"age": "none"}]
     )
     threshold: float = Field(
         default=0.01,
@@ -37,7 +38,7 @@ class OutlierModule(BaseModel):
         ) -> "OutlierModule":
         return cls(
             categorical_strategy={col: "frequency" for col in categorical_columns},
-            continuous_strategy={col: "none" for col in continuous_columns}
+            continuous_strategy={col: "none" for col in continuous_columns} if continuous_columns is not None else {},
         )
     
     @property
@@ -54,8 +55,8 @@ class OutlierModule(BaseModel):
         df = df.copy()
 
         # Handle continuous outliers
-        for col, strategy in self.continuous_strategy.items():
-            continue
+        # for col, strategy in self.continuous_strategy.items(): 
+        #     continue
 
         # Handle categorical outliers
         for col, strategy in self.categorical_strategy.items():
@@ -66,11 +67,11 @@ class OutlierModule(BaseModel):
             threshold = int(len(df) * self.threshold)
             outliers = value_counts[value_counts < threshold].index
 
-            df[col] = df[col].apply(lambda x: "Other" if x in outliers else x).astype("category")
+            df[col] = df[col].apply(lambda x, outliers=outliers: "Other" if x in outliers else x).astype("category")
             
             if len(outliers) > 0:
-                outliers = [f'{o}: {value_counts[o]} out of {df[col].count()}' for o in outliers]
-                self._outlier_report += f'  - Outliers found in {col}: {outliers}\n'
+                outliers_msg = [f'{o}: {value_counts[o]} out of {df[col].count()}' for o in outliers]
+                self._outlier_report += f'  - Outliers found in {col}: {outliers_msg}\n'
             else:
                 self._outlier_report += f'  - No Outliers found in {col}\n'
 
@@ -81,10 +82,11 @@ class OutlierModule(BaseModel):
 
 
 if __name__ == "__main__":
-    from rich import print
+    from rich import print  # noqa: A004
 
     outlier_module = OutlierModule(
-        categorical_strategy={"treatment_type": "frequency"}
+        categorical_strategy={"treatment_type": "frequency"},
+        continuous_strategy={"age": "none"}
     )
 
     print(outlier_module)

@@ -1,17 +1,19 @@
 
-import pandas as pd
-from tableone import TableOne
-from pathlib import Path
 import json
+from pathlib import Path
 
-from jarvais.analyzer.settings import BaseAnalyzerSettings, AnalyzerSettings
-from jarvais.analyzer.modules import (
-    MissingnessModule, 
-    OutlierModule, 
-    VisualizationModule,
-    OneHotEncodingModule,
-)
+import pandas as pd
+import rich.repr
+from tableone import TableOne # type: ignore
+
 from jarvais.analyzer._utils import infer_types
+from jarvais.analyzer.modules import (
+    MissingnessModule,
+    OneHotEncodingModule,
+    OutlierModule,
+    VisualizationModule,
+)
+from jarvais.analyzer.settings import AnalyzerSettings, BaseAnalyzerSettings
 from jarvais.loggers import logger
 from jarvais.utils.pdf import generate_analysis_report_pdf
 
@@ -22,9 +24,9 @@ class Analyzer():
             self, 
             data: pd.DataFrame,
             output_dir: str | Path,
-            categorical_columns: list[str] = [], 
-            continuous_columns: list[str] = [],
-            date_columns: list[str] = [],
+            categorical_columns: list[str] | None = None, 
+            continuous_columns: list[str] | None = None,
+            date_columns: list[str] | None = None,
             target_variable: str | None = None,
             task: str | None = None,
             generate_report: bool = True
@@ -36,6 +38,10 @@ class Analyzer():
         if not categorical_columns and not continuous_columns and not date_columns:
             categorical_columns, continuous_columns, date_columns = infer_types(self.data)
         else:
+            categorical_columns = categorical_columns or []
+            continuous_columns = continuous_columns or []
+            date_columns = date_columns or []
+
             specified_cols = set(categorical_columns + continuous_columns + date_columns)
             remaining_cols = set(self.data.columns) - specified_cols
 
@@ -52,7 +58,7 @@ class Analyzer():
                 date_columns = list(remaining_cols)        
         
         self.base_settings = BaseAnalyzerSettings(
-            output_dir=output_dir,
+            output_dir=Path(output_dir),
             categorical_columns=categorical_columns,
             continuous_columns=continuous_columns,
             date_columns=date_columns,
@@ -175,42 +181,7 @@ class Analyzer():
                 **self.settings.model_dump(mode="json") 
             }, f, indent=2)
 
-    def __rich_repr__(self):
+    def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
 
-
-if __name__ == "__main__":
-    from rich import print
-    import json
-
-    data = pd.DataFrame({
-        "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
-        "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
-        "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
-        "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
-        "death": [True, False, True, False, True, False, True, False, True, False],
-    })
-    analyzer = Analyzer(
-        data, 
-        output_dir="./temp_output/test",
-        categorical_columns=["stage", "treatment", "death"], 
-        target_variable="death", 
-        task="classification"
-    )
-    
-    print(analyzer)
-
-    analyzer.run()
-    
-    settings_path = Path('temp_output') / 'analyzer_settings.json'
-    with settings_path.open() as f:
-        settings_dict = json.load(f)
-    
-    analyzer = Analyzer.from_settings(data, settings_dict)
-
-    print(analyzer)
-
-    analyzer.run()
-
-    
 
