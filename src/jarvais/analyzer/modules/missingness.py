@@ -1,7 +1,8 @@
-import pandas as pd
-from sklearn.impute import KNNImputer
-from pydantic import BaseModel, Field
 from typing import Dict, Literal
+
+import pandas as pd
+from pydantic import BaseModel, Field
+from sklearn.impute import KNNImputer # type: ignore
 
 from jarvais.loggers import logger
 
@@ -11,12 +12,12 @@ class MissingnessModule(BaseModel):
     categorical_strategy: Dict[str, Literal['unknown', 'knn', 'mode']] = Field(
         description="Missingness strategy for categorical columns.",
         title="Categorical Strategy",
-        examples={"gender": "Unknown", "treatment_type": "knn", "tumor_stage": "mode"}
+        examples=[{"gender": "unknown", "treatment_type": "knn", "tumor_stage": "mode"}]
     )
     continuous_strategy: Dict[str, Literal['mean', 'median', 'mode']] = Field(
         description="Missingness strategy for continuous columns.",
         title="Continuous Strategy",
-        examples={"age": "median", "tumor_size": "mean", "survival_rate": "median"}
+        examples=[{"age": "median", "tumor_size": "mean", "survival_rate": "median"}]
     )
     enabled: bool = Field(
         default=True,
@@ -34,7 +35,7 @@ class MissingnessModule(BaseModel):
             categorical_strategy={col: 'unknown' for col in categorical_columns}
         )
 
-    def __call__(self, df: pd.DataFrame) -> pd.DataFrame:
+    def __call__(self, df: pd.DataFrame) -> pd.DataFrame: # noqa: PLR0912
         if not self.enabled:
             logger.warning("Missingness analysis is disabled.")
             return df
@@ -44,30 +45,31 @@ class MissingnessModule(BaseModel):
         df = df.copy()
 
         # Handle continuous columns
-        for col, strategy in self.continuous_strategy.items():
+        for col, cont_strategy in self.continuous_strategy.items():
             if col not in df.columns:
                 continue
-            if strategy == "mean":
+            if cont_strategy == "mean":
                 df[col] = df[col].fillna(df[col].mean())
-            elif strategy == "median":
+            elif cont_strategy == "median":
                 df[col] = df[col].fillna(df[col].median())
-            elif strategy == "mode":
+            elif cont_strategy == "mode":
                 df[col] = df[col].fillna(df[col].mode().iloc[0])
             else:
-                raise ValueError(f"Unsupported strategy for continuous column: {strategy}")
+                msg = f"Unsupported strategy for continuous column: {cont_strategy}"
+                raise ValueError(msg)
 
         # Handle categorical columns
-        for col, strategy in self.categorical_strategy.items():
+        for col, cat_strategy in self.categorical_strategy.items():
             if col not in df.columns:
                 continue
-            if strategy == "unknown":
+            if cat_strategy == "unknown":
                 df[col] = df[col].astype(str).fillna("Unknown").astype("category")
-            elif strategy == "mode":
+            elif cat_strategy == "mode":
                 df[col] = df[col].fillna(df[col].mode().iloc[0])
-            elif strategy == "knn":
+            elif cat_strategy == "knn":
                 df = self._knn_impute(df, col)
             else:
-                df[col] = df[col].fillna(strategy)
+                df[col] = df[col].fillna(cat_strategy)
 
         return df
 
@@ -103,7 +105,7 @@ class MissingnessModule(BaseModel):
         return df
 
 if __name__ == "__main__":
-    from rich import print
+    from rich import print  # noqa: A004
     
     missingness = MissingnessModule(
         continuous_strategy = {

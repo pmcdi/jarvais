@@ -12,7 +12,7 @@ from pathlib import Path
 
 
 class BaseAnalyzerSettings(BaseModel):
-    output_dir: str | Path = Field(
+    output_dir: Path = Field(
         description="Output directory.",
         title="Output Directory",
         examples=["output"],

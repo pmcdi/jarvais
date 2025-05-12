@@ -1,19 +1,21 @@
 
-import pandas as pd
 from pathlib import Path
-import numpy as np
-from pydantic import BaseModel, Field, PrivateAttr
-from joblib import Parallel, delayed
+from typing import Any
 
+import numpy as np
+import pandas as pd
+from joblib import Parallel, delayed # type: ignore
+from pydantic import BaseModel, Field, PrivateAttr
+
+from jarvais.loggers import logger
 from jarvais.utils.plot import (
     plot_corr,
     plot_frequency_table,
     plot_kaplan_meier_by_category,
     plot_one_multiplot,
     plot_pairplot,
-    plot_umap
+    plot_umap,
 )
-from jarvais.loggers import logger
 
 
 class VisualizationModule(BaseModel):
@@ -58,11 +60,11 @@ class VisualizationModule(BaseModel):
         description="Whether to perform visualization."
     )
 
-    _figures_dir: str | Path | None = PrivateAttr(default=None)
-    _multiplots: list[str] = PrivateAttr(default=list)
+    _figures_dir: Path = PrivateAttr(default=Path("."))
+    _multiplots: list[str] = PrivateAttr(default_factory=list)
     _umap_data: np.ndarray | None = PrivateAttr(default=None)
 
-    def model_post_init(self, context):
+    def model_post_init(self, context: Any) -> None: 
         
         self._figures_dir = Path(self.output_dir) / "figures"
         self._figures_dir.mkdir(exist_ok=True)
@@ -71,11 +73,12 @@ class VisualizationModule(BaseModel):
         self.plots = [p for p in plot_order if p in self.plots] # Need UMAP before frequency table
 
     @classmethod
-    def validate_plots(cls, plots):
+    def validate_plots(cls, plots: list[str]) -> list[str]:
         plot_registry = ["corr", "pairplot", "frequency_table", "multiplot", "umap", "kaplan_meier"]
         invalid = [p for p in plots if p not in plot_registry]
         if invalid:
-            raise ValueError(f"Invalid plots: {invalid}. Available: {plot_registry}")
+            msg = f"Invalid plots: {invalid}. Available: {plot_registry}"
+            raise ValueError(msg)
         return plots
     
     @classmethod
@@ -133,20 +136,20 @@ class VisualizationModule(BaseModel):
             logger.info("Plotting Multiplot...")
             self._plot_multiplot(data)
 
-    def _plot_correlation(self, data: pd.DataFrame):
+    def _plot_correlation(self, data: pd.DataFrame) -> None:
         p_corr = data[self.continuous_columns].corr(method="pearson")
         s_corr = data[self.continuous_columns].corr(method="spearman")
         size = 1 + len(self.continuous_columns)*1.2
         plot_corr(p_corr, size, file_name='pearson_correlation.png', output_dir=self._figures_dir, title="Pearson Correlation")
         plot_corr(s_corr, size, file_name='spearman_correlation.png', output_dir=self._figures_dir, title="Spearman Correlation")
 
-    def _plot_pairplot(self, data: pd.DataFrame):
+    def _plot_pairplot(self, data: pd.DataFrame) -> None:
         if self.target_variable in self.categorical_columns:
             plot_pairplot(data, self.continuous_columns, output_dir=self._figures_dir, target_variable=self.target_variable)
         else:
             plot_pairplot(data, self.continuous_columns, output_dir=self._figures_dir)
 
-    def _plot_multiplot(self, data: pd.DataFrame):
+    def _plot_multiplot(self, data: pd.DataFrame) -> None:
         (self._figures_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
         self._multiplots = Parallel(n_jobs=-1)(
             delayed(plot_one_multiplot)(
@@ -158,7 +161,7 @@ class VisualizationModule(BaseModel):
             ) for var in self.categorical_columns
         )
 
-    def _plot_kaplan_meier(self, data: pd.DataFrame):
+    def _plot_kaplan_meier(self, data: pd.DataFrame) -> None:
         data_x = data.drop(columns=['time', 'event'])
         data_y = data[['time', 'event']]
         categorical_columns = [cat for cat in self.categorical_columns if cat != 'event']
