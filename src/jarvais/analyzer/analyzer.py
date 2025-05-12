@@ -13,7 +13,7 @@ from jarvais.analyzer.modules import (
     OutlierModule,
     VisualizationModule,
 )
-from jarvais.analyzer.settings import AnalyzerSettings, BaseAnalyzerSettings
+from jarvais.analyzer.settings import AnalyzerSettings
 from jarvais.loggers import logger
 from jarvais.utils.pdf import generate_analysis_report_pdf
 
@@ -56,17 +56,7 @@ class Analyzer():
             elif not date_columns:
                 logger.warning("Date columns not specified. Inferring from remaining columns.")
                 date_columns = list(remaining_cols)        
-        
-        self.base_settings = BaseAnalyzerSettings(
-            output_dir=Path(output_dir),
-            categorical_columns=categorical_columns,
-            continuous_columns=continuous_columns,
-            date_columns=date_columns,
-            target_variable=target_variable,
-            task=task,
-            generate_report=generate_report
-        )
-
+                    
         self.missingness_module = MissingnessModule.build(
             categorical_columns=categorical_columns, 
             continuous_columns=continuous_columns
@@ -80,7 +70,7 @@ class Analyzer():
             target_variable=target_variable
         )
         self.visualization_module = VisualizationModule.build(
-            output_dir=output_dir,
+            output_dir=Path(output_dir),
             continuous_columns=continuous_columns,
             categorical_columns=categorical_columns,
             task=task,
@@ -88,7 +78,13 @@ class Analyzer():
         )
 
         self.settings = AnalyzerSettings(
-            base=self.base_settings,
+            output_dir=Path(output_dir),
+            categorical_columns=categorical_columns,
+            continuous_columns=continuous_columns,
+            date_columns=date_columns,
+            target_variable=target_variable,
+            task=task,
+            generate_report=generate_report,
             missingness=self.missingness_module,
             outlier=self.outlier_module,
             visualization=self.visualization_module,
@@ -109,10 +105,9 @@ class Analyzer():
 
         analyzer = cls(
             data=data,
-            output_dir=settings.base.output_dir,
+            output_dir=settings.output_dir,
         )
 
-        analyzer.base_settings = settings.base
         analyzer.missingness_module = settings.missingness
         analyzer.outlier_module = settings.outlier
         analyzer.visualization_module = settings.visualization
@@ -125,13 +120,13 @@ class Analyzer():
         
         # Create Table One
         self.mytable = TableOne(
-            self.data[self.base_settings.continuous_columns + self.base_settings.categorical_columns], 
-            categorical=self.base_settings.categorical_columns, 
-            continuous=self.base_settings.continuous_columns,
+            self.data[self.settings.continuous_columns + self.settings.categorical_columns], 
+            categorical=self.settings.categorical_columns, 
+            continuous=self.settings.continuous_columns,
             pval=False
         )
         print(self.mytable.tabulate(tablefmt = "grid"))
-        self.mytable.to_csv(self.base_settings.output_dir / 'tableone.csv')
+        self.mytable.to_csv(self.settings.output_dir / 'tableone.csv')
 
         # Run Data Cleaning
         self.input_data = self.data.copy()
@@ -142,7 +137,7 @@ class Analyzer():
         )
 
         # Run Visualization
-        figures_dir = self.base_settings.output_dir / 'figures'
+        figures_dir = self.settings.output_dir / 'figures'
         figures_dir.mkdir(exist_ok=True, parents=True)
         self.visualization_module(self.data)
 
@@ -150,10 +145,10 @@ class Analyzer():
         self.data = self.encoding_module(self.data)
 
         # Save Data
-        self.data.to_csv(self.base_settings.output_dir / 'updated_data.csv', index=False)
+        self.data.to_csv(self.settings.output_dir / 'updated_data.csv', index=False)
 
         # Generate Report
-        if self.base_settings.generate_report:
+        if self.settings.generate_report:
             multiplots = (
                 [f for f in (figures_dir / 'multiplots').iterdir() if f.suffix == '.png']
                 if (figures_dir / 'multiplots').exists()
@@ -162,22 +157,22 @@ class Analyzer():
             generate_analysis_report_pdf(
                 outlier_analysis=self.outlier_module.report,
                 multiplots=multiplots,
-                categorical_columns=self.base_settings.categorical_columns,
-                continuous_columns=self.base_settings.continuous_columns,
-                output_dir=self.base_settings.output_dir
+                categorical_columns=self.settings.categorical_columns,
+                continuous_columns=self.settings.continuous_columns,
+                output_dir=self.settings.output_dir
             )
         else:
             logger.warning("Skipping report generation.")
 
         # Save Settings
-        schema_path = self.base_settings.output_dir / 'analyzer_settings.schema.json'
-        with schema_path.open("w") as f:
+        self.settings.settings_schema_path = self.settings.output_dir / 'analyzer_settings.schema.json'
+        with self.settings.settings_schema_path.open("w") as f:
             json.dump(self.settings.model_json_schema(), f, indent=2)
 
-        settings_path = self.base_settings.output_dir / 'analyzer_settings.json'
-        with settings_path.open('w') as f:
+        self.settings.settings_path = self.settings.output_dir / 'analyzer_settings.json'
+        with self.settings.settings_path.open('w') as f:
             json.dump({
-                "$schema": str(schema_path.relative_to(self.base_settings.output_dir)),
+                "$schema": str(self.settings.settings_schema_path.relative_to(self.settings.output_dir)),
                 **self.settings.model_dump(mode="json") 
             }, f, indent=2)
 
@@ -185,3 +180,35 @@ class Analyzer():
         yield self.settings
 
 
+if __name__ == "__main__":
+    from rich import print
+    import json
+
+    data = pd.DataFrame({
+        "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
+        "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
+        "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
+        "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
+        "death": [True, False, True, False, True, False, True, False, True, False],
+    })
+    analyzer = Analyzer(
+        data, 
+        output_dir="./temp_output/test",
+        categorical_columns=["stage", "treatment", "death"], 
+        target_variable="death", 
+        task="classification"
+    )
+
+    print(analyzer)
+
+    analyzer.run()
+
+    with analyzer.settings.settings_path.open() as f:
+        settings_dict = json.load(f)
+
+    analyzer = Analyzer.from_settings(data, settings_dict)
+
+    print(analyzer)
+
+    # analyzer.run()
+    
