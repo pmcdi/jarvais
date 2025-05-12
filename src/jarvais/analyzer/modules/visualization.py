@@ -67,7 +67,7 @@ class VisualizationModule(BaseModel):
     def model_post_init(self, context: Any) -> None: 
         
         self._figures_dir = Path(self.output_dir) / "figures"
-        self._figures_dir.mkdir(exist_ok=True)
+        self._figures_dir.mkdir(exist_ok=True, parents=True)
 
         plot_order = ["corr", "pairplot", "umap", "frequency_table", "multiplot", "kaplan_meier"]
         self.plots = [p for p in plot_order if p in self.plots] # Need UMAP before frequency table
