@@ -19,7 +19,27 @@ from jarvais.utils.pdf import generate_analysis_report_pdf
 
 
 class Analyzer():
+    """
+    Analyzer class for data visualization and exploration.
 
+    Parameters:
+        data (pd.DataFrame): The input data to be analyzed.
+        output_dir (str | Path): The output directory for saving the analysis report and visualizations.
+        categorical_columns (list[str] | None): List of categorical columns. If None, all remaining columns will be considered categorical.
+        continuous_columns (list[str] | None): List of continuous columns. If None, all remaining columns will be considered continuous.
+        date_columns (list[str] | None): List of date columns. If None, no date columns will be considered.
+        target_variable (str | None): The target variable for analysis. If None, analysis will be performed without a target variable.
+        task (str | None): The type of task for analysis, e.g. classification, regression, survival. If None, analysis will be performed without a task.
+        generate_report (bool): Whether to generate a PDF report of the analysis. Default is True.
+
+    Attributes:
+        data (pd.DataFrame): The input data to be analyzed.
+        missingness_module (MissingnessModule): Module for handling missing data.
+        outlier_module (OutlierModule): Module for detecting outliers.
+        encoding_module (OneHotEncodingModule): Module for encoding categorical variables.
+        visualization_module (VisualizationModule): Module for generating visualizations.
+        settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.
+    """
     def __init__(
             self, 
             data: pd.DataFrame,
@@ -31,7 +51,6 @@ class Analyzer():
             task: str | None = None,
             generate_report: bool = True
         ) -> None:
-        
         self.data = data
 
         # Infer all types if none provided
@@ -97,7 +116,19 @@ class Analyzer():
             data: pd.DataFrame, 
             settings_dict: dict
         ) -> "Analyzer":
+        """
+        Initialize an Analyzer instance with a given settings dictionary. Settings are validated by pydantic.
 
+        Args:
+            data (pd.DataFrame): The input data for the analyzer.
+            settings_dict (dict): A dictionary containing the analyzer settings.
+
+        Returns:
+            Analyzer: An analyzer instance with the given settings.
+
+        Raises:
+            ValueError: If the settings dictionary is invalid.
+        """
         try:
             settings = AnalyzerSettings.model_validate(settings_dict)
         except Exception as e:
@@ -117,6 +148,18 @@ class Analyzer():
         return analyzer
 
     def run(self) -> None:
+        """
+        Runs the analyzer pipeline.
+
+        This function runs the following steps:
+            1. Creates a TableOne summary of the input data.
+            2. Runs the data cleaning modules.
+            3. Runs the visualization module.
+            4. Runs the encoding module.
+            5. Saves the updated data.
+            6. Generates a PDF report of the analysis results.
+            7. Saves the settings to a JSON file.
+        """
         
         # Create Table One
         self.mytable = TableOne(
@@ -191,6 +234,7 @@ if __name__ == "__main__":
         "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
         "death": [True, False, True, False, True, False, True, False, True, False],
     })
+    
     analyzer = Analyzer(
         data, 
         output_dir="./temp_output/test",
