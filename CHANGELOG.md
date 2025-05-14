@@ -1,6 +1,14 @@
 # CHANGELOG
 
 
+## [0.12.0](https://github.com/pmcdi/jarvais/compare/v0.11.3...v0.12.0) (2025-05-14)
+
+
+### Features
+
+* add new logger ([52aedd8](https://github.com/pmcdi/jarvais/commit/52aedd84e66a31f97774666ed0195d3b1838a800))
+* new logger ([6f23529](https://github.com/pmcdi/jarvais/commit/6f235299a66980c991edb1d2dd9bd5fada6c1321))
+
 ## [0.11.3](https://github.com/pmcdi/jarvais/compare/v0.11.2...v0.11.3) (2025-04-25)
 
 
