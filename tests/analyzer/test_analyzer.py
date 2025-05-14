@@ -38,7 +38,7 @@ def test_analyzer_radcure(
     assert (tmp_path  / 'figures' / 'kaplan_meier').exists()
     assert (tmp_path  / 'figures' / 'multiplots').exists()
 
-    assert len(analyzer.visualization_module._multiplots) == len(analyzer.base_settings.categorical_columns) # Should be same as number of categorical columns
+    assert len(analyzer.visualization_module._multiplots) == len(analyzer.settings.categorical_columns) # Should be same as number of categorical columns
 
     settings_path = tmp_path / 'analyzer_settings.json'
     with settings_path.open() as f:
@@ -78,7 +78,7 @@ def test_analyzer_breast_cancer(
     assert (tmp_path  / 'figures' / 'frequency_tables').exists()
     assert (tmp_path  / 'figures' / 'multiplots').exists()
 
-    assert len(analyzer.visualization_module._multiplots) == len(analyzer.base_settings.categorical_columns) # Should be same as number of categorical columns
+    assert len(analyzer.visualization_module._multiplots) == len(analyzer.settings.categorical_columns) # Should be same as number of categorical columns
     
     settings_path = tmp_path / 'analyzer_settings.json'
     with settings_path.open() as f:
