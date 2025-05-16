@@ -1180,8 +1180,7 @@
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/pdf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">10</span>
-<span class="normal">11</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
 <span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
@@ -1252,7 +1251,13 @@
 <span class="normal">79</span>
 <span class="normal">80</span>
 <span class="normal">81</span>
-<span class="normal">82</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_analysis_report_pdf</span><span class="p">(</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_analysis_report_pdf</span><span class="p">(</span>
         <span class="n">outlier_analysis</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">multiplots</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
         <span class="n">categorical_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">,</span>
@@ -1298,20 +1303,22 @@
         <span class="n">pdf</span> <span class="o">=</span> <span class="n">_add_outlier_analysis</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">outlier_analysis</span><span class="p">)</span>
 
     <span class="c1"># Add page-wide pairplots</span>
-    <span class="n">pdf</span><span class="o">.</span><span class="n">add_page</span><span class="p">()</span>
-    <span class="n">pdf</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s1">'inter'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
-    <span class="n">pdf</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">t_margin</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'Pair Plot of Continuous Variables'</span><span class="p">,</span> <span class="n">new_y</span><span class="o">=</span><span class="n">YPos</span><span class="o">.</span><span class="n">NEXT</span><span class="p">)</span>
-    <span class="n">img</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'pairplot.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">*</span><span class="mf">.5</span><span class="p">)</span>
-    <span class="n">pdf</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="n">pdf</span><span class="o">.</span><span class="n">t_margin</span> <span class="o">+</span> <span class="n">img</span><span class="o">.</span><span class="n">rendered_height</span> <span class="o">+</span> <span class="mi">25</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'pairplot.png'</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">add_page</span><span class="p">()</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s1">'inter'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">t_margin</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'Pair Plot of Continuous Variables'</span><span class="p">,</span> <span class="n">new_y</span><span class="o">=</span><span class="n">YPos</span><span class="o">.</span><span class="n">NEXT</span><span class="p">)</span>
+        <span class="n">img</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'pairplot.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">*</span><span class="mf">.5</span><span class="p">)</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">set_y</span><span class="p">(</span><span class="n">pdf</span><span class="o">.</span><span class="n">t_margin</span> <span class="o">+</span> <span class="n">img</span><span class="o">.</span><span class="n">rendered_height</span> <span class="o">+</span> <span class="mi">25</span><span class="p">)</span>
 
     <span class="c1"># Add correlation plots</span>
-    <span class="n">pdf</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s1">'inter'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
-    <span class="n">pdf</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">t_margin</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'Pearson and Spearman Correlation Plots'</span><span class="p">,</span> <span class="n">new_y</span><span class="o">=</span><span class="n">YPos</span><span class="o">.</span><span class="n">NEXT</span><span class="p">)</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'pearson_correlation.png'</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">()</span> <span class="ow">and</span> <span class="p">(</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'spearman_correlation.png'</span><span class="p">)</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">set_font</span><span class="p">(</span><span class="s1">'inter'</span><span class="p">,</span> <span class="s1">'B'</span><span class="p">,</span> <span class="mi">24</span><span class="p">)</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">cell</span><span class="p">(</span><span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">t_margin</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="s1">'Pearson and Spearman Correlation Plots'</span><span class="p">,</span> <span class="n">new_y</span><span class="o">=</span><span class="n">YPos</span><span class="o">.</span><span class="n">NEXT</span><span class="p">)</span>
 
-    <span class="n">corr_y</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">get_y</span><span class="p">()</span> <span class="o">+</span> <span class="mi">5</span>
+        <span class="n">corr_y</span> <span class="o">=</span> <span class="n">pdf</span><span class="o">.</span><span class="n">get_y</span><span class="p">()</span> <span class="o">+</span> <span class="mi">5</span>
 
-    <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'pearson_correlation.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="n">corr_y</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">*</span><span class="mf">.475</span><span class="p">)</span>
-    <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'spearman_correlation.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">corr_y</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">*</span><span class="mf">.475</span><span class="p">)</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'pearson_correlation.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">L</span><span class="p">,</span> <span class="n">corr_y</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">*</span><span class="mf">.475</span><span class="p">)</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'spearman_correlation.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">R</span><span class="p">,</span> <span class="n">corr_y</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">*</span><span class="mf">.475</span><span class="p">)</span>
 
     <span class="c1"># Add multiplots</span>
     <span class="k">if</span> <span class="n">multiplots</span> <span class="ow">and</span> <span class="n">categorical_columns</span><span class="p">:</span>
@@ -1320,8 +1327,11 @@
     <span class="c1"># Add demographic breakdown "table one"</span>
     <span class="n">path_tableone</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'tableone.csv'</span>
     <span class="k">if</span> <span class="n">path_tableone</span><span class="o">.</span><span class="n">exists</span><span class="p">():</span>
-        <span class="n">csv_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path_tableone</span><span class="p">,</span> <span class="n">na_filter</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
-        <span class="n">pdf</span> <span class="o">=</span> <span class="n">_add_tableone</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">csv_df</span><span class="p">)</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">csv_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">path_tableone</span><span class="p">,</span> <span class="n">na_filter</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+            <span class="n">pdf</span> <span class="o">=</span> <span class="n">_add_tableone</span><span class="p">(</span><span class="n">pdf</span><span class="p">,</span> <span class="n">csv_df</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="sa">f</span><span class="s2">"Unable to add table one to analysis report: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
 
     <span class="c1"># Save PDF</span>
     <span class="n">pdf</span><span class="o">.</span><span class="n">output</span><span class="p">(</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'analysis_report.pdf'</span><span class="p">)</span>
@@ -1422,13 +1432,7 @@ report will be saved.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/pdf.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 90</span>
 <span class="normal"> 91</span>
 <span class="normal"> 92</span>
 <span class="normal"> 93</span>
@@ -1481,7 +1485,13 @@ report will be saved.</p>
 <span class="normal">140</span>
 <span class="normal">141</span>
 <span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_explainer_report_pdf</span><span class="p">(</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_explainer_report_pdf</span><span class="p">(</span>
         <span class="n">problem_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
