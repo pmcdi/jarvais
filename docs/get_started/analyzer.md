@@ -7,16 +7,61 @@ The `Analyzer` module is designed for data visualization and exploration. It hel
 ```python
 from jarvais.analyzer import Analyzer
 
-analyzer = Analyzer(data, target_variable='target', output_dir='.')
+data = pd.DataFrame({
+        "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
+        "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
+        "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
+        "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
+        "death": [True, False, True, False, True, False, True, False, True, False],
+    })
+    
+analyzer = Analyzer(
+    data, 
+    output_dir="./temp_output/test",
+    categorical_columns=["stage", "treatment", "death"], 
+    target_variable="death", 
+    task="classification"
+)
+
 analyzer.run()
 ```
+
+### Settings
+
+The `Analyzer` module can be configured using settings. The settings are stored in a JSON file and can be loaded using the `Analyzer.from_settings` function. Example settings:
+
+```bash
+Analyzer(
+    AnalyzerSettings(
+        output_dir=PosixPath('temp_output/test'),
+        categorical_columns=['stage', 'treatment', 'death'],
+        continuous_columns=['tumor_size', 'age'],
+        date_columns=[],
+        task='classification',
+        target_variable='death',
+        generate_report=True,
+        settings_path=PosixPath('temp_output/test/analyzer_settings.json'),
+        settings_schema_path=PosixPath('temp_output/test/analyzer_settings.schema.json'),
+        missingness=MissingnessModule(
+            categorical_strategy={'stage': 'unknown', 'treatment': 'unknown', 'death': 'unknown'},
+            continuous_strategy={'tumor_size': 'median', 'age': 'median'},
+            enabled=True
+        ),
+        outlier=OutlierModule(
+            categorical_strategy={'stage': 'frequency', 'treatment': 'frequency', 'death': 'frequency'},
+            continuous_strategy={'tumor_size': 'none', 'age': 'none'},
+            threshold=0.01,
+            enabled=True
+        ),
+        encoding=OneHotEncodingModule(columns=['stage', 'treatment'], target_variable='death', prefix_sep='|', enabled=True),
+        visualization=VisualizationModule(plots=['corr', 'pairplot', 'umap', 'frequency_table', 'multiplot'], enabled=True)
+    )
+)
+```
+
 ## Example Output
 
 ```bash
-Feature Types:
-  - Categorical: ['Gender', 'Disease Type', 'Treatment']
-  - Continuous: ['Age', 'Tumor Size']
-
 Outlier Detection:
   - Outliers found in Gender: ['Male: 5 out of 1000']
   - Outliers found in Disease Type: ['Lung Cancer: 10 out of 1000']
@@ -42,9 +87,10 @@ Outlier Detection:
 The Analyzer module generates the following files and directories:
 
 - **analysis_report.pdf**: A PDF report summarizing the analysis results.
-- **config.yaml**: Configuration file for the analysis setup.
 - **tableone.csv**: CSV file containing summary statistics for the dataset.
 - **updated_data.csv**: CSV file with the cleaned and processed data.
+- **analyzer_settings.json**: Configuration file for the analysis setup.
+- **analyzer_settings.schema.json**: Schema file for the analyzer settings.
 
 ### Figures
 

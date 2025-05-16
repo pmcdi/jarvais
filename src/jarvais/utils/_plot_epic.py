@@ -73,7 +73,7 @@ def plot_epic_copy(
     precision_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, auprc), (2.5, 97.5))]
 
     # Set Seaborn style
-    sns.set_theme(style="darkgrid", font="Arial")
+    sns.set_theme(style="darkgrid")
 
     plt.figure(figsize=(37.5, 10))
 
