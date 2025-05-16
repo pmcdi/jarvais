@@ -15,35 +15,19 @@ def radcure_clinical():
 
     return df
 
-@pytest.fixture(scope="session")
-def breast_cancer():
-    """
-    Download and return breast cancer dataset.
-
-    DOI: 10.21227/a9qy-ph35
-    """
-
-    df = kagglehub.load_dataset(
-        KaggleDatasetAdapter.PANDAS,
-        "reihanenamdari/breast-cancer",
-        'Breast_Cancer.csv',
-    )
-
-    return df
-
 # @pytest.fixture(scope="session")
 # def breast_cancer():
 #     """
-#     Download and return the recurrent breast cancer dataset.
+#     Download and return breast cancer dataset.
 
-#     Citation: https://archive.ics.uci.edu/dataset/14/breast+cancer
+#     DOI: 10.21227/a9qy-ph35
 #     """
 
-#     # Load the latest version
 #     df = kagglehub.load_dataset(
 #         KaggleDatasetAdapter.PANDAS,
-#         "faysalmiah1721758/breast-cancer-data",
-#         'breast-cancer-data.csv',
+#         "reihanenamdari/breast-cancer",
+#         'Breast_Cancer.csv',
 #     )
 
 #     return df
+
