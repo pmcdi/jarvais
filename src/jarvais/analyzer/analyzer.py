@@ -1,265 +1,258 @@
-import logging
-import warnings
+
+import json
 from pathlib import Path
 
 import pandas as pd
-import yaml
-from joblib import Parallel, delayed
-from tableone import TableOne
+import rich.repr
+from tableone import TableOne # type: ignore
 
-from ._janitor import get_outliers, infer_types, replace_missing
-from ..utils.pdf import generate_analysis_report_pdf
-from ..utils.plot import (
-    plot_corr,
-    plot_frequency_table,
-    plot_kaplan_meier_by_category,
-    plot_one_multiplot,
-    plot_pairplot,
-    plot_umap,
+from jarvais.analyzer._utils import infer_types
+from jarvais.analyzer.modules import (
+    MissingnessModule,
+    OneHotEncodingModule,
+    OutlierModule,
+    VisualizationModule,
 )
+from jarvais.analyzer.settings import AnalyzerSettings
+from jarvais.loggers import logger
+from jarvais.utils.pdf import generate_analysis_report_pdf
 
-logging.basicConfig(filename=(Path.cwd() / "warnings.log"), level=logging.INFO)
 
-def custom_warning_handler(message, category, filename, lineno, file=None, line=None) -> None:
-    log_message = f"{category.__name__}: {message} in {filename} at line {lineno}"
-    logging.warning(log_message)
-
-warnings.showwarning = custom_warning_handler
-
-class Analyzer:
+class Analyzer():
     """
-    A data analysis and cleaning tool for preprocessing datasets, generating reports, and visualizations.
+    Analyzer class for data visualization and exploration.
 
-    Features:
-        - Handles missing values and outliers.
-        - Infers column types (categorical, continuous, date).
-        - Supports one-hot encoding and survival analysis.
-        - Generates summary statistics and correlation plots.
-        - Produces a comprehensive PDF analysis report.
+    Parameters:
+        data (pd.DataFrame): The input data to be analyzed.
+        output_dir (str | Path): The output directory for saving the analysis report and visualizations.
+        categorical_columns (list[str] | None): List of categorical columns. If None, all remaining columns will be considered categorical.
+        continuous_columns (list[str] | None): List of continuous columns. If None, all remaining columns will be considered continuous.
+        date_columns (list[str] | None): List of date columns. If None, no date columns will be considered.
+        target_variable (str | None): The target variable for analysis. If None, analysis will be performed without a target variable.
+        task (str | None): The type of task for analysis, e.g. classification, regression, survival. If None, analysis will be performed without a task.
+        generate_report (bool): Whether to generate a PDF report of the analysis. Default is True.
 
     Attributes:
-        data (pd.DataFrame): Input dataset.
-        target_variable (str, optional): Target variable in the dataset.
-        task (str, optional): Type of analysis task.
-        one_hot_encode (bool, optional): Whether to one-hot encode categorical columns.
-        config (str | Path, optional): Path to a YAML configuration file.
-        output_dir (str | Path, optional): Directory to save outputs. Default is the current directory.
-
-    Example:
-        ```python
-        from jarvais.analyzer import Analyzer
-        import pandas as pd
-
-        data = pd.DataFrame({
-            "age": [25, 32, 40],
-            "income": [50000, 60000, 75000],
-            "category": ["A", "B", "A"]
-        })
-
-        analyzer = Analyzer(data, target_variable="income", task="regression")
-        analyzer.run()
-        ```
+        data (pd.DataFrame): The input data to be analyzed.
+        missingness_module (MissingnessModule): Module for handling missing data.
+        outlier_module (OutlierModule): Module for detecting outliers.
+        encoding_module (OneHotEncodingModule): Module for encoding categorical variables.
+        visualization_module (VisualizationModule): Module for generating visualizations.
+        settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.
     """
     def __init__(
-            self,
+            self, 
             data: pd.DataFrame,
+            output_dir: str | Path,
+            categorical_columns: list[str] | None = None, 
+            continuous_columns: list[str] | None = None,
+            date_columns: list[str] | None = None,
             target_variable: str | None = None,
             task: str | None = None,
-            one_hot_encode: bool = False,
-            config: str | Path = None,
-            output_dir: str | Path = None
+            generate_report: bool = True
         ) -> None:
-
         self.data = data
-        self.target_variable = target_variable
-        self.task = task
-        self.one_hot_encode = one_hot_encode
 
-        assert_message = "When setting task to 'survival', target_variable must be 'event' and 'time' must be in data"
-        if self.task == 'survival':
-            assert target_variable == 'event' and 'time' in data.columns, assert_message
-
-        self.output_dir = Path.cwd() if output_dir is None else Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-
-        if config is not None:
-            config = Path(config)
-            if config.is_file():
-                with config.open('r') as file:
-                    self.config = yaml.safe_load(file)
-            else:
-                raise ValueError(f'Config file does not exist at {config}')
+        # Infer all types if none provided
+        if not categorical_columns and not continuous_columns and not date_columns:
+            categorical_columns, continuous_columns, date_columns = infer_types(self.data)
         else:
-            self.config = config
+            categorical_columns = categorical_columns or []
+            continuous_columns = continuous_columns or []
+            date_columns = date_columns or []
 
-        self.outlier_analysis = '' # Used later when writing to PDF
+            specified_cols = set(categorical_columns + continuous_columns + date_columns)
+            remaining_cols = set(self.data.columns) - specified_cols
 
-    def _create_config(self) -> None:
-        """
-        Create and save a configuration file for column types, outlier handling, and missing value strategies.
+            if not categorical_columns:
+                logger.warning("Categorical columns not specified. Inferring from remaining columns.")
+                categorical_columns = list(remaining_cols)
 
-        Steps:
-        1. **Infer Column Types**: Identifies categorical, continuous, and date columns using `infer_types`.
-        2. **Handle NaN Columns**: Drops columns entirely filled with NaN and updates the continuous column list.
-        3. **Outlier Detection**: Identifies outliers in categorical columns and stores the mappings.
-        4. **Missing Value Strategy**: Sets default imputation strategies for categorical and continuous variables.
-        """
-        print('Config file not found. Creating custom...')
+            elif not continuous_columns:
+                logger.warning("Continuous columns not specified. Inferring from remaining columns.")
+                continuous_columns = list(remaining_cols)
 
-        self.config = {}
-        columns = {}
-
-        self.categorical_columns, self.continuous_columns, self.date_columns = infer_types(self.data)
-        # Replace all non numerical values with NaN
-        self.data[self.continuous_columns] = self.data[self.continuous_columns].apply(pd.to_numeric, errors='coerce')
-
-        nan_ = self.data.apply(lambda col: col.isna().all())
-        nan_columns = nan_[nan_].index.tolist()
-        if len(nan_columns) > 0:
-            print("Columns that are all NaN(probably ID columns) dropping...: ", nan_columns)
-            self.continuous_columns = list(set(self.continuous_columns) - set(nan_columns))
-
-        print("Used a heuristic to define categorical and continuous columns. Please review!")
-        
-        columns['categorical'] = self.categorical_columns
-        columns['continuous'] = self.continuous_columns
-        columns['date'] = self.date_columns
-        columns['other'] = nan_columns
-
-        self.config['columns'] = columns
-
-        outlier_analysis, mapping = get_outliers(self.data, self.categorical_columns)
-
-        self.outlier_analysis += outlier_analysis
-        self.config['mapping'] = mapping
-
-        self.config['missingness_strategy'] = {}
-        # Defining default replacement for each missing categorical variable
-        self.config['missingness_strategy']['categorical'] = {cat :'Unknown' for cat in self.categorical_columns}
-        # Defining default replacement for each missing continuous variable
-        self.config['missingness_strategy']['continuous'] = {cont :'median' for cont in self.continuous_columns}
-
-    def _apply_config(self) -> None:
-
-        print('Applying changes from config...\n')
-
-        for key in self.config['mapping'].keys():
-            assert key in self.data.columns, f"{key} in mapping file not found data"
-            self.data.loc[:, key] = self.data.loc[:, key].replace(self.config['mapping'][key])
-
-        self.data = replace_missing(self.data, self.categorical_columns, self.continuous_columns, self.config)
-
-    def _create_multiplots(self, figures_dir: Path) -> None:
-        """Generate and save multiplots for each categorical variable against all continuous variables."""
-        self.multiplots = [] # Used to save in PDF later
-
-        (figures_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
-
-        self.multiplots = Parallel(n_jobs=-1)(
-            delayed(plot_one_multiplot)(
-                self.data,
-                self.umap_data,
-                var,
-                self.continuous_columns,
-                figures_dir
-            ) for var in self.categorical_columns
+            elif not date_columns:
+                logger.warning("Date columns not specified. Inferring from remaining columns.")
+                date_columns = list(remaining_cols)        
+                    
+        self.missingness_module = MissingnessModule.build(
+            categorical_columns=categorical_columns, 
+            continuous_columns=continuous_columns
+        )
+        self.outlier_module = OutlierModule.build(
+            categorical_columns=categorical_columns, 
+            continuous_columns=continuous_columns
+        )
+        self.encoding_module = OneHotEncodingModule.build(
+            categorical_columns=categorical_columns, 
+            target_variable=target_variable
+        )
+        self.visualization_module = VisualizationModule.build(
+            output_dir=Path(output_dir),
+            continuous_columns=continuous_columns,
+            categorical_columns=categorical_columns,
+            task=task,
+            target_variable=target_variable
         )
 
-    def run(self) -> None:
-        """Run the data cleaning and visualization process."""
-        if self.config is None:
-            self._create_config()
-        else:
-            self.continuous_columns = self.config['columns']['continuous']
-            self.categorical_columns = self.config['columns']['categorical']
-            # Replace all non numerical values with NaN
-            self.data[self.continuous_columns] = self.data[self.continuous_columns].apply(pd.to_numeric, errors='coerce')
-            self.outlier_analysis, _ = get_outliers(self.data, self.categorical_columns)
-
-        print(f"Feature Types:\n  - Categorical: {self.categorical_columns}\n  - Continuous: {self.continuous_columns}")
-        print(f"\n\nOutlier Analysis:\n{self.outlier_analysis}")
-
-        with open(self.output_dir / 'config.yaml', 'w') as f:
-            yaml.dump(self.config, f)
-
-        self._apply_config()
-
-        # Create Table One
-        df_keep = self.data[self.continuous_columns + self.categorical_columns]
-
-        self.mytable = TableOne(df_keep, categorical=self.categorical_columns, pval=False)
-        print(self.mytable.tabulate(tablefmt = "grid"))
-        self.mytable.to_csv(self.output_dir / 'tableone.csv')
-
-        # PLOTS
-        figures_dir = self.output_dir / 'figures'
-        figures_dir.mkdir(exist_ok=True, parents=True)
-
-        if self.task == 'survival':
-            data_x = self.data.drop(columns=['time', 'event'])
-            data_y = self.data[['time', 'event']]
-            categorical_columns  = [cat for cat in self.categorical_columns if cat != 'event']
-            plot_kaplan_meier_by_category(
-                data_x, data_y,
-                categorical_columns,
-                figures_dir / 'kaplan_meier'
-            )
-
-        # Correlation Plots
-        p_corr = self.data[self.continuous_columns].corr(method="pearson")
-        s_corr = self.data[self.continuous_columns].corr(method="spearman")
-        size = 1 + len(self.continuous_columns)*1.2
-        plot_corr(p_corr, size, file_name='pearson_correlation.png', output_dir=figures_dir, title="Pearson Correlation")
-        plot_corr(s_corr, size, file_name='spearman_correlation.png', output_dir=figures_dir, title="Spearman Correlation")
-
-        # Categorical cross frequency table
-        plot_frequency_table(self.data, self.categorical_columns, figures_dir)
-
-        # UMAP reduced data + Plots
-        self.umap_data = plot_umap(self.data, self.continuous_columns, figures_dir)
-
-        # Plot pairplot: keeping only the top ten correlated pairs in the pair plot
-        if self.target_variable in self.categorical_columns:
-            plot_pairplot(self.data, self.continuous_columns, output_dir=figures_dir, target_variable=self.target_variable)
-        else:
-            plot_pairplot(self.data, self.continuous_columns, output_dir=figures_dir)
-
-        # Create Multiplots
-        self._create_multiplots(figures_dir)
-
-        if self.one_hot_encode:
-            self.data = pd.get_dummies(
-                self.data,
-                columns=[cat for cat in self.categorical_columns if cat != self.target_variable],
-                dtype=float,
-                prefix_sep='|' # Using this to make it obvious OHE features
-            )
-
-        self.data.to_csv(self.output_dir / 'updated_data.csv')
-
-        # Create Output PDF
-        generate_analysis_report_pdf(
-            self.outlier_analysis,
-            self.multiplots,
-            self.categorical_columns,
-            self.continuous_columns,
-            self.output_dir
+        self.settings = AnalyzerSettings(
+            output_dir=Path(output_dir),
+            categorical_columns=categorical_columns,
+            continuous_columns=continuous_columns,
+            date_columns=date_columns,
+            target_variable=target_variable,
+            task=task,
+            generate_report=generate_report,
+            missingness=self.missingness_module,
+            outlier=self.outlier_module,
+            visualization=self.visualization_module,
+            encoding=self.encoding_module
         )
 
     @classmethod
-    def dry_run(cls, data: pd.DataFrame) -> dict:
-        """Simply returns generated config and displays TableOne."""
-        analyzer = cls(data)
-        analyzer._create_config()
+    def from_settings(
+            cls, 
+            data: pd.DataFrame, 
+            settings_dict: dict
+        ) -> "Analyzer":
+        """
+        Initialize an Analyzer instance with a given settings dictionary. Settings are validated by pydantic.
 
-        df_keep = analyzer.data[analyzer.continuous_columns + analyzer.categorical_columns]
+        Args:
+            data (pd.DataFrame): The input data for the analyzer.
+            settings_dict (dict): A dictionary containing the analyzer settings.
 
-        print(f"\n\nFeature Types:\n  - Categorical: {analyzer.categorical_columns}\n  - Continuous: {analyzer.continuous_columns}")
-        print(f"\n\nOutlier Analysis:\n{analyzer.outlier_analysis}")
+        Returns:
+            Analyzer: An analyzer instance with the given settings.
 
-        mytable = TableOne(df_keep, categorical=analyzer.categorical_columns, pval=False)
-        print(mytable.tabulate(tablefmt = "grid"))
+        Raises:
+            ValueError: If the settings dictionary is invalid.
+        """
+        try:
+            settings = AnalyzerSettings.model_validate(settings_dict)
+        except Exception as e:
+            raise ValueError("Invalid analyzer settings") from e
 
-        return analyzer.config
+        analyzer = cls(
+            data=data,
+            output_dir=settings.output_dir,
+        )
+
+        analyzer.missingness_module = settings.missingness
+        analyzer.outlier_module = settings.outlier
+        analyzer.visualization_module = settings.visualization
+
+        analyzer.settings = settings
+
+        return analyzer
+
+    def run(self) -> None:
+        """
+        Runs the analyzer pipeline.
+
+        This function runs the following steps:
+            1. Creates a TableOne summary of the input data.
+            2. Runs the data cleaning modules.
+            3. Runs the visualization module.
+            4. Runs the encoding module.
+            5. Saves the updated data.
+            6. Generates a PDF report of the analysis results.
+            7. Saves the settings to a JSON file.
+        """
+        
+        # Create Table One
+        self.mytable = TableOne(
+            self.data[self.settings.continuous_columns + self.settings.categorical_columns], 
+            categorical=self.settings.categorical_columns, 
+            continuous=self.settings.continuous_columns,
+            pval=False
+        )
+        print(self.mytable.tabulate(tablefmt = "grid"))
+        self.mytable.to_csv(self.settings.output_dir / 'tableone.csv')
+
+        # Run Data Cleaning
+        self.input_data = self.data.copy()
+        self.data = (
+            self.data
+            .pipe(self.missingness_module)
+            .pipe(self.outlier_module)
+        )
+
+        # Run Visualization
+        figures_dir = self.settings.output_dir / 'figures'
+        figures_dir.mkdir(exist_ok=True, parents=True)
+        self.visualization_module(self.data)
+
+        # Run Encoding
+        self.data = self.encoding_module(self.data)
+
+        # Save Data
+        self.data.to_csv(self.settings.output_dir / 'updated_data.csv', index=False)
+
+        # Generate Report
+        if self.settings.generate_report:
+            multiplots = (
+                [f for f in (figures_dir / 'multiplots').iterdir() if f.suffix == '.png']
+                if (figures_dir / 'multiplots').exists()
+                else []
+            )
+            generate_analysis_report_pdf(
+                outlier_analysis=self.outlier_module.report,
+                multiplots=multiplots,
+                categorical_columns=self.settings.categorical_columns,
+                continuous_columns=self.settings.continuous_columns,
+                output_dir=self.settings.output_dir
+            )
+        else:
+            logger.warning("Skipping report generation.")
+
+        # Save Settings
+        self.settings.settings_schema_path = self.settings.output_dir / 'analyzer_settings.schema.json'
+        with self.settings.settings_schema_path.open("w") as f:
+            json.dump(self.settings.model_json_schema(), f, indent=2)
+
+        self.settings.settings_path = self.settings.output_dir / 'analyzer_settings.json'
+        with self.settings.settings_path.open('w') as f:
+            json.dump({
+                "$schema": str(self.settings.settings_schema_path.relative_to(self.settings.output_dir)),
+                **self.settings.model_dump(mode="json") 
+            }, f, indent=2)
+
+    def __rich_repr__(self) -> rich.repr.Result:
+        yield self.settings
 
 
+if __name__ == "__main__":
+    from rich import print
+    import json
+
+    data = pd.DataFrame({
+        "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
+        "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
+        "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
+        "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
+        "death": [True, False, True, False, True, False, True, False, True, False],
+    })
+    
+    analyzer = Analyzer(
+        data, 
+        output_dir="./temp_output/test",
+        categorical_columns=["stage", "treatment", "death"], 
+        target_variable="death", 
+        task="classification"
+    )
+
+    print(analyzer)
+
+    analyzer.run()
+
+    with analyzer.settings.settings_path.open() as f:
+        settings_dict = json.load(f)
+
+    analyzer = Analyzer.from_settings(data, settings_dict)
+
+    print(analyzer)
+
+    # analyzer.run()
+    
