@@ -1368,6 +1368,8 @@ span.linenos.special { color: #000000; background-color: #ffffc0; padding-left: 
 
 <span class="n">data_file_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="s1">'RADCURE_processed_clinical.csv'</span><span class="p">)</span>
 <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">data_file_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+<span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Study ID"</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-1">import sys
 import pandas as pd
@@ -1379,7 +1381,9 @@ sys.path.append(project_root)
 data_dir = os.path.join(project_root, 'data')
 
 data_file_path = os.path.join(data_dir, 'RADCURE_processed_clinical.csv')
-df = pd.read_csv(data_file_path, index_col=0)</div>
+df = pd.read_csv(data_file_path, index_col=0)
+
+df.drop(columns=["Study ID"], inplace=True)</div>
 </div>
 </div>
 </div>
@@ -1405,24 +1409,64 @@ df = pd.read_csv(data_file_path, index_col=0)</div>
 </clipboard-copy>
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analyzer</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pprint</span><span class="w"> </span><span class="kn">import</span> <span class="n">pprint</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">rich</span><span class="w"> </span><span class="kn">import</span> <span class="nb">print</span>
 
-<span class="n">df</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s2">"Study ID"</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'survival_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">,</span> <span class="s1">'death'</span><span class="p">:</span><span class="s1">'event'</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">analyzer</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="p">(</span>
+    <span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> 
+    <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./survival_outputs/analyzer'</span><span class="p">,</span>
+    <span class="n">categorical_columns</span><span class="o">=</span> <span class="p">[</span>
+      <span class="s2">"Sex"</span><span class="p">,</span>
+      <span class="s2">"T Stage"</span><span class="p">,</span>
+      <span class="s2">"N Stage"</span><span class="p">,</span>
+      <span class="s2">"Stage"</span><span class="p">,</span>
+      <span class="s2">"Smoking Status"</span><span class="p">,</span>
+      <span class="s2">"Disease Site"</span><span class="p">,</span>
+      <span class="s2">"death"</span><span class="p">,</span>
+      <span class="s2">"HPV Combined"</span><span class="p">,</span>
+      <span class="s2">"Chemotherapy"</span>
+    <span class="p">],</span>
+    <span class="n">continuous_columns</span> <span class="o">=</span> <span class="p">[</span>
+      <span class="s2">"survival_time"</span><span class="p">,</span>
+      <span class="s2">"age at dx"</span><span class="p">,</span>
+      <span class="s2">"Dose"</span>
+    <span class="p">],</span>
+    <span class="n">target_variable</span><span class="o">=</span><span class="s1">'death'</span><span class="p">,</span> 
+    <span class="n">task</span><span class="o">=</span><span class="s1">'classification'</span>
+<span class="p">)</span>
 
-<span class="n">config</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="o">.</span><span class="n">dry_run</span><span class="p">(</span><span class="n">df</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">analyzer</span><span class="p">)</span>
 
-<span class="n">pprint</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
+<span class="n">analyzer</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-2">from jarvais.analyzer import Analyzer
-from pprint import pprint
+from rich import print
 
-df.drop(columns=["Study ID"], inplace=True)
-df.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
+analyzer = Analyzer(
+    data=df, 
+    output_dir='./survival_outputs/analyzer',
+    categorical_columns= [
+      "Sex",
+      "T Stage",
+      "N Stage",
+      "Stage",
+      "Smoking Status",
+      "Disease Site",
+      "death",
+      "HPV Combined",
+      "Chemotherapy"
+    ],
+    continuous_columns = [
+      "survival_time",
+      "age at dx",
+      "Dose"
+    ],
+    target_variable='death', 
+    task='classification'
+)
 
-config = Analyzer.dry_run(df)
+print(analyzer)
 
-pprint(config)</div>
+analyzer.run()</div>
 </div>
 </div>
 </div>
@@ -1434,344 +1478,284 @@ pprint(config)</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>/home/joshua-siraj/Documents/CDI/jarvais/.pixi/envs/default/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
+<pre>/home/joshua-siraj/Documents/CDI/jarvais/.pixi/envs/dev/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
   from .autonotebook import tqdm as notebook_tqdm
+14:41:01 [<span class="ansi-yellow-intense-fg ansi-bold">warning  </span>] <span class="ansi-bold">Date columns not specified. Inferring from remaining columns.</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">analyzer.__init__:76</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
+<pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #800080; text-decoration-color: #800080; font-weight: bold">Analyzer</span><span style="font-weight: bold">(</span>
+    <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">AnalyzerSettings</span><span style="font-weight: bold">(</span>
+        <span style="color: #808000; text-decoration-color: #808000">output_dir</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">PosixPath</span><span style="font-weight: bold">(</span><span style="color: #008000; text-decoration-color: #008000">'survival_outputs/analyzer'</span><span style="font-weight: bold">)</span>,
+        <span style="color: #808000; text-decoration-color: #808000">categorical_columns</span>=<span style="font-weight: bold">[</span>
+            <span style="color: #008000; text-decoration-color: #008000">'Sex'</span>,
+            <span style="color: #008000; text-decoration-color: #008000">'T Stage'</span>,
+            <span style="color: #008000; text-decoration-color: #008000">'N Stage'</span>,
+            <span style="color: #008000; text-decoration-color: #008000">'Stage'</span>,
+            <span style="color: #008000; text-decoration-color: #008000">'Smoking Status'</span>,
+            <span style="color: #008000; text-decoration-color: #008000">'Disease Site'</span>,
+            <span style="color: #008000; text-decoration-color: #008000">'death'</span>,
+            <span style="color: #008000; text-decoration-color: #008000">'HPV Combined'</span>,
+            <span style="color: #008000; text-decoration-color: #008000">'Chemotherapy'</span>
+        <span style="font-weight: bold">]</span>,
+        <span style="color: #808000; text-decoration-color: #808000">continuous_columns</span>=<span style="font-weight: bold">[</span><span style="color: #008000; text-decoration-color: #008000">'survival_time'</span>, <span style="color: #008000; text-decoration-color: #008000">'age at dx'</span>, <span style="color: #008000; text-decoration-color: #008000">'Dose'</span><span style="font-weight: bold">]</span>,
+        <span style="color: #808000; text-decoration-color: #808000">date_columns</span>=<span style="font-weight: bold">[]</span>,
+        <span style="color: #808000; text-decoration-color: #808000">task</span>=<span style="color: #008000; text-decoration-color: #008000">'classification'</span>,
+        <span style="color: #808000; text-decoration-color: #808000">target_variable</span>=<span style="color: #008000; text-decoration-color: #008000">'death'</span>,
+        <span style="color: #808000; text-decoration-color: #808000">generate_report</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>,
+        <span style="color: #808000; text-decoration-color: #808000">settings_path</span>=<span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>,
+        <span style="color: #808000; text-decoration-color: #808000">settings_schema_path</span>=<span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>,
+        <span style="color: #808000; text-decoration-color: #808000">missingness</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">MissingnessModule</span><span style="font-weight: bold">(</span>
+            <span style="color: #808000; text-decoration-color: #808000">categorical_strategy</span>=<span style="font-weight: bold">{</span>
+                <span style="color: #008000; text-decoration-color: #008000">'Sex'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'T Stage'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'N Stage'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Stage'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Smoking Status'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Disease Site'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'death'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'HPV Combined'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Chemotherapy'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>
+            <span style="font-weight: bold">}</span>,
+            <span style="color: #808000; text-decoration-color: #808000">continuous_strategy</span>=<span style="font-weight: bold">{</span><span style="color: #008000; text-decoration-color: #008000">'survival_time'</span>: <span style="color: #008000; text-decoration-color: #008000">'median'</span>, <span style="color: #008000; text-decoration-color: #008000">'age at dx'</span>: <span style="color: #008000; text-decoration-color: #008000">'median'</span>, <span style="color: #008000; text-decoration-color: #008000">'Dose'</span>: <span style="color: #008000; text-decoration-color: #008000">'median'</span><span style="font-weight: bold">}</span>,
+            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+        <span style="font-weight: bold">)</span>,
+        <span style="color: #808000; text-decoration-color: #808000">outlier</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">OutlierModule</span><span style="font-weight: bold">(</span>
+            <span style="color: #808000; text-decoration-color: #808000">categorical_strategy</span>=<span style="font-weight: bold">{</span>
+                <span style="color: #008000; text-decoration-color: #008000">'Sex'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'T Stage'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'N Stage'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Stage'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Smoking Status'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Disease Site'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'death'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'HPV Combined'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Chemotherapy'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>
+            <span style="font-weight: bold">}</span>,
+            <span style="color: #808000; text-decoration-color: #808000">continuous_strategy</span>=<span style="font-weight: bold">{</span><span style="color: #008000; text-decoration-color: #008000">'survival_time'</span>: <span style="color: #008000; text-decoration-color: #008000">'none'</span>, <span style="color: #008000; text-decoration-color: #008000">'age at dx'</span>: <span style="color: #008000; text-decoration-color: #008000">'none'</span>, <span style="color: #008000; text-decoration-color: #008000">'Dose'</span>: <span style="color: #008000; text-decoration-color: #008000">'none'</span><span style="font-weight: bold">}</span>,
+            <span style="color: #808000; text-decoration-color: #808000">threshold</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.01</span>,
+            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+        <span style="font-weight: bold">)</span>,
+        <span style="color: #808000; text-decoration-color: #808000">encoding</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">OneHotEncodingModule</span><span style="font-weight: bold">(</span>
+            <span style="color: #808000; text-decoration-color: #808000">columns</span>=<span style="font-weight: bold">[</span>
+                <span style="color: #008000; text-decoration-color: #008000">'Sex'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'T Stage'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'N Stage'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Stage'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Smoking Status'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Disease Site'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'HPV Combined'</span>,
+                <span style="color: #008000; text-decoration-color: #008000">'Chemotherapy'</span>
+            <span style="font-weight: bold">]</span>,
+            <span style="color: #808000; text-decoration-color: #808000">target_variable</span>=<span style="color: #008000; text-decoration-color: #008000">'death'</span>,
+            <span style="color: #808000; text-decoration-color: #808000">prefix_sep</span>=<span style="color: #008000; text-decoration-color: #008000">'|'</span>,
+            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+        <span style="font-weight: bold">)</span>,
+        <span style="color: #808000; text-decoration-color: #808000">visualization</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">VisualizationModule</span><span style="font-weight: bold">(</span>
+            <span style="color: #808000; text-decoration-color: #808000">plots</span>=<span style="font-weight: bold">[</span><span style="color: #008000; text-decoration-color: #008000">'corr'</span>, <span style="color: #008000; text-decoration-color: #008000">'pairplot'</span>, <span style="color: #008000; text-decoration-color: #008000">'umap'</span>, <span style="color: #008000; text-decoration-color: #008000">'frequency_table'</span>, <span style="color: #008000; text-decoration-color: #008000">'multiplot'</span><span style="font-weight: bold">]</span>,
+            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+        <span style="font-weight: bold">)</span>
+    <span style="font-weight: bold">)</span>
+<span style="font-weight: bold">)</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Performing missingness analysis...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">missingness.__call__:43</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Performing outlier analysis...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">outlier.__call__:53</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Correlation Matrix...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:115</span>
 </pre>
 </div>
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Config file not found. Creating custom...
-Used a heuristic to define categorical and continuous columns. Please review!
+<pre>+--------------------------+-------------------+-----------+-------------+
+|                          |                   | Missing   | Overall     |
++==========================+===================+===========+=============+
+| n                        |                   |           | 3346        |
++--------------------------+-------------------+-----------+-------------+
+| survival_time, mean (SD) |                   | 0         | 4.1 (2.7)   |
++--------------------------+-------------------+-----------+-------------+
+| age at dx, mean (SD)     |                   | 0         | 62.3 (11.6) |
++--------------------------+-------------------+-----------+-------------+
+| Dose, mean (SD)          |                   | 0         | 66.7 (5.8)  |
++--------------------------+-------------------+-----------+-------------+
+| Sex, n (%)               | Female            |           | 686 (20.5)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | Male              |           | 2660 (79.5) |
++--------------------------+-------------------+-----------+-------------+
+| T Stage, n (%)           | None              |           | 12 (0.4)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | T0                |           | 167 (5.0)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | T1                |           | 454 (13.6)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | T1 (2)            |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | T1a               |           | 179 (5.3)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | T1b               |           | 88 (2.6)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | T2                |           | 927 (27.7)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | T2 (2)            |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | T2a               |           | 4 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | T2b               |           | 5 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | T3                |           | 861 (25.7)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | T3 (2)            |           | 3 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | T4                |           | 116 (3.5)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | T4a               |           | 358 (10.7)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | T4b               |           | 121 (3.6)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | TX                |           | 4 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | Tis               |           | 44 (1.3)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | rT0               |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+| N Stage, n (%)           | N0                |           | 1147 (34.3) |
++--------------------------+-------------------+-----------+-------------+
+|                          | N1                |           | 344 (10.3)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | N2                |           | 182 (5.4)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | N2a               |           | 125 (3.7)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | N2b               |           | 791 (23.6)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | N2c               |           | 532 (15.9)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | N3                |           | 170 (5.1)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | N3a               |           | 13 (0.4)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | N3b               |           | 28 (0.8)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | NX                |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | None              |           | 13 (0.4)    |
++--------------------------+-------------------+-----------+-------------+
+| Stage, n (%)             | 0                 |           | 44 (1.3)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | I                 |           | 352 (10.5)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | IB                |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | II                |           | 400 (12.0)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | IIA               |           | 2 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | IIB               |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | III               |           | 605 (18.1)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | IIIA              |           | 2 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | IIIC              |           | 2 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | IV                |           | 12 (0.4)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | IVA               |           | 1581 (47.3) |
++--------------------------+-------------------+-----------+-------------+
+|                          | IVB               |           | 309 (9.2)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | IVC               |           | 2 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | None              |           | 27 (0.8)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | X                 |           | 6 (0.2)     |
++--------------------------+-------------------+-----------+-------------+
+| Smoking Status, n (%)    | Current           |           | 1139 (34.0) |
++--------------------------+-------------------+-----------+-------------+
+|                          | Ex-smoker         |           | 1290 (38.6) |
++--------------------------+-------------------+-----------+-------------+
+|                          | Non-smoker        |           | 872 (26.1)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | unknown           |           | 45 (1.3)    |
++--------------------------+-------------------+-----------+-------------+
+| Disease Site, n (%)      | benign tumor      |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | esophagus         |           | 33 (1.0)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | hypopharynx       |           | 162 (4.8)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | lacrimal gland    |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | larynx            |           | 877 (26.2)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | lip &amp; oral cavity |           | 100 (3.0)   |
++--------------------------+-------------------+-----------+-------------+
+|                          | nasal cavity      |           | 62 (1.9)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | nasopharynx       |           | 355 (10.6)  |
++--------------------------+-------------------+-----------+-------------+
+|                          | orbit             |           | 1 (0.0)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | oropharynx        |           | 1501 (44.9) |
++--------------------------+-------------------+-----------+-------------+
+|                          | other             |           | 2 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | paraganglioma     |           | 7 (0.2)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | paranasal sinus   |           | 28 (0.8)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | salivary glands   |           | 4 (0.1)     |
++--------------------------+-------------------+-----------+-------------+
+|                          | sarcoma           |           | 20 (0.6)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | skin              |           | 24 (0.7)    |
++--------------------------+-------------------+-----------+-------------+
+|                          | unknown           |           | 168 (5.0)   |
++--------------------------+-------------------+-----------+-------------+
+| death, n (%)             | 0                 |           | 2288 (68.4) |
++--------------------------+-------------------+-----------+-------------+
+|                          | 1                 |           | 1058 (31.6) |
++--------------------------+-------------------+-----------+-------------+
+| HPV Combined, n (%)      | 1.0               |           | 1139 (34.0) |
++--------------------------+-------------------+-----------+-------------+
+|                          | None              |           | 2207 (66.0) |
++--------------------------+-------------------+-----------+-------------+
+| Chemotherapy, n (%)      | 0                 |           | 1923 (57.5) |
++--------------------------+-------------------+-----------+-------------+
+|                          | 1                 |           | 1423 (42.5) |
++--------------------------+-------------------+-----------+-------------+
 
-
-Feature Types:
-  - Categorical: ['N Stage', 'Smoking Status', 'Sex', 'T Stage', 'Disease Site', 'Stage', 'Dose', 'HPV Combined', 'event', 'Chemotherapy']
-  - Continuous: ['time', 'age at dx']
-
-
-Outlier Analysis:
-  - Outliers found in N Stage: ['N3b: 28 out of 3333', 'N3a: 13 out of 3333', 'NX: 1 out of 3333']
-  - No Outliers found in Smoking Status
+Outlier Report:
   - No Outliers found in Sex
-  - Outliers found in T Stage: ['T2b: 5 out of 3334', 'T2a: 4 out of 3334', 'TX: 4 out of 3334', 'T3 (2): 3 out of 3334', 'T2 (2): 1 out of 3334', 'rT0: 1 out of 3334', 'T1 (2): 1 out of 3334']
-  - Outliers found in Disease Site: ['paranasal sinus: 28 out of 3346', 'skin: 24 out of 3346', 'sarcoma: 20 out of 3346', 'paraganglioma: 7 out of 3346', 'salivary glands: 4 out of 3346', 'other: 2 out of 3346', 'benign tumor: 1 out of 3346', 'orbit: 1 out of 3346', 'lacrimal gland: 1 out of 3346']
-  - Outliers found in Stage: ['IV: 12 out of 3319', 'X: 6 out of 3319', 'IIIC: 2 out of 3319', 'IIA: 2 out of 3319', 'IIIA: 2 out of 3319', 'IVC: 2 out of 3319', 'IB: 1 out of 3319', 'IIB: 1 out of 3319']
-  - Outliers found in Dose: ['50.0: 28 out of 3346', '68.0: 6 out of 3346', '69.96: 2 out of 3346', '62.0: 2 out of 3346', '74.0: 1 out of 3346', '52.8: 1 out of 3346', '53.55: 1 out of 3346', '52.0: 1 out of 3346', '55.0: 1 out of 3346', '50.8: 1 out of 3346', '67.6: 1 out of 3346', '62.4: 1 out of 3346', '69.6: 1 out of 3346', '54.4: 1 out of 3346', '59.4: 1 out of 3346']
+  - Outliers found in T Stage: ['nan: 12 out of 3346', 'T2b: 5 out of 3346', 'T2a: 4 out of 3346', 'TX: 4 out of 3346', 'T3 (2): 3 out of 3346', 'T2 (2): 1 out of 3346', 'T1 (2): 1 out of 3346', 'rT0: 1 out of 3346']
+  - Outliers found in N Stage: ['N3b: 28 out of 3346', 'N3a: 13 out of 3346', 'nan: 13 out of 3346', 'NX: 1 out of 3346']
+  - Outliers found in Stage: ['nan: 27 out of 3346', 'IV: 12 out of 3346', 'X: 6 out of 3346', 'IIA: 2 out of 3346', 'IIIA: 2 out of 3346', 'IIIC: 2 out of 3346', 'IVC: 2 out of 3346', 'IB: 1 out of 3346', 'IIB: 1 out of 3346']
+  - No Outliers found in Smoking Status
+  - Outliers found in Disease Site: ['paranasal sinus: 28 out of 3346', 'skin: 24 out of 3346', 'sarcoma: 20 out of 3346', 'paraganglioma: 7 out of 3346', 'salivary glands: 4 out of 3346', 'other: 2 out of 3346', 'benign tumor: 1 out of 3346', 'lacrimal gland: 1 out of 3346', 'orbit: 1 out of 3346']
+  - No Outliers found in death
   - No Outliers found in HPV Combined
-  - No Outliers found in event
   - No Outliers found in Chemotherapy
 
-╒═══════════════════════╤═══════════════════╤═══════════╤═════════════╕
-│                       │                   │ Missing   │ Overall     │
-╞═══════════════════════╪═══════════════════╪═══════════╪═════════════╡
-│ n                     │                   │           │ 3346        │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ time, mean (SD)       │                   │ 0         │ 4.1 (2.7)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ age at dx, mean (SD)  │                   │ 0         │ 62.3 (11.6) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ N Stage, n (%)        │ N0                │           │ 1147 (34.3) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N1                │           │ 344 (10.3)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N2                │           │ 182 (5.4)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N2a               │           │ 125 (3.7)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N2b               │           │ 791 (23.6)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N2c               │           │ 532 (15.9)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N3                │           │ 170 (5.1)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N3a               │           │ 13 (0.4)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N3b               │           │ 28 (0.8)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ NX                │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ None              │           │ 13 (0.4)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Smoking Status, n (%) │ Current           │           │ 1139 (34.0) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Ex-smoker         │           │ 1290 (38.6) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Non-smoker        │           │ 872 (26.1)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ unknown           │           │ 45 (1.3)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Sex, n (%)            │ Female            │           │ 686 (20.5)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Male              │           │ 2660 (79.5) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ T Stage, n (%)        │ None              │           │ 12 (0.4)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T0                │           │ 167 (5.0)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T1                │           │ 454 (13.6)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T1 (2)            │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T1a               │           │ 179 (5.3)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T1b               │           │ 88 (2.6)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T2                │           │ 927 (27.7)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T2 (2)            │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T2a               │           │ 4 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T2b               │           │ 5 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T3                │           │ 861 (25.7)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T3 (2)            │           │ 3 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T4                │           │ 116 (3.5)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T4a               │           │ 358 (10.7)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T4b               │           │ 121 (3.6)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ TX                │           │ 4 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Tis               │           │ 44 (1.3)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ rT0               │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Disease Site, n (%)   │ benign tumor      │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ esophagus         │           │ 33 (1.0)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ hypopharynx       │           │ 162 (4.8)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ lacrimal gland    │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ larynx            │           │ 877 (26.2)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ lip &amp; oral cavity │           │ 100 (3.0)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ nasal cavity      │           │ 62 (1.9)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ nasopharynx       │           │ 355 (10.6)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ orbit             │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ oropharynx        │           │ 1501 (44.9) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ other             │           │ 2 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ paraganglioma     │           │ 7 (0.2)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ paranasal sinus   │           │ 28 (0.8)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ salivary glands   │           │ 4 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ sarcoma           │           │ 20 (0.6)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ skin              │           │ 24 (0.7)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ unknown           │           │ 168 (5.0)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Stage, n (%)          │ 0                 │           │ 44 (1.3)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ I                 │           │ 352 (10.5)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IB                │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ II                │           │ 400 (12.0)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IIA               │           │ 2 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IIB               │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ III               │           │ 605 (18.1)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IIIA              │           │ 2 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IIIC              │           │ 2 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IV                │           │ 12 (0.4)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IVA               │           │ 1581 (47.3) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IVB               │           │ 309 (9.2)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IVC               │           │ 2 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ None              │           │ 27 (0.8)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ X                 │           │ 6 (0.2)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Dose, n (%)           │ 50.0              │           │ 28 (0.8)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 50.8              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 51.0              │           │ 227 (6.8)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 52.0              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 52.8              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 53.55             │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 54.4              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 55.0              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 59.4              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 60.0              │           │ 418 (12.5)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 62.0              │           │ 2 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 62.4              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 64.0              │           │ 267 (8.0)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 66.0              │           │ 95 (2.8)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 67.6              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 68.0              │           │ 6 (0.2)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 69.6              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 69.96             │           │ 2 (0.1)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 70.0              │           │ 2290 (68.4) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 74.0              │           │ 1 (0.0)     │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ HPV Combined, n (%)   │ 1.0               │           │ 1139 (34.0) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ None              │           │ 2207 (66.0) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ event, n (%)          │ 0                 │           │ 2288 (68.4) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 1                 │           │ 1058 (31.6) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Chemotherapy, n (%)   │ 0                 │           │ 1923 (57.5) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 1                 │           │ 1423 (42.5) │
-╘═══════════════════════╧═══════════════════╧═══════════╧═════════════╛
-{'columns': {'categorical': ['N Stage',
-                             'Smoking Status',
-                             'Sex',
-                             'T Stage',
-                             'Disease Site',
-                             'Stage',
-                             'Dose',
-                             'HPV Combined',
-                             'event',
-                             'Chemotherapy'],
-             'continuous': ['time', 'age at dx'],
-             'date': [],
-             'other': []},
- 'mapping': {'Chemotherapy': {'0': '0', '1': '1'},
-             'Disease Site': {'benign tumor': 'Other',
-                              'esophagus': 'esophagus',
-                              'hypopharynx': 'hypopharynx',
-                              'lacrimal gland': 'Other',
-                              'larynx': 'larynx',
-                              'lip &amp; oral cavity': 'lip &amp; oral cavity',
-                              'nasal cavity': 'nasal cavity',
-                              'nasopharynx': 'nasopharynx',
-                              'orbit': 'Other',
-                              'oropharynx': 'oropharynx',
-                              'other': 'Other',
-                              'paraganglioma': 'Other',
-                              'paranasal sinus': 'Other',
-                              'salivary glands': 'Other',
-                              'sarcoma': 'Other',
-                              'skin': 'Other',
-                              'unknown': 'unknown'},
-             'Dose': {'50.0': 'Other',
-                      '50.8': 'Other',
-                      '51.0': '51.0',
-                      '52.0': 'Other',
-                      '52.8': 'Other',
-                      '53.55': 'Other',
-                      '54.4': 'Other',
-                      '55.0': 'Other',
-                      '59.4': 'Other',
-                      '60.0': '60.0',
-                      '62.0': 'Other',
-                      '62.4': 'Other',
-                      '64.0': '64.0',
-                      '66.0': '66.0',
-                      '67.6': 'Other',
-                      '68.0': 'Other',
-                      '69.6': 'Other',
-                      '69.96': 'Other',
-                      '70.0': '70.0',
-                      '74.0': 'Other'},
-             'HPV Combined': {'1.0': '1.0', 'nan': 'nan'},
-             'N Stage': {'N0': 'N0',
-                         'N1': 'N1',
-                         'N2': 'N2',
-                         'N2a': 'N2a',
-                         'N2b': 'N2b',
-                         'N2c': 'N2c',
-                         'N3': 'N3',
-                         'N3a': 'Other',
-                         'N3b': 'Other',
-                         'NX': 'Other',
-                         'nan': 'nan'},
-             'Sex': {'Female': 'Female', 'Male': 'Male'},
-             'Smoking Status': {'Current': 'Current',
-                                'Ex-smoker': 'Ex-smoker',
-                                'Non-smoker': 'Non-smoker',
-                                'unknown': 'unknown'},
-             'Stage': {'0': '0',
-                       'I': 'I',
-                       'IB': 'Other',
-                       'II': 'II',
-                       'IIA': 'Other',
-                       'IIB': 'Other',
-                       'III': 'III',
-                       'IIIA': 'Other',
-                       'IIIC': 'Other',
-                       'IV': 'Other',
-                       'IVA': 'IVA',
-                       'IVB': 'IVB',
-                       'IVC': 'Other',
-                       'X': 'Other',
-                       'nan': 'nan'},
-             'T Stage': {'T0': 'T0',
-                         'T1': 'T1',
-                         'T1 (2)': 'Other',
-                         'T1a': 'T1a',
-                         'T1b': 'T1b',
-                         'T2': 'T2',
-                         'T2 (2)': 'Other',
-                         'T2a': 'Other',
-                         'T2b': 'Other',
-                         'T3': 'T3',
-                         'T3 (2)': 'Other',
-                         'T4': 'T4',
-                         'T4a': 'T4a',
-                         'T4b': 'T4b',
-                         'TX': 'Other',
-                         'Tis': 'Tis',
-                         'nan': 'nan',
-                         'rT0': 'Other'},
-             'event': {'0': '0', '1': '1'}},
- 'missingness_strategy': {'categorical': {'Chemotherapy': 'Unknown',
-                                          'Disease Site': 'Unknown',
-                                          'Dose': 'Unknown',
-                                          'HPV Combined': 'Unknown',
-                                          'N Stage': 'Unknown',
-                                          'Sex': 'Unknown',
-                                          'Smoking Status': 'Unknown',
-                                          'Stage': 'Unknown',
-                                          'T Stage': 'Unknown',
-                                          'event': 'Unknown'},
-                          'continuous': {'age at dx': 'median',
-                                         'time': 'median'}}}
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Pairplot...          </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:118</span>
+14:41:04 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting UMAP...              </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:124</span>
+14:41:13 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Frequency Table...   </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:121</span>
+14:41:22 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Multiplot...         </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:136</span>
+Font MPDFAA+Inter28ptBold is missing the following glyphs: '
+' (\n)
 </pre>
 </div>
 </div>
@@ -1797,33 +1781,21 @@ Outlier Analysis:
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">yaml</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">pathlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">Path</span>
+<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainerSupervised</span>
 
-<span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'categorical'</span><span class="p">]</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="s1">'Dose'</span><span class="p">)</span>
-<span class="n">config</span><span class="p">[</span><span class="s1">'columns'</span><span class="p">][</span><span class="s1">'continuous'</span><span class="p">]</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'Dose'</span><span class="p">)</span> 
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'./survival_outputs/analyzer/updated_data.csv'</span><span class="p">)</span>
+<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'survival_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">,</span> <span class="s1">'death'</span><span class="p">:</span><span class="s1">'event'</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="n">pprint</span><span class="p">(</span><span class="n">config</span><span class="p">)</span>
-
-<span class="n">analyzer_path</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="s1">'radcure_outputs/analyzer'</span><span class="p">)</span>
-<span class="n">analyzer_path</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="n">analyzer_path</span> <span class="o">/</span> <span class="s1">'config.yaml'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
-            <span class="n">yaml</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="n">config</span><span class="p">,</span> <span class="n">f</span><span class="p">)</span>
+<span class="n">trainer</span> <span class="o">=</span> <span class="n">TrainerSupervised</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">'survival'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./radcure_outputs/ED_trainer_explainer'</span><span class="p">,)</span>
+<span class="n">trainer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="s1">'event'</span><span class="p">,</span><span class="s1">'time'</span><span class="p">])</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-3">import yaml
-from pathlib import Path
+<div class="clipboard-copy-txt" id="cell-3">from jarvais.trainer import TrainerSupervised
 
-config['columns']['categorical'].remove('Dose')
-config['columns']['continuous'].append('Dose') 
+df = pd.read_csv('./survival_outputs/analyzer/updated_data.csv')
+df.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
 
-pprint(config)
-
-analyzer_path = Path('radcure_outputs/analyzer')
-analyzer_path.mkdir(parents=True, exist_ok=True)
-
-with open(analyzer_path / 'config.yaml', 'w') as f:
-            yaml.dump(config, f)</div>
+trainer = TrainerSupervised(task='survival', output_dir='./radcure_outputs/ED_trainer_explainer',)
+trainer.run(df, ['event','time'])</div>
 </div>
 </div>
 </div>
@@ -1835,119 +1807,30 @@ with open(analyzer_path / 'config.yaml', 'w') as f:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>{'columns': {'categorical': ['N Stage',
-                             'Smoking Status',
-                             'Sex',
-                             'T Stage',
-                             'Disease Site',
-                             'Stage',
-                             'HPV Combined',
-                             'event',
-                             'Chemotherapy'],
-             'continuous': ['time', 'age at dx', 'Dose'],
-             'date': [],
-             'other': []},
- 'mapping': {'Chemotherapy': {'0': '0', '1': '1'},
-             'Disease Site': {'benign tumor': 'Other',
-                              'esophagus': 'esophagus',
-                              'hypopharynx': 'hypopharynx',
-                              'lacrimal gland': 'Other',
-                              'larynx': 'larynx',
-                              'lip &amp; oral cavity': 'lip &amp; oral cavity',
-                              'nasal cavity': 'nasal cavity',
-                              'nasopharynx': 'nasopharynx',
-                              'orbit': 'Other',
-                              'oropharynx': 'oropharynx',
-                              'other': 'Other',
-                              'paraganglioma': 'Other',
-                              'paranasal sinus': 'Other',
-                              'salivary glands': 'Other',
-                              'sarcoma': 'Other',
-                              'skin': 'Other',
-                              'unknown': 'unknown'},
-             'Dose': {'50.0': 'Other',
-                      '50.8': 'Other',
-                      '51.0': '51.0',
-                      '52.0': 'Other',
-                      '52.8': 'Other',
-                      '53.55': 'Other',
-                      '54.4': 'Other',
-                      '55.0': 'Other',
-                      '59.4': 'Other',
-                      '60.0': '60.0',
-                      '62.0': 'Other',
-                      '62.4': 'Other',
-                      '64.0': '64.0',
-                      '66.0': '66.0',
-                      '67.6': 'Other',
-                      '68.0': 'Other',
-                      '69.6': 'Other',
-                      '69.96': 'Other',
-                      '70.0': '70.0',
-                      '74.0': 'Other'},
-             'HPV Combined': {'1.0': '1.0', 'nan': 'nan'},
-             'N Stage': {'N0': 'N0',
-                         'N1': 'N1',
-                         'N2': 'N2',
-                         'N2a': 'N2a',
-                         'N2b': 'N2b',
-                         'N2c': 'N2c',
-                         'N3': 'N3',
-                         'N3a': 'Other',
-                         'N3b': 'Other',
-                         'NX': 'Other',
-                         'nan': 'nan'},
-             'Sex': {'Female': 'Female', 'Male': 'Male'},
-             'Smoking Status': {'Current': 'Current',
-                                'Ex-smoker': 'Ex-smoker',
-                                'Non-smoker': 'Non-smoker',
-                                'unknown': 'unknown'},
-             'Stage': {'0': '0',
-                       'I': 'I',
-                       'IB': 'Other',
-                       'II': 'II',
-                       'IIA': 'Other',
-                       'IIB': 'Other',
-                       'III': 'III',
-                       'IIIA': 'Other',
-                       'IIIC': 'Other',
-                       'IV': 'Other',
-                       'IVA': 'IVA',
-                       'IVB': 'IVB',
-                       'IVC': 'Other',
-                       'X': 'Other',
-                       'nan': 'nan'},
-             'T Stage': {'T0': 'T0',
-                         'T1': 'T1',
-                         'T1 (2)': 'Other',
-                         'T1a': 'T1a',
-                         'T1b': 'T1b',
-                         'T2': 'T2',
-                         'T2 (2)': 'Other',
-                         'T2a': 'Other',
-                         'T2b': 'Other',
-                         'T3': 'T3',
-                         'T3 (2)': 'Other',
-                         'T4': 'T4',
-                         'T4a': 'T4a',
-                         'T4b': 'T4b',
-                         'TX': 'Other',
-                         'Tis': 'Tis',
-                         'nan': 'nan',
-                         'rT0': 'Other'},
-             'event': {'0': '0', '1': '1'}},
- 'missingness_strategy': {'categorical': {'Chemotherapy': 'Unknown',
-                                          'Disease Site': 'Unknown',
-                                          'Dose': 'Unknown',
-                                          'HPV Combined': 'Unknown',
-                                          'N Stage': 'Unknown',
-                                          'Sex': 'Unknown',
-                                          'Smoking Status': 'Unknown',
-                                          'Stage': 'Unknown',
-                                          'T Stage': 'Unknown',
-                                          'event': 'Unknown'},
-                          'continuous': {'age at dx': 'median',
-                                         'time': 'median'}}}
+<pre>Training MTLR...
+  Best trial:
+    Params: 
+      C1: 0.01
+      dropout: 0.3292835147016483
+      dims: [64, 64]
+Training DeepSurv...
+  Best trial:
+    Params: 
+      l2_reg: 0.006451742136969566
+      dropout: 0.360636124048913
+      dims: [256, 256, 256]
+Training CoxPH...
+Training GradientBoosting...
+Training RandomForest...
+Training SVM...
+
+Consolidated C-index Scores:
+MTLR: 0.6482
+DeepSurv: 0.6863
+CoxPH: 0.7212
+GradientBoosting: 0.7152
+RandomForest: 0.7156
+SVM: 0.7156
 </pre>
 </div>
 </div>
@@ -1973,277 +1856,12 @@ with open(analyzer_path / 'config.yaml', 'w') as f:
 </div>
 </clipboard-copy>
 </div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.analyzer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Analyzer</span>
-
-<span class="n">analyzer</span> <span class="o">=</span> <span class="n">Analyzer</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="n">task</span><span class="o">=</span><span class="s1">'survival'</span><span class="p">,</span> <span class="n">target_variable</span><span class="o">=</span><span class="s1">'event'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./radcure_outputs/analyzer'</span><span class="p">,</span> <span class="n">one_hot_encode</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">config</span><span class="o">=</span><span class="s1">'radcure_outputs/analyzer/config.yaml'</span><span class="p">)</span>
-
-<span class="n">analyzer</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
-</pre></div>
-<div class="clipboard-copy-txt" id="cell-4">from jarvais.analyzer import Analyzer
-
-analyzer = Analyzer(df, task='survival', target_variable='event', output_dir='./radcure_outputs/analyzer', one_hot_encode=True, config='radcure_outputs/analyzer/config.yaml')
-
-analyzer.run()</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Feature Types:
-  - Categorical: ['N Stage', 'Smoking Status', 'Sex', 'T Stage', 'Disease Site', 'Stage', 'HPV Combined', 'event', 'Chemotherapy']
-  - Continuous: ['time', 'age at dx', 'Dose']
-
-
-Outlier Analysis:
-  - Outliers found in N Stage: ['N3b: 28 out of 3333', 'N3a: 13 out of 3333', 'NX: 1 out of 3333']
-  - No Outliers found in Smoking Status
-  - No Outliers found in Sex
-  - Outliers found in T Stage: ['T2b: 5 out of 3334', 'T2a: 4 out of 3334', 'TX: 4 out of 3334', 'T3 (2): 3 out of 3334', 'T2 (2): 1 out of 3334', 'rT0: 1 out of 3334', 'T1 (2): 1 out of 3334']
-  - Outliers found in Disease Site: ['paranasal sinus: 28 out of 3346', 'skin: 24 out of 3346', 'sarcoma: 20 out of 3346', 'paraganglioma: 7 out of 3346', 'salivary glands: 4 out of 3346', 'other: 2 out of 3346', 'benign tumor: 1 out of 3346', 'orbit: 1 out of 3346', 'lacrimal gland: 1 out of 3346']
-  - Outliers found in Stage: ['IV: 12 out of 3319', 'X: 6 out of 3319', 'IIIC: 2 out of 3319', 'IIA: 2 out of 3319', 'IIIA: 2 out of 3319', 'IVC: 2 out of 3319', 'IB: 1 out of 3319', 'IIB: 1 out of 3319']
-  - No Outliers found in HPV Combined
-  - No Outliers found in event
-  - No Outliers found in Chemotherapy
-
-Applying changes from config...
-
-╒═══════════════════════╤═══════════════════╤═══════════╤═════════════╕
-│                       │                   │ Missing   │ Overall     │
-╞═══════════════════════╪═══════════════════╪═══════════╪═════════════╡
-│ n                     │                   │           │ 3346        │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ time, mean (SD)       │                   │ 0         │ 4.1 (2.7)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ age at dx, mean (SD)  │                   │ 0         │ 62.3 (11.6) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Dose, mean (SD)       │                   │ 0         │ 66.7 (5.8)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ N Stage, n (%)        │ N0                │           │ 1147 (34.3) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N1                │           │ 344 (10.3)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N2                │           │ 182 (5.4)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N2a               │           │ 125 (3.7)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N2b               │           │ 791 (23.6)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N2c               │           │ 532 (15.9)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ N3                │           │ 170 (5.1)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Other             │           │ 42 (1.3)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Unknown           │           │ 13 (0.4)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Smoking Status, n (%) │ Current           │           │ 1139 (34.0) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Ex-smoker         │           │ 1290 (38.6) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Non-smoker        │           │ 872 (26.1)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ unknown           │           │ 45 (1.3)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Sex, n (%)            │ Female            │           │ 686 (20.5)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Male              │           │ 2660 (79.5) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ T Stage, n (%)        │ Other             │           │ 19 (0.6)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T0                │           │ 167 (5.0)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T1                │           │ 454 (13.6)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T1a               │           │ 179 (5.3)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T1b               │           │ 88 (2.6)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T2                │           │ 927 (27.7)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T3                │           │ 861 (25.7)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T4                │           │ 116 (3.5)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T4a               │           │ 358 (10.7)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ T4b               │           │ 121 (3.6)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Tis               │           │ 44 (1.3)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Unknown           │           │ 12 (0.4)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Disease Site, n (%)   │ Other             │           │ 88 (2.6)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ esophagus         │           │ 33 (1.0)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ hypopharynx       │           │ 162 (4.8)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ larynx            │           │ 877 (26.2)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ lip &amp; oral cavity │           │ 100 (3.0)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ nasal cavity      │           │ 62 (1.9)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ nasopharynx       │           │ 355 (10.6)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ oropharynx        │           │ 1501 (44.9) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ unknown           │           │ 168 (5.0)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Stage, n (%)          │ 0                 │           │ 44 (1.3)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ I                 │           │ 352 (10.5)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ II                │           │ 400 (12.0)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ III               │           │ 605 (18.1)  │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IVA               │           │ 1581 (47.3) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ IVB               │           │ 309 (9.2)   │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Other             │           │ 28 (0.8)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Unknown           │           │ 27 (0.8)    │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ HPV Combined, n (%)   │ 1.0               │           │ 1139 (34.0) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ Unknown           │           │ 2207 (66.0) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ event, n (%)          │ 0                 │           │ 2288 (68.4) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 1                 │           │ 1058 (31.6) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│ Chemotherapy, n (%)   │ 0                 │           │ 1923 (57.5) │
-├───────────────────────┼───────────────────┼───────────┼─────────────┤
-│                       │ 1                 │           │ 1423 (42.5) │
-╘═══════════════════════╧═══════════════════╧═══════════╧═════════════╛
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [5]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="CodeMirror cm-s-jupyter">
-<div class="zeroclipboard-container">
-<clipboard-copy aria-label="Copy to Clipboard" for="cell-5">
-<div>
-<span class="notice" hidden="">Copied!</span>
-<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
-<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-</clipboard-copy>
-</div>
-<div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.trainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">TrainerSupervised</span>
-
-<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">'./radcure_outputs/analyzer/updated_data.csv'</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
-<span class="n">df</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="p">{</span><span class="s1">'survival_time'</span><span class="p">:</span> <span class="s1">'time'</span><span class="p">,</span> <span class="s1">'death'</span><span class="p">:</span><span class="s1">'event'</span><span class="p">},</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-<span class="n">trainer</span> <span class="o">=</span> <span class="n">TrainerSupervised</span><span class="p">(</span><span class="n">task</span><span class="o">=</span><span class="s1">'survival'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="s1">'./radcure_outputs/ED_trainer_explainer'</span><span class="p">,)</span>
-<span class="n">trainer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="p">[</span><span class="s1">'event'</span><span class="p">,</span><span class="s1">'time'</span><span class="p">])</span>
-</pre></div>
-<div class="clipboard-copy-txt" id="cell-5">from jarvais.trainer import TrainerSupervised
-
-df = pd.read_csv('./radcure_outputs/analyzer/updated_data.csv', index_col=0)
-df.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
-
-trainer = TrainerSupervised(task='survival', output_dir='./radcure_outputs/ED_trainer_explainer',)
-trainer.run(df, ['event','time'])</div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>Training MTLR...
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>[W 2025-02-06 15:47:30,167] Trial 6 failed with parameters: {'C1': 0.01, 'dropout': 0.322887614468196, 'dims': [512, 512]} because of the following error: The value nan is not acceptable.
-[W 2025-02-06 15:47:30,170] Trial 6 failed with value nan.
-</pre>
-</div>
-</div>
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>  Best trial:
-    Params: 
-      C1: 0.01
-      dropout: 0.35324720434582946
-      dims: [64, 64]
-Training DeepSurv...
-  Best trial:
-    Params: 
-      l2_reg: 0.00256531183447817
-      dropout: 0.2830909947364929
-      dims: [256, 256, 256]
-Training CoxPH...
-Training GradientBoosting...
-Training RandomForest...
-Training SVM...
-
-Consolidated C-index Scores:
-MTLR: 0.6674
-DeepSurv: 0.7045
-CoxPH: 0.7224
-GradientBoosting: 0.7158
-RandomForest: 0.7126
-SVM: 0.7185
-</pre>
-</div>
-</div>
-</div>
-</div>
-</div>
-</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell jp-CodeCell jp-Notebook-cell">
-<div class="jp-Cell-inputWrapper" tabindex="0">
-<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
-</div>
-<div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [6]:</div><div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
-<div class="CodeMirror cm-s-jupyter">
-<div class="zeroclipboard-container">
-<clipboard-copy aria-label="Copy to Clipboard" for="cell-6">
-<div>
-<span class="notice" hidden="">Copied!</span>
-<svg aria-hidden="true" class="clipboard-copy-icon" data-view-component="true" height="20" version="1.1" viewbox="0 0 16 16" width="20">
-<path d="M0 6.75C0 5.784.784 5 1.75 5h1.5a.75.75 0 010 1.5h-1.5a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-1.5a.75.75 0 011.5 0v1.5A1.75 1.75 0 019.25 16h-7.5A1.75 1.75 0 010 14.25v-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-<path d="M5 1.75C5 .784 5.784 0 6.75 0h7.5C15.216 0 16 .784 16 1.75v7.5A1.75 1.75 0 0114.25 11h-7.5A1.75 1.75 0 015 9.25v-7.5zm1.75-.25a.25.25 0 00-.25.25v7.5c0 .138.112.25.25.25h7.5a.25.25 0 00.25-.25v-7.5a.25.25 0 00-.25-.25h-7.5z" fill="currentColor" fill-rule="evenodd"></path>
-</svg>
-</div>
-</clipboard-copy>
-</div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.explainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Explainer</span>
 
 <span class="n">exp</span> <span class="o">=</span> <span class="n">Explainer</span><span class="o">.</span><span class="n">from_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
 <span class="n">exp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
 </pre></div>
-<div class="clipboard-copy-txt" id="cell-6">from jarvais.explainer import Explainer
+<div class="clipboard-copy-txt" id="cell-4">from jarvais.explainer import Explainer
 
 exp = Explainer.from_trainer(trainer)
 exp.run()</div>
@@ -2267,27 +1885,27 @@ Model Statistics:
     Log-Likelihood Ratio p-value: 0.0003
     Concordance Index (C-index):   0.59
 Model Coefficients:
-    ╒════════════════════════════════╤═══════════════╤══════════════════╕
-    │ Feature                        │   Coefficient │   Standard Error │
-    ╞════════════════════════════════╪═══════════════╪══════════════════╡
-    │ Disease Site_Other             │         0.424 │            4.571 │
-    ├────────────────────────────────┼───────────────┼──────────────────┤
-    │ Disease Site_esophagus         │         0.795 │            4.577 │
-    ├────────────────────────────────┼───────────────┼──────────────────┤
-    │ Disease Site_hypopharynx       │         0.746 │            4.556 │
-    ├────────────────────────────────┼───────────────┼──────────────────┤
-    │ Disease Site_larynx            │         0.202 │            4.552 │
-    ├────────────────────────────────┼───────────────┼──────────────────┤
-    │ Disease Site_lip &amp; oral cavity │         0.666 │            4.561 │
-    ├────────────────────────────────┼───────────────┼──────────────────┤
-    │ Disease Site_nasal cavity      │        -1.205 │            4.653 │
-    ├────────────────────────────────┼───────────────┼──────────────────┤
-    │ Disease Site_nasopharynx       │        -0.925 │            4.558 │
-    ├────────────────────────────────┼───────────────┼──────────────────┤
-    │ Disease Site_oropharynx        │        -0.046 │            4.551 │
-    ├────────────────────────────────┼───────────────┼──────────────────┤
-    │ Disease Site_unknown           │         0.142 │            4.557 │
-    ╘════════════════════════════════╧═══════════════╧══════════════════╛
+    +--------------------------------+---------------+------------------+
+    | Feature                        |   Coefficient |   Standard Error |
+    +================================+===============+==================+
+    | Disease Site_Other             |         0.424 |            4.571 |
+    +--------------------------------+---------------+------------------+
+    | Disease Site_esophagus         |         0.795 |            4.577 |
+    +--------------------------------+---------------+------------------+
+    | Disease Site_hypopharynx       |         0.746 |            4.556 |
+    +--------------------------------+---------------+------------------+
+    | Disease Site_larynx            |         0.202 |            4.552 |
+    +--------------------------------+---------------+------------------+
+    | Disease Site_lip &amp; oral cavity |         0.666 |            4.561 |
+    +--------------------------------+---------------+------------------+
+    | Disease Site_nasal cavity      |        -1.205 |            4.653 |
+    +--------------------------------+---------------+------------------+
+    | Disease Site_nasopharynx       |        -0.925 |            4.558 |
+    +--------------------------------+---------------+------------------+
+    | Disease Site_oropharynx        |        -0.046 |            4.551 |
+    +--------------------------------+---------------+------------------+
+    | Disease Site_unknown           |         0.142 |            4.557 |
+    +--------------------------------+---------------+------------------+
 ⚠️  **Possible Bias Detected in Smoking Status** ⚠️
 === Subgroup Analysis for 'Smoking Status' Using Cox Proportional Hazards Model ===
 
@@ -2297,17 +1915,17 @@ Model Statistics:
     Log-Likelihood Ratio p-value: 0.0000
     Concordance Index (C-index):   0.61
 Model Coefficients:
-    ╒═══════════════════════════╤═══════════════╤══════════════════╕
-    │ Feature                   │   Coefficient │   Standard Error │
-    ╞═══════════════════════════╪═══════════════╪══════════════════╡
-    │ Smoking Status_Current    │         0.508 │            4.720 │
-    ├───────────────────────────┼───────────────┼──────────────────┤
-    │ Smoking Status_Ex-smoker  │         0.070 │            4.720 │
-    ├───────────────────────────┼───────────────┼──────────────────┤
-    │ Smoking Status_Non-smoker │        -0.710 │            4.721 │
-    ├───────────────────────────┼───────────────┼──────────────────┤
-    │ Smoking Status_unknown    │         0.417 │            4.753 │
-    ╘═══════════════════════════╧═══════════════╧══════════════════╛
+    +---------------------------+---------------+------------------+
+    | Feature                   |   Coefficient |   Standard Error |
+    +===========================+===============+==================+
+    | Smoking Status_Current    |         0.508 |            4.720 |
+    +---------------------------+---------------+------------------+
+    | Smoking Status_Ex-smoker  |         0.070 |            4.720 |
+    +---------------------------+---------------+------------------+
+    | Smoking Status_Non-smoker |        -0.710 |            4.721 |
+    +---------------------------+---------------+------------------+
+    | Smoking Status_unknown    |         0.417 |            4.753 |
+    +---------------------------+---------------+------------------+
 </pre>
 </div>
 </div>
