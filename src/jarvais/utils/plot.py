@@ -1,4 +1,5 @@
 from itertools import combinations
+from typing import TYPE_CHECKING
 from pathlib import Path
 
 import numpy as np
@@ -20,7 +21,6 @@ from umap import UMAP
 from lifelines.statistics import multivariate_logrank_test
 from sksurv.nonparametric import kaplan_meier_estimator
 
-from jarvais.loggers import logger
 from .functional import auprc, ci_wrapper, bootstrap_metric
 from ._plot_epic import plot_epic_copy
 from ._design import config_plot
@@ -37,7 +37,7 @@ def plot_one_multiplot(
 
     def prep_for_pie(df, label):
         # Prepares data for pie plotting by grouping and sorting values.
-        data = df.groupby(label, observed=False).size().sort_values(ascending=False)
+        data = df.groupby(label).size().sort_values(ascending=False)
 
         labels = data.index.tolist()
         values = data.values.tolist()
@@ -97,26 +97,26 @@ def plot_one_multiplot(
     if data[var].nunique() > 5: # Puts legend under plot if there are too many categories
         ax[1].legend(loc='upper center', bbox_to_anchor=(0.5, -0.15), ncol=3)
 
-    # Calculate p-values
     p_values = {}
+
+    # Calculate p-values
     for col in continuous_columns:
         unique_values = data[var].unique()
         if len(unique_values) > 1:
-            if len(unique_values) == 2:
+            if len(unique_values) == 2: # If binary classification, use t-test
                 group1 = data[data[var] == unique_values[0]][col]
                 group2 = data[data[var] == unique_values[1]][col]
                 _, p_value = ttest_ind(group1, group2, equal_var=False)
-            else:
+            else: # For more than two categories, use ANOVA
                 groups = [data[data[var] == value][col] for value in unique_values]
                 _, p_value = f_oneway(*groups)
             p_values[col] = p_value
+            sorted_columns = sorted(p_values, key=p_values.get)
 
-    # Violin plots
-    sorted_columns = sorted(p_values, key=p_values.get)
-    for i, col in enumerate(sorted_columns):
-        sns.violinplot(x=var, y=col, data=data, ax=ax[i+2], inner="point")
-        ax[i+2].tick_params(axis='x', labelrotation=67.5)
-        ax[i+2].set_title(f"{var} vs {col} (p-value: {p_values[col]:.4f})")
+            for i, col in enumerate(sorted_columns):
+                sns.violinplot(x=var, y=col, data=data, ax=ax[i+2], inner="point")
+                ax[i+2].tick_params(axis='x', labelrotation=67.5)
+                ax[i+2].set_title(f"{var} vs {col} (p-value: {p_values[col]:.4f})")
 
     # Turn off unused axes
     for j in range(n, len(ax)):

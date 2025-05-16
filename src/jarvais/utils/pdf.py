@@ -2,9 +2,8 @@ from pathlib import Path
 import pandas as pd
 
 from fpdf.enums import Align, YPos
-
-from jarvais.loggers import logger
 from ._design import PDFRounded as FPDF
+
 from ._elements_analyzer import _add_multiplots, _add_outlier_analysis, _add_tableone
 
 # Reports
@@ -54,22 +53,20 @@ def generate_analysis_report_pdf(
         pdf = _add_outlier_analysis(pdf, outlier_analysis)
 
     # Add page-wide pairplots
-    if (figures_dir / 'pairplot.png').exists():
-        pdf.add_page()
-        pdf.set_font('inter', 'B', 24)
-        pdf.cell(h=pdf.t_margin, text='Pair Plot of Continuous Variables', new_y=YPos.NEXT)
-        img = pdf.image((figures_dir / 'pairplot.png'), Align.C, h=pdf.eph*.5)
-        pdf.set_y(pdf.t_margin + img.rendered_height + 25)
+    pdf.add_page()
+    pdf.set_font('inter', 'B', 24)
+    pdf.cell(h=pdf.t_margin, text='Pair Plot of Continuous Variables', new_y=YPos.NEXT)
+    img = pdf.image((figures_dir / 'pairplot.png'), Align.C, h=pdf.eph*.5)
+    pdf.set_y(pdf.t_margin + img.rendered_height + 25)
 
     # Add correlation plots
-    if (figures_dir / 'pearson_correlation.png').exists() and (figures_dir / 'spearman_correlation.png').exists():
-        pdf.set_font('inter', 'B', 24)
-        pdf.cell(h=pdf.t_margin, text='Pearson and Spearman Correlation Plots', new_y=YPos.NEXT)
+    pdf.set_font('inter', 'B', 24)
+    pdf.cell(h=pdf.t_margin, text='Pearson and Spearman Correlation Plots', new_y=YPos.NEXT)
 
-        corr_y = pdf.get_y() + 5
+    corr_y = pdf.get_y() + 5
 
-        pdf.image((figures_dir / 'pearson_correlation.png'), Align.L, corr_y, w=pdf.epw*.475)
-        pdf.image((figures_dir / 'spearman_correlation.png'), Align.R, corr_y, w=pdf.epw*.475)
+    pdf.image((figures_dir / 'pearson_correlation.png'), Align.L, corr_y, w=pdf.epw*.475)
+    pdf.image((figures_dir / 'spearman_correlation.png'), Align.R, corr_y, w=pdf.epw*.475)
 
     # Add multiplots
     if multiplots and categorical_columns:
@@ -78,11 +75,8 @@ def generate_analysis_report_pdf(
     # Add demographic breakdown "table one"
     path_tableone = output_dir / 'tableone.csv'
     if path_tableone.exists():
-        try:
-            csv_df = pd.read_csv(path_tableone, na_filter=False).astype(str)
-            pdf = _add_tableone(pdf, csv_df)
-        except Exception as e:
-            logger.warning(f"Unable to add table one to analysis report: {e}")
+        csv_df = pd.read_csv(path_tableone, na_filter=False).astype(str)
+        pdf = _add_tableone(pdf, csv_df)
 
     # Save PDF
     pdf.output(output_dir / 'analysis_report.pdf')
