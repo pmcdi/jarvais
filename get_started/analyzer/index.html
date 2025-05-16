@@ -474,6 +474,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Example Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1087,6 +1102,21 @@
     </span>
   </a>
   
+    <nav class="md-nav" aria-label="Example Usage">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Settings
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
 </li>
       
         <li class="md-nav__item">
@@ -1254,15 +1284,55 @@
 <h2 id="example-usage">Example Usage</h2>
 <pre><code class="language-python">from jarvais.analyzer import Analyzer
 
-analyzer = Analyzer(data, target_variable='target', output_dir='.')
+data = pd.DataFrame({
+        "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
+        "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
+        "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
+        "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
+        "death": [True, False, True, False, True, False, True, False, True, False],
+    })
+
+analyzer = Analyzer(
+    data, 
+    output_dir="./temp_output/test",
+    categorical_columns=["stage", "treatment", "death"], 
+    target_variable="death", 
+    task="classification"
+)
+
 analyzer.run()
 </code></pre>
+<h3 id="settings">Settings</h3>
+<p>The <code>Analyzer</code> module can be configured using settings. The settings are stored in a JSON file and can be loaded using the <code>Analyzer.from_settings</code> function. Example settings:</p>
+<pre><code class="language-bash">Analyzer(
+    AnalyzerSettings(
+        output_dir=PosixPath('temp_output/test'),
+        categorical_columns=['stage', 'treatment', 'death'],
+        continuous_columns=['tumor_size', 'age'],
+        date_columns=[],
+        task='classification',
+        target_variable='death',
+        generate_report=True,
+        settings_path=PosixPath('temp_output/test/analyzer_settings.json'),
+        settings_schema_path=PosixPath('temp_output/test/analyzer_settings.schema.json'),
+        missingness=MissingnessModule(
+            categorical_strategy={'stage': 'unknown', 'treatment': 'unknown', 'death': 'unknown'},
+            continuous_strategy={'tumor_size': 'median', 'age': 'median'},
+            enabled=True
+        ),
+        outlier=OutlierModule(
+            categorical_strategy={'stage': 'frequency', 'treatment': 'frequency', 'death': 'frequency'},
+            continuous_strategy={'tumor_size': 'none', 'age': 'none'},
+            threshold=0.01,
+            enabled=True
+        ),
+        encoding=OneHotEncodingModule(columns=['stage', 'treatment'], target_variable='death', prefix_sep='|', enabled=True),
+        visualization=VisualizationModule(plots=['corr', 'pairplot', 'umap', 'frequency_table', 'multiplot'], enabled=True)
+    )
+)
+</code></pre>
 <h2 id="example-output">Example Output</h2>
-<pre><code class="language-bash">Feature Types:
-  - Categorical: ['Gender', 'Disease Type', 'Treatment']
-  - Continuous: ['Age', 'Tumor Size']
-
-Outlier Detection:
+<pre><code class="language-bash">Outlier Detection:
   - Outliers found in Gender: ['Male: 5 out of 1000']
   - Outliers found in Disease Type: ['Lung Cancer: 10 out of 1000']
   - No Outliers found in Treatment
@@ -1333,9 +1403,10 @@ Outlier Detection:
 <p>The Analyzer module generates the following files and directories:</p>
 <ul>
 <li><strong>analysis_report.pdf</strong>: A PDF report summarizing the analysis results.</li>
-<li><strong>config.yaml</strong>: Configuration file for the analysis setup.</li>
 <li><strong>tableone.csv</strong>: CSV file containing summary statistics for the dataset.</li>
 <li><strong>updated_data.csv</strong>: CSV file with the cleaned and processed data.</li>
+<li><strong>analyzer_settings.json</strong>: Configuration file for the analysis setup.</li>
+<li><strong>analyzer_settings.schema.json</strong>: Schema file for the analyzer settings.</li>
 </ul>
 <h3 id="figures">Figures</h3>
 <h4 id="1-frequency-tables">1. Frequency Tables</h4>
