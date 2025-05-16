@@ -1,4 +1,5 @@
 .pixi/
+.env
 tests/tmp
 *.bak
 *.test
@@ -7,6 +8,7 @@ data/*
 !data/RADCURE_Clinical_v04_20241219.csv
 !data/RADCURE_processed_clinical.csv
 temp_output
+src/jarvais/bias
 
 .DS_Store
 docs/tutorials/*
