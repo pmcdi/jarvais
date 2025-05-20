@@ -1,6 +1,6 @@
 [project]
 name = "jarvais"
-version = "0.11.3"
+version = "0.12.0"
 description = "jarvAIs: just a really versatile AI service"
 authors = [
     { name = "Joshua Siraj", email = "joshua.siraj@uhn.ca" },
@@ -11,28 +11,35 @@ readme = "README.md"
 requires-python = ">=3.10,<3.13"
 
 dependencies = [
+  # utils
+  "structlog>=25.3.0,<26",
+  "rich>=13.9.4,<15",
   "pyyaml>=6.0.2,<7",
   "fpdf2>=2.8.1,<3",
   "seaborn>=0.13.2,<0.14",
-  "autogluon.tabular[all]>1.0",
   "pandas>2.0",
   "openpyxl>=3.1.5,<3.2",
   "htmlmin==0.1.12",
-  "scipy>=1.11.4,<1.13",
-  "tableone==0.9.1",
   "borb>=2.1.25,<3",
+  "scipy>=1.11.4,<1.13",
   "prettytable>=3.12.0,<4",
+  "pydantic>=2.11.3,<3",
+  # analyzer
+  "tableone==0.9.1",
+  "umap-learn>=0.5.6, <0.6",
+  #trainer
+  "autogluon.tabular[all]>1.0",
   "lifelines>=0.30.0,<0.31",
   "lightning>=2.4.0,<3",
   "optuna==4.1.0",
   "optuna-integration[pytorch-lightning]==4.1.0",
+  "scikit-learn>=1.5.2,<2",
+  "mrmr-selection==0.2.8",
+  "scikit-survival>=0.23.1,<0.24",
+  #explainer
   "fairlearn>=0.12.0,<0.13",
   "shap>=0.46.0,<0.47",
   "statsmodels>=0.14.4,<0.15",
-  "scikit-learn>=1.5.2,<2",
-  "mrmr-selection==0.2.8",
-  "umap-learn>=0.5.6, <0.6",
-  "scikit-survival>=0.23.1,<0.24",
 ]
 
 classifiers = [
