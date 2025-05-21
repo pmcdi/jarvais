@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.13.0](https://github.com/pmcdi/jarvais/compare/v0.12.1...v0.13.0) (2025-05-21)
+
+
+### Features
+
+* add categorical mapping into outlier module. ([#77](https://github.com/pmcdi/jarvais/issues/77)) ([44c3915](https://github.com/pmcdi/jarvais/commit/44c39158c13d76969c5e195ab65cfe88c592e126))
+
 ## [0.12.1](https://github.com/pmcdi/jarvais/compare/v0.12.0...v0.12.1) (2025-05-20)
 
 
