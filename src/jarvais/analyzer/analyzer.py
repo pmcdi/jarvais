@@ -192,14 +192,9 @@ class Analyzer():
 
         # Generate Report
         if self.settings.generate_report:
-            multiplots = (
-                [f for f in (figures_dir / 'multiplots').iterdir() if f.suffix == '.png']
-                if (figures_dir / 'multiplots').exists()
-                else []
-            )
             generate_analysis_report_pdf(
                 outlier_analysis=self.outlier_module.report,
-                multiplots=multiplots,
+                multiplots=self.visualization_module._multiplots,
                 categorical_columns=self.settings.categorical_columns,
                 continuous_columns=self.settings.continuous_columns,
                 output_dir=self.settings.output_dir
@@ -254,5 +249,5 @@ if __name__ == "__main__":
 
     print(analyzer)
 
-    # analyzer.run()
+    analyzer.run()
     
