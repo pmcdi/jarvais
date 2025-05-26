@@ -11,7 +11,7 @@ from pydantic import BaseModel, Field
 from pathlib import Path
 
 
-class BaseAnalyzerSettings(BaseModel):
+class AnalyzerSettings(BaseModel):
     output_dir: Path = Field(
         description="Output directory.",
         title="Output Directory",
@@ -46,9 +46,21 @@ class BaseAnalyzerSettings(BaseModel):
         default=True,
         description="Whether to generate a pdf report."
     )
+    settings_path: Path | None = Field(
+        default=None,
+        description="Path to settings file.",
+    )
+    settings_schema_path: Path | None = Field(
+        default=None,
+        description="Path to settings schema file.",
+    )
+
+    missingness: MissingnessModule
+    outlier: OutlierModule
+    encoding: OneHotEncodingModule
+    visualization: VisualizationModule
 
     def model_post_init(self, context):
-        self.output_dir = Path(self.output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
     
     @classmethod
@@ -56,13 +68,3 @@ class BaseAnalyzerSettings(BaseModel):
         if task not in ['classification', 'regression', 'survival', None]:
             raise ValueError("Invalid task parameter. Choose one of: 'classification', 'regression', 'survival'.")
         return task
-
-
-class AnalyzerSettings(BaseModel):
-    base: BaseAnalyzerSettings
-    missingness: MissingnessModule
-    outlier: OutlierModule
-    encoding: OneHotEncodingModule
-    visualization: VisualizationModule
-
-

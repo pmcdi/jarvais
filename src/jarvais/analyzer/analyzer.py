@@ -13,13 +13,33 @@ from jarvais.analyzer.modules import (
     OutlierModule,
     VisualizationModule,
 )
-from jarvais.analyzer.settings import AnalyzerSettings, BaseAnalyzerSettings
+from jarvais.analyzer.settings import AnalyzerSettings
 from jarvais.loggers import logger
 from jarvais.utils.pdf import generate_analysis_report_pdf
 
 
 class Analyzer():
+    """
+    Analyzer class for data visualization and exploration.
 
+    Parameters:
+        data (pd.DataFrame): The input data to be analyzed.
+        output_dir (str | Path): The output directory for saving the analysis report and visualizations.
+        categorical_columns (list[str] | None): List of categorical columns. If None, all remaining columns will be considered categorical.
+        continuous_columns (list[str] | None): List of continuous columns. If None, all remaining columns will be considered continuous.
+        date_columns (list[str] | None): List of date columns. If None, no date columns will be considered.
+        target_variable (str | None): The target variable for analysis. If None, analysis will be performed without a target variable.
+        task (str | None): The type of task for analysis, e.g. classification, regression, survival. If None, analysis will be performed without a task.
+        generate_report (bool): Whether to generate a PDF report of the analysis. Default is True.
+
+    Attributes:
+        data (pd.DataFrame): The input data to be analyzed.
+        missingness_module (MissingnessModule): Module for handling missing data.
+        outlier_module (OutlierModule): Module for detecting outliers.
+        encoding_module (OneHotEncodingModule): Module for encoding categorical variables.
+        visualization_module (VisualizationModule): Module for generating visualizations.
+        settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.
+    """
     def __init__(
             self, 
             data: pd.DataFrame,
@@ -31,7 +51,6 @@ class Analyzer():
             task: str | None = None,
             generate_report: bool = True
         ) -> None:
-        
         self.data = data
 
         # Infer all types if none provided
@@ -56,17 +75,7 @@ class Analyzer():
             elif not date_columns:
                 logger.warning("Date columns not specified. Inferring from remaining columns.")
                 date_columns = list(remaining_cols)        
-        
-        self.base_settings = BaseAnalyzerSettings(
-            output_dir=Path(output_dir),
-            categorical_columns=categorical_columns,
-            continuous_columns=continuous_columns,
-            date_columns=date_columns,
-            target_variable=target_variable,
-            task=task,
-            generate_report=generate_report
-        )
-
+                    
         self.missingness_module = MissingnessModule.build(
             categorical_columns=categorical_columns, 
             continuous_columns=continuous_columns
@@ -80,7 +89,7 @@ class Analyzer():
             target_variable=target_variable
         )
         self.visualization_module = VisualizationModule.build(
-            output_dir=output_dir,
+            output_dir=Path(output_dir),
             continuous_columns=continuous_columns,
             categorical_columns=categorical_columns,
             task=task,
@@ -88,7 +97,13 @@ class Analyzer():
         )
 
         self.settings = AnalyzerSettings(
-            base=self.base_settings,
+            output_dir=Path(output_dir),
+            categorical_columns=categorical_columns,
+            continuous_columns=continuous_columns,
+            date_columns=date_columns,
+            target_variable=target_variable,
+            task=task,
+            generate_report=generate_report,
             missingness=self.missingness_module,
             outlier=self.outlier_module,
             visualization=self.visualization_module,
@@ -101,7 +116,19 @@ class Analyzer():
             data: pd.DataFrame, 
             settings_dict: dict
         ) -> "Analyzer":
+        """
+        Initialize an Analyzer instance with a given settings dictionary. Settings are validated by pydantic.
 
+        Args:
+            data (pd.DataFrame): The input data for the analyzer.
+            settings_dict (dict): A dictionary containing the analyzer settings.
+
+        Returns:
+            Analyzer: An analyzer instance with the given settings.
+
+        Raises:
+            ValueError: If the settings dictionary is invalid.
+        """
         try:
             settings = AnalyzerSettings.model_validate(settings_dict)
         except Exception as e:
@@ -109,10 +136,9 @@ class Analyzer():
 
         analyzer = cls(
             data=data,
-            output_dir=settings.base.output_dir,
+            output_dir=settings.output_dir,
         )
 
-        analyzer.base_settings = settings.base
         analyzer.missingness_module = settings.missingness
         analyzer.outlier_module = settings.outlier
         analyzer.visualization_module = settings.visualization
@@ -122,16 +148,28 @@ class Analyzer():
         return analyzer
 
     def run(self) -> None:
+        """
+        Runs the analyzer pipeline.
+
+        This function runs the following steps:
+            1. Creates a TableOne summary of the input data.
+            2. Runs the data cleaning modules.
+            3. Runs the visualization module.
+            4. Runs the encoding module.
+            5. Saves the updated data.
+            6. Generates a PDF report of the analysis results.
+            7. Saves the settings to a JSON file.
+        """
         
         # Create Table One
         self.mytable = TableOne(
-            self.data[self.base_settings.continuous_columns + self.base_settings.categorical_columns], 
-            categorical=self.base_settings.categorical_columns, 
-            continuous=self.base_settings.continuous_columns,
+            self.data[self.settings.continuous_columns + self.settings.categorical_columns], 
+            categorical=self.settings.categorical_columns, 
+            continuous=self.settings.continuous_columns,
             pval=False
         )
         print(self.mytable.tabulate(tablefmt = "grid"))
-        self.mytable.to_csv(self.base_settings.output_dir / 'tableone.csv')
+        self.mytable.to_csv(self.settings.output_dir / 'tableone.csv')
 
         # Run Data Cleaning
         self.input_data = self.data.copy()
@@ -142,7 +180,7 @@ class Analyzer():
         )
 
         # Run Visualization
-        figures_dir = self.base_settings.output_dir / 'figures'
+        figures_dir = self.settings.output_dir / 'figures'
         figures_dir.mkdir(exist_ok=True, parents=True)
         self.visualization_module(self.data)
 
@@ -150,34 +188,29 @@ class Analyzer():
         self.data = self.encoding_module(self.data)
 
         # Save Data
-        self.data.to_csv(self.base_settings.output_dir / 'updated_data.csv', index=False)
+        self.data.to_csv(self.settings.output_dir / 'updated_data.csv', index=False)
 
         # Generate Report
-        if self.base_settings.generate_report:
-            multiplots = (
-                [f for f in (figures_dir / 'multiplots').iterdir() if f.suffix == '.png']
-                if (figures_dir / 'multiplots').exists()
-                else []
-            )
+        if self.settings.generate_report:
             generate_analysis_report_pdf(
                 outlier_analysis=self.outlier_module.report,
-                multiplots=multiplots,
-                categorical_columns=self.base_settings.categorical_columns,
-                continuous_columns=self.base_settings.continuous_columns,
-                output_dir=self.base_settings.output_dir
+                multiplots=self.visualization_module._multiplots,
+                categorical_columns=self.settings.categorical_columns,
+                continuous_columns=self.settings.continuous_columns,
+                output_dir=self.settings.output_dir
             )
         else:
             logger.warning("Skipping report generation.")
 
         # Save Settings
-        schema_path = self.base_settings.output_dir / 'analyzer_settings.schema.json'
-        with schema_path.open("w") as f:
+        self.settings.settings_schema_path = self.settings.output_dir / 'analyzer_settings.schema.json'
+        with self.settings.settings_schema_path.open("w") as f:
             json.dump(self.settings.model_json_schema(), f, indent=2)
 
-        settings_path = self.base_settings.output_dir / 'analyzer_settings.json'
-        with settings_path.open('w') as f:
+        self.settings.settings_path = self.settings.output_dir / 'analyzer_settings.json'
+        with self.settings.settings_path.open('w') as f:
             json.dump({
-                "$schema": str(schema_path.relative_to(self.base_settings.output_dir)),
+                "$schema": str(self.settings.settings_schema_path.relative_to(self.settings.output_dir)),
                 **self.settings.model_dump(mode="json") 
             }, f, indent=2)
 
@@ -185,3 +218,36 @@ class Analyzer():
         yield self.settings
 
 
+if __name__ == "__main__":
+    from rich import print
+    import json
+
+    data = pd.DataFrame({
+        "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
+        "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
+        "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
+        "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
+        "death": [True, False, True, False, True, False, True, False, True, False],
+    })
+    
+    analyzer = Analyzer(
+        data, 
+        output_dir="./temp_output/test",
+        categorical_columns=["stage", "treatment", "death"], 
+        target_variable="death", 
+        task="classification"
+    )
+
+    print(analyzer)
+
+    analyzer.run()
+
+    with analyzer.settings.settings_path.open() as f:
+        settings_dict = json.load(f)
+
+    analyzer = Analyzer.from_settings(data, settings_dict)
+
+    print(analyzer)
+
+    analyzer.run()
+    

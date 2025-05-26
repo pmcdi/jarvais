@@ -1,6 +1,36 @@
 # CHANGELOG
 
 
+## [0.13.1](https://github.com/pmcdi/jarvais/compare/v0.13.0...v0.13.1) (2025-05-26)
+
+
+### Bug Fixes
+
+* **Analyzer:** multiplot title mismatch in pdf ([#79](https://github.com/pmcdi/jarvais/issues/79)) ([01341c8](https://github.com/pmcdi/jarvais/commit/01341c89182f0a122598e311f6b7d09a67742f62))
+
+## [0.13.0](https://github.com/pmcdi/jarvais/compare/v0.12.1...v0.13.0) (2025-05-21)
+
+
+### Features
+
+* add categorical mapping into outlier module. ([#77](https://github.com/pmcdi/jarvais/issues/77)) ([44c3915](https://github.com/pmcdi/jarvais/commit/44c39158c13d76969c5e195ab65cfe88c592e126))
+
+## [0.12.1](https://github.com/pmcdi/jarvais/compare/v0.12.0...v0.12.1) (2025-05-20)
+
+
+### Miscellaneous Chores
+
+* release 0.12.1 ([03c4daa](https://github.com/pmcdi/jarvais/commit/03c4daa5e9280257564e2c23205746c086ce9e9a))
+* release 0.12.1 ([818a4ba](https://github.com/pmcdi/jarvais/commit/818a4ba06f5034126a14d0d13c28a59ac900140f))
+
+## [0.12.0](https://github.com/pmcdi/jarvais/compare/v0.11.3...v0.12.0) (2025-05-14)
+
+
+### Features
+
+* add new logger ([52aedd8](https://github.com/pmcdi/jarvais/commit/52aedd84e66a31f97774666ed0195d3b1838a800))
+* new logger ([6f23529](https://github.com/pmcdi/jarvais/commit/6f235299a66980c991edb1d2dd9bd5fada6c1321))
+
 ## [0.11.3](https://github.com/pmcdi/jarvais/compare/v0.11.2...v0.11.3) (2025-04-25)
 
 

@@ -65,12 +65,13 @@ description = "Run pytest"
 ############################################## STYLE ###############################################
 # See configs/ruff.toml for the configuration
 [feature.style.dependencies]
-ruff = ">=0.4.4"
-pre-commit = ">=3.7.1,<3.8"
-mypy = ">=1.15.0,<2"
+
 
 [feature.style.pypi-dependencies]
 pandas-stubs = ">=2.2.3.250308, <3"
+ruff = ">=0.4.4"
+pre-commit = ">=3.7.1,<3.8"
+mypy = ">=1.15.0,<2"
 
 [feature.style.tasks]
 ruff-check.cmd = ["ruff", "check", "src"]
