@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.13.1](https://github.com/pmcdi/jarvais/compare/v0.13.0...v0.13.1) (2025-05-26)
+
+
+### Bug Fixes
+
+* **Analyzer:** multiplot title mismatch in pdf ([#79](https://github.com/pmcdi/jarvais/issues/79)) ([01341c8](https://github.com/pmcdi/jarvais/commit/01341c89182f0a122598e311f6b7d09a67742f62))
+
 ## [0.13.0](https://github.com/pmcdi/jarvais/compare/v0.12.1...v0.13.0) (2025-05-21)
 
 
