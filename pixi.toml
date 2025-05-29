@@ -29,6 +29,7 @@ mkdocs-material = ">=9.5.49,<10"
 mkdocs-jupyter = ">=0.25.1,<0.26" 
 mkdocs-pdf = ">=0.1.2,<0.2"
 mkdocstrings = { version = ">=0.27.0, <0.28", extras = ["python"] }
+mkdocs-click = ">=0.9.0, <0.10"
 
 [feature.dev.dependencies]
 
