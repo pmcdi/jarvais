@@ -6,7 +6,6 @@ from jarvais.trainer.modules import (
     FeatureReductionModule, 
     SurvivalTrainerModule, 
     AutogluonTabularWrapper,
-    EvaluationModule
 )
 
 
@@ -50,7 +49,6 @@ class TrainerSettings(BaseModel):
 
     reduction_module: FeatureReductionModule
     trainer_module: SurvivalTrainerModule | AutogluonTabularWrapper
-    evaluation_module: EvaluationModule
 
     def model_post_init(self, context):
         self.output_dir = Path(self.output_dir)

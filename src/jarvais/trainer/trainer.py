@@ -4,12 +4,12 @@ from pathlib import Path
 import rich.repr
 from sklearn.model_selection import train_test_split
 
+from jarvais.explainer import Explainer
 from jarvais.loggers import logger
 from jarvais.trainer.modules import (
     FeatureReductionModule, 
     SurvivalTrainerModule, 
     AutogluonTabularWrapper,
-    EvaluationModule
 )
 from jarvais.trainer.settings import TrainerSettings
 
@@ -53,11 +53,6 @@ class TrainerSupervised:
                 k_folds=k_folds
             )
 
-        self.evaluation_module = EvaluationModule.build(
-            output_dir=output_dir,
-            task=task,
-        )
-
         self.settings = TrainerSettings(
             output_dir=Path(output_dir),
             target_variable=target_variable,
@@ -68,7 +63,6 @@ class TrainerSupervised:
             explain=explain,
             reduction_module=self.reduction_module,
             trainer_module=self.trainer_module,
-            evaluation_module=self.evaluation_module
         )
 
     def run(self):
@@ -100,18 +94,25 @@ class TrainerSupervised:
         self.predictor, self.X_val, self.y_val = self.trainer_module.fit(
             X_train=self.X_train, 
             y_train=self.y_train, 
-        )
-
-        # Evaluate
-        self.evaluation_module(
-            trainer_module=self.trainer_module,
-            X_train=self.X_train,
-            y_train=self.y_train,
-            X_val=self.X_val,
-            y_val=self.y_val,
-            X_test=self.X_test,
+            X_test=self.X_test, 
             y_test=self.y_test
         )
+
+        self.X_train = self.X_train.drop(self.X_val.index)
+        self.y_train = self.y_train.drop(self.y_val.index)
+
+        data_dir = self.settings.output_dir / 'data'
+        data_dir.mkdir(parents=True, exist_ok=True)
+        self.X_train.to_csv((data_dir / 'X_train.csv'), index=False)
+        self.X_test.to_csv((data_dir / 'X_test.csv'), index=False)
+        self.X_val.to_csv((data_dir / 'X_val.csv'), index=False)
+        self.y_train.to_csv((data_dir / 'y_train.csv'), index=False)
+        self.y_test.to_csv((data_dir / 'y_test.csv'), index=False)
+        self.y_val.to_csv((data_dir / 'y_val.csv'), index=False)
+
+        if self.settings.explain:
+            explainer = Explainer.from_trainer(self)
+            explainer.run()
 
         # Save Settings
         schema_path = self.settings.output_dir / 'trainer_settings.schema.json'
@@ -124,6 +125,19 @@ class TrainerSupervised:
                 "$schema": str(schema_path.relative_to(self.settings.output_dir)),
                 **self.settings.model_dump(mode="json") 
             }, f, indent=2)
+
+    def model_names(self) -> list[str]:
+        """
+        Returns all trainer model names.
+
+        This method retrieves the names of all models associated with the 
+        current predictor. It requires that the predictor has been trained.
+
+        Returns:
+            list: A list of model names available in the predictor.
+        """
+
+        return self.predictor.model_names()
 
     def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
