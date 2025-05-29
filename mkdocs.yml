@@ -34,6 +34,7 @@ plugins:
 
 markdown_extensions:
   - attr_list
+  - mkdocs-click
 
 nav:
   - Introduction: index.md
@@ -54,6 +55,7 @@ nav:
         - Plotting: api/plot.md
         - Functional: api/functional.md
         - PDF: api/pdf.md
+  - CLI: cli/jarvais.md
 
 extra_css:
   - assets/styles.css
