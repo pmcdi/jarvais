@@ -118,6 +118,9 @@ def analyzer(
         with Path(config).open() as f:
             settings_dict = json.load(f)
 
+        settings_dict["output_dir"] = output_dir
+        settings_dict["visualization"]["output_dir"] = output_dir
+
         analyzer = Analyzer.from_settings(data, settings_dict)
     else:
         categorical_columns = list(categorical_columns) if categorical_columns else None
