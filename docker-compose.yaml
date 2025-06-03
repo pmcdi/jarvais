@@ -2,7 +2,7 @@ services:
   jarvais-analyzer:
     image: jarvais:latest
     volumes:
-      - ./data/a2rData_train_ED.csv:/mnt/data.csv
-      - ./temp_output/analyzer_bruh:/mnt/output
-      - ./temp_output/a2r/analyzer/analyzer_settings.json:/mnt/config.json
+      - ./data/RADCURE_processed_clinical.csv:/mnt/data.csv
+      - ./temp_output/radcure_docker:/mnt/output
+      - ./data/radcure_analyzer_settings.json:/mnt/config.json
     command: ["jarvais", "-vv", "analyzer", "/mnt/data.csv", "/mnt/output", "--config", "/mnt/config.json"]
