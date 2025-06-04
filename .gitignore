@@ -7,6 +7,7 @@ tests/tmp
 data/*
 !data/RADCURE_Clinical_v04_20241219.csv
 !data/RADCURE_processed_clinical.csv
+!data/radcure_analyzer_settings.json
 temp_output
 src/jarvais/bias
 
