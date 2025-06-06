@@ -99,7 +99,8 @@ def plot_one_multiplot(
             json.dump(json_data, f)
 
         for col in continuous_columns:
-            data[[var, col]].to_json(output_dir / 'multiplots' / f"{var}_{col}.json")
+            with (output_dir / 'multiplots' / f"{var}_{col}.json").open("w") as f:
+                json.dump(data[[var, col]].to_dict(orient="records"), f, indent=2)
 
     # UMAP colored by variable
     sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], hue=data[var], alpha=.7, ax=ax[1])
