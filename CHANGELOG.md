@@ -1,6 +1,26 @@
 # CHANGELOG
 
 
+## [0.14.0](https://github.com/pmcdi/jarvais/compare/v0.13.1...v0.14.0) (2025-06-04)
+
+
+### Features
+
+* add analyzer to jarvais cli ([f530e0e](https://github.com/pmcdi/jarvais/commit/f530e0e422fa5ac78b184577c0a8b70254fd2449))
+* add cli entry point for jarvais ([76c26e5](https://github.com/pmcdi/jarvais/commit/76c26e5c3a241854b396b9d7c2597d2158bd7113))
+* add CLI entry point for jarvais (analyzer only) ([1c38b66](https://github.com/pmcdi/jarvais/commit/1c38b66d19bfa79c06595881977b1beefc42d400))
+* added CLI entrypoint for Analyzer ([1c38b66](https://github.com/pmcdi/jarvais/commit/1c38b66d19bfa79c06595881977b1beefc42d400))
+
+
+### Bug Fixes
+
+* **cli:** update output directory when using config for analyzer ([7bc419f](https://github.com/pmcdi/jarvais/commit/7bc419f5b915eb33f192879dea5be804104aa7b5))
+
+
+### Documentation
+
+* add section for CLI ([c41d5f8](https://github.com/pmcdi/jarvais/commit/c41d5f87afe9079ed171d621fe4e09368ffce65a))
+
 ## [0.13.1](https://github.com/pmcdi/jarvais/compare/v0.13.0...v0.13.1) (2025-05-26)
 
 

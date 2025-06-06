@@ -1,0 +1,8 @@
+services:
+  jarvais-analyzer:
+    image: jarvais:latest
+    volumes:
+      - ./data/RADCURE_processed_clinical.csv:/mnt/data.csv
+      - ./temp_output/radcure_docker:/mnt/output
+      - ./data/radcure_analyzer_settings.json:/mnt/config.json
+    command: ["jarvais", "-vv", "analyzer", "/mnt/data.csv", "/mnt/output", "--config", "/mnt/config.json"]
