@@ -1,8 +1,15 @@
-from typing import Literal, Optional
+from typing import Literal
+
 import pandas as pd
-from pydantic import BaseModel, Field
-from sklearn.feature_selection import SelectKBest, VarianceThreshold, chi2, f_classif, f_regression
 from mrmr import mrmr_classif, mrmr_regression
+from pydantic import BaseModel, Field
+from sklearn.feature_selection import (
+    SelectKBest,
+    VarianceThreshold,
+    chi2,
+    f_classif,
+    f_regression,
+)
 
 from jarvais.loggers import logger
 
@@ -24,10 +31,10 @@ class FeatureReductionModule(BaseModel):
     )
 
     @classmethod
-    def build(cls, method: str, task: str, keep_k: int = 10) -> "FeatureReductionModule":
-        return cls(method=method, task=task, keep_k=keep_k)
+    def build(cls, method: str | None, task: str, keep_k: int = 10) -> "FeatureReductionModule":
+        return cls(method=method, task=task, keep_k=keep_k) # type: ignore
 
-    def __call__(self, X: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
+    def __call__(self, X: pd.DataFrame, y: pd.Series) -> tuple[pd.DataFrame, pd.Series]:
         if not self.enabled or self.method is None:
             logger.info("Skipping feature reduction.")
             return X, y
@@ -58,7 +65,8 @@ class FeatureReductionModule(BaseModel):
         elif self.method == "mrmr":
             X_reduced = self._mrmr(X, y)
         else:
-            raise ValueError(f"Unsupported method: {self.method}")
+            msg = f"Unsupported method: {self.method}"
+            raise ValueError(msg)
 
         # Step 3: Reverse mappings for categorical columns
         for col in categorical_columns:

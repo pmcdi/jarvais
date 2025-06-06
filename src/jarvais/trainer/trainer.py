@@ -1,15 +1,16 @@
 import json
-import pandas as pd
 from pathlib import Path
+
+import numpy as np
+import pandas as pd
 import rich.repr
 from sklearn.model_selection import train_test_split
 
 from jarvais.explainer import Explainer
-from jarvais.loggers import logger
 from jarvais.trainer.modules import (
-    FeatureReductionModule, 
-    SurvivalTrainerModule, 
     AutogluonTabularWrapper,
+    FeatureReductionModule,
+    SurvivalTrainerModule,
 )
 from jarvais.trainer.settings import TrainerSettings
 
@@ -17,7 +18,6 @@ from jarvais.trainer.settings import TrainerSettings
 class TrainerSupervised:
     def __init__(
         self,
-        data: pd.DataFrame,
         output_dir: str | Path,
         target_variable: str | list[str],
         task: str,
@@ -30,8 +30,6 @@ class TrainerSupervised:
         explain: bool = False
     ) -> None:
         
-        self.data = data    
-
         self.reduction_module = FeatureReductionModule.build(
             method=reduction_method,
             task=task,
@@ -65,7 +63,31 @@ class TrainerSupervised:
             trainer_module=self.trainer_module,
         )
 
-    def run(self):
+    @classmethod
+    def from_settings(
+            cls, 
+            settings_dict: dict,
+        ) -> "TrainerSupervised":
+        settings = TrainerSettings.model_validate(settings_dict)
+        
+        trainer = cls(
+            output_dir=settings.output_dir,
+            target_variable=settings.target_variable,
+            task=settings.task,
+        )
+
+        trainer.reduction_module = settings.reduction_module
+        trainer.trainer_module = settings.trainer_module
+
+        trainer.settings = settings
+
+        return trainer
+
+    def run(
+            self,
+            data: pd.DataFrame 
+        ) -> None:
+        self.data = data
 
         # Preprocess
         X = self.data.drop(self.settings.target_variable, axis=1)
@@ -138,14 +160,66 @@ class TrainerSupervised:
         """
 
         return self.predictor.model_names()
+    
+    def infer(self, data: pd.DataFrame, model: str | None = None) -> np.ndarray:
+        """
+        Make predictions on new data using the trained predictor.
+
+        Args:
+            data (pd.DataFrame): The new data to make predictions on.
+            model (str | None): The model to use for prediction. If None, the best model will be used.
+
+        Returns:
+            np.ndarray: The predicted values.
+        """
+
+        if self.settings.task == 'survival':
+            inference = self.predictor.predict(data, model)
+        elif self.predictor.can_predict_proba:
+            inference = self.predictor.predict_proba(data, model, as_pandas=False)[:, 1]
+        else:
+            inference = self.predictor.predict(data, model, as_pandas=False)
+
+        return inference
+    
+    @classmethod
+    def load_trainer(
+            cls, 
+            project_dir: str | Path
+        ) -> "TrainerSupervised":
+
+        from autogluon.tabular import TabularPredictor
+
+        from jarvais.trainer.modules.survival_trainer import SurvivalPredictor
+
+        project_dir = Path(project_dir)
+        with (project_dir / 'trainer_settings.json').open('r') as f:
+            trainer_config = json.load(f)
+
+        trainer = cls.from_settings(trainer_config)
+
+        if trainer.settings.task == 'survival':
+            model_dir = (project_dir / 'survival_models')
+            trainer.predictor = SurvivalPredictor.load(model_dir)
+        else:
+            model_dir = (project_dir / 'autogluon_models' / 'autogluon_models_best_fold')
+            trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
+
+        trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv')
+        trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv')
+        trainer.X_train = pd.read_csv(project_dir / 'data' / 'X_train.csv')
+        trainer.y_test = pd.read_csv(project_dir / 'data' / 'y_test.csv').squeeze()
+        trainer.y_val = pd.read_csv(project_dir / 'data' / 'y_val.csv').squeeze()
+        trainer.y_train = pd.read_csv(project_dir / 'data' / 'y_train.csv').squeeze()
+  
+        return trainer
 
     def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
 
 
 if __name__ == "__main__":
-    from rich import print
-    import numpy as np
+    from rich import print  # noqa: A004
 
     # np.random.seed(0)
     # data = pd.DataFrame(
@@ -157,18 +231,14 @@ if __name__ == "__main__":
     #         'tumor_stage': np.random.randint(1, 10, 50)
     #     }
     # )
-
     # trainer = TrainerSupervised(
     #     data, 
     #     output_dir="temp_output/trainer_test", 
     #     target_variable=["event", "time"], 
     #     task="survival"
     # )
-
     # print(trainer)
-
     # trainer.run()
-
     from jarvais.analyzer import Analyzer
 
     
@@ -177,7 +247,7 @@ if __name__ == "__main__":
     df.rename(columns={'survival_time': 'time', 'death':'event'}, inplace=True)
 
     analyzer = Analyzer(
-        data=df, 
+        df,
         output_dir='./survival_outputs/analyzer',
         categorical_columns= [
         "Sex",
@@ -206,15 +276,12 @@ if __name__ == "__main__":
 
     # analyzer.data["event"] = analyzer.data['event'].astype(bool)
     trainer = TrainerSupervised(
-        analyzer.data,
         output_dir="temp_output/trainer_test_rad", 
-        target_variable=["event", "time"], 
-        task="survival",
+        target_variable="event", 
+        task="binary",
         k_folds=2
     )
-
-    # trainer.trainer_module.deep_models = []
         
     print(trainer)
 
-    trainer.run()
+    trainer.run(analyzer.data)

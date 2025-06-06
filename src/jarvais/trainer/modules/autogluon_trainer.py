@@ -1,11 +1,14 @@
+import shutil
+from pathlib import Path
 from typing import Any, Literal
 
 import pandas as pd
-from pydantic import BaseModel, Field, PrivateAttr
-from pathlib import Path
 from autogluon.core.metrics import make_scorer
-from autogluon.tabular.configs.hyperparameter_configs import get_hyperparameter_config
 from autogluon.tabular import TabularPredictor
+from autogluon.tabular.configs.hyperparameter_configs import (
+    get_hyperparameter_config,
+)
+from pydantic import BaseModel, Field, PrivateAttr
 from sklearn.model_selection import KFold
 from tabulate import tabulate
 
@@ -14,7 +17,6 @@ from jarvais.utils.functional import auprc
 
 from ._leaderboard import aggregate_folds, format_leaderboard
 from ._simple_regression_model import SimpleRegressionModel
-
 
 
 class AutogluonTabularWrapper(BaseModel):
@@ -33,15 +35,14 @@ class AutogluonTabularWrapper(BaseModel):
         title="Task",
         examples=["binary", "multiclass", "regression", "survival"]
     )
+    eval_metric: str  = Field(
+        description="Evaluation metric.",
+        title="Evaluation Metric"
+    )
     k_folds: int = Field(
         default=5,
         description="Number of folds.",
         title="Number of Folds"
-    )
-    eval_metric: str | None = Field(
-        default=None,
-        description="Evaluation metric.",
-        title="Evaluation Metric"
     )
     extra_metrics: list = Field(
         default_factory=list,
@@ -49,11 +50,11 @@ class AutogluonTabularWrapper(BaseModel):
         title="Extra Metrics",
         examples=["accuracy"]
     )
-    kwargs: dict = Field(
+    kwargs: dict[str, Any] = Field(
         default_factory=dict,
         description="Additional arguments to pass to the model.",
         title="Additional Arguments",
-        examples={"presets": "best_quality"}
+        examples=[{"presets": "best_quality"}]
     )   
 
     _cv_scores: list = PrivateAttr(default_factory=list)
@@ -62,7 +63,7 @@ class AutogluonTabularWrapper(BaseModel):
     _predictor: TabularPredictor | None = PrivateAttr(default=None)
     _predictors: list[TabularPredictor] = PrivateAttr(default_factory=list)
 
-    def model_post_init(self, context):
+    def model_post_init(self, context: Any) -> None: # noqa: ANN001
 
         self._kwargs = self.kwargs.copy()
         custom_hyperparameters = get_hyperparameter_config('default')
@@ -88,21 +89,18 @@ class AutogluonTabularWrapper(BaseModel):
         target_variable: str,
         task: str,
         k_folds: int = 5,
-    ):  
-        if task == "binary" or task == "multiclass":
+    ) -> "AutogluonTabularWrapper":  
+        if task in {"binary", "multiclass"}:
             eval_metric = "roc_auc"
             extra_metrics = ['f1', 'auprc']
         elif task == "regression":
             eval_metric = "r2"
             extra_metrics = ['root_mean_squared_error']
-        elif task == "survival":
-            eval_metric = "c_index"
-            extra_metrics = []
 
         return cls(
-            output_dir=output_dir,
+            output_dir=Path(output_dir),
             target_variable=target_variable,
-            task=task,
+            task=task, # type:ignore
             k_folds=k_folds,
             eval_metric=eval_metric,
             extra_metrics=extra_metrics
@@ -114,7 +112,7 @@ class AutogluonTabularWrapper(BaseModel):
             y_train: pd.Series,
             X_test: pd.DataFrame,
             y_test: pd.Series
-        ):
+        ) -> tuple[TabularPredictor, pd.DataFrame, pd.Series]:
 
         if self.k_folds > 1:
             self._predictor, X_val, y_val = self._train_autogluon_with_cv(
@@ -147,13 +145,13 @@ class AutogluonTabularWrapper(BaseModel):
             X_val, y_val = self._predictor.load_data_internal(data='val', return_y=True)
 
             train_leaderboard = self._predictor.leaderboard(
-                pd.concat([self.X_train, self.y_train], axis=1),
+                pd.concat([X_train, y_train], axis=1),
                 extra_metrics=self._extra_metrics).round(2)
             val_leaderboard = self._predictor.leaderboard(
-                pd.concat([self.X_val, self.y_val], axis=1),
+                pd.concat([X_val, y_val], axis=1),
                 extra_metrics=self._extra_metrics).round(2)
             test_leaderboard = self._predictor.leaderboard(
-                pd.concat([self.X_test, self.y_test], axis=1),
+                pd.concat([X_test, y_test], axis=1),
                 extra_metrics=self._extra_metrics).round(2)
 
         final_leaderboard = pd.merge(
@@ -166,8 +164,8 @@ class AutogluonTabularWrapper(BaseModel):
             on='model'
         )
 
-        print('\nModel Leaderboard\n----------------')
-        print(tabulate(
+        print('\nModel Leaderboard\n----------------') # noqa: T201
+        print(tabulate( # noqa: T201
             final_leaderboard.sort_values(by='score_test', ascending=False),
             tablefmt = "grid",
             headers="keys",
@@ -179,7 +177,7 @@ class AutogluonTabularWrapper(BaseModel):
             self,
             X_train: pd.DataFrame,
             y_train: pd.Series,
-        ):
+        ) -> tuple[TabularPredictor, pd.DataFrame, pd.Series]:
 
         kf = KFold(n_splits=self.k_folds, shuffle=True, random_state=42)
 
@@ -211,7 +209,12 @@ class AutogluonTabularWrapper(BaseModel):
             logger.info(f"Fold {fold+1}/{self.k_folds} score: {score} ({self.eval_metric})")
             self._cv_scores.append(score)
 
-            best_fold = self._cv_scores.index(max(self._cv_scores))
+        best_fold = self._cv_scores.index(max(self._cv_scores))
+
+        shutil.copytree(
+            self.output_dir / 'autogluon_models' / f'autogluon_models_fold_{best_fold + 1}',
+            self.output_dir / 'autogluon_models' / 'autogluon_models_best_fold', dirs_exist_ok=True
+        )
             
         return self._predictors[best_fold], X_train.iloc[val_indices[best_fold]], y_train.iloc[val_indices[best_fold]]
         

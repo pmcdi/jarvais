@@ -1,11 +1,11 @@
 from pathlib import Path
 
-from pydantic import BaseModel, Field   
+from pydantic import BaseModel, Field
 
 from jarvais.trainer.modules import (
-    FeatureReductionModule, 
-    SurvivalTrainerModule, 
     AutogluonTabularWrapper,
+    FeatureReductionModule,
+    SurvivalTrainerModule,
 )
 
 
@@ -24,7 +24,7 @@ class TrainerSettings(BaseModel):
     task: str = Field(
         description="Task to perform.",
         title="Task",
-        examples=["classification", "regression", "survival"]
+        examples=["binary", "multiclass", "regression", "survival"]
     )
     stratify_on: str | None = Field(
         description="Variable to stratify on.",
@@ -50,13 +50,13 @@ class TrainerSettings(BaseModel):
     reduction_module: FeatureReductionModule
     trainer_module: SurvivalTrainerModule | AutogluonTabularWrapper
 
-    def model_post_init(self, context):
+    def model_post_init(self, __context) -> None: # type: ignore # noqa: ANN001
         self.output_dir = Path(self.output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
     
     @classmethod
-    def validate_task(cls, task):
-        if task not in ['classification', 'regression', 'survival', None]:
-            raise ValueError("Invalid task parameter. Choose one of: 'classification', 'regression', 'survival'.")
+    def validate_task(cls, task: str) -> str:
+        if task not in ['binary', 'multiclass', 'regression', 'survival', None]:
+            raise ValueError("Invalid task parameter. Choose one of: 'binary', 'multiclass', 'regression', 'survival'.")
         return task
 

@@ -86,6 +86,9 @@ ignore = [
     "D206",
     "N813",
     "EM101",
+    # Allow uppercase 
+    "N806",
+    "N803",
 ]
 
 [lint.mccabe]

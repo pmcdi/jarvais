@@ -1,42 +1,75 @@
+import json
 import pickle
-from typing import Literal
-
-import pandas as pd
 from pathlib import Path
-from pydantic import BaseModel, Field, PrivateAttr
+from typing import Literal, TypeAlias
+
+import numpy as np
+import pandas as pd
+from pydantic import BaseModel, Field
 from sklearn.model_selection import train_test_split
-from sksurv.ensemble import GradientBoostingSurvivalAnalysis, RandomSurvivalForest
+from sksurv.ensemble import (
+    GradientBoostingSurvivalAnalysis,
+    RandomSurvivalForest,
+)
 from sksurv.linear_model import CoxnetSurvivalAnalysis
+from sksurv.metrics import concordance_index_censored
 from sksurv.svm import FastSurvivalSVM
 from sksurv.util import Surv
-from sksurv.metrics import concordance_index_censored
 from tabulate import tabulate
 
 from jarvais.loggers import logger
-from jarvais.trainer.survival import train_deepsurv, train_mtlr
+
+from .deep_survival import LitDeepSurv, LitMTLR, train_deepsurv, train_mtlr
+
+
+MODELType: TypeAlias = CoxnetSurvivalAnalysis | RandomSurvivalForest | GradientBoostingSurvivalAnalysis | FastSurvivalSVM | LitDeepSurv | LitMTLR
 
 
 class SurvivalPredictor:
 
     def __init__(
             self,
-            models: dict,
+            models: dict[str, MODELType],
             model_scores: dict[str, float],
             best_model: str
-        ):
+        ) -> None:
             self.models = models
             self.model_scores = model_scores
             self.best_model = best_model
         
-    def predict(self, X, model: str | None = None):
+    def predict(self, X: pd.DataFrame, model: str | None = None) -> np.ndarray:
 
         if model:
             return self.models[model].predict(X)
 
         return self.models[self.best_model].predict(X)
     
-    def model_names(self):
+    def model_names(self) -> list[str]:
         return list(self.models.keys())
+    
+    @classmethod
+    def load(cls, model_dir: str | Path) -> "SurvivalPredictor":
+
+        model_dir = Path(model_dir)
+
+        with (model_dir / 'survival_metadata.json').open('r') as f:
+                model_info = json.load(f)
+            
+        models: dict[str, MODELType] = {}
+        for model_name in model_info["model_scores"]:
+            if model_name == 'MTLR':
+                models[model_name] = LitMTLR.load_from_checkpoint(model_dir / "MTLR.ckpt")
+            elif model_name == 'DeepSurv':
+                models[model_name] = LitDeepSurv.load_from_checkpoint(model_dir / "DeepSurv.ckpt")
+            else:
+                with (model_dir / f'{model_name}.pkl').open("rb") as f:
+                    models[model_name] = pickle.load(f)
+
+        return cls(
+            models, 
+            model_info["model_scores"], 
+            model_info["best_model"]
+        )
 
 
 class SurvivalTrainerModule(BaseModel):
@@ -55,7 +88,7 @@ class SurvivalTrainerModule(BaseModel):
         title="Deep Learning Models",
         examples=["MTLR", "DeepSurv"]
     )
-    eval_metric: Literal["c_index"] | None = Field(
+    eval_metric: Literal["c_index"] = Field(
         default="c_index",
         description="Evaluation metric.",
         title="Evaluation Metric"
@@ -89,10 +122,10 @@ class SurvivalTrainerModule(BaseModel):
     @classmethod
     def build(
         cls,
-        output_dir: str,
-    ):
+        output_dir: str | Path,
+    ) -> "SurvivalTrainerModule":
         return cls(
-            output_dir=output_dir,
+            output_dir=Path(output_dir),
             deep_models=["MTLR", "DeepSurv"],
             classical_models=["CoxPH", "RandomForest", "GradientBoosting", "SVM"]
         )
@@ -103,7 +136,7 @@ class SurvivalTrainerModule(BaseModel):
             y_train: pd.DataFrame,
             X_test: pd.DataFrame,
             y_test: pd.DataFrame
-        ):
+        ) -> tuple[SurvivalPredictor, pd.DataFrame, pd.DataFrame]:
 
         """Train both deep and traditional survival models, consolidate fitted models and C-index scores."""
         (self.output_dir / 'survival_models').mkdir(exist_ok=True, parents=True)
@@ -124,7 +157,8 @@ class SurvivalTrainerModule(BaseModel):
                 trained_models['MTLR'] = train_mtlr(
                     data_train,
                     data_val,
-                    self.output_dir / 'survival_models')
+                    self.output_dir / 'survival_models',
+                    self.random_seed)
             except Exception as e:
                 logger.error(f"Error training MTLR model: {e}")
         else:
@@ -135,7 +169,8 @@ class SurvivalTrainerModule(BaseModel):
                 trained_models['DeepSurv'] = train_deepsurv(
                     data_train,
                     data_val,
-                    self.output_dir / 'survival_models')
+                    self.output_dir / 'survival_models',
+                    self.random_seed)
             except Exception as e:
                 logger.error(f"Error training DeepSurv model: {e}")
         else:
@@ -162,7 +197,7 @@ class SurvivalTrainerModule(BaseModel):
                 trained_models[name] = model
 
                 model_path = self.output_dir / 'survival_models' / f"{name}.pkl"
-                with open(model_path, "wb") as f:
+                with model_path.open("wb") as f:
                     pickle.dump(model, f)
 
             except Exception as e:
@@ -172,10 +207,26 @@ class SurvivalTrainerModule(BaseModel):
         y_val = data_val[["time", "event"]]
 
         predictor = self._evaluate(trained_models, X_train, y_train, X_val, y_val, X_test, y_test)
+        
+        survival_metadata = {
+            "model_scores": predictor.model_scores,
+            "best_model": predictor.best_model
+        }
+        with (self.output_dir / "survival_models" / "survival_metadata.json").open("w") as f:
+            json.dump(survival_metadata, f)
 
         return predictor, X_val, y_val
     
-    def _evaluate(self, trained_models, X_train, y_train, X_val, y_val, X_test, y_test) -> SurvivalPredictor:
+    def _evaluate(
+            self, 
+            trained_models: dict[str, MODELType], 
+            X_train: pd.DataFrame, 
+            y_train: pd.DataFrame, 
+            X_val: pd.DataFrame, 
+            y_val: pd.DataFrame, 
+            X_test: pd.DataFrame, 
+            y_test: pd.DataFrame
+        ) -> SurvivalPredictor:
 
         leaderboard = []
         test_scores = {}
@@ -204,21 +255,24 @@ class SurvivalTrainerModule(BaseModel):
             test_scores[model] = test_score
 
         for model in self.deep_models:
+            trained_model = trained_models.get(model)
+            if not trained_model:
+                continue
 
             train_score = concordance_index_censored(
                 y_train['event'].astype(bool), 
                 y_train['time'], 
-                trained_models[model].predict(X_train)
+                trained_model.predict(X_train)
             )[0]
             val_score = concordance_index_censored(
                 y_val['event'].astype(bool), 
                 y_val['time'], 
-                trained_models[model].predict(X_val)
+                trained_model.predict(X_val)
             )[0]
             test_score = concordance_index_censored(
                 y_test['event'].astype(bool), 
                 y_test['time'], 
-                trained_models[model].predict(X_test)
+                trained_model.predict(X_test)
             )[0]
             leaderboard.append({
                 'model': model,
@@ -229,8 +283,8 @@ class SurvivalTrainerModule(BaseModel):
 
             test_scores[model] = test_score
 
-        print('\nModel Leaderboard\n----------------')
-        print(tabulate(
+        print('\nModel Leaderboard\n----------------') # noqa: T201
+        print(tabulate( # noqa: T201
             pd.DataFrame(leaderboard).sort_values(by='test_score', ascending=False),
             tablefmt = "grid",
             headers="keys",
@@ -239,5 +293,5 @@ class SurvivalTrainerModule(BaseModel):
         return SurvivalPredictor(
                 models=trained_models, 
                 model_scores=test_scores,
-                best_model=max(test_scores, key=test_scores.get)
+                best_model=max(test_scores, key=test_scores.get) # type: ignore
             )
