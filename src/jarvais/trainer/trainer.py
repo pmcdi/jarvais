@@ -16,6 +16,22 @@ from jarvais.trainer.settings import TrainerSettings
 
 
 class TrainerSupervised:
+    """
+    TrainerSupervised is a class for automating the process of feature reduction, 
+    model training, and evaluation for various machine learning tasks.
+
+    Parameters:
+        output_dir (str | Path): The output directory for saving the trained model and data.
+        target_variable (str | list[str]): The column name of the target variable, or a list of two column names for survival analysis.
+        task (str): The type of task to perform, e.g. 'binary', 'multiclass', 'regression', or 'survival'.
+        stratify_on (str | None): The column name of a variable to stratify the train-test split over. If None, no stratification will be performed.
+        test_size (float): The proportion of data to use for testing. Default is 0.2.
+        k_folds (int): The number of folds to use for cross-validation. Default is 5.
+        reduction_method (str | None): The method to use for feature reduction. If None, no feature reduction will be performed.
+        keep_k (int): The number of features to keep after reduction. Default is 2.
+        random_state (int): The random state for reproducibility. Default is 42.
+        explain (bool): Whether to generate explanations for the model. Default is False.
+    """
     def __init__(
         self,
         output_dir: str | Path,
@@ -68,6 +84,15 @@ class TrainerSupervised:
             cls, 
             settings_dict: dict,
         ) -> "TrainerSupervised":
+        """
+        Initialize a TrainerSupervised instance with a given settings dictionary.
+
+        Args:
+            dict: A dictionary containing the settings for the TrainerSupervised instance.
+
+        Returns:
+            TrainerSupervised: An instance of TrainerSupervised with the given settings.
+        """
         settings = TrainerSettings.model_validate(settings_dict)
         
         trainer = cls(

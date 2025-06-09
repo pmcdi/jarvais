@@ -10,11 +10,11 @@ def format_leaderboard(leaderboard: pd.DataFrame, eval_metric: str, extra_metric
     def format_scores(row: pd.Series, score_col: str, extra_metrics: list[str]) -> str:
         """Format scores as a string with AUROC, F1, and AUPRC. Or with R2 and RMSE for regression."""
         if 'f1' in extra_metrics:
-            return f"{eval_metric.upper()} {row[score_col]}\nF1: {row['f1']}\nAUPRC: {row['auprc']}"
+            return f"{eval_metric.upper()}: {row[score_col]}\nF1: {row['f1']}\nAUPRC: {row['auprc']}"
         elif 'root_mean_squared_error' in extra_metrics:
-            return f"{eval_metric.upper()} {row[score_col]}\nRMSE: {row['root_mean_squared_error']}"
+            return f"{eval_metric.upper()}: {row[score_col]}\nRMSE: {row['root_mean_squared_error']}"
         else:
-            return f"{eval_metric.upper()} {row[score_col]}"
+            return f"{eval_metric.upper()}: {row[score_col]}"
 
     leaderboard[score_col_name] = leaderboard.apply(
         lambda row: format_scores(row, score_col_name, extra_metrics),

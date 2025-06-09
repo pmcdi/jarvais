@@ -70,6 +70,7 @@ class AutogluonTabularWrapper(BaseModel):
         custom_hyperparameters[SimpleRegressionModel] = {}
         self._kwargs['hyperparameters'] = custom_hyperparameters
         
+        self._extra_metrics = self.extra_metrics.copy()
         if 'auprc' in self.extra_metrics:
             ag_auprc_scorer = make_scorer(
                 name='auprc', # Move this to a seperate file?
@@ -78,7 +79,6 @@ class AutogluonTabularWrapper(BaseModel):
                 greater_is_better=True,
                 needs_class=True)
             
-            self._extra_metrics = self.extra_metrics.copy()
             self._extra_metrics.remove('auprc')
             self._extra_metrics.append(ag_auprc_scorer)
 
@@ -212,7 +212,7 @@ class AutogluonTabularWrapper(BaseModel):
         best_fold = self._cv_scores.index(max(self._cv_scores))
 
         shutil.copytree(
-            self.output_dir / 'autogluon_models' / f'autogluon_models_fold_{best_fold + 1}',
+            self.output_dir / 'autogluon_models' / f'autogluon_models_fold_{best_fold}',
             self.output_dir / 'autogluon_models' / 'autogluon_models_best_fold', dirs_exist_ok=True
         )
             
