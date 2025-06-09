@@ -1,6 +1,6 @@
 [project]
 name = "jarvais"
-version = "0.13.1"
+version = "0.14.0"
 description = "jarvAIs: just a really versatile AI service"
 authors = [
     { name = "Joshua Siraj", email = "joshua.siraj@uhn.ca" },
@@ -24,6 +24,7 @@ dependencies = [
   "scipy>=1.11.4,<1.13",
   "prettytable>=3.12.0,<4",
   "pydantic>=2.11.3,<3",
+  "click>=8.2.1,<9",
   # analyzer
   "tableone==0.9.1",
   "umap-learn>=0.5.6, <0.6",
@@ -83,3 +84,6 @@ patch_without_tag = true                                   # patch release by de
 
 [tool.semantic_release.branches.main]
 match = "(main)"
+
+[project.scripts]
+jarvais = "jarvais.cli.__main__:cli"

@@ -1,0 +1,190 @@
+{
+  "$schema": "analyzer_settings.schema.json",
+  "output_dir": "/home/joshua-siraj/Documents/CDI/jarvais/temp_output/rad_test",
+  "categorical_columns": [
+    "Sex",
+    "T Stage",
+    "N Stage",
+    "Stage",
+    "death",
+    "Smoking Status",
+    "Disease Site"
+  ],
+  "continuous_columns": [
+    "survival_time",
+    "age at dx",
+    "Dose"
+  ],
+  "date_columns": [
+    "HPV Combined",
+    "Study ID",
+    "Chemotherapy",
+    "Unnamed: 0"
+  ],
+  "task": null,
+  "target_variable": null,
+  "generate_report": true,
+  "settings_path": "/home/joshua-siraj/Documents/CDI/jarvais/temp_output/rad_test/analyzer_settings.json",
+  "settings_schema_path": "/home/joshua-siraj/Documents/CDI/jarvais/temp_output/rad_test/analyzer_settings.schema.json",
+  "missingness": {
+    "categorical_strategy": {
+      "Sex": "unknown",
+      "T Stage": "unknown",
+      "N Stage": "unknown",
+      "Stage": "unknown",
+      "death": "unknown",
+      "Smoking Status": "unknown",
+      "Disease Site": "unknown"
+    },
+    "continuous_strategy": {
+      "survival_time": "median",
+      "age at dx": "median",
+      "Dose": "median"
+    },
+    "enabled": true
+  },
+  "outlier": {
+    "categorical_strategy": {
+      "Sex": "frequency",
+      "T Stage": "frequency",
+      "N Stage": "frequency",
+      "Stage": "frequency",
+      "death": "frequency",
+      "Smoking Status": "frequency",
+      "Disease Site": "frequency"
+    },
+    "continuous_strategy": {
+      "survival_time": "none",
+      "age at dx": "none",
+      "Dose": "none"
+    },
+    "threshold": 0.01,
+    "enabled": true,
+    "categorical_mapping": {
+      "Sex": {
+        "Male": "Male",
+        "Female": "Female"
+      },
+      "T Stage": {
+        "T2": "T2",
+        "T3": "T3",
+        "T1": "T1",
+        "T4a": "T4a",
+        "T1a": "T1a",
+        "T0": "T0",
+        "T4b": "T4b",
+        "T4": "T4",
+        "T1b": "T1b",
+        "Tis": "Tis",
+        "nan": "Other",
+        "T2b": "Other",
+        "T2a": "Other",
+        "TX": "Other",
+        "T3 (2)": "Other",
+        "T2 (2)": "Other",
+        "T1 (2)": "Other",
+        "rT0": "Other"
+      },
+      "N Stage": {
+        "N0": "N0",
+        "N2b": "N2b",
+        "N2c": "N2c",
+        "N1": "N1",
+        "N2": "N2",
+        "N3": "N3",
+        "N2a": "N2a",
+        "N3b": "Other",
+        "N3a": "Other",
+        "nan": "Other",
+        "NX": "Other"
+      },
+      "Stage": {
+        "IVA": "IVA",
+        "III": "III",
+        "II": "II",
+        "I": "I",
+        "IVB": "IVB",
+        "0": "0",
+        "nan": "Other",
+        "IV": "Other",
+        "X": "Other",
+        "IIA": "Other",
+        "IIIA": "Other",
+        "IIIC": "Other",
+        "IVC": "Other",
+        "IB": "Other",
+        "IIB": "Other"
+      },
+      "death": {
+        "0": "0",
+        "1": "1"
+      },
+      "Smoking Status": {
+        "Ex-smoker": "Ex-smoker",
+        "Current": "Current",
+        "Non-smoker": "Non-smoker",
+        "unknown": "unknown"
+      },
+      "Disease Site": {
+        "oropharynx": "oropharynx",
+        "larynx": "larynx",
+        "nasopharynx": "nasopharynx",
+        "unknown": "unknown",
+        "hypopharynx": "hypopharynx",
+        "lip & oral cavity": "lip & oral cavity",
+        "nasal cavity": "nasal cavity",
+        "esophagus": "esophagus",
+        "paranasal sinus": "Other",
+        "skin": "Other",
+        "sarcoma": "Other",
+        "paraganglioma": "Other",
+        "salivary glands": "Other",
+        "other": "Other",
+        "benign tumor": "Other",
+        "lacrimal gland": "Other",
+        "orbit": "Other"
+      }
+    }
+  },
+  "encoding": {
+    "columns": [
+      "Sex",
+      "T Stage",
+      "N Stage",
+      "Stage",
+      "death",
+      "Smoking Status",
+      "Disease Site"
+    ],
+    "target_variable": null,
+    "prefix_sep": "|",
+    "enabled": true
+  },
+  "visualization": {
+    "plots": [
+      "corr",
+      "pairplot",
+      "umap",
+      "frequency_table",
+      "multiplot"
+    ],
+    "output_dir": "/home/joshua-siraj/Documents/CDI/jarvais/temp_output/rad_test",
+    "continuous_columns": [
+      "survival_time",
+      "age at dx",
+      "Dose"
+    ],
+    "categorical_columns": [
+      "Sex",
+      "T Stage",
+      "N Stage",
+      "Stage",
+      "death",
+      "Smoking Status",
+      "Disease Site"
+    ],
+    "task": null,
+    "target_variable": null,
+    "enabled": true
+  }
+}

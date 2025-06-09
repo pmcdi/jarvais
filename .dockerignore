@@ -1,0 +1,29 @@
+# Python artifacts
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.egg
+*.egg-info/
+
+# Environment files
+.env
+*.env
+
+# Jupyter Notebooks 
+*.ipynb
+.ipynb_checkpoints/
+
+# OS / Editor files
+.DS_Store
+
+# Git
+.git/
+.gitignore
+
+# Docker-related
+.dockerignore
+docker-compose.yaml 
+
+# Docs
+docs
