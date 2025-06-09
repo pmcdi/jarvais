@@ -477,11 +477,11 @@ def plot_violin_of_bootstrapped_metrics(
         output_dir (Path): Directory to save the generated violin plots.
     """
     # Define metrics based on the problem type
-    if trainer.task == 'regression':
+    if trainer.settings.task == 'regression':
         metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
-    elif trainer.task == 'binary':
+    elif trainer.settings.task == 'binary':
         metrics = [('AUROC', roc_auc_score), ('AUPRC', auprc)]
-    elif trainer.task == 'survival':
+    elif trainer.settings.task == 'survival':
         metrics = [('Concordance Index', ci_wrapper)]
 
     # Prepare lists for DataFrame

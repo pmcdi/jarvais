@@ -1,16 +1,14 @@
-from typing import Union, List
-
-import numpy as np
-import pandas as pd
-from scipy.interpolate import interp1d
-
-import torch
-from torch import nn
-from torch import optim
+from typing import List, Union
 
 import lightning.pytorch as pl
+import numpy as np
+import pandas as pd
+import torch
+from scipy.interpolate import interp1d
+from torch import nn, optim
 
 from .utils import make_optimizer, normalize
+
 
 class MTLR(nn.Module):
     """Multi-task logistic regression for individualised
