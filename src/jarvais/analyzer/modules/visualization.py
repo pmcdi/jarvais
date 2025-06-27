@@ -1,4 +1,5 @@
 
+import json
 from pathlib import Path
 from typing import Any
 
@@ -54,6 +55,10 @@ class VisualizationModule(BaseModel):
         title="Target Variable",
         examples=["death"],
         repr=False
+    )
+    save_to_json: bool = Field(
+        default=False,
+        description="Whether to save plots as JSON files."
     )
     enabled: bool = Field(
         default=True,
@@ -119,10 +124,13 @@ class VisualizationModule(BaseModel):
                         self._plot_pairplot(data)
                     case "frequency_table":
                         logger.info("Plotting Frequency Table...")
-                        plot_frequency_table(data, self.categorical_columns, self._figures_dir)
+                        plot_frequency_table(data, self.categorical_columns, self._figures_dir, self.save_to_json)
                     case "umap":
                         logger.info("Plotting UMAP...")
                         self._umap_data = plot_umap(data, self.continuous_columns, self._figures_dir)
+                        if self.save_to_json:
+                            with open(self._figures_dir / 'umap_data.json', 'w') as f:
+                                json.dump(self._umap_data.tolist(), f)
                     case "kaplan_meier":
                         logger.info("Plotting Kaplan Meier Curves...")
                         self._plot_kaplan_meier(data)
@@ -143,11 +151,18 @@ class VisualizationModule(BaseModel):
         plot_corr(p_corr, size, file_name='pearson_correlation.png', output_dir=self._figures_dir, title="Pearson Correlation")
         plot_corr(s_corr, size, file_name='spearman_correlation.png', output_dir=self._figures_dir, title="Spearman Correlation")
 
+        if self.save_to_json:
+            p_corr.to_json(self._figures_dir / 'pearson_correlation.json')
+            s_corr.to_json(self._figures_dir / 'spearman_correlation.json')
+
     def _plot_pairplot(self, data: pd.DataFrame) -> None:
         if self.target_variable in self.categorical_columns:
             plot_pairplot(data, self.continuous_columns, output_dir=self._figures_dir, target_variable=self.target_variable)
         else:
             plot_pairplot(data, self.continuous_columns, output_dir=self._figures_dir)
+
+        if self.save_to_json:
+            data.to_json(self._figures_dir / 'pairplot.json')
 
     def _plot_multiplot(self, data: pd.DataFrame) -> None:
         (self._figures_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
@@ -157,7 +172,8 @@ class VisualizationModule(BaseModel):
                 self._umap_data,
                 var,
                 self.continuous_columns,
-                self._figures_dir
+                self._figures_dir,
+                self.save_to_json
             ) for var in self.categorical_columns
         )
 
