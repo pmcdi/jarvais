@@ -1,4 +1,5 @@
 from itertools import combinations
+import json
 from pathlib import Path
 
 import numpy as np
@@ -32,7 +33,8 @@ def plot_one_multiplot(
         umap_data: pd.DataFrame,
         var: str,
         continuous_columns: list,
-        output_dir: Path
+        output_dir: Path,
+        save_to_json: bool = False
     ) -> Path:
 
     def prep_for_pie(df, label):
@@ -90,6 +92,15 @@ def plot_one_multiplot(
               textprops={'fontsize': fontsize},
               colors=plt.cm.Set2.colors)
     ax[0].set_title(f"{var} Distribution. N: {data[var].count()}")
+
+    if save_to_json:
+        json_data = [{"name": l, "y": v} for l, v in zip(labels, values)]
+        with open(output_dir / 'multiplots' / f"{var}_pie.json", "w") as f:
+            json.dump(json_data, f)
+
+        for col in continuous_columns:
+            with (output_dir / 'multiplots' / f"{var}_{col}.json").open("w") as f:
+                json.dump(data[[var, col]].to_dict(orient="records"), f, indent=2)
 
     # UMAP colored by variable
     sns.scatterplot(x=umap_data[:,0], y=umap_data[:,1], hue=data[var], alpha=.7, ax=ax[1])
@@ -179,7 +190,8 @@ def plot_corr(
 def plot_frequency_table(
         data: pd.DataFrame,
         columns: list,
-        output_dir: Path
+        output_dir: Path,
+        save_to_json: bool = False
     ) -> None:
     """
     Generates and saves heatmap visualizations for frequency tables of all column pair combinations.
@@ -188,6 +200,7 @@ def plot_frequency_table(
         data (pd.DataFrame): Input dataset containing the columns to analyze.
         columns (list): List of column names to create frequency tables for.
         output_dir (Path): Directory to save the generated heatmaps.
+        save_to_json (bool): Flag to indicate whether to save frequency table data as JSON files.
     """
     frequency_dir = Path(output_dir) / 'frequency_tables'
     frequency_dir.mkdir(parents=True, exist_ok=True)
@@ -201,6 +214,9 @@ def plot_frequency_table(
         plt.ylabel(column_1)
         plt.savefig(frequency_dir / f'{column_1}_vs_{column_2}.png')
         plt.close()
+
+        if save_to_json:
+            heatmap_data.to_json(frequency_dir / f'{column_1}_vs_{column_2}.json')
 
 @config_plot()
 def plot_pairplot(
@@ -248,7 +264,7 @@ def plot_pairplot(
 def plot_umap(
         data: pd.DataFrame,
         continuous_columns: list,
-        output_dir: Path
+        output_dir: Path,
     ) -> np.ndarray:
     """
     Generates a 2D UMAP projection of the specified continuous columns and saves the resulting scatter plot.

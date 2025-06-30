@@ -185,6 +185,7 @@
     ],
     "task": null,
     "target_variable": null,
+    "save_to_json": true,
     "enabled": true
   }
 }
