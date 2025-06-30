@@ -2754,8 +2754,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/jarvais/analyzer/modules/visualization.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 21</span>
-<span class="normal"> 22</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 22</span>
 <span class="normal"> 23</span>
 <span class="normal"> 24</span>
 <span class="normal"> 25</span>
@@ -2901,7 +2900,26 @@
 <span class="normal">165</span>
 <span class="normal">166</span>
 <span class="normal">167</span>
-<span class="normal">168</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VisualizationModule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span>
+<span class="normal">171</span>
+<span class="normal">172</span>
+<span class="normal">173</span>
+<span class="normal">174</span>
+<span class="normal">175</span>
+<span class="normal">176</span>
+<span class="normal">177</span>
+<span class="normal">178</span>
+<span class="normal">179</span>
+<span class="normal">180</span>
+<span class="normal">181</span>
+<span class="normal">182</span>
+<span class="normal">183</span>
+<span class="normal">184</span>
+<span class="normal">185</span>
+<span class="normal">186</span>
+<span class="normal">187</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">VisualizationModule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
 
     <span class="n">plots</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"List of plots to generate."</span><span class="p">,</span>
@@ -2937,6 +2955,10 @@
         <span class="n">title</span><span class="o">=</span><span class="s2">"Target Variable"</span><span class="p">,</span>
         <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">"death"</span><span class="p">],</span>
         <span class="nb">repr</span><span class="o">=</span><span class="kc">False</span>
+    <span class="p">)</span>
+    <span class="n">save_to_json</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Whether to save plots as JSON files."</span>
     <span class="p">)</span>
     <span class="n">enabled</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
@@ -2991,6 +3013,9 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Visualization is disabled."</span><span class="p">)</span>
             <span class="k">return</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">warning</span><span class="p">(</span><span class="s2">"Saving plots as JSON files is enabled. This feature is experimental."</span><span class="p">)</span>
+
         <span class="k">for</span> <span class="n">plot</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">plots</span><span class="p">:</span>
             <span class="k">try</span><span class="p">:</span>
                 <span class="k">match</span> <span class="n">plot</span><span class="p">:</span>
@@ -3002,10 +3027,13 @@
                         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_pairplot</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
                     <span class="k">case</span> <span class="s2">"frequency_table"</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Plotting Frequency Table..."</span><span class="p">)</span>
-                        <span class="n">plot_frequency_table</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span><span class="p">)</span>
+                        <span class="n">plot_frequency_table</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">)</span>
                     <span class="k">case</span> <span class="s2">"umap"</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Plotting UMAP..."</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_umap_data</span> <span class="o">=</span> <span class="n">plot_umap</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span><span class="p">)</span>
+                        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">:</span>
+                            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span> <span class="o">/</span> <span class="s1">'umap_data.json'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+                                <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_umap_data</span><span class="o">.</span><span class="n">tolist</span><span class="p">(),</span> <span class="n">f</span><span class="p">)</span>
                     <span class="k">case</span> <span class="s2">"kaplan_meier"</span><span class="p">:</span>
                         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Plotting Kaplan Meier Curves..."</span><span class="p">)</span>
                         <span class="bp">self</span><span class="o">.</span><span class="n">_plot_kaplan_meier</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -3026,11 +3054,18 @@
         <span class="n">plot_corr</span><span class="p">(</span><span class="n">p_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'pearson_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Pearson Correlation"</span><span class="p">)</span>
         <span class="n">plot_corr</span><span class="p">(</span><span class="n">s_corr</span><span class="p">,</span> <span class="n">size</span><span class="p">,</span> <span class="n">file_name</span><span class="o">=</span><span class="s1">'spearman_correlation.png'</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Spearman Correlation"</span><span class="p">)</span>
 
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">:</span>
+            <span class="n">p_corr</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span> <span class="o">/</span> <span class="s1">'pearson_correlation.json'</span><span class="p">)</span>
+            <span class="n">s_corr</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span> <span class="o">/</span> <span class="s1">'spearman_correlation.json'</span><span class="p">)</span>
+
     <span class="k">def</span><span class="w"> </span><span class="nf">_plot_pairplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">target_variable</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">:</span>
             <span class="n">plot_pairplot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span><span class="p">,</span> <span class="n">target_variable</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">target_variable</span><span class="p">)</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">plot_pairplot</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span> <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">save_to_json</span><span class="p">:</span>
+            <span class="n">data</span><span class="o">.</span><span class="n">to_json</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span> <span class="o">/</span> <span class="s1">'pairplot.json'</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_plot_multiplot</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span> <span class="o">/</span> <span class="s1">'multiplots'</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
@@ -3040,7 +3075,8 @@
                 <span class="bp">self</span><span class="o">.</span><span class="n">_umap_data</span><span class="p">,</span>
                 <span class="n">var</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_figures_dir</span><span class="p">,</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">save_to_json</span>
             <span class="p">)</span> <span class="k">for</span> <span class="n">var</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">categorical_columns</span>
         <span class="p">)</span>
 
