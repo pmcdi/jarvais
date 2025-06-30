@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.15.0](https://github.com/pmcdi/jarvais/compare/v0.14.0...v0.15.0) (2025-06-30)
+
+
+### Features
+
+* add option to save json of plot  ([#88](https://github.com/pmcdi/jarvais/issues/88)) ([ec0fa9a](https://github.com/pmcdi/jarvais/commit/ec0fa9a0cf70be59aeca15d46958dee1789e05f1))
+
 ## [0.14.0](https://github.com/pmcdi/jarvais/compare/v0.13.1...v0.14.0) (2025-06-04)
 
 
