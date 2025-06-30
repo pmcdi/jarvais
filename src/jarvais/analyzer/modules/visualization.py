@@ -112,6 +112,9 @@ class VisualizationModule(BaseModel):
         if not self.enabled:
             logger.warning("Visualization is disabled.")
             return
+        
+        if self.save_to_json:
+            logger.warning("Saving plots as JSON files is enabled. This feature is experimental.")
 
         for plot in self.plots:
             try:
