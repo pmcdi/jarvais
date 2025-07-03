@@ -21,7 +21,7 @@ jarvAIs is a Python package designed to automate and enhance machine learning wo
 $ pip install jarvais
 ```
 
-### (recommended) Create new `pixi` environment for a project
+### (recommended) Create new [`pixi`](https://pixi.sh/latest/) environment for a project
 
 ```bash
 mkdir my_project
@@ -54,21 +54,28 @@ The **Analyzer** module is designed for data visualization and exploration. It h
 ```python
 from jarvais.analyzer import Analyzer
 
-analyzer = Analyzer(data, target_variable='target', output_dir='.')
+analyzer = Analyzer(
+    data, 
+    output_dir="./analyzer_outputs",
+    categorical_columns=['Gender', 'Disease Type', 'Treatment', 'Target'] 
+    target_variable="Target", 
+    task="classification"
+)
+
 analyzer.run()
 ```
 #### Example Output
 
 ```bash
 Feature Types:
-  - Categorical: ['Gender', 'Disease Type', 'Treatment']
+  - Categorical: ['Gender', 'Disease Type', 'Treatment', 'Target']
   - Continuous: ['Age', 'Tumor Size']
 
 Outlier Detection:
   - Outliers found in Gender: ['Male: 5 out of 1000']
   - Outliers found in Disease Type: ['Lung Cancer: 10 out of 1000']
   - No Outliers found in Treatment
-  - Outliers found in Tumor Size: ['12.5: 2 out of 1000']
+  - No Outliers found in Target
 ```
 
 ##### TableOne(Data Summary):
@@ -83,6 +90,9 @@ Outlier Detection:
 | Disease Type, n (%) | Breast Cancer     |           | 300 (30%)   |
 |                     | Lung Cancer       |           | 150 (15%)   |
 |                     | Prostate Cancer   |           | 100 (10%)   |
+| Target              | True              |           | 560 (56%)   |
+|                     | False             |           | 440 (44%)   |
+
 
 #### Output Files:
 
@@ -90,6 +100,8 @@ The Analyzer module generates the following files and directories:
 
 - **analysis_report.pdf**: A PDF report summarizing the analysis results.
 - **config.yaml**: Configuration file for the analysis setup.
+- **analyzer_settings.json**: JSON file that contains the settings used for the analysis.
+- **analyzer_settings.schema.json**: JSON schema file that documents how the settings can be modified.
 
 **Figures:**
 - **frequency_tables**: Contains visualizations comparing different categorical features.
@@ -120,18 +132,23 @@ The **Trainer** module simplifies and automates the process of feature reduction
 ```python
 from jarvais.trainer import TrainerSupervised
 
-trainer = TrainerSupervised(task='binary', output_dir='./trainer_outputs')
-trainer.run(data=data, target_variable='target', save_data=True)
+trainer = TrainerSupervised(
+    output_dir="./outputs/trainer", 
+    target_variable="death", 
+    task="binary",
+    k_folds=2
+)
+
+trainer.run(data)
 ```
 
 #### Example Output
 
 ```bash
-Training fold 1/5...  
-Fold 1 score: `0.8467207586933614`
-
-Training fold 2/5...  
-Fold 2 score: `0.8487846136306914`
+12:50:37 [info     ] Training fold 1/2...           [jarvais] call=autogluon_trainer._train_autogluon_with_cv:192
+12:51:06 [info     ] Fold 1/2 score: 0.7761862315751399 (roc_auc) [jarvais] call=autogluon_trainer._train_autogluon_with_cv:209
+         [info     ] Training fold 2/2...           [jarvais] call=autogluon_trainer._train_autogluon_with_cv:192
+12:51:31 [info     ] Fold 2/2 score: 0.750053611337183 (roc_auc) [jarvais] call=autogluon_trainer._train_autogluon_with_cv:209
 ...
 ```
 

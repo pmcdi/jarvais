@@ -229,7 +229,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/2a/5a/04cde32b07a7431d4ed0553a76fdb7a61270e78c5fd5a603e190ac389f14/wrapt-1.17.2-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/cc/f5/1b5d88e5a65168b435e8339b53d027e3e7adecb0c7d157bc86d18f78471b/xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/15/45/212604d3142d84b4065d5f8cab6582ed3d78e4cc250568ef2a36fe1cf0a5/yarl-1.20.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: .
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-hfdf4475_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-hbd8a1cb_0.conda
@@ -430,7 +430,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/53/18/75ddc64c3f63988f5a1d7e10fb204ffe5762bc663f8023f18ecaf31a332e/wrapt-1.17.2-cp312-cp312-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/0b/6b/f47143ecab6313272497f324ffe2eafaf2851c0781a9022040adf80f9aab/xgboost-3.0.2-py3-none-macosx_10_15_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/60/c3/9e776e98ea350f76f94dd80b408eaa54e5092643dbf65fd9babcffb60509/yarl-1.20.0-cp312-cp312-macosx_10_13_x86_64.whl
-      - pypi: .
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h2466b09_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-h4c7d964_0.conda
@@ -631,7 +631,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/15/06/1dbf478ea45c03e78a6a8c4be4fdc3c3bddea5c8de8a93bc971415e47f0f/wrapt-1.17.2-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/29/22/e3ff2dfafe862a91733dfa0aecdb4794aa1d9a18e09a14e118bde0cbc2db/xgboost-3.0.2-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/ca/c6/333fe0338305c0ac1c16d5aa7cc4841208d3252bbe62172e0051006b5445/yarl-1.20.0-cp312-cp312-win_amd64.whl
-      - pypi: .
+      - pypi: ./
   dev:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -962,7 +962,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/2a/5a/04cde32b07a7431d4ed0553a76fdb7a61270e78c5fd5a603e190ac389f14/wrapt-1.17.2-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/cc/f5/1b5d88e5a65168b435e8339b53d027e3e7adecb0c7d157bc86d18f78471b/xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/15/45/212604d3142d84b4065d5f8cab6582ed3d78e4cc250568ef2a36fe1cf0a5/yarl-1.20.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: .
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-hfdf4475_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-hbd8a1cb_0.conda
@@ -1265,7 +1265,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/53/18/75ddc64c3f63988f5a1d7e10fb204ffe5762bc663f8023f18ecaf31a332e/wrapt-1.17.2-cp312-cp312-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/0b/6b/f47143ecab6313272497f324ffe2eafaf2851c0781a9022040adf80f9aab/xgboost-3.0.2-py3-none-macosx_10_15_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/60/c3/9e776e98ea350f76f94dd80b408eaa54e5092643dbf65fd9babcffb60509/yarl-1.20.0-cp312-cp312-macosx_10_13_x86_64.whl
-      - pypi: .
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h2466b09_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-h4c7d964_0.conda
@@ -1566,7 +1566,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/15/06/1dbf478ea45c03e78a6a8c4be4fdc3c3bddea5c8de8a93bc971415e47f0f/wrapt-1.17.2-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/29/22/e3ff2dfafe862a91733dfa0aecdb4794aa1d9a18e09a14e118bde0cbc2db/xgboost-3.0.2-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/ca/c6/333fe0338305c0ac1c16d5aa7cc4841208d3252bbe62172e0051006b5445/yarl-1.20.0-cp312-cp312-win_amd64.whl
-      - pypi: .
+      - pypi: ./
   publish:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -1831,7 +1831,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/cc/f5/1b5d88e5a65168b435e8339b53d027e3e7adecb0c7d157bc86d18f78471b/xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/15/45/212604d3142d84b4065d5f8cab6582ed3d78e4cc250568ef2a36fe1cf0a5/yarl-1.20.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/fc/79/edeb217c57fe1bf16d890aa91a1c2c96b28c07b46afed54a5dcf310c3f6f/zstandard-0.23.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: .
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-hfdf4475_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-hbd8a1cb_0.conda
@@ -2065,7 +2065,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/0b/6b/f47143ecab6313272497f324ffe2eafaf2851c0781a9022040adf80f9aab/xgboost-3.0.2-py3-none-macosx_10_15_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/60/c3/9e776e98ea350f76f94dd80b408eaa54e5092643dbf65fd9babcffb60509/yarl-1.20.0-cp312-cp312-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/7b/83/f23338c963bd9de687d47bf32efe9fd30164e722ba27fb59df33e6b1719b/zstandard-0.23.0-cp312-cp312-macosx_10_9_x86_64.whl
-      - pypi: .
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h2466b09_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-h4c7d964_0.conda
@@ -2300,7 +2300,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/29/22/e3ff2dfafe862a91733dfa0aecdb4794aa1d9a18e09a14e118bde0cbc2db/xgboost-3.0.2-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/ca/c6/333fe0338305c0ac1c16d5aa7cc4841208d3252bbe62172e0051006b5445/yarl-1.20.0-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/75/37/872d74bd7739639c4553bf94c84af7d54d8211b626b352bc57f0fd8d1e3f/zstandard-0.23.0-cp312-cp312-win_amd64.whl
-      - pypi: .
+      - pypi: ./
   py310:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -2534,7 +2534,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/90/ec/00759565518f268ed707dcc40f7eeec38637d46b098a1f5143bff488fe97/wrapt-1.17.2-cp310-cp310-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/cc/f5/1b5d88e5a65168b435e8339b53d027e3e7adecb0c7d157bc86d18f78471b/xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/8b/fd/10fcf7d86f49b1a11096d6846257485ef32e3d3d322e8a7fdea5b127880c/yarl-1.20.0-cp310-cp310-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: .
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-hfdf4475_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-hbd8a1cb_0.conda
@@ -2738,7 +2738,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/1b/7b/13369d42651b809389c1a7153baa01d9700430576c81a2f5c5e460df0ed9/wrapt-1.17.2-cp310-cp310-macosx_10_9_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/0b/6b/f47143ecab6313272497f324ffe2eafaf2851c0781a9022040adf80f9aab/xgboost-3.0.2-py3-none-macosx_10_15_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/3d/c2/4e78185c453c3ca02bd11c7907394d0410d26215f9e4b7378648b3522a30/yarl-1.20.0-cp310-cp310-macosx_10_9_x86_64.whl
-      - pypi: .
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h2466b09_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-h4c7d964_0.conda
@@ -2943,7 +2943,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/72/6a/c5a83e8f61aec1e1aeef939807602fb880e5872371e95df2137142f5c58e/wrapt-1.17.2-cp310-cp310-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/29/22/e3ff2dfafe862a91733dfa0aecdb4794aa1d9a18e09a14e118bde0cbc2db/xgboost-3.0.2-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/db/1f/5c1952f3d983ac3f5fb079b5b13b62728f8a73fd27d03e1cef7e476addff/yarl-1.20.0-cp310-cp310-win_amd64.whl
-      - pypi: .
+      - pypi: ./
   py311:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -3174,7 +3174,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/b4/b0/9fc566b0fe08b282c850063591a756057c3247b2362b9286429ec5bf1721/wrapt-1.17.2-cp311-cp311-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/cc/f5/1b5d88e5a65168b435e8339b53d027e3e7adecb0c7d157bc86d18f78471b/xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/9c/85/d793a703cf4bd0d4cd04e4b13cc3d44149470f790230430331a0c1f52df5/yarl-1.20.0-cp311-cp311-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: .
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-hfdf4475_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-hbd8a1cb_0.conda
@@ -3375,7 +3375,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/50/ff/149aba8365fdacef52b31a258c4dc1c57c79759c335eff0b3316a2664a64/wrapt-1.17.2-cp311-cp311-macosx_10_9_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/0b/6b/f47143ecab6313272497f324ffe2eafaf2851c0781a9022040adf80f9aab/xgboost-3.0.2-py3-none-macosx_10_15_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/ba/81/315a3f6f95947cfbf37c92d6fbce42a1a6207b6c38e8c2b452499ec7d449/yarl-1.20.0-cp311-cp311-macosx_10_9_x86_64.whl
-      - pypi: .
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h2466b09_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-h4c7d964_0.conda
@@ -3577,7 +3577,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/47/f8/fb1773491a253cbc123c5d5dc15c86041f746ed30416535f2a8df1f4a392/wrapt-1.17.2-cp311-cp311-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/29/22/e3ff2dfafe862a91733dfa0aecdb4794aa1d9a18e09a14e118bde0cbc2db/xgboost-3.0.2-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/33/46/ca335c2e1f90446a77640a45eeb1cd8f6934f2c6e4df7db0f0f36ef9f025/yarl-1.20.0-cp311-cp311-win_amd64.whl
-      - pypi: .
+      - pypi: ./
   py312:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -3808,7 +3808,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/2a/5a/04cde32b07a7431d4ed0553a76fdb7a61270e78c5fd5a603e190ac389f14/wrapt-1.17.2-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/cc/f5/1b5d88e5a65168b435e8339b53d027e3e7adecb0c7d157bc86d18f78471b/xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/15/45/212604d3142d84b4065d5f8cab6582ed3d78e4cc250568ef2a36fe1cf0a5/yarl-1.20.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: .
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-hfdf4475_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-hbd8a1cb_0.conda
@@ -4009,7 +4009,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/53/18/75ddc64c3f63988f5a1d7e10fb204ffe5762bc663f8023f18ecaf31a332e/wrapt-1.17.2-cp312-cp312-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/0b/6b/f47143ecab6313272497f324ffe2eafaf2851c0781a9022040adf80f9aab/xgboost-3.0.2-py3-none-macosx_10_15_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/60/c3/9e776e98ea350f76f94dd80b408eaa54e5092643dbf65fd9babcffb60509/yarl-1.20.0-cp312-cp312-macosx_10_13_x86_64.whl
-      - pypi: .
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h2466b09_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-h4c7d964_0.conda
@@ -4211,7 +4211,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/15/06/1dbf478ea45c03e78a6a8c4be4fdc3c3bddea5c8de8a93bc971415e47f0f/wrapt-1.17.2-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/29/22/e3ff2dfafe862a91733dfa0aecdb4794aa1d9a18e09a14e118bde0cbc2db/xgboost-3.0.2-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/ca/c6/333fe0338305c0ac1c16d5aa7cc4841208d3252bbe62172e0051006b5445/yarl-1.20.0-cp312-cp312-win_amd64.whl
-      - pypi: .
+      - pypi: ./
   test:
     channels:
     - url: https://conda.anaconda.org/conda-forge/
@@ -4455,7 +4455,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/2a/5a/04cde32b07a7431d4ed0553a76fdb7a61270e78c5fd5a603e190ac389f14/wrapt-1.17.2-cp312-cp312-manylinux_2_5_x86_64.manylinux1_x86_64.manylinux_2_17_x86_64.manylinux2014_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/cc/f5/1b5d88e5a65168b435e8339b53d027e3e7adecb0c7d157bc86d18f78471b/xgboost-3.0.2-py3-none-manylinux_2_28_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/15/45/212604d3142d84b4065d5f8cab6582ed3d78e4cc250568ef2a36fe1cf0a5/yarl-1.20.0-cp312-cp312-manylinux_2_17_x86_64.manylinux2014_x86_64.whl
-      - pypi: .
+      - pypi: ./
       osx-64:
       - conda: https://conda.anaconda.org/conda-forge/osx-64/bzip2-1.0.8-hfdf4475_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-hbd8a1cb_0.conda
@@ -4670,7 +4670,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/53/18/75ddc64c3f63988f5a1d7e10fb204ffe5762bc663f8023f18ecaf31a332e/wrapt-1.17.2-cp312-cp312-macosx_10_13_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/0b/6b/f47143ecab6313272497f324ffe2eafaf2851c0781a9022040adf80f9aab/xgboost-3.0.2-py3-none-macosx_10_15_x86_64.whl
       - pypi: https://files.pythonhosted.org/packages/60/c3/9e776e98ea350f76f94dd80b408eaa54e5092643dbf65fd9babcffb60509/yarl-1.20.0-cp312-cp312-macosx_10_13_x86_64.whl
-      - pypi: .
+      - pypi: ./
       win-64:
       - conda: https://conda.anaconda.org/conda-forge/win-64/bzip2-1.0.8-h2466b09_7.conda
       - conda: https://conda.anaconda.org/conda-forge/noarch/ca-certificates-2025.4.26-h4c7d964_0.conda
@@ -4885,7 +4885,7 @@ environments:
       - pypi: https://files.pythonhosted.org/packages/15/06/1dbf478ea45c03e78a6a8c4be4fdc3c3bddea5c8de8a93bc971415e47f0f/wrapt-1.17.2-cp312-cp312-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/29/22/e3ff2dfafe862a91733dfa0aecdb4794aa1d9a18e09a14e118bde0cbc2db/xgboost-3.0.2-py3-none-win_amd64.whl
       - pypi: https://files.pythonhosted.org/packages/ca/c6/333fe0338305c0ac1c16d5aa7cc4841208d3252bbe62172e0051006b5445/yarl-1.20.0-cp312-cp312-win_amd64.whl
-      - pypi: .
+      - pypi: ./
 packages:
 - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
   sha256: fe51de6107f9edc7aa4f786a70f4a883943bc9d39b3bb7307c04c41410990726
@@ -7990,10 +7990,10 @@ packages:
   - jaraco-classes ; extra == 'test'
   - pytest-mypy ; extra == 'type'
   requires_python: '>=3.8'
-- pypi: .
+- pypi: ./
   name: jarvais
-  version: 0.14.0
-  sha256: 991300d7e62c07c11171a3f8242572d637eb7c03f11db0fd600da4298d6ec8c0
+  version: 0.15.0
+  sha256: d5d724777d5a70a48d8796e3f7314da221cc009ba918fafff0a65ca7abd79dd0
   requires_dist:
   - structlog>=25.3.0,<26
   - rich>=13.9.4,<15
