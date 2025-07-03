@@ -16,18 +16,23 @@ The `Trainer` module simplifies and automates the process of feature reduction, 
 ```python
 from jarvais.trainer import TrainerSupervised
 
-trainer = TrainerSupervised(task='binary', output_dir='./trainer_outputs')
-trainer.run(data=data, target_variable='target', save_data=True)
+trainer = TrainerSupervised(
+    output_dir="./outputs/trainer", 
+    target_variable="death", 
+    task="binary",
+    k_folds=2
+)
+
+trainer.run(data)
 ```
 
 ## Example Output
 
 ```bash
-Training fold 1/5...  
-Fold 1 score: `0.8467207586933614`
-
-Training fold 2/5...  
-Fold 2 score: `0.8487846136306914`
+12:50:37 [info     ] Training fold 1/2...           [jarvais] call=autogluon_trainer._train_autogluon_with_cv:192
+12:51:06 [info     ] Fold 1/2 score: 0.7761862315751399 (roc_auc) [jarvais] call=autogluon_trainer._train_autogluon_with_cv:209
+         [info     ] Training fold 2/2...           [jarvais] call=autogluon_trainer._train_autogluon_with_cv:192
+12:51:31 [info     ] Fold 2/2 score: 0.750053611337183 (roc_auc) [jarvais] call=autogluon_trainer._train_autogluon_with_cv:209
 ...
 ```
 

@@ -163,7 +163,7 @@ class Analyzer():
         
         # Create Table One
         self.mytable = TableOne(
-            self.data[self.settings.continuous_columns + self.settings.categorical_columns], 
+            self.data[self.settings.continuous_columns + self.settings.categorical_columns].copy(), 
             categorical=self.settings.categorical_columns, 
             continuous=self.settings.continuous_columns,
             pval=False

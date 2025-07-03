@@ -42,8 +42,8 @@ def tmpdir():
 def trained_binary_model(classification_data, tmpdir):
     X, y = classification_data
     data = pd.concat([X, y], axis=1)
-    trainer = TrainerSupervised(task='binary', output_dir=str(tmpdir))
-    trainer.run(data=data, target_variable='target')
+    trainer = TrainerSupervised(task='binary', output_dir=str(tmpdir), target_variable='target')
+    trainer.run(data=data)
     return trainer
 
 @pytest.fixture
@@ -76,7 +76,7 @@ def test_explainer_from_trainer(trained_binary_model, tmpdir):
     trainer = trained_binary_model
     explainer = Explainer.from_trainer(trainer)
     assert explainer.trainer is trainer
-    assert explainer.output_dir == trainer.output_dir
+    assert explainer.output_dir == trainer.settings.output_dir
     assert explainer.X_train is trainer.X_train
     assert explainer.X_test is trainer.X_test
     assert explainer.y_test is trainer.y_test
@@ -85,8 +85,8 @@ def test_explainer_from_trainer(trained_binary_model, tmpdir):
 def trained_regression_model(regression_data, tmpdir):
     X, y = regression_data
     data = pd.concat([X, y], axis=1)
-    trainer = TrainerSupervised(task='regression', output_dir=str(tmpdir))
-    trainer.run(data=data, target_variable='target')
+    trainer = TrainerSupervised(task='regression', output_dir=str(tmpdir), target_variable='target')
+    trainer.run(data=data)
     return trainer 
 
 def test_explainer_run_regression(trained_regression_model, tmpdir):
