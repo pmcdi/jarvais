@@ -21,7 +21,7 @@ jarvAIs is a Python package designed to automate and enhance machine learning wo
 $ pip install jarvais
 ```
 
-### (recommended) Create new `pixi` environment for a project
+### (recommended) Create new [`pixi`](https://pixi.sh/latest/) environment for a project
 
 ```bash
 mkdir my_project
@@ -54,21 +54,28 @@ The **Analyzer** module is designed for data visualization and exploration. It h
 ```python
 from jarvais.analyzer import Analyzer
 
-analyzer = Analyzer(data, target_variable='target', output_dir='.')
+analyzer = Analyzer(
+    data, 
+    output_dir="./analyzer_outputs",
+    categorical_columns=['Gender', 'Disease Type', 'Treatment', 'Target'] 
+    target_variable="Target", 
+    task="classification"
+)
+
 analyzer.run()
 ```
 #### Example Output
 
 ```bash
 Feature Types:
-  - Categorical: ['Gender', 'Disease Type', 'Treatment']
+  - Categorical: ['Gender', 'Disease Type', 'Treatment', 'Target']
   - Continuous: ['Age', 'Tumor Size']
 
 Outlier Detection:
   - Outliers found in Gender: ['Male: 5 out of 1000']
   - Outliers found in Disease Type: ['Lung Cancer: 10 out of 1000']
   - No Outliers found in Treatment
-  - Outliers found in Tumor Size: ['12.5: 2 out of 1000']
+  - No Outliers found in Target
 ```
 
 ##### TableOne(Data Summary):
@@ -83,6 +90,9 @@ Outlier Detection:
 | Disease Type, n (%) | Breast Cancer     |           | 300 (30%)   |
 |                     | Lung Cancer       |           | 150 (15%)   |
 |                     | Prostate Cancer   |           | 100 (10%)   |
+| Target              | True              |           | 560 (56%)   |
+|                     | False             |           | 440 (44%)   |
+
 
 #### Output Files:
 
@@ -90,6 +100,8 @@ The Analyzer module generates the following files and directories:
 
 - **analysis_report.pdf**: A PDF report summarizing the analysis results.
 - **config.yaml**: Configuration file for the analysis setup.
+- **analyzer_settings.json**: JSON file that contains the settings used for the analysis.
+- **analyzer_settings.schema.json**: JSON schema file that documents how the settings can be modified.
 
 **Figures:**
 - **frequency_tables**: Contains visualizations comparing different categorical features.
@@ -103,6 +115,10 @@ The Analyzer module generates the following files and directories:
 - **Data Files:**
   - **tableone.csv**: CSV file containing summary statistics for the dataset.
   - **updated_data.csv**: CSV file with the cleaned and processed data.
+
+
+**Check out the [Analyzer Quick Start](https://pmcdi.github.io/jarvais/get_started/analyzer/) for more details.**
+
 
 ### Trainer Module
 
@@ -147,6 +163,9 @@ Displays values in `mean [min, max]` format across training folds.
 |                        | F1: 0.21 [0.19, 0.22]        | F1: 0.16 [0.14, 0.18]        | F1: 1.0 [1.0, 1.0]           |
 |                        | AUPRC: 0.45 [0.45, 0.45]     | AUPRC: 0.43 [0.41, 0.45]     | AUPRC: 1.0 [1.0, 1.0]        |
 
+**Check out the [Trainer Quick Start](https://pmcdi.github.io/jarvais/get_started/trainer/) for more details.**
+
+
 ### Explainer Module
 
 The **Explainer** module is designed to evaluate trained models by generating diagnostic plots, auditing bias, and producing comprehensive reports. It supports various supervised learning tasks, including classification, regression, and survival models. 
@@ -183,6 +202,8 @@ The **Explainer** module generates the following files and directories:
   - `model_evaluation.png`: A visual summary of model evaluation.
   - `shap_barplot.png`: SHAP value bar plot for model interpretability.
   - `shap_heatmap.png`: SHAP value heatmap for model interpretability.
+
+**Check out the [Explainer Quick Start](https://pmcdi.github.io/jarvais/get_started/explainer/) for more details.**
 
 ## Contributing
 
