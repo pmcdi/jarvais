@@ -116,6 +116,10 @@ The Analyzer module generates the following files and directories:
   - **tableone.csv**: CSV file containing summary statistics for the dataset.
   - **updated_data.csv**: CSV file with the cleaned and processed data.
 
+
+**Check out the [Analyzer Quick Start](https://pmcdi.github.io/jarvais/get_started/analyzer/) for more details.**
+
+
 ### Trainer Module
 
 The **Trainer** module simplifies and automates the process of feature reduction, model training, and evaluation for various machine learning tasks, ensuring flexibility and efficiency.
@@ -159,6 +163,9 @@ Displays values in `mean [min, max]` format across training folds.
 |                        | F1: 0.21 [0.19, 0.22]        | F1: 0.16 [0.14, 0.18]        | F1: 1.0 [1.0, 1.0]           |
 |                        | AUPRC: 0.45 [0.45, 0.45]     | AUPRC: 0.43 [0.41, 0.45]     | AUPRC: 1.0 [1.0, 1.0]        |
 
+**Check out the [Trainer Quick Start](https://pmcdi.github.io/jarvais/get_started/trainer/) for more details.**
+
+
 ### Explainer Module
 
 The **Explainer** module is designed to evaluate trained models by generating diagnostic plots, auditing bias, and producing comprehensive reports. It supports various supervised learning tasks, including classification, regression, and survival models. 
@@ -195,6 +202,8 @@ The **Explainer** module generates the following files and directories:
   - `model_evaluation.png`: A visual summary of model evaluation.
   - `shap_barplot.png`: SHAP value bar plot for model interpretability.
   - `shap_heatmap.png`: SHAP value heatmap for model interpretability.
+
+**Check out the [Explainer Quick Start](https://pmcdi.github.io/jarvais/get_started/explainer/) for more details.**
 
 ## Contributing
 
