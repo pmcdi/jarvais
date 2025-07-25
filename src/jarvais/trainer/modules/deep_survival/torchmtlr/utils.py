@@ -70,7 +70,7 @@ def encode_survival(time: Union[float, int, TensorOrArray],
     # works in the _opposite_ way as it does in numpy,
     # so we need to set it to True
     bin_idxs = torch.bucketize(time, bins, right=True)
-    for i, (bin_idx, e) in enumerate(zip(bin_idxs, event, strict=False)):
+    for i, (bin_idx, e) in enumerate(zip(bin_idxs, event)):
         if e == 1:
             y[i, bin_idx] = 1
         else:

@@ -217,6 +217,9 @@ class Analyzer():
     def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
 
+    def __repr__(self) -> str:
+        return f"Analyzer(settings={self.settings.model_dump_json(indent=2)})"
+
 
 if __name__ == "__main__":
     from rich import print

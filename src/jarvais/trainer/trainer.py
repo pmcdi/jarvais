@@ -242,28 +242,12 @@ class TrainerSupervised:
     def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
 
+    def __repr__(self) -> str:
+        return f"TrainerSupervised(settings={self.settings.model_dump_json(indent=2)})"
+
 
 if __name__ == "__main__":
     from rich import print  # noqa: A004
-
-    # np.random.seed(0)
-    # data = pd.DataFrame(
-    #     {
-    #         'time': np.random.randint(1, 100, 50),
-    #         'event': np.random.randint(0, 2, 50),
-    #         'age': np.random.randint(20, 80, 50),
-    #         # 'sex': np.random.choice(["M", "F"], 50),
-    #         'tumor_stage': np.random.randint(1, 10, 50)
-    #     }
-    # )
-    # trainer = TrainerSupervised(
-    #     data, 
-    #     output_dir="temp_output/trainer_test", 
-    #     target_variable=["event", "time"], 
-    #     task="survival"
-    # )
-    # print(trainer)
-    # trainer.run()
     from jarvais.analyzer import Analyzer
 
     
@@ -302,8 +286,8 @@ if __name__ == "__main__":
     # analyzer.data["event"] = analyzer.data['event'].astype(bool)
     trainer = TrainerSupervised(
         output_dir="temp_output/trainer_test_rad", 
-        target_variable="event", 
-        task="binary",
+        target_variable="Dose", 
+        task="regression",
         k_folds=2
     )
         

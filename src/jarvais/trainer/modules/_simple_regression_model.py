@@ -26,10 +26,11 @@ class SimpleRegressionModel(AbstractModel):
             # X will be the training data.
             self._feature_generator = LabelEncoderFeatureGenerator(verbosity=0)
             self._feature_generator.fit(X=X)
-        if self._feature_generator and self._feature_generator.features_in:
-            # This converts categorical features to numeric via stateful label encoding.
-            X = X.copy()
-            X[self._feature_generator.features_in] = self._feature_generator.transform(X=X)
+            
+            if self._feature_generator.features_in:
+                # This converts categorical features to numeric via stateful label encoding.
+                X = X.copy()
+                X[self._feature_generator.features_in] = self._feature_generator.transform(X=X)
 
         # Add a fillna call to handle missing values.
         return X.fillna(0).to_numpy(dtype=float32)
