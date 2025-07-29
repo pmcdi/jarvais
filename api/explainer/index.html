@@ -16,7 +16,7 @@
       
       
       <link rel="icon" href="../../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.12">
+      <meta name="generator" content="mkdocs-1.6.1, mkdocs-material-9.6.14">
     
     
       
@@ -24,7 +24,7 @@
       
     
     
-      <link rel="stylesheet" href="../../assets/stylesheets/main.2afb09e1.min.css">
+      <link rel="stylesheet" href="../../assets/stylesheets/main.342714a4.min.css">
       
         
         <link rel="stylesheet" href="../../assets/stylesheets/palette.06af60db.min.css">
@@ -1396,7 +1396,7 @@
             <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
         <span class="p">)</span>            
 
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'binary'</span><span class="p">,</span> <span class="s1">'multiclass'</span><span class="p">]:</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'binary'</span><span class="p">,</span> <span class="s1">'multiclass'</span><span class="p">]:</span>
             <span class="n">plot_classification_diagnostics</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
@@ -1413,7 +1413,7 @@
                 <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
             <span class="p">)</span>
 
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
+        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
             <span class="n">plot_regression_diagnostics</span><span class="p">(</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -1421,8 +1421,8 @@
             <span class="p">)</span>
 
         <span class="c1"># Plot feature importance</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># NEEDS TO BE UPDATED</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="s1">'CoxPH'</span><span class="p">]</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># NEEDS TO BE UPDATED</span>
+            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">'CoxPH'</span><span class="p">]</span>
             <span class="n">result</span> <span class="o">=</span> <span class="n">permutation_importance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
                                             <span class="n">Surv</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="s1">'event'</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">),</span>
                                             <span class="n">n_repeats</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
@@ -1441,7 +1441,7 @@
             <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">model_best</span>
 
         <span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">importance_df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
-        <span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_run_bias_audit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
 
@@ -1449,19 +1449,19 @@
         <span class="n">bias_output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># Data needs to be not be one hot encoded</span>
+            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># Data needs to be not be one hot encoded</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">infer_sensitive_features</span><span class="p">(</span><span class="n">undummify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">prefix_sep</span><span class="o">=</span><span class="s1">'|'</span><span class="p">))</span>
             <span class="k">else</span><span class="p">:</span>
                 <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">infer_sensitive_features</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span>
 
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span> <span class="p">)</span>
-        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span> <span class="k">else</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">,</span> <span class="s1">'false_positive_rate'</span><span class="p">]</span> 
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span> <span class="p">)</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span> <span class="k">else</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">,</span> <span class="s1">'false_positive_rate'</span><span class="p">]</span> 
 
         <span class="n">bias</span> <span class="o">=</span> <span class="n">BiasExplainer</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> 
             <span class="n">y_pred</span><span class="p">,</span> 
             <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> 
             <span class="n">bias_output_dir</span><span class="p">,</span>
             <span class="n">metrics</span>
         <span class="p">)</span>
@@ -1470,7 +1470,7 @@
     <span class="nd">@classmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">from_trainer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">"""Create Explainer object from TrainerSupervised object."""</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1578,7 +1578,7 @@
         <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
     <span class="p">)</span>            
 
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'binary'</span><span class="p">,</span> <span class="s1">'multiclass'</span><span class="p">]:</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'binary'</span><span class="p">,</span> <span class="s1">'multiclass'</span><span class="p">]:</span>
         <span class="n">plot_classification_diagnostics</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
@@ -1595,7 +1595,7 @@
             <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
         <span class="p">)</span>
 
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
+    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
         <span class="n">plot_regression_diagnostics</span><span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -1603,8 +1603,8 @@
         <span class="p">)</span>
 
     <span class="c1"># Plot feature importance</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># NEEDS TO BE UPDATED</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">predictors</span><span class="p">[</span><span class="s1">'CoxPH'</span><span class="p">]</span>
+    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># NEEDS TO BE UPDATED</span>
+        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">'CoxPH'</span><span class="p">]</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">permutation_importance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
                                         <span class="n">Surv</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="s1">'event'</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">),</span>
                                         <span class="n">n_repeats</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
@@ -1623,7 +1623,7 @@
         <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">model_best</span>
 
     <span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">importance_df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
-    <span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
+    <span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1655,7 +1655,7 @@
 <span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_trainer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""Create Explainer object from TrainerSupervised object."""</span>
-    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -2457,10 +2457,10 @@ a warning flag will be applied.</p>
     
     
       
-      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.tracking", "announce.dismiss"], "search": "../../assets/javascripts/workers/search.f8cc74c7.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
+      <script id="__config" type="application/json">{"base": "../..", "features": ["navigation.instant", "navigation.tabs", "navigation.tabs.sticky", "navigation.tracking", "announce.dismiss"], "search": "../../assets/javascripts/workers/search.d50fe291.min.js", "tags": null, "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}, "version": null}</script>
     
     
-      <script src="../../assets/javascripts/bundle.c8b220af.min.js"></script>
+      <script src="../../assets/javascripts/bundle.13a4f30d.min.js"></script>
       
     
   </body>
