@@ -4,27 +4,36 @@
 # ------------------------------------------------------------------------------
 
 import numpy as np
-
 import torch
+from sksurv.metrics import concordance_index_censored
 from torch.utils.data import Dataset
 
-from lifelines.utils import concordance_index
 
 def calculate_c_index(risk_pred, y, e):
-    ''' Performs calculating c-index
-
-    :param risk_pred: (np.ndarray or torch.Tensor) model prediction
-    :param y: (np.ndarray or torch.Tensor) the times of event e
-    :param e: (np.ndarray or torch.Tensor) flag that records whether the event occurs
-    :return c_index: the c_index is calculated by (risk_pred, y, e)
     '''
-    if not isinstance(y, np.ndarray):
-        y = y.detach().cpu().numpy()
+    Calculates the concordance index using scikit-survival.
+
+    :param risk_pred: (np.ndarray or torch.Tensor) model prediction (higher = more risk)
+    :param y: (np.ndarray or torch.Tensor) time-to-event
+    :param e: (np.ndarray or torch.Tensor) event occurred (1) or censored (0)
+    :return: c-index score
+    '''
+
+    # Convert to NumPy if needed
     if not isinstance(risk_pred, np.ndarray):
         risk_pred = risk_pred.detach().cpu().numpy()
+    if not isinstance(y, np.ndarray):
+        y = y.detach().cpu().numpy()
     if not isinstance(e, np.ndarray):
         e = e.detach().cpu().numpy()
-    return concordance_index(y, risk_pred, e)
+
+    # Flatten and ensure correct types
+    risk_pred = np.ravel(risk_pred).astype(float)
+    y = np.ravel(y).astype(float)
+    e = np.ravel(e).astype(bool)  # Must be boolean for sksurv
+
+    return concordance_index_censored(e, y, risk_pred)[0]
+
 
 class SurvivalDataset(Dataset):
     def __init__(self, data):

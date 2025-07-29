@@ -163,7 +163,7 @@ class Analyzer():
         
         # Create Table One
         self.mytable = TableOne(
-            self.data[self.settings.continuous_columns + self.settings.categorical_columns], 
+            self.data[self.settings.continuous_columns + self.settings.categorical_columns].copy(), 
             categorical=self.settings.categorical_columns, 
             continuous=self.settings.continuous_columns,
             pval=False
@@ -216,6 +216,9 @@ class Analyzer():
 
     def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
+
+    def __repr__(self) -> str:
+        return f"Analyzer(settings={self.settings.model_dump_json(indent=2)})"
 
 
 if __name__ == "__main__":
