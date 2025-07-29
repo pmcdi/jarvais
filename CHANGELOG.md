@@ -1,6 +1,18 @@
 # CHANGELOG
 
 
+## [0.16.0](https://github.com/pmcdi/jarvais/compare/v0.15.0...v0.16.0) (2025-07-29)
+
+
+### Features
+
+* **trainer:** add new trainer + settings ([#82](https://github.com/pmcdi/jarvais/issues/82)) ([b801829](https://github.com/pmcdi/jarvais/commit/b8018291d23d16f32075a31c2a638f8038bebea5))
+
+
+### Documentation
+
+* **README:** update analyzer section ([#92](https://github.com/pmcdi/jarvais/issues/92)) ([45c2ef4](https://github.com/pmcdi/jarvais/commit/45c2ef43599228d2ea14d667deec5c2d45d70196))
+
 ## [0.15.0](https://github.com/pmcdi/jarvais/compare/v0.14.0...v0.15.0) (2025-06-30)
 
 
