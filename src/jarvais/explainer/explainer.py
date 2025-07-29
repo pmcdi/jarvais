@@ -66,7 +66,7 @@ class Explainer():
             output_dir=self.output_dir / 'figures'
         )            
 
-        if self.trainer.task in ['binary', 'multiclass']:
+        if self.trainer.settings.task in ['binary', 'multiclass']:
             plot_classification_diagnostics(
                 self.y_test,
                 self.predictor.predict_proba(self.X_test).iloc[:, 1],
@@ -83,7 +83,7 @@ class Explainer():
                 output_dir=self.output_dir / 'figures'
             )
 
-        elif self.trainer.task == 'regression':
+        elif self.trainer.settings.task == 'regression':
             plot_regression_diagnostics(
                 self.y_test,
                 self.predictor.predict(self.X_test, as_pandas=False),
@@ -91,8 +91,8 @@ class Explainer():
             )
 
         # Plot feature importance
-        if self.trainer.task == 'survival': # NEEDS TO BE UPDATED
-            model = self.trainer.predictors['CoxPH']
+        if self.trainer.settings.task == 'survival': # NEEDS TO BE UPDATED
+            model = self.trainer.predictor.models['CoxPH']
             result = permutation_importance(model, self.X_test,
                                             Surv.from_dataframe('event', 'time', self.y_test),
                                             n_repeats=15)
@@ -111,7 +111,7 @@ class Explainer():
             model_name = self.predictor.model_best
 
         plot_feature_importance(importance_df, self.output_dir / 'figures', model_name)
-        generate_explainer_report_pdf(self.trainer.task, self.output_dir)
+        generate_explainer_report_pdf(self.trainer.settings.task, self.output_dir)
 
     def _run_bias_audit(self) -> List[pd.DataFrame]:
 
@@ -119,19 +119,19 @@ class Explainer():
         bias_output_dir.mkdir(parents=True, exist_ok=True)
 
         if self.sensitive_features is None:
-            if self.trainer.task == 'survival': # Data needs to be not be one hot encoded
+            if self.trainer.settings.task == 'survival': # Data needs to be not be one hot encoded
                 self.sensitive_features = infer_sensitive_features(undummify(self.X_test, prefix_sep='|'))
             else:
                 self.sensitive_features = infer_sensitive_features(self.X_test)
         
-        y_pred = None if self.trainer.task == 'survival' else pd.Series(self.trainer.infer(self.X_test) )
-        metrics = ['mean_prediction'] if self.trainer.task == 'regression' else ['mean_prediction', 'false_positive_rate'] 
+        y_pred = None if self.trainer.settings.task == 'survival' else pd.Series(self.trainer.infer(self.X_test) )
+        metrics = ['mean_prediction'] if self.trainer.settings.task == 'regression' else ['mean_prediction', 'false_positive_rate'] 
 
         bias = BiasExplainer(
             self.y_test, 
             y_pred, 
             self.sensitive_features,
-            self.trainer.task, 
+            self.trainer.settings.task, 
             bias_output_dir,
             metrics
         )
@@ -140,4 +140,4 @@ class Explainer():
     @classmethod
     def from_trainer(cls, trainer, **kwargs):
         """Create Explainer object from TrainerSupervised object."""
-        return cls(trainer, trainer.X_train, trainer.X_test, trainer.y_test, trainer.output_dir, **kwargs)
+        return cls(trainer, trainer.X_train, trainer.X_test, trainer.y_test, trainer.settings.output_dir, **kwargs)

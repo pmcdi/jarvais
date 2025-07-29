@@ -1,10 +1,9 @@
 import pandas as pd
-from numpy import float32, ndarray
-
 from autogluon.core.models import AbstractModel
 from autogluon.features.generators import LabelEncoderFeatureGenerator
-
+from numpy import float32, ndarray
 from sklearn.linear_model import LinearRegression, LogisticRegression
+
 
 class SimpleRegressionModel(AbstractModel):
     """
@@ -12,14 +11,14 @@ class SimpleRegressionModel(AbstractModel):
 
     It can handle `binary`, `multiclass`, `regression` tasks.
     """
-    def __init__(self, **kwargs):
+    def __init__(self, **kwargs: dict) -> None:
         # Simply pass along kwargs to parent, and init our internal `_feature_generator` variable to None
         super().__init__(**kwargs)
-        self._feature_generator = None
+        self._feature_generator: LabelEncoderFeatureGenerator | None = None
 
     # The `_preprocess` method takes the input data and transforms it to the internal representation usable by the model.
     # `_preprocess` is called by `preprocess` and is used during model fit and model inference.
-    def _preprocess(self, X: pd.DataFrame, is_train=False, **kwargs) -> ndarray:
+    def _preprocess(self, X: pd.DataFrame, is_train: bool = False, **kwargs: dict) -> ndarray:
         # print(f'Entering the `_preprocess` method: {len(X)} rows of data (is_train={is_train})')
         X = super()._preprocess(X, **kwargs)
 
@@ -27,7 +26,7 @@ class SimpleRegressionModel(AbstractModel):
             # X will be the training data.
             self._feature_generator = LabelEncoderFeatureGenerator(verbosity=0)
             self._feature_generator.fit(X=X)
-        if self._feature_generator.features_in:
+        if self._feature_generator and self._feature_generator.features_in:
             # This converts categorical features to numeric via stateful label encoding.
             X = X.copy()
             X[self._feature_generator.features_in] = self._feature_generator.transform(X=X)
@@ -39,7 +38,7 @@ class SimpleRegressionModel(AbstractModel):
     def _fit(self,
             X: pd.DataFrame,  # training data
             y: pd.Series,  # training labels
-            **kwargs):
+            **kwargs: dict) -> None:
 
         # Store the feature names before transforming to numpy
         feature_names = X.columns if isinstance(X, pd.DataFrame) else range(X.shape[1])
@@ -58,25 +57,16 @@ class SimpleRegressionModel(AbstractModel):
 
         # Print the coefficients and the intercept after training
         coefs = self.model.coef_.flatten()
-        intercept = self.model.intercept_ if self.problem_type == 'regression' else self.model.intercept_[0]
+        self.intercept = self.model.intercept_ if self.problem_type == 'regression' else self.model.intercept_[0]
 
         # Create a DataFrame to display feature names with their corresponding coefficients
-        coef_df = pd.DataFrame({
+        self.coef_df = pd.DataFrame({
             'Feature': feature_names,
             'Coefficient': coefs
         })
 
-        # Print the coefficients along with their corresponding features
-        # print("\nSimple Regression Model Coefficients:")
-        # print(coef_df.sort_values(by='Coefficient', key=abs, ascending=False).to_string(index=False))  # sort by coefficient value for better readability
-
-        # # Print the intercept separately
-        # print(f"\nSimple Regression Model Intercept: {intercept}")
-
-        # print('Exiting the `_fit` method')
-
     # The `_set_default_params` method defines the default hyperparameters of the model.
-    def _set_default_params(self):
+    def _set_default_params(self) -> None:
         default_params = {
             'solver': 'lbfgs',  # Solver to use in the optimization problem
             'max_iter': 1000,    # Maximum number of iterations for convergence
