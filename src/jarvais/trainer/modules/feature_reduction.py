@@ -39,6 +39,10 @@ class FeatureReductionModule(BaseModel):
             logger.info("Skipping feature reduction.")
             return X, y
 
+        if self.task == 'survival':
+            logger.warning("Survival analysis is not supported for feature reduction. Skipping feature reduction.")
+            return X, y
+
         logger.info(f"Applying feature reduction: {self.method}")
 
         X = X.copy()
