@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.17.0](https://github.com/pmcdi/jarvais/compare/v0.16.0...v0.17.0) (2025-08-01)
+
+
+### Features
+
+* **Trainer:** skip feature reduction for survival ([#97](https://github.com/pmcdi/jarvais/issues/97)) ([0aa1861](https://github.com/pmcdi/jarvais/commit/0aa1861cc96962712f7ccdcfe95d61a5b83b6eba))
+
 ## [0.16.0](https://github.com/pmcdi/jarvais/compare/v0.15.0...v0.16.0) (2025-07-29)
 
 
