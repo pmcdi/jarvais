@@ -142,6 +142,7 @@ class Analyzer():
         analyzer.missingness_module = settings.missingness
         analyzer.outlier_module = settings.outlier
         analyzer.visualization_module = settings.visualization
+        analyzer.encoding_module = settings.encoding
 
         analyzer.settings = settings
 
