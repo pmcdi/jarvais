@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.17.1](https://github.com/pmcdi/jarvais/compare/v0.17.0...v0.17.1) (2025-08-05)
+
+
+### Bug Fixes
+
+* **analyzer:** add encoding module to settings initialization ([#101](https://github.com/pmcdi/jarvais/issues/101)) ([28f01e0](https://github.com/pmcdi/jarvais/commit/28f01e00bcf502044bda72a8eeb21ae95b20cb52))
+
 ## [0.17.0](https://github.com/pmcdi/jarvais/compare/v0.16.0...v0.17.0) (2025-08-01)
 
 
