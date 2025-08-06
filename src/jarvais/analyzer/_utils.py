@@ -32,17 +32,26 @@ def infer_types(data: pd.DataFrame) -> Tuple[List[str], List[str], List[str]]:
     numeric_cols = {col for col in numeric_cols if data[col].dtype != bool}
     likely_cat = set(data.columns) - numeric_cols
     likely_cat = list(likely_cat - set(date_columns))
-
+    
     # check proportion of unique values if numerical
     for var in numeric_cols:
         likely_flag = 1.0 * data[var].nunique()/data[var].count() < 0.025
         if likely_flag:
-            likely_cat.append(var)
+            ### DEVNOTE Aug 6 2025
+            # We are deciding to NOT auto-switch to categorical to avoid false positives. 
+            # The user MUST manually move the column to the categorical_columns list in `analyzer_settings.json` if it should be considered categorical.
+            logger.warning(f"ATTN: Column {var} is potentially categorical because it has a low proportion of unique values.\n"
+                           f"If the variable should be considered categorical, move it to the categorical_columns list in `analyzer_settings.json`.")
 
     # Heuristic targeted at detecting ID columns
-    likely_cat = [cat for cat in likely_cat if data[cat].nunique()/data[cat].count() < 0.2]
+    categorical_columns = []
+    for cat_var in likely_cat:
+        if data[cat_var].nunique()/data[cat_var].count() < 0.2:
+            categorical_columns.append(cat_var)
+        else:
+            logger.warning(f"ATTN: Column {cat_var} is not considered categorical because it has a high proportion of unique values.\n"
+                           f"This variable is likely an ID column.")
 
-    categorical_columns = likely_cat
     continuous_columns = list(set(data.columns) - set(likely_cat) - set(date_columns))
 
     return categorical_columns, continuous_columns, date_columns
