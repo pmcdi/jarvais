@@ -1,12 +1,13 @@
 from typing import Dict, Literal
 
 import pandas as pd
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import Field, PrivateAttr
 
 from jarvais.loggers import logger
+from .base import AnalyzerModule
 
 
-class OutlierModule(BaseModel):
+class OutlierModule(AnalyzerModule):
 
     categorical_strategy: Dict[str, Literal['frequency']] = Field(
         description="Outlier strategy for categorical columns.",
@@ -22,10 +23,6 @@ class OutlierModule(BaseModel):
         default=0.01,
         description="Frequency threshold below which a category is considered an outlier.",
         title="Threshold",
-    )
-    enabled: bool = Field(
-        default=True,
-        description="Whether to perform outlier analysis."
     )
 
     categorical_mapping: Dict[str, Dict[str, str]] = Field(

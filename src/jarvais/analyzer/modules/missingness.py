@@ -1,13 +1,14 @@
 from typing import Dict, Literal
 
 import pandas as pd
-from pydantic import BaseModel, Field
+from pydantic import Field
 from sklearn.impute import KNNImputer # type: ignore
 
 from jarvais.loggers import logger
+from .base import AnalyzerModule
 
 
-class MissingnessModule(BaseModel):
+class MissingnessModule(AnalyzerModule):
 
     categorical_strategy: Dict[str, Literal['unknown', 'knn', 'mode']] = Field(
         description="Missingness strategy for categorical columns.",
@@ -18,10 +19,6 @@ class MissingnessModule(BaseModel):
         description="Missingness strategy for continuous columns.",
         title="Continuous Strategy",
         examples=[{"age": "median", "tumor_size": "mean", "survival_rate": "median"}]
-    )
-    enabled: bool = Field(
-        default=True,
-        description="Whether to perform missingness analysis."
     )
 
     @classmethod
