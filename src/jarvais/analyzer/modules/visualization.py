@@ -105,10 +105,12 @@ class VisualizationModule(AnalyzerModule):
                    target_variable=target_variable
                 )   
 
-    def __call__(self, data: pd.DataFrame) -> None:
+    def __call__(self, data: pd.DataFrame) -> pd.DataFrame:
         if not self.enabled:
             logger.warning("Visualization is disabled.")
-            return
+            return data
+
+        original_data = data.copy()
         
         if self.save_to_json:
             logger.warning("Saving plots as JSON files is enabled. This feature is experimental.")
@@ -143,6 +145,8 @@ class VisualizationModule(AnalyzerModule):
             
             logger.info("Plotting Multiplot...")
             self._plot_multiplot(data)
+
+        return original_data
 
     def _plot_correlation(self, data: pd.DataFrame) -> None:
         p_corr = data[self.continuous_columns].corr(method="pearson")
