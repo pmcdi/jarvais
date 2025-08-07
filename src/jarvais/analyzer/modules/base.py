@@ -55,20 +55,18 @@ class AnalyzerModule(BaseModel, ABC):
         pass
     
     @abstractmethod
-    def __call__(self, df: pd.DataFrame) -> pd.DataFrame | None:
+    def __call__(self, df: pd.DataFrame) -> pd.DataFrame:
         """
         Process a DataFrame through this module.
         
-        Most modules should follow a pd.DataFrame -> pd.DataFrame pattern,
+        Modules should follow a pd.DataFrame -> pd.DataFrame pattern,
         transforming the input data and returning the modified DataFrame.
-        
-        Visualization modules are an exception and may return None while
-        generating plots or other side effects.
+        Or return the original data if the module does not transform the data.
         
         Args:
             df: The input DataFrame to process
             
         Returns:
-            The processed DataFrame, or None for modules that don't transform data
+            The processed DataFrame or the original data if the module does not transform the data.
         """
         pass
