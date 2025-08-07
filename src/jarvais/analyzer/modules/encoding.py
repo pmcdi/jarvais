@@ -1,10 +1,11 @@
 import pandas as pd
-from pydantic import BaseModel, Field
+from pydantic import Field
 
 from jarvais.loggers import logger
+from .base import AnalyzerModule
 
 
-class OneHotEncodingModule(BaseModel):
+class OneHotEncodingModule(AnalyzerModule):
     columns: list[str] | None = Field(
         default=None,
         description="List of categorical columns to one-hot encode. If None, all columns are used."
@@ -16,10 +17,6 @@ class OneHotEncodingModule(BaseModel):
     prefix_sep: str = Field(
         default="|",
         description="Prefix separator used in encoded feature names."
-    )
-    enabled: bool = Field(
-        default=True,
-        description="Whether to perform one-hot encoding."
     )
 
     @classmethod
