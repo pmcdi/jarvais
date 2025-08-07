@@ -283,9 +283,12 @@ class SurvivalTrainerModule(BaseModel):
 
             test_scores[model] = test_score
 
+        leaderboard_df = pd.DataFrame(leaderboard).sort_values(by='test_score', ascending=False)
+        leaderboard_df.to_csv(self.output_dir / 'leaderboard.csv', index=False)
+
         print('\nModel Leaderboard\n----------------') # noqa: T201
         print(tabulate( # noqa: T201
-            pd.DataFrame(leaderboard).sort_values(by='test_score', ascending=False),
+            leaderboard_df,
             tablefmt = "grid",
             headers="keys",
             showindex=False))

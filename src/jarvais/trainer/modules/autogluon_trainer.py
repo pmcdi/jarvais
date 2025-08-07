@@ -164,6 +164,8 @@ class AutogluonTabularWrapper(BaseModel):
             on='model'
         )
 
+        final_leaderboard.to_csv(self.output_dir / 'leaderboard.csv', index=False)
+
         print('\nModel Leaderboard\n----------------') # noqa: T201
         print(tabulate( # noqa: T201
             final_leaderboard.sort_values(by='score_test', ascending=False),
