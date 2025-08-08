@@ -30,6 +30,7 @@ class Analyzer():
         categorical_columns (list[str] | None): List of categorical columns. If None, all remaining columns will be considered categorical.
         continuous_columns (list[str] | None): List of continuous columns. If None, all remaining columns will be considered continuous.
         date_columns (list[str] | None): List of date columns. If None, no date columns will be considered.
+        boolean_columns (list[str] | None): List of boolean columns. If None, no boolean columns will be considered.
         target_variable (str | None): The target variable for analysis. If None, analysis will be performed without a target variable.
         task (str | None): The type of task for analysis, e.g. classification, regression, survival. If None, analysis will be performed without a task.
         generate_report (bool): Whether to generate a PDF report of the analysis. Default is True.
@@ -39,6 +40,7 @@ class Analyzer():
         missingness_module (MissingnessModule): Module for handling missing data.
         outlier_module (OutlierModule): Module for detecting outliers.
         encoding_module (OneHotEncodingModule): Module for encoding categorical variables.
+        boolean_module (BooleanEncodingModule): Module for encoding boolean variables.
         visualization_module (VisualizationModule): Module for generating visualizations.
         settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.
     """
@@ -49,6 +51,7 @@ class Analyzer():
             categorical_columns: list[str] | None = None, 
             continuous_columns: list[str] | None = None,
             date_columns: list[str] | None = None,
+            boolean_columns: list[str] | None = None,
             target_variable: str | None = None,
             task: str | None = None,
             generate_report: bool = True
