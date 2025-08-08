@@ -3,6 +3,8 @@
 tests/tmp
 *.bak
 *.test
+notebooks/
+example_output/
 
 data/*
 !data/RADCURE_Clinical_v04_20241219.csv
