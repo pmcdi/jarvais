@@ -6,7 +6,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 from joblib import Parallel, delayed # type: ignore
-from pydantic import BaseModel, Field, PrivateAttr
+from pydantic import Field, PrivateAttr
 
 from jarvais.loggers import logger
 from jarvais.utils.plot import (
@@ -17,9 +17,10 @@ from jarvais.utils.plot import (
     plot_pairplot,
     plot_umap,
 )
+from .base import AnalyzerModule
 
 
-class VisualizationModule(BaseModel):
+class VisualizationModule(AnalyzerModule):
 
     plots: list[str] = Field(
         description="List of plots to generate.",
@@ -59,10 +60,6 @@ class VisualizationModule(BaseModel):
     save_to_json: bool = Field(
         default=False,
         description="Whether to save plots as JSON files."
-    )
-    enabled: bool = Field(
-        default=True,
-        description="Whether to perform visualization."
     )
 
     _figures_dir: Path = PrivateAttr(default=Path("."))
@@ -108,10 +105,12 @@ class VisualizationModule(BaseModel):
                    target_variable=target_variable
                 )   
 
-    def __call__(self, data: pd.DataFrame) -> None:
+    def __call__(self, data: pd.DataFrame) -> pd.DataFrame:
         if not self.enabled:
             logger.warning("Visualization is disabled.")
-            return
+            return data
+
+        original_data = data.copy()
         
         if self.save_to_json:
             logger.warning("Saving plots as JSON files is enabled. This feature is experimental.")
@@ -146,6 +145,8 @@ class VisualizationModule(BaseModel):
             
             logger.info("Plotting Multiplot...")
             self._plot_multiplot(data)
+
+        return original_data
 
     def _plot_correlation(self, data: pd.DataFrame) -> None:
         p_corr = data[self.continuous_columns].corr(method="pearson")

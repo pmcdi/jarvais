@@ -172,22 +172,16 @@ class Analyzer():
         print(self.mytable.tabulate(tablefmt = "grid"))
         self.mytable.to_csv(self.settings.output_dir / 'tableone.csv')
 
-        # Run Data Cleaning
+        # Run Modules
         self.input_data = self.data.copy()
         self.data = (
             self.data
             .pipe(self.missingness_module)
             .pipe(self.outlier_module)
+            .pipe(self.visualization_module)
+            .pipe(self.encoding_module)
         )
-
-        # Run Visualization
-        figures_dir = self.settings.output_dir / 'figures'
-        figures_dir.mkdir(exist_ok=True, parents=True)
-        self.visualization_module(self.data)
-
-        # Run Encoding
-        self.data = self.encoding_module(self.data)
-
+        
         # Save Data
         self.data.to_csv(self.settings.output_dir / 'updated_data.csv', index=False)
 
