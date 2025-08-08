@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.19.0](https://github.com/pmcdi/jarvais/compare/v0.18.0...v0.19.0) (2025-08-08)
+
+
+### Features
+
+* Add AnalyzerModule parent class ([7e1919e](https://github.com/pmcdi/jarvais/commit/7e1919e56f8841e54ef07b7985c254e4006dccb0))
+
 ## [0.18.0](https://github.com/pmcdi/jarvais/compare/v0.17.1...v0.18.0) (2025-08-07)
 
 
