@@ -4,5 +4,5 @@ from .outlier import OutlierModule
 from .visualization import VisualizationModule
 from .encoding import OneHotEncodingModule
 
-__all__ = ["AnalyzerModule", "MissingnessModule", "OutlierModule", "VisualizationModule", "OneHotEncodingModule"]
+__all__ = ["AnalyzerModule", "MissingnessModule", "OutlierModule", "VisualizationModule", "OneHotEncodingModule", "JanitorModule"]
 
