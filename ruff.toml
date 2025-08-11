@@ -89,6 +89,8 @@ ignore = [
     # Allow uppercase 
     "N806",
     "N803",
+    # Ignore unsorted imports (isort)
+    "I001",
 ]
 
 [lint.mccabe]
