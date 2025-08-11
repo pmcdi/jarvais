@@ -125,6 +125,7 @@ class Analyzer():
             outlier=self.outlier_module,
             visualization=self.visualization_module,
             encoding=self.encoding_module,
+            boolean=self.boolean_module,
             dashboard=self.dashboard_module
         )
 
@@ -161,6 +162,7 @@ class Analyzer():
         analyzer.outlier_module = settings.outlier
         analyzer.visualization_module = settings.visualization
         analyzer.encoding_module = settings.encoding
+        analyzer.boolean_module = settings.boolean
         analyzer.dashboard_module = settings.dashboard
 
         analyzer.settings = settings
@@ -200,6 +202,7 @@ class Analyzer():
             .pipe(self.visualization_module)
             .pipe(self.encoding_module)
             .pipe(self.boolean_module)
+            .pipe(self.dashboard_module)
         )
         
         # Save Data

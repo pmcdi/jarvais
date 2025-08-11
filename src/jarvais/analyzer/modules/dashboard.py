@@ -69,7 +69,7 @@ class DashboardModule(AnalyzerModule):
     def dashboard_plot_path(self) -> Path | None:
         return self._dashboard_plot_path
 
-    def __call__(self, df: pd.DataFrame) -> pd.DataFrame:
+    def __call__(self, df: pd.DataFrame, original_data: pd.DataFrame = None) -> pd.DataFrame:
         if not self.enabled:
             logger.warning("Dashboard is disabled.")
             return df
@@ -77,8 +77,11 @@ class DashboardModule(AnalyzerModule):
         logger.info("Computing statistical ranking for dashboard...")
 
         # Use original data to compute significance. Requires multiplots already generated in figures/multiplots
+        # If original_data is not provided, fall back to df (for backwards compatibility)
+        data_for_analysis = original_data if original_data is not None else df
+        
         results = find_top_multiplots(
-            data=df,
+            data=data_for_analysis,
             categorical_columns=self.categorical_columns,
             continuous_columns=self.continuous_columns,
             output_dir=self.output_dir,
@@ -96,7 +99,7 @@ class DashboardModule(AnalyzerModule):
         try:
             figures_dir = Path(self.output_dir) / "figures"
             figures_dir.mkdir(exist_ok=True, parents=True)
-            self._dashboard_plot_path = plot_dashboard(results, figures_dir)
+            self._dashboard_plot_path = plot_dashboard(results, data_for_analysis, figures_dir)
         except Exception as e:
             logger.warning(f"Failed to generate dashboard plot: {e}")
 

@@ -7,6 +7,7 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
+import matplotlib.patches as mpatches
 import seaborn as sns
 
 import shap
@@ -19,6 +20,7 @@ from sklearn.metrics import (
     root_mean_squared_error,
 )
 from umap import UMAP
+from statsmodels.stats.multicomp import pairwise_tukeyhsd
 
 from lifelines.statistics import multivariate_logrank_test
 from sksurv.nonparametric import kaplan_meier_estimator
@@ -128,8 +130,19 @@ def plot_one_multiplot(
     sorted_columns = sorted(p_values, key=p_values.get)
     for i, col in enumerate(sorted_columns):
         sns.violinplot(x=var, y=col, data=data, ax=ax[i+2], inner="point")
+        
+        # Add statistical annotations
+        n_categories = len(unique_values)
+        # Use bonferroni correction for multiple comparisons if >2 groups
+        correction = 'bonferroni' if n_categories > 2 else None
+        add_stat_annotation(ax[i+2], data, var, col, 
+                          test='auto', 
+                          comparisons_correction=correction,
+                          text_format='star', 
+                          loc='inside')
+        
         ax[i+2].tick_params(axis='x', labelrotation=67.5)
-        ax[i+2].set_title(f"{var} vs {col} (p-value: {p_values[col]:.4f})")
+        ax[i+2].set_title(f"{var} vs {col} (overall p={p_values[col]:.4f})")
 
     # Turn off unused axes
     for j in range(n, len(ax)):
@@ -679,61 +692,359 @@ def plot_classification_diagnostics(
 @config_plot()
 def plot_dashboard(
         significant_results: list[dict[str, Any]],
-        figures_dir: Path,
+        data: pd.DataFrame,
+        output_dir: Path,
     ) -> Path:
     """
-    Create a single "dashboard" image that tiles the multiplot PNGs for the set of
-    significant results. If multiple significant results reference the same categorical
-    variable, that multiplot image is included only once.
+    Create a grid of violinplots for significant results, showing the distribution
+    of continuous variables across categorical variables.
 
-    The output is saved as figures/dashboard_plot.png and the path is returned.
+    Args:
+        significant_results (list[dict[str, Any]]): List of significant results from statistical analysis.
+            Each dict should contain 'categorical_var', 'continuous_var', and 'p_value'.
+        data (pd.DataFrame): The original dataframe containing all variables.
+        output_dir (Path): Directory to save the output plot.
+
+    Returns:
+        Path: Path to the saved dashboard violinplot image.
     """
-    import math
-    import matplotlib.pyplot as plt
-    import matplotlib.image as mpimg
-
-    multiplots_dir = Path(figures_dir) / 'multiplots'
-    unique_plot_paths: list[Path] = []
-
-    seen: set[str] = set()
-    for r in significant_results:
-        cat = r.get('categorical_var')
-        if cat is None or cat in seen:
-            continue
-        seen.add(cat)
-        if 'plot_path' in r and r['plot_path']:
-            p = Path(r['plot_path'])
-            if p.exists():
-                unique_plot_paths.append(p)
-            else:
-                candidate = multiplots_dir / f"{cat}_multiplots.png"
-                if candidate.exists():
-                    unique_plot_paths.append(candidate)
-
-    if len(unique_plot_paths) == 0:
-        raise ValueError("No multiplot images found to include in dashboard.")
-
-    count = len(unique_plot_paths)
-    cols = 2 if count <= 4 else 3
-    rows = math.ceil(count / cols)
-    fig, axes = plt.subplots(rows, cols, figsize=(cols * 10, rows * 7), dpi=200)
-    if not isinstance(axes, np.ndarray):
+    # Extract unique categorical-continuous variable pairs from significant results
+    plot_pairs = []
+    seen_pairs = set()
+    
+    for result in significant_results:
+        cat_var = result.get('categorical_var')
+        cont_var = result.get('continuous_var')
+        p_value = result.get('p_value', None)
+        
+        if cat_var and cont_var and (cat_var, cont_var) not in seen_pairs:
+            seen_pairs.add((cat_var, cont_var))
+            plot_pairs.append({
+                'cat_var': cat_var,
+                'cont_var': cont_var,
+                'p_value': p_value
+            })
+    
+    if len(plot_pairs) == 0:
+        raise ValueError("No valid categorical-continuous variable pairs found in significant results.")
+    
+    # Determine grid layout
+    n_plots = len(plot_pairs)
+    if n_plots <= 4:
+        cols = 2
+    elif n_plots <= 9:
+        cols = 3
+    elif n_plots <= 16:
+        cols = 4
+    else:
+        cols = 5
+    
+    rows = math.ceil(n_plots / cols)
+    
+    # Create figure with subplots
+    fig, axes = plt.subplots(rows, cols, figsize=(cols * 5, rows * 4), dpi=150)
+    
+    # Handle single subplot case
+    if n_plots == 1:
         axes = np.array([axes])
-    axes = axes.flatten()
-
-    for ax, img_path in zip(axes, unique_plot_paths):
-        img = mpimg.imread(str(img_path))
-        ax.imshow(img)
-        ax.set_title(img_path.stem)
-        ax.axis('off')
-
-    # Hide extra axes if any
-    for ax in axes[len(unique_plot_paths):]:
-        ax.axis('off')
-
-    figures_dir.mkdir(parents=True, exist_ok=True)
-    out_path = figures_dir / 'dashboard_plot.png'
-    plt.tight_layout()
-    plt.savefig(out_path)
+    elif rows == 1 or cols == 1:
+        axes = axes.reshape(-1)
+    else:
+        axes = axes.flatten()
+    
+    # Create violinplots
+    for idx, pair_info in enumerate(plot_pairs):
+        ax = axes[idx]
+        cat_var = pair_info['cat_var']
+        cont_var = pair_info['cont_var']
+        p_value = pair_info['p_value']
+        
+        # Create violinplot
+        try:
+            sns.violinplot(
+                x=cat_var,
+                y=cont_var,
+                data=data,
+                ax=ax,
+                inner="point",
+                palette="Set2"
+            )
+            
+            # Add statistical annotations
+            n_categories = data[cat_var].nunique()
+            # Use bonferroni correction for multiple comparisons if >2 groups
+            correction = 'bonferroni' if n_categories > 2 else None
+            add_stat_annotation(ax, data, cat_var, cont_var, 
+                              test='auto', 
+                              comparisons_correction=correction,
+                              text_format='star', 
+                              loc='inside')
+            
+            # Rotate x-axis labels if needed
+            if n_categories > 5:
+                ax.tick_params(axis='x', labelrotation=45)
+            
+            # Set title with overall p-value if available
+            if p_value is not None:
+                ax.set_title(f"{cat_var} vs {cont_var}\n(overall p={p_value:.4f})")
+            else:
+                ax.set_title(f"{cat_var} vs {cont_var}")
+            
+            # Adjust labels
+            ax.set_xlabel(cat_var)
+            ax.set_ylabel(cont_var)
+            
+        except Exception as e:
+            logger.warning(f"Could not create violinplot for {cat_var} vs {cont_var}: {e}")
+            ax.text(0.5, 0.5, f"Error plotting\n{cat_var} vs {cont_var}",
+                    ha='center', va='center', transform=ax.transAxes)
+            ax.set_xticks([])
+            ax.set_yticks([])
+    
+    # Hide unused subplots
+    for idx in range(n_plots, len(axes)):
+        axes[idx].axis('off')
+    
+    # Add overall title
+    fig.suptitle("Dashboard: Significant Variable Relationships", fontsize=16, y=0.98)
+    
+    # Adjust layout
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    
+    # Save figure
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / 'dashboard_violinplots.png'
+    plt.savefig(output_path, bbox_inches='tight')
     plt.close()
-    return out_path
+    
+    return output_path
+
+
+def add_stat_annotation(ax, data, x, y, test='auto', comparisons_correction=None, 
+                       text_format='star', loc='inside', verbose=0):
+    """
+    Add statistical annotations (brackets and significance markers) to a plot.
+    
+    Args:
+        ax: Matplotlib axis object
+        data: DataFrame containing the data
+        x: Name of the categorical variable (x-axis)
+        y: Name of the continuous variable (y-axis)
+        test: Statistical test to use ('t-test_ind', 'Mann-Whitney', 'auto')
+        comparisons_correction: Method for multiple comparisons correction ('bonferroni', 'holm', etc.)
+        text_format: Format for p-value display ('star', 'simple', 'full')
+        loc: Location of annotations ('inside' or 'outside')
+        verbose: Verbosity level
+    """
+    from scipy.stats import mannwhitneyu, kruskal
+    import warnings
+    warnings.filterwarnings('ignore')
+    
+    # Get unique groups
+    groups = sorted(data[x].unique())
+    n_groups = len(groups)
+    
+    if n_groups < 2:
+        return
+    
+    # Get positions of groups on x-axis
+    positions = list(range(n_groups))
+    
+    # Calculate y-axis range for bracket positioning
+    y_max = data[y].max()
+    y_min = data[y].min()
+    y_range = y_max - y_min
+    
+    # Starting height for brackets
+    if loc == 'inside':
+        h = y_max + 0.02 * y_range
+    else:
+        h = y_max + 0.08 * y_range
+    
+    # Format p-value based on text_format
+    def format_pvalue(p):
+        if text_format == 'star':
+            if p < 0.001:
+                return '***'
+            elif p < 0.01:
+                return '**'
+            elif p < 0.05:
+                return '*'
+            else:
+                return 'ns'
+        elif text_format == 'simple':
+            if p < 0.001:
+                return 'p<0.001'
+            else:
+                return f'p={p:.3f}'
+        else:  # full
+            return f'p={p:.4f}'
+    
+    if n_groups == 2:
+        # Two groups: single comparison
+        group1_data = data[data[x] == groups[0]][y].dropna()
+        group2_data = data[data[x] == groups[1]][y].dropna()
+        
+        # Perform statistical test
+        if test == 'auto':
+            # Check normality and choose test
+            if len(group1_data) >= 20 and len(group2_data) >= 20:
+                _, p_value = ttest_ind(group1_data, group2_data)
+            else:
+                _, p_value = mannwhitneyu(group1_data, group2_data)
+        elif test == 't-test_ind':
+            _, p_value = ttest_ind(group1_data, group2_data)
+        elif test == 'Mann-Whitney':
+            _, p_value = mannwhitneyu(group1_data, group2_data)
+        
+        # Draw bracket
+        x1, x2 = positions[0], positions[1]
+        
+        # Horizontal lines
+        ax.plot([x1, x1, x2, x2], [h, h + 0.01 * y_range, h + 0.01 * y_range, h], 
+                lw=1.5, c='black')
+        
+        # Add text
+        ax.text((x1 + x2) * 0.5, h + 0.02 * y_range, format_pvalue(p_value), 
+                ha='center', va='bottom')
+    
+    else:
+        # Multiple groups: pairwise comparisons
+        # First perform overall test
+        group_data = [data[data[x] == g][y].dropna() for g in groups]
+        
+        # Check if all values are identical across groups to avoid Kruskal error
+        all_values = pd.concat(group_data)
+        if len(all_values.unique()) == 1:
+            # All values are identical, no statistical difference possible
+            return
+        
+        try:
+            if test == 'auto' or test == 'Kruskal':
+                _, overall_p = kruskal(*group_data)
+            else:
+                _, overall_p = f_oneway(*group_data)
+        except ValueError as e:
+            # Handle edge cases where statistical test fails
+            logger.warning(f"Statistical test failed for {x} vs {y}: {e}")
+            return
+        
+        if overall_p < 0.05:
+            # Perform post-hoc pairwise comparisons
+            comparisons = []
+            p_values = []
+            
+            # Get all pairs
+            from itertools import combinations as iter_combinations
+            for (i, group1), (j, group2) in iter_combinations(enumerate(groups), 2):
+                group1_data = data[data[x] == group1][y].dropna()
+                group2_data = data[data[x] == group2][y].dropna()
+                
+                if test == 'auto':
+                    if len(group1_data) >= 20 and len(group2_data) >= 20:
+                        _, p = ttest_ind(group1_data, group2_data)
+                    else:
+                        _, p = mannwhitneyu(group1_data, group2_data)
+                elif test == 't-test_ind':
+                    _, p = ttest_ind(group1_data, group2_data)
+                elif test == 'Mann-Whitney':
+                    _, p = mannwhitneyu(group1_data, group2_data)
+                
+                comparisons.append((i, j))
+                p_values.append(p)
+            
+            # Apply multiple comparisons correction
+            if comparisons_correction == 'bonferroni':
+                p_values = [min(p * len(p_values), 1.0) for p in p_values]
+            elif comparisons_correction == 'holm':
+                # Holm-Bonferroni correction
+                sorted_p = sorted(enumerate(p_values), key=lambda x: x[1])
+                for idx, (original_idx, p) in enumerate(sorted_p):
+                    sorted_p[idx] = (original_idx, min(p * (len(p_values) - idx), 1.0))
+                p_values = [p for _, p in sorted(sorted_p, key=lambda x: x[0])]
+            
+            # Draw brackets for significant comparisons
+            bracket_height = h
+            for (i, j), p_value in zip(comparisons, p_values):
+                if p_value < 0.05:
+                    x1, x2 = positions[i], positions[j]
+                    
+                    # Draw bracket
+                    ax.plot([x1, x1, x2, x2], 
+                           [bracket_height, bracket_height + 0.01 * y_range, 
+                            bracket_height + 0.01 * y_range, bracket_height], 
+                           lw=1.5, c='black')
+                    
+                    # Add text
+                    ax.text((x1 + x2) * 0.5, bracket_height + 0.02 * y_range, 
+                           format_pvalue(p_value), ha='center', va='bottom')
+                    
+                    # Increment height for next bracket
+                    bracket_height += 0.06 * y_range
+    
+    # Adjust y-axis limits if needed
+    current_ylim = ax.get_ylim()
+    if loc == 'outside':
+        ax.set_ylim(current_ylim[0], max(current_ylim[1], bracket_height + 0.1 * y_range))
+
+
+@config_plot()
+def plot_violinplot_with_stats(
+        data: pd.DataFrame,
+        x: str,
+        y: str,
+        output_dir: Path,
+        test: str = 'auto',
+        comparisons_correction: str = None,
+        text_format: str = 'star',
+        loc: str = 'inside',
+        figsize: tuple = (8, 6),
+        palette: str = 'Set2',
+        title: str = None
+    ) -> Path:
+    """
+    Create a violin plot with statistical significance annotations.
+    
+    Args:
+        data: DataFrame containing the data
+        x: Name of the categorical variable (x-axis)
+        y: Name of the continuous variable (y-axis)
+        output_dir: Directory to save the output plot
+        test: Statistical test to use ('auto', 't-test_ind', 'Mann-Whitney', 'Kruskal')
+        comparisons_correction: Method for multiple comparisons ('bonferroni', 'holm', None)
+        text_format: Format for p-value display ('star', 'simple', 'full')
+        loc: Location of annotations ('inside' or 'outside')
+        figsize: Figure size as (width, height)
+        palette: Color palette for violin plot
+        title: Plot title (if None, auto-generated)
+    
+    Returns:
+        Path: Path to the saved plot
+    """
+    fig, ax = plt.subplots(figsize=figsize)
+    
+    # Create violin plot
+    sns.violinplot(x=x, y=y, data=data, ax=ax, inner="point", palette=palette)
+    
+    # Add statistical annotations
+    add_stat_annotation(ax, data, x, y, test=test, 
+                       comparisons_correction=comparisons_correction,
+                       text_format=text_format, loc=loc)
+    
+    # Rotate x-axis labels if many categories
+    if data[x].nunique() > 5:
+        ax.tick_params(axis='x', labelrotation=45)
+    
+    # Set title
+    if title is None:
+        title = f"{x} vs {y}"
+    ax.set_title(title)
+    
+    # Save plot
+    output_dir.mkdir(parents=True, exist_ok=True)
+    output_path = output_dir / f'{x}_vs_{y}_with_stats.png'
+    plt.tight_layout()
+    plt.savefig(output_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    
+    return output_path
