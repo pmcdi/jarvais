@@ -1,13 +1,14 @@
-from pydantic import BaseModel
-
 from jarvais.analyzer.modules import (
     OutlierModule, 
     VisualizationModule, 
     MissingnessModule,
-    OneHotEncodingModule
+    OneHotEncodingModule,
+    BooleanEncodingModule,
+    DashboardModule
 )
 
 from pydantic import BaseModel, Field
+from typing import Any
 from pathlib import Path
 
 
@@ -59,12 +60,14 @@ class AnalyzerSettings(BaseModel):
     outlier: OutlierModule
     encoding: OneHotEncodingModule
     visualization: VisualizationModule
+    boolean: BooleanEncodingModule
+    dashboard: DashboardModule
 
-    def model_post_init(self, context):
+    def model_post_init(self, context: Any) -> None:
         self.output_dir.mkdir(parents=True, exist_ok=True)
     
     @classmethod
-    def validate_task(cls, task):
+    def validate_task(cls, task: str | None) -> str | None:
         if task not in ['classification', 'regression', 'survival', None]:
             raise ValueError("Invalid task parameter. Choose one of: 'classification', 'regression', 'survival'.")
         return task

@@ -1,6 +1,8 @@
 from itertools import combinations
 import json
 from pathlib import Path
+import math
+from typing import Any
 
 import numpy as np
 import pandas as pd
@@ -673,3 +675,65 @@ def plot_classification_diagnostics(
     plt.savefig(output_dir / 'confusion_matrix.png')
     plt.close()
 
+
+@config_plot()
+def plot_dashboard(
+        significant_results: list[dict[str, Any]],
+        figures_dir: Path,
+    ) -> Path:
+    """
+    Create a single "dashboard" image that tiles the multiplot PNGs for the set of
+    significant results. If multiple significant results reference the same categorical
+    variable, that multiplot image is included only once.
+
+    The output is saved as figures/dashboard_plot.png and the path is returned.
+    """
+    import math
+    import matplotlib.pyplot as plt
+    import matplotlib.image as mpimg
+
+    multiplots_dir = Path(figures_dir) / 'multiplots'
+    unique_plot_paths: list[Path] = []
+
+    seen: set[str] = set()
+    for r in significant_results:
+        cat = r.get('categorical_var')
+        if cat is None or cat in seen:
+            continue
+        seen.add(cat)
+        if 'plot_path' in r and r['plot_path']:
+            p = Path(r['plot_path'])
+            if p.exists():
+                unique_plot_paths.append(p)
+            else:
+                candidate = multiplots_dir / f"{cat}_multiplots.png"
+                if candidate.exists():
+                    unique_plot_paths.append(candidate)
+
+    if len(unique_plot_paths) == 0:
+        raise ValueError("No multiplot images found to include in dashboard.")
+
+    count = len(unique_plot_paths)
+    cols = 2 if count <= 4 else 3
+    rows = math.ceil(count / cols)
+    fig, axes = plt.subplots(rows, cols, figsize=(cols * 10, rows * 7), dpi=200)
+    if not isinstance(axes, np.ndarray):
+        axes = np.array([axes])
+    axes = axes.flatten()
+
+    for ax, img_path in zip(axes, unique_plot_paths):
+        img = mpimg.imread(str(img_path))
+        ax.imshow(img)
+        ax.set_title(img_path.stem)
+        ax.axis('off')
+
+    # Hide extra axes if any
+    for ax in axes[len(unique_plot_paths):]:
+        ax.axis('off')
+
+    figures_dir.mkdir(parents=True, exist_ok=True)
+    out_path = figures_dir / 'dashboard_plot.png'
+    plt.tight_layout()
+    plt.savefig(out_path)
+    plt.close()
+    return out_path

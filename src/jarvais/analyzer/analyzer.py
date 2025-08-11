@@ -13,7 +13,8 @@ from jarvais.analyzer.modules import (
     OneHotEncodingModule,
     OutlierModule,
     VisualizationModule,
-    BooleanEncodingModule
+    BooleanEncodingModule,
+    DashboardModule
 )
 from jarvais.analyzer.settings import AnalyzerSettings
 from jarvais.loggers import logger
@@ -99,6 +100,11 @@ class Analyzer():
         self.boolean_module = BooleanEncodingModule.build(
             boolean_columns=boolean_columns
         )
+        self.dashboard_module = DashboardModule.build(
+            output_dir=Path(output_dir),
+            continuous_columns=continuous_columns,
+            categorical_columns=categorical_columns
+        )
         self.visualization_module = VisualizationModule.build(
             output_dir=Path(output_dir),
             continuous_columns=continuous_columns,
@@ -118,7 +124,8 @@ class Analyzer():
             missingness=self.missingness_module,
             outlier=self.outlier_module,
             visualization=self.visualization_module,
-            encoding=self.encoding_module
+            encoding=self.encoding_module,
+            dashboard=self.dashboard_module
         )
 
     @classmethod
@@ -154,6 +161,7 @@ class Analyzer():
         analyzer.outlier_module = settings.outlier
         analyzer.visualization_module = settings.visualization
         analyzer.encoding_module = settings.encoding
+        analyzer.dashboard_module = settings.dashboard
 
         analyzer.settings = settings
 
