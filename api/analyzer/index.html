@@ -1351,6 +1351,22 @@
           </tr>
           <tr class="doc-section-item">
             <td>
+                <code>boolean_columns</code>
+            </td>
+            <td>
+                  <code><span title="list">list</span>[<span title="str">str</span>] | None</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List of boolean columns. If None, no boolean columns will be considered.</p>
+              </div>
+            </td>
+            <td>
+                  <code>None</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
                 <code>target_variable</code>
             </td>
             <td>
@@ -1456,6 +1472,17 @@
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="jarvais.analyzer.Analyzer.boolean_module">boolean_module</span></code></td>
+            <td>
+                  <code><span title="jarvais.analyzer.modules.BooleanEncodingModule">BooleanEncodingModule</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Module for encoding boolean variables.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><span title="jarvais.analyzer.Analyzer.visualization_module">visualization_module</span></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="jarvais.analyzer.modules.VisualizationModule" href="#jarvais.analyzer.modules.VisualizationModule">VisualizationModule</a></code>
@@ -1487,9 +1514,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 23</span>
 <span class="normal"> 24</span>
 <span class="normal"> 25</span>
 <span class="normal"> 26</span>
@@ -1682,7 +1707,17 @@
 <span class="normal">213</span>
 <span class="normal">214</span>
 <span class="normal">215</span>
-<span class="normal">216</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">():</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Analyzer class for data visualization and exploration.</span>
 
@@ -1692,6 +1727,7 @@
 <span class="sd">        categorical_columns (list[str] | None): List of categorical columns. If None, all remaining columns will be considered categorical.</span>
 <span class="sd">        continuous_columns (list[str] | None): List of continuous columns. If None, all remaining columns will be considered continuous.</span>
 <span class="sd">        date_columns (list[str] | None): List of date columns. If None, no date columns will be considered.</span>
+<span class="sd">        boolean_columns (list[str] | None): List of boolean columns. If None, no boolean columns will be considered.</span>
 <span class="sd">        target_variable (str | None): The target variable for analysis. If None, analysis will be performed without a target variable.</span>
 <span class="sd">        task (str | None): The type of task for analysis, e.g. classification, regression, survival. If None, analysis will be performed without a task.</span>
 <span class="sd">        generate_report (bool): Whether to generate a PDF report of the analysis. Default is True.</span>
@@ -1701,6 +1737,7 @@
 <span class="sd">        missingness_module (MissingnessModule): Module for handling missing data.</span>
 <span class="sd">        outlier_module (OutlierModule): Module for detecting outliers.</span>
 <span class="sd">        encoding_module (OneHotEncodingModule): Module for encoding categorical variables.</span>
+<span class="sd">        boolean_module (BooleanEncodingModule): Module for encoding boolean variables.</span>
 <span class="sd">        visualization_module (VisualizationModule): Module for generating visualizations.</span>
 <span class="sd">        settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.</span>
 <span class="sd">    """</span>
@@ -1711,6 +1748,7 @@
             <span class="n">categorical_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
             <span class="n">continuous_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">date_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+            <span class="n">boolean_columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">target_variable</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">task</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">generate_report</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span>
@@ -1719,7 +1757,9 @@
 
         <span class="c1"># Infer all types if none provided</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">categorical_columns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">continuous_columns</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">date_columns</span><span class="p">:</span>
-            <span class="n">categorical_columns</span><span class="p">,</span> <span class="n">continuous_columns</span><span class="p">,</span> <span class="n">date_columns</span> <span class="o">=</span> <span class="n">infer_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="n">categorical_columns</span><span class="p">,</span> <span class="n">continuous_columns</span><span class="p">,</span> <span class="n">date_columns</span><span class="p">,</span> <span class="n">boolean_columns</span> <span class="o">=</span> <span class="n">infer_types</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">data</span><span class="p">)</span>
+            <span class="c1"># Treat booleans as categorical downstream</span>
+            <span class="c1"># categorical_columns = list(sorted(set(categorical_columns) | set(boolean_columns)))</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">categorical_columns</span> <span class="o">=</span> <span class="n">categorical_columns</span> <span class="ow">or</span> <span class="p">[]</span>
             <span class="n">continuous_columns</span> <span class="o">=</span> <span class="n">continuous_columns</span> <span class="ow">or</span> <span class="p">[]</span>
@@ -1751,6 +1791,9 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">encoding_module</span> <span class="o">=</span> <span class="n">OneHotEncodingModule</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
             <span class="n">categorical_columns</span><span class="o">=</span><span class="n">categorical_columns</span><span class="p">,</span> 
             <span class="n">target_variable</span><span class="o">=</span><span class="n">target_variable</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span> <span class="o">=</span> <span class="n">BooleanEncodingModule</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+            <span class="n">boolean_columns</span><span class="o">=</span><span class="n">boolean_columns</span>
         <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">visualization_module</span> <span class="o">=</span> <span class="n">VisualizationModule</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
             <span class="n">output_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">),</span>
@@ -2005,17 +2048,7 @@
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
 <span class="normal">124</span>
 <span class="normal">125</span>
 <span class="normal">126</span>
@@ -2041,7 +2074,17 @@
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_settings</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> 
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
@@ -2112,17 +2155,7 @@
 </details>
             <details class="quote">
               <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">151</span>
-<span class="normal">152</span>
-<span class="normal">153</span>
-<span class="normal">154</span>
-<span class="normal">155</span>
-<span class="normal">156</span>
-<span class="normal">157</span>
-<span class="normal">158</span>
-<span class="normal">159</span>
-<span class="normal">160</span>
-<span class="normal">161</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
 <span class="normal">162</span>
 <span class="normal">163</span>
 <span class="normal">164</span>
@@ -2171,7 +2204,17 @@
 <span class="normal">207</span>
 <span class="normal">208</span>
 <span class="normal">209</span>
-<span class="normal">210</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">210</span>
+<span class="normal">211</span>
+<span class="normal">212</span>
+<span class="normal">213</span>
+<span class="normal">214</span>
+<span class="normal">215</span>
+<span class="normal">216</span>
+<span class="normal">217</span>
+<span class="normal">218</span>
+<span class="normal">219</span>
+<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Runs the analyzer pipeline.</span>
 
@@ -3101,11 +3144,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/jarvais/analyzer/modules/encoding.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 8</span>
-<span class="normal"> 9</span>
-<span class="normal">10</span>
-<span class="normal">11</span>
-<span class="normal">12</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">12</span>
 <span class="normal">13</span>
 <span class="normal">14</span>
 <span class="normal">15</span>
@@ -3139,7 +3178,11 @@
 <span class="normal">43</span>
 <span class="normal">44</span>
 <span class="normal">45</span>
-<span class="normal">46</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OneHotEncodingModule</span><span class="p">(</span><span class="n">AnalyzerModule</span><span class="p">):</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">OneHotEncodingModule</span><span class="p">(</span><span class="n">AnalyzerModule</span><span class="p">):</span>
     <span class="n">columns</span><span class="p">:</span> <span class="nb">list</span><span class="p">[</span><span class="nb">str</span><span class="p">]</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"List of categorical columns to one-hot encode. If None, all columns are used."</span>
