@@ -13,11 +13,13 @@ from jarvais.analyzer.modules import (
     OneHotEncodingModule,
     OutlierModule,
     VisualizationModule,
-    BooleanEncodingModule
+    BooleanEncodingModule,
+    DashboardModule
 )
 from jarvais.analyzer.settings import AnalyzerSettings
 from jarvais.loggers import logger
 from jarvais.utils.pdf import generate_analysis_report_pdf
+from jarvais.utils.statistical_ranking import find_top_multiplots
 
 
 class Analyzer():
@@ -98,6 +100,11 @@ class Analyzer():
         self.boolean_module = BooleanEncodingModule.build(
             boolean_columns=boolean_columns
         )
+        self.dashboard_module = DashboardModule.build(
+            output_dir=Path(output_dir),
+            continuous_columns=continuous_columns,
+            categorical_columns=categorical_columns
+        )
         self.visualization_module = VisualizationModule.build(
             output_dir=Path(output_dir),
             continuous_columns=continuous_columns,
@@ -117,7 +124,9 @@ class Analyzer():
             missingness=self.missingness_module,
             outlier=self.outlier_module,
             visualization=self.visualization_module,
-            encoding=self.encoding_module
+            encoding=self.encoding_module,
+            boolean=self.boolean_module,
+            dashboard=self.dashboard_module
         )
 
     @classmethod
@@ -153,6 +162,8 @@ class Analyzer():
         analyzer.outlier_module = settings.outlier
         analyzer.visualization_module = settings.visualization
         analyzer.encoding_module = settings.encoding
+        analyzer.boolean_module = settings.boolean
+        analyzer.dashboard_module = settings.dashboard
 
         analyzer.settings = settings
 
@@ -190,6 +201,8 @@ class Analyzer():
             .pipe(self.outlier_module)
             .pipe(self.visualization_module)
             .pipe(self.encoding_module)
+            .pipe(self.boolean_module)
+            .pipe(self.dashboard_module)
         )
         
         # Save Data
@@ -219,6 +232,45 @@ class Analyzer():
                 **self.settings.model_dump(mode="json") 
             }, f, indent=2)
 
+    def get_top_multiplots(self, n_top: int = 10, significance_threshold: float = 0.05) -> List[Dict[str, Any]]:
+        """
+        Find the most statistically significant multiplots from the analyzer results.
+        
+        This method should be called after running the analyzer to identify the most
+        statistically significant relationships between categorical and continuous variables.
+        
+        Args:
+            n_top (int): Number of top significant plots to return (default: 10)
+            significance_threshold (float): P-value threshold for significance (default: 0.05)
+        
+        Returns:
+            List[Dict[str, Any]]: List of dictionaries containing statistical significance results
+        
+        Example:
+            ```python
+            analyzer = Analyzer(data, ...)
+            analyzer.run()
+            
+            # Get the 10 most significant multiplots
+            significant_results = analyzer.get_top_multiplots(n_top=10)
+            
+            for result in significant_results:
+                print(f"{result['categorical_var']} vs {result['continuous_var']}: "
+                      f"p={result['p_value']:.4f} ({result['test_type']})")
+            ```
+        """
+        if not hasattr(self, 'data') or self.data is None:
+            raise ValueError("No data available. Please run the analyzer first.")
+            
+        return find_top_multiplots(
+            data=self.input_data,
+            categorical_columns=self.settings.categorical_columns,
+            continuous_columns=self.settings.continuous_columns,
+            output_dir=self.settings.output_dir,
+            n_top=n_top,
+            significance_threshold=significance_threshold
+        )
+        
     def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
 

@@ -7992,8 +7992,8 @@ packages:
   requires_python: '>=3.8'
 - pypi: .
   name: jarvais
-  version: 0.17.1
-  sha256: 6755ab3091b855ea175660d5770cf4be8bd77572894731f99390941740d71607
+  version: 0.18.0
+  sha256: b86786a54555672e55cff9a7016565fb4d6a3435f555f71e644b4d8229dd3677
   requires_dist:
   - structlog>=25.3.0,<26
   - rich>=13.9.4,<15
