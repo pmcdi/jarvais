@@ -781,6 +781,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#jarvais.analyzer.Analyzer.get_top_multiplots" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_top_multiplots
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1127,6 +1136,15 @@
   <a href="#jarvais.analyzer.Analyzer.run" class="md-nav__link">
     <span class="md-ellipsis">
       run
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.analyzer.Analyzer.get_top_multiplots" class="md-nav__link">
+    <span class="md-ellipsis">
+      get_top_multiplots
     </span>
   </a>
   
@@ -1514,9 +1532,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 25</span>
 <span class="normal"> 26</span>
 <span class="normal"> 27</span>
 <span class="normal"> 28</span>
@@ -1717,7 +1733,59 @@
 <span class="normal">223</span>
 <span class="normal">224</span>
 <span class="normal">225</span>
-<span class="normal">226</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">():</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span>
+<span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span>
+<span class="normal">273</span>
+<span class="normal">274</span>
+<span class="normal">275</span>
+<span class="normal">276</span>
+<span class="normal">277</span>
+<span class="normal">278</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Analyzer class for data visualization and exploration.</span>
 
@@ -1795,6 +1863,11 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span> <span class="o">=</span> <span class="n">BooleanEncodingModule</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
             <span class="n">boolean_columns</span><span class="o">=</span><span class="n">boolean_columns</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">dashboard_module</span> <span class="o">=</span> <span class="n">DashboardModule</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">),</span>
+            <span class="n">continuous_columns</span><span class="o">=</span><span class="n">continuous_columns</span><span class="p">,</span>
+            <span class="n">categorical_columns</span><span class="o">=</span><span class="n">categorical_columns</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">visualization_module</span> <span class="o">=</span> <span class="n">VisualizationModule</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
             <span class="n">output_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">),</span>
             <span class="n">continuous_columns</span><span class="o">=</span><span class="n">continuous_columns</span><span class="p">,</span>
@@ -1814,7 +1887,9 @@
             <span class="n">missingness</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">missingness_module</span><span class="p">,</span>
             <span class="n">outlier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_module</span><span class="p">,</span>
             <span class="n">visualization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">visualization_module</span><span class="p">,</span>
-            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_module</span>
+            <span class="n">encoding</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_module</span><span class="p">,</span>
+            <span class="n">boolean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span><span class="p">,</span>
+            <span class="n">dashboard</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dashboard_module</span>
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -1850,6 +1925,8 @@
         <span class="n">analyzer</span><span class="o">.</span><span class="n">outlier_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">outlier</span>
         <span class="n">analyzer</span><span class="o">.</span><span class="n">visualization_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">visualization</span>
         <span class="n">analyzer</span><span class="o">.</span><span class="n">encoding_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">encoding</span>
+        <span class="n">analyzer</span><span class="o">.</span><span class="n">boolean_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">boolean</span>
+        <span class="n">analyzer</span><span class="o">.</span><span class="n">dashboard_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">dashboard</span>
 
         <span class="n">analyzer</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
 
@@ -1887,6 +1964,8 @@
             <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_module</span><span class="p">)</span>
             <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">visualization_module</span><span class="p">)</span>
             <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_module</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dashboard_module</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># Save Data</span>
@@ -1915,6 +1994,45 @@
                 <span class="s2">"$schema"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_schema_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)),</span>
                 <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span> 
             <span class="p">},</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">get_top_multiplots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_top</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">significance_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Find the most statistically significant multiplots from the analyzer results.</span>
+
+<span class="sd">        This method should be called after running the analyzer to identify the most</span>
+<span class="sd">        statistically significant relationships between categorical and continuous variables.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n_top (int): Number of top significant plots to return (default: 10)</span>
+<span class="sd">            significance_threshold (float): P-value threshold for significance (default: 0.05)</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            List[Dict[str, Any]]: List of dictionaries containing statistical significance results</span>
+
+<span class="sd">        Example:</span>
+<span class="sd">            ```python</span>
+<span class="sd">            analyzer = Analyzer(data, ...)</span>
+<span class="sd">            analyzer.run()</span>
+
+<span class="sd">            # Get the 10 most significant multiplots</span>
+<span class="sd">            significant_results = analyzer.get_top_multiplots(n_top=10)</span>
+
+<span class="sd">            for result in significant_results:</span>
+<span class="sd">                print(f"{result['categorical_var']} vs {result['continuous_var']}: "</span>
+<span class="sd">                      f"p={result['p_value']:.4f} ({result['test_type']})")</span>
+<span class="sd">            ```</span>
+<span class="sd">        """</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No data available. Please run the analyzer first."</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">find_top_multiplots</span><span class="p">(</span>
+            <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">,</span>
+            <span class="n">categorical_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span>
+            <span class="n">continuous_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">n_top</span><span class="o">=</span><span class="n">n_top</span><span class="p">,</span>
+            <span class="n">significance_threshold</span><span class="o">=</span><span class="n">significance_threshold</span>
+        <span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">__rich_repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rich</span><span class="o">.</span><span class="n">repr</span><span class="o">.</span><span class="n">Result</span><span class="p">:</span>
         <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
@@ -2048,16 +2166,7 @@
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
@@ -2084,7 +2193,18 @@
 <span class="normal">156</span>
 <span class="normal">157</span>
 <span class="normal">158</span>
-<span class="normal">159</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span>
+<span class="normal">162</span>
+<span class="normal">163</span>
+<span class="normal">164</span>
+<span class="normal">165</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span>
+<span class="normal">170</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_settings</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> 
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
@@ -2117,6 +2237,8 @@
     <span class="n">analyzer</span><span class="o">.</span><span class="n">outlier_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">outlier</span>
     <span class="n">analyzer</span><span class="o">.</span><span class="n">visualization_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">visualization</span>
     <span class="n">analyzer</span><span class="o">.</span><span class="n">encoding_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">encoding</span>
+    <span class="n">analyzer</span><span class="o">.</span><span class="n">boolean_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">boolean</span>
+    <span class="n">analyzer</span><span class="o">.</span><span class="n">dashboard_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">dashboard</span>
 
     <span class="n">analyzer</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
 
@@ -2155,18 +2277,7 @@
 </details>
             <details class="quote">
               <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">161</span>
-<span class="normal">162</span>
-<span class="normal">163</span>
-<span class="normal">164</span>
-<span class="normal">165</span>
-<span class="normal">166</span>
-<span class="normal">167</span>
-<span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
-<span class="normal">172</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
 <span class="normal">175</span>
@@ -2214,7 +2325,20 @@
 <span class="normal">217</span>
 <span class="normal">218</span>
 <span class="normal">219</span>
-<span class="normal">220</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">220</span>
+<span class="normal">221</span>
+<span class="normal">222</span>
+<span class="normal">223</span>
+<span class="normal">224</span>
+<span class="normal">225</span>
+<span class="normal">226</span>
+<span class="normal">227</span>
+<span class="normal">228</span>
+<span class="normal">229</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Runs the analyzer pipeline.</span>
 
@@ -2246,6 +2370,8 @@
         <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_module</span><span class="p">)</span>
         <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">visualization_module</span><span class="p">)</span>
         <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">encoding_module</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">dashboard_module</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Save Data</span>
@@ -2274,6 +2400,188 @@
             <span class="s2">"$schema"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_schema_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)),</span>
             <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span> 
         <span class="p">},</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="jarvais.analyzer.Analyzer.get_top_multiplots" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">get_top_multiplots</span><span class="p">(</span><span class="n">n_top</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">significance_threshold</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Find the most statistically significant multiplots from the analyzer results.</p>
+<p>This method should be called after running the analyzer to identify the most
+statistically significant relationships between categorical and continuous variables.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>n_top</code>
+            </td>
+            <td>
+                  <code><span title="int">int</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Number of top significant plots to return (default: 10)</p>
+              </div>
+            </td>
+            <td>
+                  <code>10</code>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>significance_threshold</code>
+            </td>
+            <td>
+                  <code><span title="float">float</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>P-value threshold for significance (default: 0.05)</p>
+              </div>
+            </td>
+            <td>
+                  <code>0.05</code>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                  <code><span title="typing.List">List</span>[<span title="typing.Dict">Dict</span>[<span title="str">str</span>, <span title="typing.Any">Any</span>]]</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>List[Dict[str, Any]]: List of dictionaries containing statistical significance results</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+<details class="example" open>
+  <summary>Example</summary>
+  <pre><code class="language-python">analyzer = Analyzer(data, ...)
+analyzer.run()
+
+# Get the 10 most significant multiplots
+significant_results = analyzer.get_top_multiplots(n_top=10)
+
+for result in significant_results:
+    print(f"{result['categorical_var']} vs {result['continuous_var']}: "
+          f"p={result['p_value']:.4f} ({result['test_type']})")
+</code></pre>
+</details>
+            <details class="quote">
+              <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">235</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span>
+<span class="normal">241</span>
+<span class="normal">242</span>
+<span class="normal">243</span>
+<span class="normal">244</span>
+<span class="normal">245</span>
+<span class="normal">246</span>
+<span class="normal">247</span>
+<span class="normal">248</span>
+<span class="normal">249</span>
+<span class="normal">250</span>
+<span class="normal">251</span>
+<span class="normal">252</span>
+<span class="normal">253</span>
+<span class="normal">254</span>
+<span class="normal">255</span>
+<span class="normal">256</span>
+<span class="normal">257</span>
+<span class="normal">258</span>
+<span class="normal">259</span>
+<span class="normal">260</span>
+<span class="normal">261</span>
+<span class="normal">262</span>
+<span class="normal">263</span>
+<span class="normal">264</span>
+<span class="normal">265</span>
+<span class="normal">266</span>
+<span class="normal">267</span>
+<span class="normal">268</span>
+<span class="normal">269</span>
+<span class="normal">270</span>
+<span class="normal">271</span>
+<span class="normal">272</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">get_top_multiplots</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n_top</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">10</span><span class="p">,</span> <span class="n">significance_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.05</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Dict</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Any</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Find the most statistically significant multiplots from the analyzer results.</span>
+
+<span class="sd">    This method should be called after running the analyzer to identify the most</span>
+<span class="sd">    statistically significant relationships between categorical and continuous variables.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        n_top (int): Number of top significant plots to return (default: 10)</span>
+<span class="sd">        significance_threshold (float): P-value threshold for significance (default: 0.05)</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        List[Dict[str, Any]]: List of dictionaries containing statistical significance results</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        ```python</span>
+<span class="sd">        analyzer = Analyzer(data, ...)</span>
+<span class="sd">        analyzer.run()</span>
+
+<span class="sd">        # Get the 10 most significant multiplots</span>
+<span class="sd">        significant_results = analyzer.get_top_multiplots(n_top=10)</span>
+
+<span class="sd">        for result in significant_results:</span>
+<span class="sd">            print(f"{result['categorical_var']} vs {result['continuous_var']}: "</span>
+<span class="sd">                  f"p={result['p_value']:.4f} ({result['test_type']})")</span>
+<span class="sd">        ```</span>
+<span class="sd">    """</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">hasattr</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="s1">'data'</span><span class="p">)</span> <span class="ow">or</span> <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"No data available. Please run the analyzer first."</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">find_top_multiplots</span><span class="p">(</span>
+        <span class="n">data</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="p">,</span>
+        <span class="n">categorical_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">categorical_columns</span><span class="p">,</span>
+        <span class="n">continuous_columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">continuous_columns</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+        <span class="n">n_top</span><span class="o">=</span><span class="n">n_top</span><span class="p">,</span>
+        <span class="n">significance_threshold</span><span class="o">=</span><span class="n">significance_threshold</span>
+    <span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -3269,8 +3577,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/jarvais/analyzer/settings.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
-<span class="normal">15</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -3325,7 +3632,10 @@
 <span class="normal">67</span>
 <span class="normal">68</span>
 <span class="normal">69</span>
-<span class="normal">70</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AnalyzerSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AnalyzerSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Output directory."</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">"Output Directory"</span><span class="p">,</span>
@@ -3373,12 +3683,14 @@
     <span class="n">outlier</span><span class="p">:</span> <span class="n">OutlierModule</span>
     <span class="n">encoding</span><span class="p">:</span> <span class="n">OneHotEncodingModule</span>
     <span class="n">visualization</span><span class="p">:</span> <span class="n">VisualizationModule</span>
+    <span class="n">boolean</span><span class="p">:</span> <span class="n">BooleanEncodingModule</span>
+    <span class="n">dashboard</span><span class="p">:</span> <span class="n">DashboardModule</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">validate_task</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">validate_task</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span> <span class="o">|</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="n">task</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'classification'</span><span class="p">,</span> <span class="s1">'regression'</span><span class="p">,</span> <span class="s1">'survival'</span><span class="p">,</span> <span class="kc">None</span><span class="p">]:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid task parameter. Choose one of: 'classification', 'regression', 'survival'."</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">task</span>
