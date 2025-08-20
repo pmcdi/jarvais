@@ -117,7 +117,7 @@ def _add_outlier_analysis(pdf: FPDF, outlier_analysis: str) -> FPDF:
 
     outliers = {}
     for line in outlier_analysis.splitlines():
-        var = line.split("found in")[1].split(": [")[0].strip()
+        var = line.split("found in")[1].split(": [")[0]
         if "No Outliers" in line:
             outliers[var] = "✓ No outliers found"
         else:
@@ -139,10 +139,23 @@ def _add_outlier_analysis(pdf: FPDF, outlier_analysis: str) -> FPDF:
                 row.cell(var)
                 row.cell(var_outs)
             else:
-                for n, val in enumerate(var_outs): 
+                # Limit the number of outliers displayed to prevent page overflow
+                max_outliers_display = 9
+                display_outs = var_outs[:max_outliers_display]
+                truncated = len(var_outs) > max_outliers_display
+                
+                for n, val in enumerate(display_outs): 
                     row = table.row()
                     if n == 0:
-                        row.cell(var, rowspan=len(var_outs))
+                        # Calculate rowspan considering truncation message
+                        rowspan = len(display_outs) + (1 if truncated else 0)
+                        row.cell(var, rowspan=rowspan)
                     row.cell(val)
+                
+                # Add truncation message if there are more outliers
+                if truncated:
+                    row = table.row()
+                    remaining = len(var_outs) - max_outliers_display
+                    row.cell(f"... and {remaining} more outliers")
 
     return pdf

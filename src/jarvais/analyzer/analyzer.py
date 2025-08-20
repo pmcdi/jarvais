@@ -56,7 +56,8 @@ class Analyzer():
             boolean_columns: list[str] | None = None,
             target_variable: str | None = None,
             task: str | None = None,
-            generate_report: bool = True
+            generate_report: bool = True,
+            group_outliers: bool = True
         ) -> None:
         self.data = data
 
@@ -87,11 +88,13 @@ class Analyzer():
                     
         self.missingness_module = MissingnessModule.build(
             categorical_columns=categorical_columns, 
-            continuous_columns=continuous_columns
+            continuous_columns=continuous_columns,
         )
         self.outlier_module = OutlierModule.build(
             categorical_columns=categorical_columns, 
-            continuous_columns=continuous_columns
+            continuous_columns=continuous_columns,            
+            group_outliers=group_outliers
+
         )
         self.encoding_module = OneHotEncodingModule.build(
             categorical_columns=categorical_columns, 
@@ -282,18 +285,19 @@ if __name__ == "__main__":
     from rich import print
     import json
 
-    data = pd.DataFrame({
-        "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
-        "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
-        "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
-        "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
-        "death": [True, False, True, False, True, False, True, False, True, False],
-    })
+    # data = pd.DataFrame({
+    #     "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
+    #     "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
+    #     "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
+    #     "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
+    #     "death": [True, False, True, False, True, False, True, False, True, False],
+    # })
+    data = pd.read_csv("data/RADCURE_Clinical_v04_20241219_minusone.csv")
     
     analyzer = Analyzer(
         data, 
         output_dir="./temp_output/test",
-        categorical_columns=["stage", "treatment", "death"], 
+        # categorical_columns=["stage", "treatment", "death"], 
         target_variable="death", 
         task="classification"
     )

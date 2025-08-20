@@ -31,7 +31,11 @@ class OutlierModule(AnalyzerModule):
         "Generated after running outlier analysis. If a mapping is already provided, it will be used directly.",
         title="Categorical Outlier Mapping"
     )
-
+    group_outliers: bool = Field(
+        default=True,
+        description="Whether to group outliers into a single category named 'Other'.",
+        title="Group Outliers"
+    )
     _outlier_report: str = PrivateAttr(default="")
 
     @classmethod
@@ -39,10 +43,12 @@ class OutlierModule(AnalyzerModule):
             cls, 
             categorical_columns: list[str],
             continuous_columns: list[str] | None = None, 
+            group_outliers: bool = True
         ) -> "OutlierModule":
         return cls(
             categorical_strategy={col: "frequency" for col in categorical_columns},
             continuous_strategy={col: "none" for col in continuous_columns} if continuous_columns is not None else {},
+            group_outliers=group_outliers
         )
     
     @property
@@ -75,13 +81,14 @@ class OutlierModule(AnalyzerModule):
                 # Otherwise, compute the mapping based on frequency threshold
                 value_counts = df[col].value_counts()
                 threshold = int(len(df) * self.threshold)
-                outliers = value_counts[value_counts < threshold].index
-
+                outliers = value_counts[value_counts < threshold].index 
+                
                 mapping = {
                     val: ("Other" if val in outliers else val)
                     for val in value_counts.index
                 }
-
+                mapping["Other"] = "Other"
+                
                 self.categorical_mapping[col] = dict(mapping)
 
                 if len(outliers) > 0:
@@ -95,6 +102,10 @@ class OutlierModule(AnalyzerModule):
 
         if self._outlier_report:
             print(f"\nOutlier Report:\n{self._outlier_report}")
+
+        if self.group_outliers:
+            for col in self.categorical_mapping:
+                df[col] = df[col].apply(lambda x: self.categorical_mapping[col][x])
 
         return df
 
