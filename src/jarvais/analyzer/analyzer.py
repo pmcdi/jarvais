@@ -18,7 +18,6 @@ from jarvais.analyzer.modules import (
 from jarvais.analyzer.settings import AnalyzerSettings
 from jarvais.loggers import logger
 from jarvais.utils.pdf import generate_analysis_report_pdf
-from jarvais.utils.statistical_ranking import find_top_multiplots
 
 
 class Analyzer():
@@ -52,7 +51,8 @@ class Analyzer():
             date_columns: list[str] | None = None,
             target_variable: str | None = None,
             task: str | None = None,
-            generate_report: bool = True
+            generate_report: bool = True,
+            group_outliers: bool = True
         ) -> None:
         self.data = data
 
@@ -83,11 +83,13 @@ class Analyzer():
                     
         self.missingness_module = MissingnessModule.build(
             categorical_columns=categorical_columns, 
-            continuous_columns=continuous_columns
+            continuous_columns=continuous_columns,
         )
         self.outlier_module = OutlierModule.build(
             categorical_columns=categorical_columns, 
-            continuous_columns=continuous_columns
+            continuous_columns=continuous_columns,            
+            group_outliers=group_outliers
+
         )
         self.encoding_module = OneHotEncodingModule.build(
             categorical_columns=categorical_columns, 
@@ -227,45 +229,6 @@ class Analyzer():
     def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
 
-    def get_top_multiplots(self, n_top: int = 10, significance_threshold: float = 0.05) -> List[Dict[str, Any]]:
-        """
-        Find the most statistically significant multiplots from the analyzer results.
-        
-        This method should be called after running the analyzer to identify the most
-        statistically significant relationships between categorical and continuous variables.
-        
-        Args:
-            n_top (int): Number of top significant plots to return (default: 10)
-            significance_threshold (float): P-value threshold for significance (default: 0.05)
-        
-        Returns:
-            List[Dict[str, Any]]: List of dictionaries containing statistical significance results
-        
-        Example:
-            ```python
-            analyzer = Analyzer(data, ...)
-            analyzer.run()
-            
-            # Get the 10 most significant multiplots
-            significant_results = analyzer.get_top_multiplots(n_top=10)
-            
-            for result in significant_results:
-                print(f"{result['categorical_var']} vs {result['continuous_var']}: "
-                      f"p={result['p_value']:.4f} ({result['test_type']})")
-            ```
-        """
-        if not hasattr(self, 'data') or self.data is None:
-            raise ValueError("No data available. Please run the analyzer first.")
-            
-        return find_top_multiplots(
-            data=self.input_data,
-            categorical_columns=self.settings.categorical_columns,
-            continuous_columns=self.settings.continuous_columns,
-            output_dir=self.settings.output_dir,
-            n_top=n_top,
-            significance_threshold=significance_threshold
-        )
-
     def __repr__(self) -> str:
         return f"Analyzer(settings={self.settings.model_dump_json(indent=2)})"
 
@@ -274,18 +237,19 @@ if __name__ == "__main__":
     from rich import print
     import json
 
-    data = pd.DataFrame({
-        "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
-        "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
-        "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
-        "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
-        "death": [True, False, True, False, True, False, True, False, True, False],
-    })
+    # data = pd.DataFrame({
+    #     "stage": ["I", "I", "II", "III", "IV", "IV", "IV", "IV", "IV", "IV"],
+    #     "treatment": ["surgery", "surgery", "chemo", "chemo", "chemo", "chemo", "hormone", "hormone", "hormone", "hormone"],
+    #     "age": [45, 45, 60, 70, 80, 80, 80, 80, 80, 80],
+    #     "tumor_size": [2.1, 2.5, 3.0, 3.5, 4.0, 4.5, 5.0, 5.5, 6.0, 6.5],  
+    #     "death": [True, False, True, False, True, False, True, False, True, False],
+    # })
+    data = pd.read_csv("data/RADCURE_Clinical_v04_20241219_minusone.csv")
     
     analyzer = Analyzer(
         data, 
         output_dir="./temp_output/test",
-        categorical_columns=["stage", "treatment", "death"], 
+        # categorical_columns=["stage", "treatment", "death"], 
         target_variable="death", 
         task="classification"
     )

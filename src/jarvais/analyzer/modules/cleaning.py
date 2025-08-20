@@ -5,7 +5,7 @@ import pandas as pd
 from pydantic import Field
 
 
-from base import AnalyzerModule
+from .base import AnalyzerModule
 from jarvais.loggers import logger
 
 
