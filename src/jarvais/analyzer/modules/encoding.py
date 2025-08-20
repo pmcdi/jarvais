@@ -50,7 +50,7 @@ class OneHotEncodingModule(AnalyzerModule):
         )
 
 
-class BooleanEncodingModule(BaseModel):
+class BooleanEncodingModule(AnalyzerModule):
     columns: list[str] = Field(
         default_factory=list,
         description="List of boolean-like columns to encode as 1/0."

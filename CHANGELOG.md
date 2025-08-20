@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.18.0](https://github.com/pmcdi/jarvais/compare/v0.17.1...v0.18.0) (2025-08-07)
+
+
+### Features
+
+* **trainer:** export leaderboard to CSV in autogluon and survival trainers ([#106](https://github.com/pmcdi/jarvais/issues/106)) ([bff454b](https://github.com/pmcdi/jarvais/commit/bff454bf406975c6c9d2b6c573192e141fd49ee4))
+
 ## [0.17.1](https://github.com/pmcdi/jarvais/compare/v0.17.0...v0.17.1) (2025-08-05)
 
 
