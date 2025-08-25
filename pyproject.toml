@@ -1,6 +1,6 @@
 [project]
 name = "jarvais"
-version = "0.18.0"
+version = "0.19.0"
 description = "jarvAIs: just a really versatile AI service"
 authors = [
     { name = "Joshua Siraj", email = "joshua.siraj@uhn.ca" },
