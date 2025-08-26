@@ -4152,7 +4152,9 @@ Each dict should contain 'categorical_var', 'continuous_var', and 'p_value'.</p>
 <span class="normal">985</span>
 <span class="normal">986</span>
 <span class="normal">987</span>
-<span class="normal">988</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_stat_annotation</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s1">'auto'</span><span class="p">,</span> <span class="n">comparisons_correction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+<span class="normal">988</span>
+<span class="normal">989</span>
+<span class="normal">990</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">add_stat_annotation</span><span class="p">(</span><span class="n">ax</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">test</span><span class="o">=</span><span class="s1">'auto'</span><span class="p">,</span> <span class="n">comparisons_correction</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
                        <span class="n">text_format</span><span class="o">=</span><span class="s1">'star'</span><span class="p">,</span> <span class="n">loc</span><span class="o">=</span><span class="s1">'inside'</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">0</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Add statistical annotations (brackets and significance markers) to a plot.</span>
@@ -4295,29 +4297,31 @@ Each dict should contain 'categorical_var', 'continuous_var', and 'p_value'.</p>
                     <span class="n">sorted_p</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">original_idx</span><span class="p">,</span> <span class="nb">min</span><span class="p">(</span><span class="n">p</span> <span class="o">*</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">p_values</span><span class="p">)</span> <span class="o">-</span> <span class="n">idx</span><span class="p">),</span> <span class="mf">1.0</span><span class="p">))</span>
                 <span class="n">p_values</span> <span class="o">=</span> <span class="p">[</span><span class="n">p</span> <span class="k">for</span> <span class="n">_</span><span class="p">,</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">sorted</span><span class="p">(</span><span class="n">sorted_p</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span>
 
-            <span class="c1"># Draw brackets for significant comparisons</span>
-            <span class="n">bracket_height</span> <span class="o">=</span> <span class="n">h</span>
-            <span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">),</span> <span class="n">p_value</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">comparisons</span><span class="p">,</span> <span class="n">p_values</span><span class="p">):</span>
-                <span class="k">if</span> <span class="n">p_value</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
-                    <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">positions</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
+            <span class="c1"># Find the most significant comparison (lowest p-value that's &lt; 0.05)</span>
+            <span class="n">significant_comparisons</span> <span class="o">=</span> <span class="p">[(</span><span class="n">i</span><span class="p">,</span> <span class="n">comp</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">comp</span><span class="p">,</span> <span class="n">p</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">comparisons</span><span class="p">,</span> <span class="n">p_values</span><span class="p">))</span> <span class="k">if</span> <span class="n">p</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">]</span>
 
-                    <span class="c1"># Draw bracket</span>
-                    <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x2</span><span class="p">],</span> 
-                           <span class="p">[</span><span class="n">bracket_height</span><span class="p">,</span> <span class="n">bracket_height</span> <span class="o">+</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">y_range</span><span class="p">,</span> 
-                            <span class="n">bracket_height</span> <span class="o">+</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">y_range</span><span class="p">,</span> <span class="n">bracket_height</span><span class="p">],</span> 
-                           <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'black'</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">significant_comparisons</span><span class="p">:</span>
+                <span class="c1"># Get the comparison with the lowest p-value</span>
+                <span class="n">most_sig_idx</span><span class="p">,</span> <span class="n">most_sig_comp</span><span class="p">,</span> <span class="n">most_sig_p</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">significant_comparisons</span><span class="p">,</span> <span class="n">key</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="p">[</span><span class="mi">2</span><span class="p">])</span>
+                <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="o">=</span> <span class="n">most_sig_comp</span>
 
-                    <span class="c1"># Add text</span>
-                    <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="n">x1</span> <span class="o">+</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">bracket_height</span> <span class="o">+</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">y_range</span><span class="p">,</span> 
-                           <span class="n">format_pvalue</span><span class="p">(</span><span class="n">p_value</span><span class="p">),</span> <span class="n">ha</span><span class="o">=</span><span class="s1">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">'bottom'</span><span class="p">)</span>
+                <span class="c1"># Draw bracket for only the most significant comparison</span>
+                <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span> <span class="o">=</span> <span class="n">positions</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">positions</span><span class="p">[</span><span class="n">j</span><span class="p">]</span>
 
-                    <span class="c1"># Increment height for next bracket</span>
-                    <span class="n">bracket_height</span> <span class="o">+=</span> <span class="mf">0.06</span> <span class="o">*</span> <span class="n">y_range</span>
+                <span class="c1"># Draw bracket</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">plot</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">x1</span><span class="p">,</span> <span class="n">x2</span><span class="p">,</span> <span class="n">x2</span><span class="p">],</span> 
+                       <span class="p">[</span><span class="n">h</span><span class="p">,</span> <span class="n">h</span> <span class="o">+</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">y_range</span><span class="p">,</span> 
+                        <span class="n">h</span> <span class="o">+</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="n">y_range</span><span class="p">,</span> <span class="n">h</span><span class="p">],</span> 
+                       <span class="n">lw</span><span class="o">=</span><span class="mf">1.5</span><span class="p">,</span> <span class="n">c</span><span class="o">=</span><span class="s1">'black'</span><span class="p">)</span>
+
+                <span class="c1"># Add text</span>
+                <span class="n">ax</span><span class="o">.</span><span class="n">text</span><span class="p">((</span><span class="n">x1</span> <span class="o">+</span> <span class="n">x2</span><span class="p">)</span> <span class="o">*</span> <span class="mf">0.5</span><span class="p">,</span> <span class="n">h</span> <span class="o">+</span> <span class="mf">0.02</span> <span class="o">*</span> <span class="n">y_range</span><span class="p">,</span> 
+                       <span class="n">format_pvalue</span><span class="p">(</span><span class="n">most_sig_p</span><span class="p">),</span> <span class="n">ha</span><span class="o">=</span><span class="s1">'center'</span><span class="p">,</span> <span class="n">va</span><span class="o">=</span><span class="s1">'bottom'</span><span class="p">)</span>
 
     <span class="c1"># Adjust y-axis limits if needed</span>
     <span class="n">current_ylim</span> <span class="o">=</span> <span class="n">ax</span><span class="o">.</span><span class="n">get_ylim</span><span class="p">()</span>
     <span class="k">if</span> <span class="n">loc</span> <span class="o">==</span> <span class="s1">'outside'</span><span class="p">:</span>
-        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">current_ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">current_ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">bracket_height</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">y_range</span><span class="p">))</span>
+        <span class="n">ax</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="n">current_ylim</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="nb">max</span><span class="p">(</span><span class="n">current_ylim</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">h</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="n">y_range</span><span class="p">))</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -4553,9 +4557,7 @@ Each dict should contain 'categorical_var', 'continuous_var', and 'p_value'.</p>
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/utils/plot.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 991</span>
-<span class="normal"> 992</span>
-<span class="normal"> 993</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 993</span>
 <span class="normal"> 994</span>
 <span class="normal"> 995</span>
 <span class="normal"> 996</span>
@@ -4612,7 +4614,9 @@ Each dict should contain 'categorical_var', 'continuous_var', and 'p_value'.</p>
 <span class="normal">1047</span>
 <span class="normal">1048</span>
 <span class="normal">1049</span>
-<span class="normal">1050</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@config_plot</span><span class="p">()</span>
+<span class="normal">1050</span>
+<span class="normal">1051</span>
+<span class="normal">1052</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@config_plot</span><span class="p">()</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">plot_violinplot_with_stats</span><span class="p">(</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
         <span class="n">x</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
