@@ -203,9 +203,9 @@ class Analyzer():
             .pipe(self.missingness_module)
             .pipe(self.outlier_module)
             .pipe(self.visualization_module)
+            .pipe(self.dashboard_module)
             .pipe(self.encoding_module)
             .pipe(self.boolean_module)
-            .pipe(self.dashboard_module)
         )
         
         # Save Data
@@ -234,45 +234,6 @@ class Analyzer():
                 "$schema": str(self.settings.settings_schema_path.relative_to(self.settings.output_dir)),
                 **self.settings.model_dump(mode="json") 
             }, f, indent=2)
-
-    def get_top_multiplots(self, n_top: int = 10, significance_threshold: float = 0.05) -> List[Dict[str, Any]]:
-        """
-        Find the most statistically significant multiplots from the analyzer results.
-        
-        This method should be called after running the analyzer to identify the most
-        statistically significant relationships between categorical and continuous variables.
-        
-        Args:
-            n_top (int): Number of top significant plots to return (default: 10)
-            significance_threshold (float): P-value threshold for significance (default: 0.05)
-        
-        Returns:
-            List[Dict[str, Any]]: List of dictionaries containing statistical significance results
-        
-        Example:
-            ```python
-            analyzer = Analyzer(data, ...)
-            analyzer.run()
-            
-            # Get the 10 most significant multiplots
-            significant_results = analyzer.get_top_multiplots(n_top=10)
-            
-            for result in significant_results:
-                print(f"{result['categorical_var']} vs {result['continuous_var']}: "
-                      f"p={result['p_value']:.4f} ({result['test_type']})")
-            ```
-        """
-        if not hasattr(self, 'data') or self.data is None:
-            raise ValueError("No data available. Please run the analyzer first.")
-            
-        return find_top_multiplots(
-            data=self.input_data,
-            categorical_columns=self.settings.categorical_columns,
-            continuous_columns=self.settings.continuous_columns,
-            output_dir=self.settings.output_dir,
-            n_top=n_top,
-            significance_threshold=significance_threshold
-        )
         
     def __rich_repr__(self) -> rich.repr.Result:
         yield self.settings
