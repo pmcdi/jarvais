@@ -68,10 +68,6 @@ def main():
     
     print(f"\nRunning analyzer with output to: {output_dir}")
     
-    # Method 1: Using the Analyzer class with built-in method
-    print("\n" + "="*60)
-    print("METHOD 1: Using Analyzer.get_top_multiplots()")
-    print("="*60)
     
     # try:
     # Create and run analyzer
@@ -87,66 +83,6 @@ def main():
     # Run the analyzer to generate multiplots
     analyzer.run()
     
-    # print(data.Dose.dtype)
-    # print(data.Dose.unique())
-
-    # Get the most significant multiplots
-    significant_results = analyzer.get_top_multiplots(n_top=10)
-    
-    print(f"\nFound {len(significant_results)} significant relationships:")
-    print("-" * 80)
-    print(f"{'Categorical':<15} {'Continuous':<15} {'P-value':<12} {'Test':<8} {'Effect':<10} {'Significant'}")
-    print("-" * 80)
-    
-    for result in significant_results:
-        significance_mark = "***" if result['p_value'] < 0.001 else "**" if result['p_value'] < 0.01 else "*" if result['p_value'] < 0.05 else ""
-        print(f"{result['categorical_var']:<15} {result['continuous_var']:<15} "
-                f"{result['p_value']:<12.4f} {result['test_type']:<8} "
-                f"{result['effect_size']:<10.3f} {significance_mark}")
-    
-    # except Exception as e:
-        # print(f"Error with Method 1: {e}")
-        # print("This might be due to missing dependencies or environment issues.")
-    
-    # # Method 2: Using the standalone function
-    # print("\n" + "="*60)
-    # print("METHOD 2: Using standalone find_top_multiplots()")
-    # print("="*60)
-    
-    # try:
-    #     # Use the standalone function directly
-    #     results = find_top_multiplots(
-    #         data=data,
-    #         # categorical_columns=['sex', 'tumor_stage', 'treatment_type', 'disease_site'],
-    #         # continuous_columns=['age', 'tumor_size', 'survival_time', 'bmi'],
-    #         output_dir=output_dir,
-    #         n_top=10,
-    #         significance_threshold=0.05
-    #     )
-        
-    #     print(f"\nFound {len(results)} relationships:")
-        
-    #     # Create and display summary
-    #     summary_df = summarize_significant_results(results, output_dir / "significance_summary.csv")
-    #     print("\nSummary DataFrame:")
-    #     print(summary_df.to_string(index=False))
-        
-    #     # Show the most significant finding
-    #     if results:
-    #         top_result = results[0]
-    #         print(f"\nMost significant relationship:")
-    #         print(f"  {top_result['categorical_var']} vs {top_result['continuous_var']}")
-    #         print(f"  P-value: {top_result['p_value']:.2e}")
-    #         print(f"  Test type: {top_result['test_type']}")
-    #         print(f"  Effect size: {top_result['effect_size']:.3f}")
-    #         print(f"  Plot location: {top_result['plot_path']}")
-        
-    # except Exception as e:
-    #     print(f"Error with Method 2: {e}")
-    #     print("This might be due to missing plot files if analyzer didn't run successfully.")
-    
-    # print(f"\nExample completed! Check {output_dir} for generated files.")
-
 
 if __name__ == "__main__":
     import numpy as np  # Import here to avoid issues if not available

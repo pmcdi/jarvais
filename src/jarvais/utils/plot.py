@@ -963,29 +963,31 @@ def add_stat_annotation(ax, data, x, y, test='auto', comparisons_correction=None
                     sorted_p[idx] = (original_idx, min(p * (len(p_values) - idx), 1.0))
                 p_values = [p for _, p in sorted(sorted_p, key=lambda x: x[0])]
             
-            # Draw brackets for significant comparisons
-            bracket_height = h
-            for (i, j), p_value in zip(comparisons, p_values):
-                if p_value < 0.05:
-                    x1, x2 = positions[i], positions[j]
-                    
-                    # Draw bracket
-                    ax.plot([x1, x1, x2, x2], 
-                           [bracket_height, bracket_height + 0.01 * y_range, 
-                            bracket_height + 0.01 * y_range, bracket_height], 
-                           lw=1.5, c='black')
-                    
-                    # Add text
-                    ax.text((x1 + x2) * 0.5, bracket_height + 0.02 * y_range, 
-                           format_pvalue(p_value), ha='center', va='bottom')
-                    
-                    # Increment height for next bracket
-                    bracket_height += 0.06 * y_range
+            # Find the most significant comparison (lowest p-value that's < 0.05)
+            significant_comparisons = [(i, comp, p) for i, (comp, p) in enumerate(zip(comparisons, p_values)) if p < 0.05]
+            
+            if significant_comparisons:
+                # Get the comparison with the lowest p-value
+                most_sig_idx, most_sig_comp, most_sig_p = min(significant_comparisons, key=lambda x: x[2])
+                i, j = most_sig_comp
+                
+                # Draw bracket for only the most significant comparison
+                x1, x2 = positions[i], positions[j]
+                
+                # Draw bracket
+                ax.plot([x1, x1, x2, x2], 
+                       [h, h + 0.01 * y_range, 
+                        h + 0.01 * y_range, h], 
+                       lw=1.5, c='black')
+                
+                # Add text
+                ax.text((x1 + x2) * 0.5, h + 0.02 * y_range, 
+                       format_pvalue(most_sig_p), ha='center', va='bottom')
     
     # Adjust y-axis limits if needed
     current_ylim = ax.get_ylim()
     if loc == 'outside':
-        ax.set_ylim(current_ylim[0], max(current_ylim[1], bracket_height + 0.1 * y_range))
+        ax.set_ylim(current_ylim[0], max(current_ylim[1], h + 0.1 * y_range))
 
 
 @config_plot()
