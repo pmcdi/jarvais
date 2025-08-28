@@ -196,14 +196,18 @@ class Analyzer():
         print(self.mytable.tabulate(tablefmt = "grid"))
         self.mytable.to_csv(self.settings.output_dir / 'tableone.csv')
 
-        # Run Modules
-        self.input_data = self.data.copy()
-        self.data = (
-            self.data
+        # Run modules that do not modify the input data
+        self.input_data = (self.data.copy()
             .pipe(self.missingness_module)
             .pipe(self.outlier_module)
             .pipe(self.visualization_module)
             .pipe(self.dashboard_module)
+        )
+        
+        # Run modules that modify the input data
+        self.data = (self.data
+            .pipe(self.missingness_module)
+            .pipe(self.outlier_module)
             .pipe(self.encoding_module)
             .pipe(self.boolean_module)
         )
