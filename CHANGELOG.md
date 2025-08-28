@@ -1,6 +1,16 @@
 # CHANGELOG
 
 
+## [0.19.0](https://github.com/pmcdi/jarvais/compare/v0.18.0...v0.19.0) (2025-08-20)
+
+
+### Features
+
+* Add AnalyzerModule parent class ([7e1919e](https://github.com/pmcdi/jarvais/commit/7e1919e56f8841e54ef07b7985c254e4006dccb0))
+* DashboardModule creates n plots with statistically significant relationships ([#113](https://github.com/pmcdi/jarvais/issues/113)) ([c2f5ecb](https://github.com/pmcdi/jarvais/commit/c2f5ecb32674104c3d2b9803cd763ebaccc18c3e))
+* improved infer_types and outlier handling ([#114](https://github.com/pmcdi/jarvais/issues/114)) ([ecbf23b](https://github.com/pmcdi/jarvais/commit/ecbf23b65b3dd4c7d0945ed435336bc72f26cefa))
+* new infer_types structure ([e66ee2e](https://github.com/pmcdi/jarvais/commit/e66ee2e578785e923158f02b81371dac31494d4e))
+
 ## [0.18.0](https://github.com/pmcdi/jarvais/compare/v0.17.1...v0.18.0) (2025-08-07)
 
 
