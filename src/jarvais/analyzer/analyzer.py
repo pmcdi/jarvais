@@ -196,7 +196,7 @@ class Analyzer():
         print(self.mytable.tabulate(tablefmt = "grid"))
         self.mytable.to_csv(self.settings.output_dir / 'tableone.csv')
 
-        # Run modules that do not modify the input data
+        # Run modules that do not create new columns/features
         self.input_data = (self.data.copy()
             .pipe(self.missingness_module)
             .pipe(self.outlier_module)
@@ -204,10 +204,8 @@ class Analyzer():
             .pipe(self.dashboard_module)
         )
         
-        # Run modules that modify the input data
-        self.data = (self.data
-            .pipe(self.missingness_module)
-            .pipe(self.outlier_module)
+        # Run modules that modify the input data (create new columns/features)
+        self.data = (self.input_data.copy()
             .pipe(self.encoding_module)
             .pipe(self.boolean_module)
         )
