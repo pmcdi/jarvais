@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.20.0](https://github.com/pmcdi/jarvais/compare/v0.19.1...v0.20.0) (2025-08-29)
+
+
+### Miscellaneous Chores
+
+* release 0.20.0 ([d776732](https://github.com/pmcdi/jarvais/commit/d776732ae0a2016c0790b0dfef2ba635de76f074))
+
 ## [0.19.1](https://github.com/pmcdi/jarvais/compare/v0.19.0...v0.19.1) (2025-08-29)
 
 
