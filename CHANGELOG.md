@@ -1,6 +1,16 @@
 # CHANGELOG
 
 
+## [0.19.1](https://github.com/pmcdi/jarvais/compare/v0.19.0...v0.19.1) (2025-08-29)
+
+
+### Bug Fixes
+
+* add DashboardModule tests, Analyzer module clarity, and release to pypi only on main ([#118](https://github.com/pmcdi/jarvais/issues/118)) ([6dfbd0b](https://github.com/pmcdi/jarvais/commit/6dfbd0b62c526415df4f16be40e0ac583fe4d506))
+* DashboardModule comes before EncodingModule in the pipe of Analyzer.run() + formal removal of get_top_multiplots() ([#115](https://github.com/pmcdi/jarvais/issues/115)) ([e300e65](https://github.com/pmcdi/jarvais/commit/e300e657b1dc46a120c2003045eebaae0679d907))
+* minor optimizations to Analyzer ([e300e65](https://github.com/pmcdi/jarvais/commit/e300e657b1dc46a120c2003045eebaae0679d907))
+* pipe modules separately between Analyzer.input_data vs Analyzer.data ([#117](https://github.com/pmcdi/jarvais/issues/117)) ([25148d4](https://github.com/pmcdi/jarvais/commit/25148d4230dc6c244789abaec28eb0032a294c00))
+
 ## [0.19.0](https://github.com/pmcdi/jarvais/compare/v0.18.0...v0.19.0) (2025-08-20)
 
 
