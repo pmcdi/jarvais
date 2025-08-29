@@ -107,7 +107,7 @@ jobs:
   # --------------------------------------
   Publish-To-PyPi:
     needs: release-please
-    if: ${{ needs.release-please.outputs.releases_created }}
+    if: ${{ needs.release-please.outputs.releases_created && github.ref == 'refs/heads/main' }}
     runs-on: ubuntu-latest
     env:
       PIXI_ENV: publish
