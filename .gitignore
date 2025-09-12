@@ -3,6 +3,7 @@
 tests/tmp
 *.bak
 *.test
+.cache
 notebooks/
 example_output/
 

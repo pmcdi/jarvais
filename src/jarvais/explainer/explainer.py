@@ -1,143 +1,104 @@
+from __future__ import annotations
+
 from pathlib import Path
-from typing import List
+import json
+import rich.repr
+from typing import TYPE_CHECKING
 
-import pandas as pd
-from sklearn.inspection import permutation_importance
-from sksurv.util import Surv
+from jarvais.explainer.modules import ImportanceModule, VisualizationModule, BiasAuditModule
+from jarvais.explainer.settings import ExplainerSettings
+from jarvais.utils.pdf import generate_explainer_report_pdf
 
-from ..utils.pdf import generate_explainer_report_pdf
-from ..utils.functional import undummify
-from ..utils.plot import (
-    plot_classification_diagnostics,
-    plot_feature_importance,
-    plot_regression_diagnostics,
-    plot_shap_values,
-    plot_violin_of_bootstrapped_metrics,
-)
-from .bias import BiasExplainer, infer_sensitive_features
+if TYPE_CHECKING:
+    from jarvais.trainer import TrainerSupervised
+
 
 class Explainer():
-    """
-    A class to generate diagnostic plots and reports for models trained using TrainerSupervised.
 
-    Attributes:
-        trainer (TrainerSupervised): The TrainerSupervised object containing the trained model.
-        predictor (object): The AutoGluon predictor object used for inference.
-        X_train (pd.DataFrame): The training dataset used to train the model.
-        X_test (pd.DataFrame): The test dataset for evaluating the model.
-        y_test (pd.DataFrame): The true target values for the test dataset.
-        output_dir (Path): The directory where plots, reports, and outputs are saved.
-        sensitive_features (list, optional): List of features considered sensitive for bias auditing.
-    """
     def __init__(
-            self,
-            trainer,
-            X_train: pd.DataFrame,
-            X_test: pd.DataFrame,
-            y_test: pd.DataFrame,
-            output_dir: str | Path | None = None,
-            sensitive_features: list | None = None,
-        ) -> None:
+        self,
+        output_dir: str | Path,
+        sensitive_features: list | None = None,
+    ) -> None:
+    
+        output_dir = Path(output_dir)
+        figures_dir = output_dir / 'figures'
+        bias_dir = output_dir / 'bias'
 
-        self.trainer = trainer
-        self.predictor = trainer.predictor
-        self.X_train = X_train
-        self.X_test = X_test
-        self.y_test = y_test
-        self.sensitive_features = sensitive_features
+        self.visualization_module = VisualizationModule(output_dir=figures_dir)
+        self.importance_module = ImportanceModule(output_dir=figures_dir)
+        self.bias_audit_module = BiasAuditModule(output_dir=bias_dir, sensitive_features=sensitive_features)
 
-        self.output_dir = Path.cwd() if output_dir is None else Path(output_dir)
-        self.output_dir.mkdir(parents=True, exist_ok=True)
-        (self.output_dir / 'figures').mkdir(parents=True, exist_ok=True)
-
-    def run(self) -> None:
-        """Generate diagnostic plots and reports for the trained model."""
-
-        self._run_bias_audit()
-
-        plot_violin_of_bootstrapped_metrics(
-            self.trainer,
-            self.X_test,
-            self.y_test,
-            self.trainer.X_val,
-            self.trainer.y_val,
-            self.X_train,
-            self.trainer.y_train,
-            output_dir=self.output_dir / 'figures'
-        )            
-
-        if self.trainer.settings.task in ['binary', 'multiclass']:
-            plot_classification_diagnostics(
-                self.y_test,
-                self.predictor.predict_proba(self.X_test).iloc[:, 1],
-                self.trainer.y_val,
-                self.predictor.predict_proba(self.trainer.X_val).iloc[:, 1],
-                self.trainer.y_train,
-                self.predictor.predict_proba(self.X_train).iloc[:, 1],
-                output_dir=self.output_dir / 'figures'
-            )
-            plot_shap_values(
-                self.predictor,
-                self.X_train,
-                self.X_test,
-                output_dir=self.output_dir / 'figures'
-            )
-
-        elif self.trainer.settings.task == 'regression':
-            plot_regression_diagnostics(
-                self.y_test,
-                self.predictor.predict(self.X_test, as_pandas=False),
-                output_dir=self.output_dir / 'figures'
-            )
-
-        # Plot feature importance
-        if self.trainer.settings.task == 'survival': # NEEDS TO BE UPDATED
-            model = self.trainer.predictor.models['CoxPH']
-            result = permutation_importance(model, self.X_test,
-                                            Surv.from_dataframe('event', 'time', self.y_test),
-                                            n_repeats=15)
-
-            importance_df = pd.DataFrame(
-                {
-                    "importance": result["importances_mean"],
-                    "stddev": result["importances_std"],
-                },
-                index=self.X_test.columns,
-            ).sort_values(by="importance", ascending=False)
-            model_name = 'CoxPH'
-        else:
-            importance_df = self.predictor.feature_importance(
-                pd.concat([self.X_test, self.y_test], axis=1))
-            model_name = self.predictor.model_best
-
-        plot_feature_importance(importance_df, self.output_dir / 'figures', model_name)
-        generate_explainer_report_pdf(self.trainer.settings.task, self.output_dir)
-
-    def _run_bias_audit(self) -> List[pd.DataFrame]:
-
-        bias_output_dir = self.output_dir / 'bias'
-        bias_output_dir.mkdir(parents=True, exist_ok=True)
-
-        if self.sensitive_features is None:
-            if self.trainer.settings.task == 'survival': # Data needs to be not be one hot encoded
-                self.sensitive_features = infer_sensitive_features(undummify(self.X_test, prefix_sep='|'))
-            else:
-                self.sensitive_features = infer_sensitive_features(self.X_test)
-        
-        y_pred = None if self.trainer.settings.task == 'survival' else pd.Series(self.trainer.infer(self.X_test) )
-        metrics = ['mean_prediction'] if self.trainer.settings.task == 'regression' else ['mean_prediction', 'false_positive_rate'] 
-
-        bias = BiasExplainer(
-            self.y_test, 
-            y_pred, 
-            self.sensitive_features,
-            self.trainer.settings.task, 
-            bias_output_dir,
-            metrics
+        self.settings = ExplainerSettings(
+            output_dir=output_dir,
+            visualization=self.visualization_module,
+            importance=self.importance_module,
+            bias_audit=self.bias_audit_module
         )
-        bias.run(relative=True)
 
     @classmethod
-    def from_trainer(cls, trainer, **kwargs):
-        """Create Explainer object from TrainerSupervised object."""
-        return cls(trainer, trainer.X_train, trainer.X_test, trainer.y_test, trainer.settings.output_dir, **kwargs)
+    def from_settings(
+            cls, 
+            settings_dict: dict
+        ) -> "Explainer":
+        """
+        Initialize an Explainer instance with a given settings dictionary. Settings are validated by pydantic.
+
+        Args:
+            settings_dict (dict): A dictionary containing the explainer settings.
+
+        Returns:
+            Explainer: An explainer instance with the given settings.
+        """
+        try:
+            settings = ExplainerSettings.model_validate(settings_dict)
+        except Exception as e:
+            raise ValueError("Invalid explainer settings") from e
+
+        explainer = cls(
+            output_dir=settings.output_dir,
+        )
+
+        explainer.visualization_module = settings.visualization
+        explainer.importance_module = settings.importance
+        explainer.bias_audit_module = settings.bias_audit
+
+        explainer.settings = settings
+
+        return explainer
+
+    def run(self, trainer: "TrainerSupervised") -> None:
+        """Generate diagnostic plots and reports for the trained model."""
+
+        # Run Modules
+        self.bias_audit_module(trainer)
+        self.visualization_module(trainer)
+        self.importance_module(trainer)
+
+        # Generate Report
+        generate_explainer_report_pdf(trainer.settings.task, self.settings.output_dir)
+
+        # Save Settings
+        self.settings.settings_schema_path = self.settings.output_dir / 'explainer_settings.schema.json'
+        with self.settings.settings_schema_path.open("w") as f:
+            json.dump(self.settings.model_json_schema(), f, indent=2)
+
+        self.settings.settings_path = self.settings.output_dir / 'explainer_settings.json'
+        with self.settings.settings_path.open('w') as f:
+            json.dump({
+                "$schema": str(self.settings.settings_schema_path.relative_to(self.settings.output_dir)),
+                **self.settings.model_dump(mode="json") 
+            }, f, indent=2)
+
+    def __rich_repr__(self) -> rich.repr.Result:
+        yield self.settings
+
+    def __repr__(self) -> str:
+        return f"Analyzer(settings={self.settings.model_dump_json(indent=2)})"
+
+if __name__ == "__main__":
+    from jarvais.trainer import TrainerSupervised
+
+    trainer = TrainerSupervised.load_trainer("temp_output/trainer_test_rad")
+    explainer = Explainer(output_dir="temp_output/explainer_test_rad")
+    explainer.run(trainer)

@@ -7,30 +7,32 @@ from typing import Any
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import matplotlib.patches as mpatches
 import seaborn as sns
-
 import shap
 from autogluon.tabular import TabularPredictor
 from scipy.stats import f_oneway, ttest_ind
+from sklearn.calibration import calibration_curve
 from sklearn.metrics import (
     confusion_matrix,
     r2_score,
     roc_auc_score,
     root_mean_squared_error,
+    precision_recall_curve,
+    roc_curve,
 )
 from umap import UMAP
-from statsmodels.stats.multicomp import pairwise_tukeyhsd
-
 from lifelines.statistics import multivariate_logrank_test
 from sksurv.nonparametric import kaplan_meier_estimator
 
 from jarvais.loggers import logger
-from .functional import auprc, ci_wrapper, bootstrap_metric
-from ._plot_epic import plot_epic_copy
+from .functional import auprc, ci_wrapper, bootstrap_metric, _bin_class_curve
 from ._design import config_plot
 
-# ANALYZER
+
+# -------------------------------------------------#
+#               ANALYZER PLOTS                     #
+# -------------------------------------------------#
+
 @config_plot(plot_type='multi')
 def plot_one_multiplot(
         data: pd.DataFrame,
@@ -369,325 +371,6 @@ def plot_kaplan_meier_by_category(
         plt.grid(alpha=0.3)
         plt.savefig(output_dir / f'kaplan_meier_{cat_col}.png')
         plt.close()
-
-# EXPLAINER
-
-class ModelWrapper:
-    def __init__(self, predictor: TabularPredictor, feature_names: list, target_variable: str=None):
-        self.ag_model = predictor
-        self.feature_names = feature_names
-        self.target_variable = target_variable
-        if target_variable is None and predictor.problem_type != 'regression':
-            print("Since target_class not specified, SHAP will explain predictions for each class")
-
-    def predict_proba(self, X):
-        if isinstance(X, pd.Series):
-            X = X.values.reshape(1,-1)
-        if not isinstance(X, pd.DataFrame):
-            X = pd.DataFrame(X, columns=self.feature_names)
-
-        if self.ag_model.can_predict_proba:
-            preds = self.ag_model.predict_proba(X)
-        else:
-            preds = self.ag_model.predict(X)
-        return preds
-
-@config_plot()
-def plot_feature_importance(df: pd.DataFrame, output_dir: Path, model_name: str=''):
-    """
-    Plots feature importance with standard deviation and p-value significance.
-
-    Args:
-        df (pd.DataFrame): DataFrame containing the feature importance data. 
-            Look at example for required format.
-        output_dir (Path): Directory to save the feature importance plot.
-        model_name (str): Optional name of the model, included in the plot title.
-
-    Example:
-        ```python
-        import pandas as pd
-        from pathlib import Path
-
-        df = pd.DataFrame({
-            'importance': [0.25, 0.18, 0.12, 0.10],
-            'stddev': [0.03, 0.02, 0.01, 0.015],
-            'p_value': [0.03, 0.07, 0.01, 0.2]
-        }, index=['Feature A', 'Feature B', 'Feature C', 'Feature D'])
-
-        plot_feature_importance(df, Path('./output'))
-        ```
-    """
-    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
-
-    bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
-
-    if 'p_value' in df.columns:
-        for bar, p_value in zip(bars, df['p_value']):
-            height = bar.get_height()
-            significance = '*' if p_value < 0.05 else ''
-            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance,
-                    ha='center', va='bottom', fontsize=10, color='red')
-
-    ax.set_xlabel('Feature', fontsize=14)
-    ax.set_ylabel('Importance', fontsize=14)
-    ax.set_title(f'Feature Importance with Standard Deviation and p-value Significance ({model_name})', fontsize=16)
-    ax.axhline(0, color='grey', linewidth=0.8)
-
-    ax.set_xticks(np.arange(len(df.index.values)))
-    ax.set_xticklabels(df.index.values, rotation=60, ha='right', fontsize=10)
-
-    ax.grid(axis='y', linestyle='--', alpha=0.7)
-
-    significance_patch = plt.Line2D([0], [0], color='red', marker='*', linestyle='None', markersize=10, label='p < 0.05')
-    ax.legend(handles=[significance_patch], loc='upper right', fontsize=12)
-
-    plt.tight_layout()
-    fig.savefig(output_dir / 'feature_importance.png')
-    plt.close()
-
-@config_plot()
-def plot_shap_values(
-        predictor: TabularPredictor,
-        X_train: pd.DataFrame,
-        X_test: pd.DataFrame,
-        output_dir: Path,
-        max_display: int = 10,
-    ) -> None:
-    """
-    Generates and saves SHAP value visualizations, including a heatmap and a bar plot, for a autogluon tabular model.
-
-    Args:
-        predictor (TabularPredictor): The trained tabular predictor model for which SHAP values are calculated.
-        X_train (pd.DataFrame): Training dataset used to create the SHAP background data.
-        X_test (pd.DataFrame): Test dataset used to evaluate and compute SHAP values.
-        output_dir (Path): Directory to save the SHAP value visualizations.
-        max_display (int): Maximum number of features to display in the visualizations. Defaults to 10.
-    """
-    predictor = ModelWrapper(predictor, X_train.columns)
-    background_data = shap.sample(X_train, 100)
-    shap_exp = shap.KernelExplainer(predictor.predict_proba, background_data)
-
-    # sample 100 samples from test set to evaluate with shap values
-    test_data = shap.sample(X_test, 100)
-
-    # Compute SHAP values for the test set
-    shap_values = shap_exp(test_data)
-
-    sns.set_theme(style="darkgrid")
-    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
-    shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
-    fig.savefig(output_dir / 'shap_heatmap.png')
-    plt.close()
-
-    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
-    shap.plots.bar(shap_values[...,1], max_display=max_display, show=False, ax=ax)
-    fig.savefig(output_dir / 'shap_barplot.png')
-    plt.close()
-
-def plot_violin_of_bootstrapped_metrics(
-        trainer,
-        X_test: pd.Series,
-        y_test: pd.Series,
-        X_val: pd.Series,
-        y_val: pd.Series,
-        X_train: pd.Series,
-        y_train: pd.Series,
-        output_dir: Path
-    ) -> None:
-    """
-    Generates violin plots for bootstrapped model performance metrics across train, validation, and test datasets.
-
-    Args:
-        trainer (TrainerSupervised): The trained model predictor for evaluating performance metrics.
-        X_test (pd.Series): Test features dataset.
-        y_test (pd.Series): Test target values.
-        X_val (pd.Series): Validation features dataset.
-        y_val (pd.Series): Validation target values.
-        X_train (pd.Series): Training features dataset.
-        y_train (pd.Series): Training target values.
-        output_dir (Path): Directory to save the generated violin plots.
-    """
-    # Define metrics based on the problem type
-    if trainer.settings.task == 'regression':
-        metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
-    elif trainer.settings.task == 'binary':
-        metrics = [('AUROC', roc_auc_score), ('AUPRC', auprc)]
-    elif trainer.settings.task == 'survival':
-        metrics = [('Concordance Index', ci_wrapper)]
-
-    # Prepare lists for DataFrame
-    results = []
-
-    # Loop through models and metrics to compute bootstrapped values
-    for model_name in trainer.model_names():
-        y_pred_test = trainer.infer(X_test, model=model_name)
-        y_pred_val = trainer.infer(X_val, model=model_name)
-        y_pred_train = trainer.infer(X_train, model=model_name)
-
-        for metric_name, metric_func in metrics:
-            test_values = bootstrap_metric(y_test.to_numpy(), y_pred_test, metric_func)
-            results.extend([(model_name, metric_name, 'Test', value) for value in test_values])
-
-            val_values = bootstrap_metric(y_val.to_numpy(), y_pred_val, metric_func)
-            results.extend([(model_name, metric_name, 'Validation', value) for value in val_values])
-
-            train_values = bootstrap_metric(y_train.to_numpy(), y_pred_train, metric_func)
-            results.extend([(model_name, metric_name, 'Train', value) for value in train_values])
-
-    # Create a results DataFrame
-    result_df = pd.DataFrame(results, columns=['model', 'metric', 'data_split', 'value'])
-
-     # Sort models by median metric value within each combination of metric and data_split
-    model_order_per_split = {}
-    for split in ['Test', 'Validation', 'Train']:
-        split_order = (
-            result_df[result_df['data_split'] == split]
-            .groupby(['metric', 'model'])['value']
-            .median()
-            .reset_index()
-            .sort_values(by=['metric', 'value'], ascending=[True, False])
-            .groupby('metric')['model']
-            .apply(list)
-            .to_dict()
-        )
-        model_order_per_split[split] = split_order
-
-    # Function to create violin plots for a specific data split
-    def create_violin_plot(data_split, save_path):
-        sns.set_theme(style="darkgrid")
-        subset = result_df[result_df['data_split'] == data_split]
-        g = sns.FacetGrid(
-            subset,
-            col="metric",
-            margin_titles=True,
-            height=4,
-            aspect=1.5,
-            sharex=False,
-        )
-
-        # Create violin plots with sorted models
-        def violin_plot(data, **kwargs):
-            metric = data.iloc[0]['metric']
-            order = model_order_per_split[data_split].get(metric, None)
-            sns.violinplot(data=data, x="value", y="model", linewidth=1, order=order, **kwargs)
-
-        g.map_dataframe(violin_plot)
-
-        # Adjust the titles and axis labels
-        g.set_titles(col_template="{col_name}")
-        g.set_axis_labels("", "Model")
-
-        # Add overall title and adjust layout
-        g.figure.suptitle(f"Model Performance of {data_split} Data (Bootstrapped)", fontsize=16)
-        g.tight_layout(w_pad=0.5, h_pad=1)
-
-        # Save the plot
-        g.savefig(save_path, dpi=500)
-        plt.close()
-
-    # Generate and save plots for each data split
-    create_violin_plot('Test', output_dir / 'test_metrics_bootstrap.png')
-    create_violin_plot('Validation', output_dir / 'validation_metrics_bootstrap.png')
-    create_violin_plot('Train', output_dir / 'train_metrics_bootstrap.png')
-
-@config_plot()
-def plot_regression_diagnostics(
-        y_true: np.ndarray, 
-        y_pred: np.ndarray, 
-        output_dir: Path
-    ) -> None:
-    """
-    Generates diagnostic plots for evaluating a regression model.
-
-    Plots:
-        - True vs. Predicted values plot.
-        - Residuals plot.
-        - Histogram of residuals.
-
-    Args:
-        y_true (np.ndarray): Array of true target values.
-        y_pred (np.ndarray): Array of predicted values from the regression model.
-        output_dir (Path): Directory to save the diagnostic plots.
-    """
-    residuals = y_true - y_pred
-    
-    # Regression Line
-    plt.figure(figsize=(10, 6))
-    sns.set_theme(style="darkgrid")
-    sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
-    sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
-    plt.xlabel('True Values')
-    plt.ylabel('Predictions')
-    plt.title('True vs Predicted Values')
-    plt.savefig(output_dir / 'true_vs_predicted.png')
-    plt.close()
-
-    # Residuals
-    plt.figure(figsize=(10, 6))
-    sns.set_theme(style="darkgrid")
-    sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
-    plt.axhline(0, color='red', linestyle='--')
-    plt.xlabel('Fitted Values')
-    plt.ylabel('Residuals')
-    plt.title('Residual Plot')
-    plt.savefig(output_dir / 'residual_plot.png')
-    plt.close()
-
-    # Residual Histogram
-    plt.figure(figsize=(10, 6))
-    sns.set_theme(style="darkgrid")
-    sns.histplot(residuals, kde=True, bins=30)
-    plt.xlabel('Residuals')
-    plt.title('Histogram of Residuals')
-    plt.savefig(output_dir / 'residual_hist.png')
-    plt.close()
-
-@config_plot()
-def plot_classification_diagnostics(
-        y_test: pd.DataFrame,
-        y_test_pred: pd.DataFrame,
-        y_val: pd.DataFrame,
-        y_val_pred: pd.DataFrame,
-        y_train: pd.DataFrame,
-        y_train_pred: pd.DataFrame,
-        output_dir: Path
-    ) -> None:
-    """
-    Generates diagnostic plots for evaluating a classification model.
-
-    Plots:
-        - Epic model evaluation plots (ROC Curve, Precision-Recall Curve, Calibration Curve, Sensitivity/Flag Curve).
-        - Confusion Matrix.
-
-    Args:
-        y_test (pd.DataFrame): True labels for the test dataset.
-        y_test_pred (pd.DataFrame): Predicted probabilities for the test dataset.
-        y_val (pd.DataFrame): True labels for the validation dataset.
-        y_val_pred (pd.DataFrame): Predicted probabilities for the validation dataset.
-        y_train (pd.DataFrame): True labels for the training dataset.
-        y_train_pred (pd.DataFrame): Predicted probabilities for the training dataset.
-        output_dir (Path): Directory to save the diagnostic plots.
-    """
-    plot_epic_copy(
-        y_test.to_numpy(),
-        y_test_pred.to_numpy(),
-        y_val.to_numpy(),
-        y_val_pred.to_numpy(),
-        y_train.to_numpy(),
-        y_train_pred.to_numpy() ,
-        output_dir
-    )
-
-    conf_matrix = confusion_matrix(y_test, y_test_pred.apply(lambda x: 1 if x >= 0.5 else 0))
-
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
-    plt.xlabel('Predicted')
-    plt.ylabel('Actual')
-    plt.title('Confusion Matrix')
-    plt.savefig(output_dir / 'confusion_matrix.png')
-    plt.close()
-
 
 @config_plot()
 def plot_dashboard(
@@ -1050,3 +733,509 @@ def plot_violinplot_with_stats(
     plt.close()
     
     return output_path
+
+
+# -------------------------------------------------#
+#               EXPLAINER PLOTS                   #
+# -------------------------------------------------#
+
+
+class ModelWrapper:
+    def __init__(self, predictor: TabularPredictor, feature_names: list, target_variable: str=None):
+        self.ag_model = predictor
+        self.feature_names = feature_names
+        self.target_variable = target_variable
+        if target_variable is None and predictor.problem_type != 'regression':
+            print("Since target_class not specified, SHAP will explain predictions for each class")
+
+    def predict_proba(self, X):
+        if isinstance(X, pd.Series):
+            X = X.values.reshape(1,-1)
+        if not isinstance(X, pd.DataFrame):
+            X = pd.DataFrame(X, columns=self.feature_names)
+
+        if self.ag_model.can_predict_proba:
+            preds = self.ag_model.predict_proba(X)
+        else:
+            preds = self.ag_model.predict(X)
+        return preds
+
+@config_plot()
+def plot_feature_importance(df: pd.DataFrame, output_dir: Path, model_name: str=''):
+    """
+    Plots feature importance with standard deviation and p-value significance.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the feature importance data. 
+            Look at example for required format.
+        output_dir (Path): Directory to save the feature importance plot.
+        model_name (str): Optional name of the model, included in the plot title.
+
+    Example:
+        ```python
+        import pandas as pd
+        from pathlib import Path
+
+        df = pd.DataFrame({
+            'importance': [0.25, 0.18, 0.12, 0.10],
+            'stddev': [0.03, 0.02, 0.01, 0.015],
+            'p_value': [0.03, 0.07, 0.01, 0.2]
+        }, index=['Feature A', 'Feature B', 'Feature C', 'Feature D'])
+
+        plot_feature_importance(df, Path('./output'))
+        ```
+    """
+    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
+
+    bars = ax.bar(df.index, df['importance'], yerr=df['stddev'], capsize=5, color='skyblue', edgecolor='black')
+
+    if 'p_value' in df.columns:
+        for bar, p_value in zip(bars, df['p_value']):
+            height = bar.get_height()
+            significance = '*' if p_value < 0.05 else ''
+            ax.text(bar.get_x() + bar.get_width() / 2.0, height + 0.002, significance,
+                    ha='center', va='bottom', fontsize=10, color='red')
+
+    ax.set_xlabel('Feature', fontsize=14)
+    ax.set_ylabel('Importance', fontsize=14)
+    ax.set_title(f'Feature Importance with Standard Deviation and p-value Significance ({model_name})', fontsize=16)
+    ax.axhline(0, color='grey', linewidth=0.8)
+
+    ax.set_xticks(np.arange(len(df.index.values)))
+    ax.set_xticklabels(df.index.values, rotation=60, ha='right', fontsize=10)
+
+    ax.grid(axis='y', linestyle='--', alpha=0.7)
+
+    significance_patch = plt.Line2D([0], [0], color='red', marker='*', linestyle='None', markersize=10, label='p < 0.05')
+    ax.legend(handles=[significance_patch], loc='upper right', fontsize=12)
+
+    plt.tight_layout()
+    fig.savefig(output_dir / 'feature_importance.png')
+    plt.close()
+
+@config_plot()
+def plot_shap_values(
+        predictor: TabularPredictor,
+        X_train: pd.DataFrame,
+        X_test: pd.DataFrame,
+        output_dir: Path,
+        max_display: int = 10,
+    ) -> None:
+    """
+    Generates and saves SHAP value visualizations, including a heatmap and a bar plot, for a autogluon tabular model.
+
+    Args:
+        predictor (TabularPredictor): The trained tabular predictor model for which SHAP values are calculated.
+        X_train (pd.DataFrame): Training dataset used to create the SHAP background data.
+        X_test (pd.DataFrame): Test dataset used to evaluate and compute SHAP values.
+        output_dir (Path): Directory to save the SHAP value visualizations.
+        max_display (int): Maximum number of features to display in the visualizations. Defaults to 10.
+    """
+    predictor = ModelWrapper(predictor, X_train.columns)
+    background_data = shap.sample(X_train, 100)
+    shap_exp = shap.KernelExplainer(predictor.predict_proba, background_data)
+
+    # sample 100 samples from test set to evaluate with shap values
+    test_data = shap.sample(X_test, 100)
+
+    # Compute SHAP values for the test set
+    shap_values = shap_exp(test_data)
+
+    sns.set_theme(style="darkgrid")
+    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
+    shap.plots.heatmap(shap_values[...,1], max_display=max_display, show=False, ax=ax)
+    fig.savefig(output_dir / 'shap_heatmap.png')
+    plt.close()
+
+    fig, ax = plt.subplots(figsize=(20, 12), dpi=72)
+    shap.plots.bar(shap_values[...,1], max_display=max_display, show=False, ax=ax)
+    fig.savefig(output_dir / 'shap_barplot.png')
+    plt.close()
+
+@config_plot()
+def plot_violin_of_bootstrapped_metrics(
+        trainer,
+        X_test: pd.Series,
+        y_test: pd.Series,
+        X_val: pd.Series,
+        y_val: pd.Series,
+        X_train: pd.Series,
+        y_train: pd.Series,
+        output_dir: Path,
+    ) -> None:
+    """
+    Generates violin plots for bootstrapped model performance metrics across train, validation, and test datasets.
+
+    Args:
+        trainer (TrainerSupervised): The trained model predictor for evaluating performance metrics.
+        X_test (pd.Series): Test features dataset.
+        y_test (pd.Series): Test target values.
+        X_val (pd.Series): Validation features dataset.
+        y_val (pd.Series): Validation target values.
+        X_train (pd.Series): Training features dataset.
+        y_train (pd.Series): Training target values.
+        output_dir (Path): Directory to save the generated violin plots.
+    """
+    # Define metrics based on the problem type
+    if trainer.settings.task == 'regression':
+        metrics = [('R Squared', r2_score), ('Root Mean Squared Error', root_mean_squared_error)]
+    elif trainer.settings.task == 'binary':
+        metrics = [('AUROC', roc_auc_score), ('AUPRC', auprc)]
+    elif trainer.settings.task == 'survival':
+        metrics = [('Concordance Index', ci_wrapper)]
+
+    # Prepare lists for DataFrame
+    results = []
+
+    # Loop through models and metrics to compute bootstrapped values
+    for model_name in trainer.model_names():
+        y_pred_test = trainer.infer(X_test, model=model_name)
+        y_pred_val = trainer.infer(X_val, model=model_name)
+        y_pred_train = trainer.infer(X_train, model=model_name)
+
+        for metric_name, metric_func in metrics:
+            test_values = bootstrap_metric(y_test.to_numpy(), y_pred_test, metric_func)
+            results.extend([(model_name, metric_name, 'Test', value) for value in test_values])
+
+            val_values = bootstrap_metric(y_val.to_numpy(), y_pred_val, metric_func)
+            results.extend([(model_name, metric_name, 'Validation', value) for value in val_values])
+
+            train_values = bootstrap_metric(y_train.to_numpy(), y_pred_train, metric_func)
+            results.extend([(model_name, metric_name, 'Train', value) for value in train_values])
+
+    # Create a results DataFrame
+    result_df = pd.DataFrame(results, columns=['model', 'metric', 'data_split', 'value'])
+
+     # Sort models by median metric value within each combination of metric and data_split
+    model_order_per_split = {}
+    for split in ['Test', 'Validation', 'Train']:
+        split_order = (
+            result_df[result_df['data_split'] == split]
+            .groupby(['metric', 'model'])['value']
+            .median()
+            .reset_index()
+            .sort_values(by=['metric', 'value'], ascending=[True, False])
+            .groupby('metric')['model']
+            .apply(list)
+            .to_dict()
+        )
+        model_order_per_split[split] = split_order
+
+    # Function to create violin plots for a specific data split
+    def create_violin_plot(data_split: str, save_path: Path):
+        sns.set_theme(style="darkgrid")
+        subset = result_df[result_df['data_split'] == data_split]
+
+        g = sns.FacetGrid(
+            subset,
+            col="metric",
+            margin_titles=True,
+            height=4,
+            aspect=1.5,
+            sharex=False,
+        )
+
+        # Create violin plots with sorted models
+        def violin_plot(data, **kwargs):
+            metric = data.iloc[0]['metric']
+            order = model_order_per_split[data_split].get(metric, None)
+            sns.violinplot(data=data, x="value", y="model", linewidth=1, order=order, **kwargs)
+
+        g.map_dataframe(violin_plot)
+
+        # Adjust the titles and axis labels
+        g.set_titles(col_template="{col_name}")
+        g.set_axis_labels("", "Model")
+
+        # Add overall title and adjust layout
+        g.figure.suptitle(f"Model Performance of {data_split} Data (Bootstrapped)", fontsize=16)
+        g.tight_layout(w_pad=0.5, h_pad=1)
+
+        # Save the plot
+        g.savefig(save_path, dpi=500)
+        plt.close()
+
+    # Generate and save plots for each data split
+    create_violin_plot('Test', output_dir / 'test_metrics_bootstrap.png')
+    create_violin_plot('Validation', output_dir / 'validation_metrics_bootstrap.png')
+    create_violin_plot('Train', output_dir / 'train_metrics_bootstrap.png')
+
+@config_plot()
+def plot_regression_line(
+        y_true: np.ndarray, 
+        y_pred: np.ndarray, 
+        output_dir: Path
+    ) -> None:
+
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="darkgrid")
+    sns.scatterplot(x=y_true, y=y_pred, alpha=0.5)
+    sns.lineplot(x=y_true, y=y_true, color='red')  # Perfect prediction line
+    plt.xlabel('True Values')
+    plt.ylabel('Predictions')
+    plt.title('True vs Predicted Values')
+    plt.savefig(output_dir / 'true_vs_predicted.png')
+    plt.close()
+
+@config_plot()
+def plot_residuals(
+        y_true: np.ndarray,
+        y_pred: np.ndarray,
+        output_dir: Path
+    ) -> None:
+
+    residuals = y_true - y_pred
+
+    # Residuals
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="darkgrid")
+    sns.scatterplot(x=y_pred, y=residuals, alpha=0.5)
+    plt.axhline(0, color='red', linestyle='--')
+    plt.xlabel('Fitted Values')
+    plt.ylabel('Residuals')
+    plt.title('Residual Plot')
+    plt.savefig(output_dir / 'residual_plot.png')
+    plt.close()
+
+@config_plot()
+def plot_residual_histogram(
+        y_true: np.ndarray,
+        y_pred: np.ndarray,
+        output_dir: Path
+    ) -> None:
+
+    residuals = y_true - y_pred
+
+    # Residual Histogram
+    plt.figure(figsize=(10, 6))
+    sns.set_theme(style="darkgrid")
+    sns.histplot(residuals, kde=True, bins=30)
+    plt.xlabel('Residuals')
+    plt.title('Histogram of Residuals')
+    plt.savefig(output_dir / 'residual_hist.png')
+    plt.close()
+
+@config_plot()
+def plot_confusion_matrix(
+        y_test: pd.DataFrame,
+        y_test_pred: pd.DataFrame,
+        output_dir: Path, 
+        tag: str = "",
+    ) -> None:
+
+    conf_matrix = confusion_matrix(y_test, y_test_pred.apply(lambda x: 1 if x >= 0.5 else 0))
+
+    plt.figure(figsize=(8, 6))
+    sns.heatmap(conf_matrix, annot=True, fmt='d', cmap='Blues')
+    plt.xlabel('Predicted')
+    plt.ylabel('Actual')
+    plt.title(f'Confusion Matrix {tag}')
+    plt.savefig(output_dir / 'confusion_matrix.png')
+    plt.close()
+
+@config_plot()
+def plot_roc_curve(
+        y_test: np.ndarray,
+        y_pred: np.ndarray,
+        output_dir: Path,
+        y_val: np.ndarray | None = None,
+        y_val_pred: np.ndarray | None = None,
+        y_train: np.ndarray | None = None,
+        y_train_pred: np.ndarray | None = None,
+    ) -> None:
+
+    plt.figure(figsize=(8, 6))
+    sns.set_theme(style="darkgrid")
+
+    fpr_test, tpr_test, _ = roc_curve(y_test, y_pred)
+    roc_auc_test = roc_auc_score(y_test, y_pred)
+    roc_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, roc_auc_score), (2.5, 97.5))]
+    sns.lineplot(x=fpr_test, y=tpr_test, label=f"Test AUROC = {roc_auc_test:.2f} {roc_conf_test}", color="blue")
+
+    if y_val is not None:
+        fpr_val, tpr_val, _ = roc_curve(y_val, y_val_pred)
+        roc_auc_val = roc_auc_score(y_val, y_val_pred)
+        roc_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, roc_auc_score), (2.5, 97.5))]
+        sns.lineplot(x=fpr_val, y=tpr_val, label=f"Validation AUROC = {roc_auc_val:.2f} {roc_conf_val}", color="orange")
+
+    if y_train is not None:
+        fpr_train, tpr_train, _ = roc_curve(y_train, y_train_pred)
+        roc_auc_train = roc_auc_score(y_train, y_train_pred)
+        roc_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, roc_auc_score), (2.5, 97.5))]
+        sns.lineplot(x=fpr_train, y=tpr_train, label=f"Train AUROC = {roc_auc_train:.2f} {roc_conf_train}", color="green")
+
+    plt.xlabel("1 - Specificity")
+    plt.ylabel("Sensitivity")
+    plt.title("ROC Curve")
+    plt.legend()
+    plt.savefig(output_dir / 'roc_curve.png')
+    plt.close()
+
+@config_plot()
+def plot_precision_recall_curve(
+        y_test: np.ndarray,
+        y_pred: np.ndarray,
+        output_dir: Path,
+        y_val: np.ndarray | None = None,
+        y_val_pred: np.ndarray | None = None,
+        y_train: np.ndarray | None = None,
+        y_train_pred: np.ndarray | None = None,
+    ) -> None:
+
+    plt.figure(figsize=(8, 6))
+    sns.set_theme(style="darkgrid")
+
+    precision_test, recall_test, _ = precision_recall_curve(y_test, y_pred)
+    average_precision_test = auprc(y_test, y_pred)
+    precision_conf_test = [round(val, 2) for val in np.percentile(bootstrap_metric(y_test, y_pred, auprc), (2.5, 97.5))]
+    sns.lineplot(x=recall_test, y=precision_test, label=f"Test AUC-PR = {average_precision_test:.2f} {precision_conf_test}", color="blue")
+
+    if y_val is not None:
+        precision_val, recall_val, _ = precision_recall_curve(y_val, y_val_pred)
+        average_precision_val = auprc(y_val, y_val_pred)
+        precision_conf_val = [round(val, 2) for val in np.percentile(bootstrap_metric(y_val, y_val_pred, auprc), (2.5, 97.5))]
+        sns.lineplot(x=recall_val, y=precision_val, label=f"Validation AUC-PR = {average_precision_val:.2f} {precision_conf_val}", color="orange")
+
+    if y_train is not None:
+        precision_train, recall_train, _ = precision_recall_curve(y_train, y_train_pred)
+        average_precision_train = auprc(y_train, y_train_pred)
+        precision_conf_train = [round(val, 2) for val in np.percentile(bootstrap_metric(y_train, y_train_pred, auprc), (2.5, 97.5))]
+        sns.lineplot(x=recall_train, y=precision_train, label=f"Train AUC-PR = {average_precision_train:.2f} {precision_conf_train}", color="green")
+
+    plt.xlabel("Recall")
+    plt.ylabel("Precision")
+    plt.title("Precision-Recall Curve")
+    plt.legend()
+    plt.savefig(output_dir / 'precision_recall_curve.png')
+    plt.close()
+
+@config_plot()
+def plot_calibration_curve(
+        y_test: np.ndarray,
+        y_pred: np.ndarray,
+        output_dir: Path,
+        y_val: np.ndarray | None = None,
+        y_val_pred: np.ndarray | None = None,
+        y_train: np.ndarray | None = None,
+        y_train_pred: np.ndarray | None = None,
+    ) -> None:
+
+    plt.figure(figsize=(8, 6))
+    sns.set_theme(style="darkgrid")
+
+    prob_true_test, prob_pred_test = calibration_curve(y_test, y_pred, n_bins=10, strategy='uniform')
+    sns.lineplot(x=prob_pred_test, y=prob_true_test, label="Test Calibration Curve", color="blue", marker='o')
+
+    if y_val is not None:
+        prob_true_val, prob_pred_val = calibration_curve(y_val, y_val_pred, n_bins=10, strategy='uniform')
+        sns.lineplot(x=prob_pred_val, y=prob_true_val, label="Validation Calibration Curve", color="orange", marker='o')
+
+    if y_train is not None:
+        prob_true_train, prob_pred_train = calibration_curve(y_train, y_train_pred, n_bins=10, strategy='uniform')
+        sns.lineplot(x=prob_pred_train, y=prob_true_train, label="Train Calibration Curve", color="green", marker='o')
+
+    sns.lineplot(x=[0, 1], y=[0, 1], linestyle="--", label="Perfect Calibration", color="gray")
+    plt.xlabel("Predicted Probability")
+    plt.ylabel("Observed Probability")
+    plt.title("Calibration Curve")
+    plt.legend()
+    plt.savefig(output_dir / 'calibration_curve.png')
+    plt.close()
+
+@config_plot()
+def plot_sensitivity_flag_curve(
+        y_test: np.ndarray,
+        y_pred: np.ndarray,
+        output_dir: Path,
+        y_val: np.ndarray | None = None,
+        y_val_pred: np.ndarray | None = None,
+        y_train: np.ndarray | None = None,
+        y_train_pred: np.ndarray | None = None,
+    ) -> None:
+
+    plt.figure(figsize=(8, 6))
+    sns.set_theme(style="darkgrid")
+
+    fps, tps, _ = _bin_class_curve(y_test, y_pred)
+    sens_test = tps / sum(y_test)
+    flag_rate_test = (tps + fps) / len(y_test)
+    sns.lineplot(x=flag_rate_test, y=sens_test, label="Test", color="blue")
+
+    if y_val is not None:
+        fps, tps, _ = _bin_class_curve(y_val, y_val_pred)
+        sens_val = tps / sum(y_val)
+        flag_rate_val = (tps + fps) / len(y_val)
+        sns.lineplot(x=flag_rate_val, y=sens_val, label="Validation", color="orange")
+    
+    if y_train is not None:
+        fps, tps, _ = _bin_class_curve(y_train, y_train_pred)
+        sens_train = tps / sum(y_train)
+        flag_rate_train = (tps + fps) / len(y_train)
+        sns.lineplot(x=flag_rate_train, y=sens_train, label="Train", color="green")
+
+    plt.xlabel('Flag Rate')
+    plt.ylabel('Sensitivity')
+    plt.title('Sensitivity/Flag Curve')
+    plt.legend()
+    plt.savefig(output_dir / 'sensitivity_flag_curve.png')
+    plt.close()
+
+@config_plot()
+def plot_sensitivity_specificity_ppv_by_threshold(
+        y_test: np.ndarray,
+        y_pred: np.ndarray,
+        output_dir: Path,
+        tag: str = "",
+    ) -> None:
+
+    plt.figure(figsize=(8, 6))
+    sns.set_theme(style="darkgrid")
+
+    fpr_test, tpr_test, thresholds_roc_test = roc_curve(y_test, y_pred)
+    precision_test, recall_test, thresholds_pr_test = precision_recall_curve(y_test, y_pred)
+    sensitivity_test = tpr_test
+    specificity_test = 1 - fpr_test
+    ppv_test = precision_test[:-1]
+
+    sns.lineplot(x=thresholds_roc_test, y=sensitivity_test, label=f"Sensitivity {tag}", color="blue")
+    sns.lineplot(x=thresholds_roc_test, y=specificity_test, label=f"Specificity {tag}", color="green")
+    sns.lineplot(x=thresholds_pr_test, y=ppv_test, label=f"PPV {tag}", color="magenta")
+    plt.xlabel("Threshold")
+    plt.ylabel("Metric")
+    plt.title(f"Metrics by Threshold {tag}")
+    plt.legend()
+
+    plt.savefig(output_dir / f'sensitivity_specificity_ppv_by_threshold.png')
+    plt.close()
+
+@config_plot()
+def plot_histogram_of_predicted_probabilities(
+        y_test: np.ndarray,
+        y_pred: np.ndarray,
+        output_dir: Path,
+        tag: str = "",
+    ) -> None:
+
+    plt.figure(figsize=(8, 6))
+    sns.set_theme(style="darkgrid")
+
+    def _get_highest_bin_count(values, bins):
+        counts, _ = np.histogram(values, bins=bins)
+        return counts.max()
+
+    highest_bin_count = max(
+        _get_highest_bin_count(y_pred[y_test == 0], bins=20),
+        _get_highest_bin_count(y_pred[y_test == 1], bins=20),
+    )
+    highest_bin_count += highest_bin_count//20
+
+    sns.histplot(y_pred[y_test == 0], bins=20, alpha=0.7, label=f"Actual False {tag}", color='blue', kde=False)
+    sns.histplot(y_pred[y_test == 1], bins=20, alpha=0.7, label=f"Actual True {tag}", color='magenta', kde=False)
+    plt.xlabel("Predicted Probability")
+    plt.ylabel("Count")
+    plt.title(f"Histogram of Predicted Probabilities {tag}")
+    plt.ylim(0, highest_bin_count)
+    plt.legend()
+    
+    plt.savefig(output_dir / f'histogram_of_predicted_probabilities.png')
+    plt.close()
