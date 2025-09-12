@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 from pydantic import BaseModel, Field
 from sklearn.inspection import permutation_importance
@@ -11,7 +12,6 @@ from jarvais.loggers import logger
 
 if TYPE_CHECKING:
     from jarvais.trainer import TrainerSupervised
-    from pathlib import Path
 
 
 class ImportanceModule(BaseModel):

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+from pathlib import Path
 from typing import TYPE_CHECKING
 from pydantic import BaseModel, Field
 from jarvais.utils.plot import (
@@ -19,7 +20,6 @@ from jarvais.utils.plot import (
 from jarvais.loggers import logger
 
 if TYPE_CHECKING:
-    from pathlib import Path
     from jarvais.trainer import TrainerSupervised
 
 

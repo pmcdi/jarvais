@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import inspect
+from pathlib import Path
 from typing import TYPE_CHECKING
 from functools import partial
 import numpy as np
@@ -19,7 +20,6 @@ from jarvais.loggers import logger
 
 if TYPE_CHECKING:
     from jarvais.trainer import TrainerSupervised
-    from pathlib import Path
 
 def get_metric(metric: str, sensitive_features : list | None = None): # noqa: ANN201
     fn = getattr(fm, metric)
