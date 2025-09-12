@@ -94,7 +94,7 @@ class Explainer():
         yield self.settings
 
     def __repr__(self) -> str:
-        return f"Analyzer(settings={self.settings.model_dump_json(indent=2)})"
+        return f"Explainer(settings={self.settings.model_dump_json(indent=2)})"
 
 if __name__ == "__main__":
     from jarvais.trainer import TrainerSupervised
