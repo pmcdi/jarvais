@@ -93,13 +93,13 @@ class BiasAuditModule(BaseModel):
                     result.to_csv(self.output_dir / f'{sensitive_feature_name}_fm_metrics.csv')
         
 
-    def _generate_violin(self, sensitive_feature: pd.Series, bias_metric:np.ndarray, task: str) -> None:
+    def _generate_violin(self, sensitive_column: pd.Series, bias_metric:np.ndarray, task: str) -> None:
         """Generate a violin plot for the bias metric."""
         plt.figure(figsize=(8, 6)) 
         sns.set_theme(style="whitegrid")  
 
         sns.violinplot(
-            x=sensitive_feature, 
+            x=sensitive_column, 
             y=bias_metric, 
             palette="muted",  
             inner="quart", 
@@ -108,18 +108,18 @@ class BiasAuditModule(BaseModel):
 
         bias_metric_name = 'log_loss' if task == 'binary' else 'root_mean_squared_error'
 
-        plt.title(f'{bias_metric_name.title()} Distribution by {sensitive_feature.name}', fontsize=16, weight='bold')  
-        plt.xlabel(f'{sensitive_feature.name}', fontsize=14)  
+        plt.title(f'{bias_metric_name.title()} Distribution by {sensitive_column.name}', fontsize=16, weight='bold')  
+        plt.xlabel(f'{sensitive_column.name}', fontsize=14)  
         plt.ylabel(f'{bias_metric_name.title()} per Patient', fontsize=14) 
         plt.xticks(rotation=45, ha='right')
 
         plt.tight_layout()  
-        plt.savefig(self.output_dir / f'{sensitive_feature.name}_{bias_metric_name}.png') 
+        plt.savefig(self.output_dir / f'{sensitive_column.name}_{bias_metric_name}.png') 
         plt.show()
 
-    def _subgroup_analysis_ols(self, sensitive_feature: pd.Series, bias_metric: np.ndarray) -> float:
+    def _subgroup_analysis_ols(self, sensitive_column: pd.Series, bias_metric: np.ndarray) -> float:
         """Fit a statsmodels OLS model to the bias metric data, using the sensitive feature and print summary based on p_val."""
-        one_hot_encoded = pd.get_dummies(sensitive_feature, prefix=sensitive_feature.name)
+        one_hot_encoded = pd.get_dummies(sensitive_column, prefix=sensitive_column.name)
         X_columns = one_hot_encoded.columns
 
         X = one_hot_encoded.values  
@@ -131,8 +131,8 @@ class BiasAuditModule(BaseModel):
         if model.f_pvalue < 0.05:
             output = []
 
-            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.name.title()}** ⚠️\n") # noqa: T201
-            output.append(f"=== Subgroup Analysis for '{sensitive_feature.name.title()}' Using OLS Regression ===\n")
+            print(f"⚠️  **Possible Bias Detected in {sensitive_column.name.title()}** ⚠️\n") # noqa: T201
+            output.append(f"=== Subgroup Analysis for '{sensitive_column.name.title()}' Using OLS Regression ===\n")
 
             output.append("Model Statistics:")
             output.append(f"    R-squared:                  {model.rsquared:.3f}")
@@ -153,14 +153,14 @@ class BiasAuditModule(BaseModel):
             output_text = '\n'.join(output)
             print(output_text) # noqa: T201
 
-            with (self.output_dir / f'{sensitive_feature.name}_Cox_model_summary.txt').open('w') as f:
+            with (self.output_dir / f'{sensitive_column.name}_Cox_model_summary.txt').open('w') as f:
                 f.write(output_text)
 
         return model.f_pvalue
 
-    def _subgroup_analysis_coxph(self, y_true: pd.Series, sensitive_feature: pd.Series) -> None:
+    def _subgroup_analysis_coxph(self, y_true: pd.Series, sensitive_column: pd.Series) -> None:
         """Fit a CoxPH model using the sensitive feature and print summary based on p_val."""
-        one_hot_encoded = pd.get_dummies(sensitive_feature, prefix=sensitive_feature.name)
+        one_hot_encoded = pd.get_dummies(sensitive_column, prefix=sensitive_column.name)
         df_encoded = y_true.join(one_hot_encoded)
 
         cph = CoxPHFitter(penalizer=0.0001)
@@ -169,8 +169,8 @@ class BiasAuditModule(BaseModel):
         if cph.log_likelihood_ratio_test().p_value < 0.05:
             output = []
 
-            print(f"⚠️  **Possible Bias Detected in {sensitive_feature.name.title()}** ⚠️") # noqa: T201
-            output.append(f"=== Subgroup Analysis for '{sensitive_feature.name.title()}' Using Cox Proportional Hazards Model ===\n")
+            print(f"⚠️  **Possible Bias Detected in {sensitive_column.name.title()}** ⚠️") # noqa: T201
+            output.append(f"=== Subgroup Analysis for '{sensitive_column.name.title()}' Using Cox Proportional Hazards Model ===\n")
 
             output.append("Model Statistics:")
             output.append(f"    AIC (Partial):               {cph.AIC_partial_:.2f}")
@@ -190,25 +190,25 @@ class BiasAuditModule(BaseModel):
             output_text = '\n'.join(output)
             print(output_text) # noqa: T201
 
-            with (self.output_dir / f'{sensitive_feature.name}_OLS_model_summary.txt').open('w') as f:
+            with (self.output_dir / f'{sensitive_column.name}_OLS_model_summary.txt').open('w') as f:
                 f.write(output_text)
 
     def _calculate_fair_metrics(
             self, 
             y_true: pd.Series,
             y_pred: pd.Series,
-            sensitive_feature: pd.Series, 
+            sensitive_column: pd.Series, 
             fairness_threshold: float, 
             relative: bool,
             metrics: list
         ) -> pd.DataFrame:
         """Calculate the Fairlearn metrics and return the results in a DataFrame."""
-        _metrics = {metric: get_metric(metric, sensitive_features=sensitive_feature) for metric in metrics}
+        _metrics = {metric: get_metric(metric, sensitive_features=sensitive_column) for metric in metrics}
         metric_frame = fm.MetricFrame(
             metrics=_metrics, 
             y_true=y_true, 
             y_pred=y_pred, 
-            sensitive_features=sensitive_feature, 
+            sensitive_features=sensitive_column, 
         )
         result = pd.DataFrame(metric_frame.by_group.T, index=_metrics.keys())
         result = result.rename(
@@ -220,7 +220,7 @@ class BiasAuditModule(BaseModel):
             )
 
         if relative:
-            largest_feature = sensitive_feature.mode().iloc[0]
+            largest_feature = sensitive_column.mode().iloc[0]
             results_relative = result.T / result[largest_feature]
             results_relative = results_relative.applymap(
                 lambda x: f"{x:.3f} ✅" if x <= fairness_threshold or 1/x <= fairness_threshold 
