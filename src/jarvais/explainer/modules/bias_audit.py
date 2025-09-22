@@ -58,10 +58,12 @@ class BiasAuditModule(BaseModel):
         
         if self.sensitive_features is None:
             logger.info("No sensitive features provided, inferring from data...")
-            if trainer.settings.task == 'survival': # Data needs to be not be one hot encoded
-                self.sensitive_features = infer_sensitive_features(undummify(trainer.X_test, prefix_sep='|'))
-            else:
-                self.sensitive_features = infer_sensitive_features(trainer.X_test)
+            test_data = (
+                undummify(trainer.X_test, prefix_sep=trainer.settings.encoding_module.prefix_sep)
+                if trainer.settings.encoding_module.enabled
+                else trainer.X_test
+            )
+            self.sensitive_features = infer_sensitive_features(test_data)
         
         y_pred = None if trainer.settings.task == 'survival' else pd.Series(trainer.infer(trainer.X_test) )
         metrics = ['mean_prediction'] if trainer.settings.task == 'regression' else ['mean_prediction', 'false_positive_rate']

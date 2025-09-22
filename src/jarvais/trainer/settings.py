@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from jarvais.trainer.modules import (
     AutogluonTabularWrapper,
     FeatureReductionModule,
+    OneHotEncodingModule,
     SurvivalTrainerModule,
 )
 
@@ -47,6 +48,7 @@ class TrainerSettings(BaseModel):
         title="Generate Explainability Model"
     )
 
+    encoding_module: OneHotEncodingModule
     reduction_module: FeatureReductionModule
     trainer_module: SurvivalTrainerModule | AutogluonTabularWrapper
 

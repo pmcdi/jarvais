@@ -10,7 +10,6 @@ from tableone import TableOne # type: ignore
 from jarvais.analyzer._utils import infer_types
 from jarvais.analyzer.modules import (
     MissingnessModule,
-    OneHotEncodingModule,
     OutlierModule,
     VisualizationModule,
     BooleanEncodingModule,
@@ -96,10 +95,6 @@ class Analyzer():
             group_outliers=group_outliers
 
         )
-        self.encoding_module = OneHotEncodingModule.build(
-            categorical_columns=categorical_columns, 
-            target_variable=target_variable
-        )
         self.boolean_module = BooleanEncodingModule.build(
             boolean_columns=boolean_columns
         )
@@ -127,7 +122,6 @@ class Analyzer():
             missingness=self.missingness_module,
             outlier=self.outlier_module,
             visualization=self.visualization_module,
-            encoding=self.encoding_module,
             boolean=self.boolean_module,
             dashboard=self.dashboard_module
         )
@@ -164,7 +158,6 @@ class Analyzer():
         analyzer.missingness_module = settings.missingness
         analyzer.outlier_module = settings.outlier
         analyzer.visualization_module = settings.visualization
-        analyzer.encoding_module = settings.encoding
         analyzer.boolean_module = settings.boolean
         analyzer.dashboard_module = settings.dashboard
 
@@ -206,7 +199,6 @@ class Analyzer():
         
         # Run modules that modify the input data (create new columns/features)
         self.data = (self.input_data.copy()
-            .pipe(self.encoding_module)
             .pipe(self.boolean_module)
         )
         

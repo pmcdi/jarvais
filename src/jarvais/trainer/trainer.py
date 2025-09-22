@@ -11,8 +11,10 @@ from jarvais.trainer.modules import (
     AutogluonTabularWrapper,
     FeatureReductionModule,
     SurvivalTrainerModule,
+    OneHotEncodingModule,
 )
 from jarvais.trainer.settings import TrainerSettings
+from jarvais.loggers import logger
 
 
 class TrainerSupervised:
@@ -45,6 +47,14 @@ class TrainerSupervised:
         random_state: int = 42,
         explain: bool = False
     ) -> None:
+
+        self.encoding_module = OneHotEncodingModule.build()
+
+        if task in {'binary', 'multiclass'}:
+            logger.warning(
+                "One-hot encoding is disabled for binary and multiclass tasks due to autogluon's OneHotEncoder implementation. If you want to use one-hot encoding, edit the trainer settings manually." 
+            )
+            self.encoding_module.enabled = False
         
         self.reduction_module = FeatureReductionModule.build(
             method=reduction_method,
@@ -75,6 +85,7 @@ class TrainerSupervised:
             test_size=test_size,
             random_state=random_state,
             explain=explain,
+            encoding_module=self.encoding_module,
             reduction_module=self.reduction_module,
             trainer_module=self.trainer_module,
         )
@@ -101,6 +112,7 @@ class TrainerSupervised:
             task=settings.task,
         )
 
+        trainer.encoding_module = settings.encoding_module
         trainer.reduction_module = settings.reduction_module
         trainer.trainer_module = settings.trainer_module
 
@@ -112,17 +124,18 @@ class TrainerSupervised:
             self,
             data: pd.DataFrame 
         ) -> None:
-        self.data = data
+        self.input_data = data
 
         # Preprocess
-        X = self.data.drop(self.settings.target_variable, axis=1)
-        y = self.data[self.settings.target_variable]
+        X = self.input_data.drop(self.settings.target_variable, axis=1)
+        y = self.input_data[self.settings.target_variable]
 
+        X = self.encoding_module(X)
         X, y = self.reduction_module(X, y)     
 
         if self.settings.task in {'binary', 'multiclass'}:
             stratify_col = (
-                y.astype(str) + '_' + self.data[self.settings.stratify_on].astype(str)
+                y.astype(str) + '_' + self.input_data[self.settings.stratify_on].astype(str)
                 if self.settings.stratify_on is not None
                 else y
             )
@@ -150,6 +163,7 @@ class TrainerSupervised:
 
         data_dir = self.settings.output_dir / 'data'
         data_dir.mkdir(parents=True, exist_ok=True)
+        self.input_data.to_csv((data_dir / 'input_data.csv'), index=False)
         self.X_train.to_csv((data_dir / 'X_train.csv'), index=False)
         self.X_test.to_csv((data_dir / 'X_test.csv'), index=False)
         self.X_val.to_csv((data_dir / 'X_val.csv'), index=False)
@@ -158,8 +172,8 @@ class TrainerSupervised:
         self.y_val.to_csv((data_dir / 'y_val.csv'), index=False)
 
         if self.settings.explain:
-            explainer = Explainer.from_trainer(self)
-            explainer.run()
+            explainer = Explainer(self.settings.output_dir)
+            explainer.run(self)
 
         # Save Settings
         schema_path = self.settings.output_dir / 'trainer_settings.schema.json'
@@ -230,6 +244,7 @@ class TrainerSupervised:
             model_dir = (project_dir / 'autogluon_models' / 'autogluon_models_best_fold')
             trainer.predictor = TabularPredictor.load(model_dir, verbosity=1)
 
+        trainer.input_data = pd.read_csv(project_dir / 'data' / 'input_data.csv')
         trainer.X_test = pd.read_csv(project_dir / 'data' / 'X_test.csv')
         trainer.X_val = pd.read_csv(project_dir / 'data' / 'X_val.csv')
         trainer.X_train = pd.read_csv(project_dir / 'data' / 'X_train.csv')
