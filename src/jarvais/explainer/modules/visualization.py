@@ -25,6 +25,10 @@ if TYPE_CHECKING:
 
 class VisualizationModule(BaseModel):
     output_dir: Path = Field(description="Output directory.")
+    shap: bool = Field(
+        description="Whether to plot SHAP values. Only available for classification tasks. This flag exists because the SHAP values are computationally expensive to plot.", 
+        default=True,
+    )
 
     def model_post_init(self, __context) -> None: # noqa: ANN001
         self.output_dir.mkdir(parents=True, exist_ok=True)
@@ -136,11 +140,12 @@ class VisualizationModule(BaseModel):
             tag="(Test)",
         )
 
-        plot_shap_values(
-            trainer.predictor,
-            trainer.X_train,
-            trainer.X_test,
-            output_dir=self.output_dir
-        )
+        if self.shap:
+            plot_shap_values(
+                trainer.predictor,
+                trainer.X_train,
+                trainer.X_test,
+                output_dir=self.output_dir
+            )
 
-        
+            
