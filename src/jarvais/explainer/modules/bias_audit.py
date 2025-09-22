@@ -55,17 +55,18 @@ class BiasAuditModule(BaseModel):
     def __call__(self, trainer: "TrainerSupervised") -> None:
 
         logger.info("Running Bias Audit Module...")
+
+        test_data = (
+            undummify(trainer.X_test, prefix_sep=trainer.settings.encoding_module.prefix_sep)
+            if trainer.settings.encoding_module.enabled
+            else trainer.X_test
+        )
         
         if self.sensitive_features is None:
             logger.info("No sensitive features provided, inferring from data...")
-            test_data = (
-                undummify(trainer.X_test, prefix_sep=trainer.settings.encoding_module.prefix_sep)
-                if trainer.settings.encoding_module.enabled
-                else trainer.X_test
-            )
             self.sensitive_features = infer_sensitive_features(test_data)
         
-        y_pred = None if trainer.settings.task == 'survival' else pd.Series(trainer.infer(trainer.X_test) )
+        y_pred = None if trainer.settings.task == 'survival' else pd.Series(trainer.infer(test_data))
         metrics = ['mean_prediction'] if trainer.settings.task == 'regression' else ['mean_prediction', 'false_positive_rate']
 
         if trainer.settings.task == 'binary':
@@ -79,7 +80,7 @@ class BiasAuditModule(BaseModel):
             bias_metric = np.sqrt((trainer.y_test.to_numpy() - y_pred) ** 2)
 
         for sensitive_feature_name in self.sensitive_features:
-            _sensitive_column = trainer.X_test[sensitive_feature_name]
+            _sensitive_column = test_data[sensitive_feature_name]
             if trainer.settings.task == 'survival':
                 self._subgroup_analysis_coxph(trainer.y_test, _sensitive_column)
             else:
