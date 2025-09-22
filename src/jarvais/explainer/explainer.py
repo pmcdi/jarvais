@@ -76,7 +76,7 @@ class Explainer():
         self.importance_module(trainer)
 
         # Generate Report
-        generate_explainer_report_pdf(trainer.settings.task, self.settings.output_dir)
+        generate_explainer_report_pdf(trainer.settings.task, self.settings.output_dir, self.settings.visualization.shap)
 
         # Save Settings
         self.settings.settings_schema_path = self.settings.output_dir / 'explainer_settings.schema.json'
