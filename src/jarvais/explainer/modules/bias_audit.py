@@ -156,7 +156,7 @@ class BiasAuditModule(BaseModel):
             output_text = '\n'.join(output)
             print(output_text) # noqa: T201
 
-            with (self.output_dir / f'{sensitive_column.name}_Cox_model_summary.txt').open('w') as f:
+            with (self.output_dir / f'{sensitive_column.name}_OLS_model_summary.txt').open('w') as f:
                 f.write(output_text)
 
         return model.f_pvalue
@@ -193,7 +193,7 @@ class BiasAuditModule(BaseModel):
             output_text = '\n'.join(output)
             print(output_text) # noqa: T201
 
-            with (self.output_dir / f'{sensitive_column.name}_OLS_model_summary.txt').open('w') as f:
+            with (self.output_dir / f'{sensitive_column.name}_Cox_model_summary.txt').open('w') as f:
                 f.write(output_text)
 
     def _calculate_fair_metrics(
