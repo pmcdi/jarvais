@@ -24,14 +24,11 @@ class ImportanceModule(BaseModel):
         
         logger.info("Running Feature Importance Module...")
         
-        if trainer.settings.task == 'survival': # NEEDS TO BE UPDATED
-            model_name = 'CoxPH'
-            model = trainer.predictor.models[model_name]
+        if trainer.settings.task == 'survival':
             result = permutation_importance(
-                model, 
+                trainer.predictor, 
                 trainer.X_test,
-                Surv.from_dataframe('event', 'time', trainer.y_test),
-                n_repeats=15
+                trainer.y_test,
             )
 
             importance_df = pd.DataFrame(
@@ -41,6 +38,7 @@ class ImportanceModule(BaseModel):
                 },
                 index=trainer.X_test.columns,
             ).sort_values(by="importance", ascending=False)
+            model_name = trainer.predictor.best_model
         else:
             importance_df = trainer.predictor.feature_importance(
                 pd.concat([trainer.X_test, trainer.y_test], axis=1))
