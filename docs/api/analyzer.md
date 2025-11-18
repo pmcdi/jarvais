@@ -24,7 +24,7 @@ The `Analyzer` class contains the following modules:
         heading_level: 3
         members_order: source
         show_root_heading: true
-::: jarvais.analyzer.modules.VisualizationModule
+::: jarvais.analyzer.modules.DataVisualizationModule
     options:
         heading_level: 3
         members_order: source

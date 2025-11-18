@@ -3,7 +3,7 @@ from pathlib import Path
 from typing import Any
 
 from jarvais.explainer.modules import (
-    VisualizationModule, 
+    ModelInterpretationModule, 
     ImportanceModule, 
     BiasAuditModule
 )
@@ -22,7 +22,7 @@ class ExplainerSettings(BaseModel):
         description="Path to settings schema file.",
     )
     
-    visualization: VisualizationModule
+    interpretation: ModelInterpretationModule
     importance: ImportanceModule
     bias_audit: BiasAuditModule
 

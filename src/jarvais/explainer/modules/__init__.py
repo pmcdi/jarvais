@@ -1,5 +1,5 @@
 from .importance import ImportanceModule
-from .visualization import VisualizationModule
+from .interpretation import ModelInterpretationModule
 from .bias_audit import BiasAuditModule
 
-__all__ = ["ImportanceModule", "VisualizationModule", "BiasAuditModule"]
+__all__ = ["ImportanceModule", "ModelInterpretationModule", "BiasAuditModule"]

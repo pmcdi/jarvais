@@ -1,6 +1,6 @@
 from jarvais.analyzer.modules import (
     OutlierModule, 
-    VisualizationModule, 
+    DataVisualizationModule, 
     MissingnessModule,
     BooleanEncodingModule,
     DashboardModule
@@ -57,7 +57,7 @@ class AnalyzerSettings(BaseModel):
 
     missingness: MissingnessModule
     outlier: OutlierModule
-    visualization: VisualizationModule
+    visualization: DataVisualizationModule
     boolean: BooleanEncodingModule
     dashboard: DashboardModule
 

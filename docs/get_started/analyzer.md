@@ -54,7 +54,7 @@ Analyzer(
             enabled=True
         ),
         encoding=OneHotEncodingModule(columns=['stage', 'treatment'], target_variable='death', prefix_sep='|', enabled=True),
-        visualization=VisualizationModule(plots=['corr', 'pairplot', 'umap', 'frequency_table', 'multiplot'], enabled=True)
+        visualization=DataVisualizationModule(plots=['corr', 'pairplot', 'umap', 'frequency_table', 'multiplot'], enabled=True)
     )
 )
 ```

@@ -11,7 +11,7 @@ from jarvais.analyzer._utils import infer_types
 from jarvais.analyzer.modules import (
     MissingnessModule,
     OutlierModule,
-    VisualizationModule,
+    DataVisualizationModule,
     BooleanEncodingModule,
     DashboardModule
 )
@@ -42,7 +42,7 @@ class Analyzer():
         outlier_module (OutlierModule): Module for detecting outliers.
         encoding_module (OneHotEncodingModule): Module for encoding categorical variables.
         boolean_module (BooleanEncodingModule): Module for encoding boolean variables.
-        visualization_module (VisualizationModule): Module for generating visualizations.
+        visualization_module (DataVisualizationModule): Module for generating visualizations.
         settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.
     """
     def __init__(
@@ -103,7 +103,7 @@ class Analyzer():
             continuous_columns=continuous_columns,
             categorical_columns=categorical_columns
         )
-        self.visualization_module = VisualizationModule.build(
+        self.visualization_module = DataVisualizationModule.build(
             output_dir=Path(output_dir),
             continuous_columns=continuous_columns,
             categorical_columns=categorical_columns,

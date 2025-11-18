@@ -5,7 +5,7 @@ import json
 import rich.repr
 from typing import TYPE_CHECKING
 
-from jarvais.explainer.modules import ImportanceModule, VisualizationModule, BiasAuditModule
+from jarvais.explainer.modules import ImportanceModule, ModelInterpretationModule, BiasAuditModule
 from jarvais.explainer.settings import ExplainerSettings
 from jarvais.utils.pdf import generate_explainer_report_pdf
 
@@ -25,13 +25,13 @@ class Explainer():
         figures_dir = output_dir / 'figures'
         bias_dir = output_dir / 'bias'
 
-        self.visualization_module = VisualizationModule(output_dir=figures_dir)
+        self.interpretation_module = ModelInterpretationModule(output_dir=figures_dir)
         self.importance_module = ImportanceModule(output_dir=figures_dir)
         self.bias_audit_module = BiasAuditModule(output_dir=bias_dir, sensitive_features=sensitive_features)
 
         self.settings = ExplainerSettings(
             output_dir=output_dir,
-            visualization=self.visualization_module,
+            interpretation=self.interpretation_module,
             importance=self.importance_module,
             bias_audit=self.bias_audit_module
         )
@@ -59,7 +59,7 @@ class Explainer():
             output_dir=settings.output_dir,
         )
 
-        explainer.visualization_module = settings.visualization
+        explainer.interpretation_module = settings.interpretation
         explainer.importance_module = settings.importance
         explainer.bias_audit_module = settings.bias_audit
 
@@ -72,11 +72,11 @@ class Explainer():
 
         # Run Modules
         self.bias_audit_module(trainer)
-        self.visualization_module(trainer)
+        self.interpretation_module(trainer)
         self.importance_module(trainer)
 
         # Generate Report
-        generate_explainer_report_pdf(trainer.settings.task, self.settings.output_dir, self.settings.visualization.shap)
+        generate_explainer_report_pdf(trainer.settings.task, self.settings.output_dir, self.settings.interpretation.shap)
 
         # Save Settings
         self.settings.settings_schema_path = self.settings.output_dir / 'explainer_settings.schema.json'
@@ -97,8 +97,4 @@ class Explainer():
         return f"Explainer(settings={self.settings.model_dump_json(indent=2)})"
 
 if __name__ == "__main__":
-    from jarvais.trainer import TrainerSupervised
-
-    trainer = TrainerSupervised.load_trainer("temp_output/trainer_test_rad")
-    explainer = Explainer(output_dir="temp_output/explainer_test_rad")
-    explainer.run(trainer)
+    pass

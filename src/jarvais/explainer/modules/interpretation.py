@@ -23,7 +23,7 @@ if TYPE_CHECKING:
     from jarvais.trainer import TrainerSupervised
 
 
-class VisualizationModule(BaseModel):
+class ModelInterpretationModule(BaseModel):
     output_dir: Path = Field(description="Output directory.")
     shap: bool = Field(
         description="Whether to plot SHAP values. Only available for classification tasks. This flag exists because the SHAP values are computationally expensive to plot.", 
