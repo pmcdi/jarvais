@@ -8,11 +8,27 @@ The `Explainer` class is part of the `jarvais.explainer` module. It generates ex
         members_order: source
         show_root_heading: true
 
----
+## Explainer Modules
 
-The `BiasExplainer` class is used by the `Explainer` class to run a bias audit.
+::: jarvais.explainer.modules.BiasAuditModule
+    options:
+        heading_level: 3
+        members_order: source
+        show_root_heading: true
+::: jarvais.explainer.modules.ImportanceModule
+    options:
+        heading_level: 3
+        members_order: source
+        show_root_heading: true
+::: jarvais.explainer.modules.ModelInterpretationModule
+    options:
+        heading_level: 3
+        members_order: source
+        show_root_heading: true
 
-::: jarvais.explainer.BiasExplainer
+## Explainer Settings
+
+::: jarvais.explainer.settings.ExplainerSettings
     options:
         heading_level: 3
         members_order: source
