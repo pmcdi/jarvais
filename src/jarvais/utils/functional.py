@@ -1,8 +1,8 @@
 from typing import Callable, List
+import re
 
 import numpy as np
 import pandas as pd
-
 from sklearn.metrics import auc, precision_recall_curve
 from sksurv.metrics import concordance_index_censored
 
@@ -126,3 +126,36 @@ def process_RADCURE_clinical(df):
     })
     
     return df_converted
+
+def _bin_class_curve(y_true: np.ndarray, y_pred: np.ndarray):
+    sort_ix = np.argsort(y_pred, kind="mergesort")[::-1]
+    y_true = np.array(y_true)[sort_ix]
+    y_pred = np.array(y_pred)[sort_ix]
+
+    # Find where the threshold changes
+    distinct_ix = np.where(np.diff(y_pred))[0]
+    threshold_idxs = np.r_[distinct_ix, y_true.size - 1]
+
+    # Add up the true positives and infer false ones
+    tps = np.cumsum(y_true)[threshold_idxs]
+    fps = 1 + threshold_idxs - tps
+
+    return fps, tps, y_pred[threshold_idxs]
+
+def infer_sensitive_features(data: pd.DataFrame) -> dict:
+    """
+    Infers potentially sensitive features from a DataFrame.
+    """
+    sensitive_keywords = [
+        "gender", "sex", "age", "race", "ethnicity", "income",
+        "religion", "disability", "nationality", "language",
+        "marital", "citizen", "veteran", "status", "orientation",
+        "disease", "regimen", "disease_site"
+    ]
+
+    sensitive_features = {
+        col for col in data.columns 
+        if any(re.search(rf"\b{keyword}\b", col, re.IGNORECASE) for keyword in sensitive_keywords)
+    }
+
+    return sensitive_features

@@ -1,11 +1,11 @@
 import pandas as pd
 from pathlib import Path
 
-from jarvais.analyzer.modules import VisualizationModule
+from jarvais.analyzer.modules import DataVisualizationModule
 
 def test_visualization_module_init(tmp_path):
 
-    vis_module = VisualizationModule.build(
+    vis_module = DataVisualizationModule.build(
         output_dir=tmp_path,
         continuous_columns=["age"],
         categorical_columns=["sex"],

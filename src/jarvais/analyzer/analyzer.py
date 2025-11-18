@@ -10,9 +10,8 @@ from tableone import TableOne # type: ignore
 from jarvais.analyzer._utils import infer_types
 from jarvais.analyzer.modules import (
     MissingnessModule,
-    OneHotEncodingModule,
     OutlierModule,
-    VisualizationModule,
+    DataVisualizationModule,
     BooleanEncodingModule,
     DashboardModule
 )
@@ -43,7 +42,7 @@ class Analyzer():
         outlier_module (OutlierModule): Module for detecting outliers.
         encoding_module (OneHotEncodingModule): Module for encoding categorical variables.
         boolean_module (BooleanEncodingModule): Module for encoding boolean variables.
-        visualization_module (VisualizationModule): Module for generating visualizations.
+        visualization_module (DataVisualizationModule): Module for generating visualizations.
         settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.
     """
     def __init__(
@@ -96,10 +95,6 @@ class Analyzer():
             group_outliers=group_outliers
 
         )
-        self.encoding_module = OneHotEncodingModule.build(
-            categorical_columns=categorical_columns, 
-            target_variable=target_variable
-        )
         self.boolean_module = BooleanEncodingModule.build(
             boolean_columns=boolean_columns
         )
@@ -108,7 +103,7 @@ class Analyzer():
             continuous_columns=continuous_columns,
             categorical_columns=categorical_columns
         )
-        self.visualization_module = VisualizationModule.build(
+        self.visualization_module = DataVisualizationModule.build(
             output_dir=Path(output_dir),
             continuous_columns=continuous_columns,
             categorical_columns=categorical_columns,
@@ -127,7 +122,6 @@ class Analyzer():
             missingness=self.missingness_module,
             outlier=self.outlier_module,
             visualization=self.visualization_module,
-            encoding=self.encoding_module,
             boolean=self.boolean_module,
             dashboard=self.dashboard_module
         )
@@ -164,7 +158,6 @@ class Analyzer():
         analyzer.missingness_module = settings.missingness
         analyzer.outlier_module = settings.outlier
         analyzer.visualization_module = settings.visualization
-        analyzer.encoding_module = settings.encoding
         analyzer.boolean_module = settings.boolean
         analyzer.dashboard_module = settings.dashboard
 
@@ -206,7 +199,6 @@ class Analyzer():
         
         # Run modules that modify the input data (create new columns/features)
         self.data = (self.input_data.copy()
-            .pipe(self.encoding_module)
             .pipe(self.boolean_module)
         )
         

@@ -6,7 +6,7 @@ from jarvais.analyzer import Analyzer
 from jarvais.trainer import TrainerSupervised
 
 
-def get_analyzed_data(df, target, task, output_dir, encode):
+def get_analyzed_data(df, target, task, output_dir):
     analyzer = Analyzer(
         df,
         output_dir=output_dir,
@@ -25,7 +25,6 @@ def get_analyzed_data(df, target, task, output_dir, encode):
         task=task,
     )
     analyzer.visualization_module.enabled = False
-    analyzer.encoding_module.enabled = encode
     analyzer.run()
     return analyzer.data
 
@@ -39,7 +38,6 @@ def test_binary_trainer_runs(radcure_clinical, tmp_path):
         target="event",
         task="binary",
         output_dir=output_dir / "analyzer",
-        encode=False,
     )
 
     trainer = TrainerSupervised(
@@ -71,7 +69,6 @@ def test_regression_trainer_runs(radcure_clinical, tmp_path):
         target="time",
         task="regression",
         output_dir=output_dir / "analyzer",
-        encode=False,
     )
 
     trainer = TrainerSupervised(
@@ -103,7 +100,6 @@ def test_survival_trainer_runs(radcure_clinical, tmp_path):
         target="event",
         task="survival",
         output_dir=output_dir / "analyzer",
-        encode=True,
     )
 
     trainer = TrainerSupervised(

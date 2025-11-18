@@ -38,18 +38,36 @@ class SurvivalPredictor:
             self.best_model = best_model
         
     def predict(self, X: pd.DataFrame, model: str | None = None) -> np.ndarray:
+        """ Predict survival probabilities for a given dataset. """
 
         if model:
             return self.models[model].predict(X)
 
         return self.models[self.best_model].predict(X)
+
+    def score(self, X: pd.DataFrame, y: pd.DataFrame, model: str | None = None) -> float:
+        """ Score a given dataset with concordance index. """
+        
+        if model:
+            return concordance_index_censored( 
+                y['event'].astype(bool),
+                y['time'],
+                self.predict(X, model)
+            )[0]
+
+        return concordance_index_censored( 
+            y['event'].astype(bool),
+            y['time'],
+            self.predict(X)
+        )[0]
     
     def model_names(self) -> list[str]:
+        """ Get the names of all models. """
         return list(self.models.keys())
     
     @classmethod
     def load(cls, model_dir: str | Path) -> "SurvivalPredictor":
-
+        """ Load a saved SurvivalPredictor. """
         model_dir = Path(model_dir)
 
         with (model_dir / 'survival_metadata.json').open('r') as f:
@@ -70,6 +88,10 @@ class SurvivalPredictor:
             model_info["model_scores"], 
             model_info["best_model"]
         )
+
+    def fit(self, X: pd.DataFrame, y: pd.DataFrame) -> None:
+        """ Empty method to satisfy the interface for sklearn.inspection.permutation_importance. """
+        return None
 
 
 class SurvivalTrainerModule(BaseModel):

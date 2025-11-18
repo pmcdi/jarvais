@@ -89,7 +89,8 @@ def generate_analysis_report_pdf(
 
 def generate_explainer_report_pdf(
         problem_type: str,
-        output_dir: str | Path
+        output_dir: str | Path,
+        shap: bool
     ) -> None:
     """
     Generate a PDF report for the explainer with visualizations and metrics.
@@ -104,6 +105,7 @@ def generate_explainer_report_pdf(
             and 'survival'.
         output_dir (str | Path): The directory where the generated PDF 
             report will be saved.
+        shap (bool): Whether to include SHAP plots in the report.
 
     Returns:
         None: The function saves the generated PDF to the specified output directory.
@@ -135,15 +137,15 @@ def generate_explainer_report_pdf(
     pdf.add_page()
 
     if problem_type in ['binary', 'multiclass']:
-        pdf.image((figures_dir / 'model_evaluation.png'), Align.C, w=pdf.epw-20)
+        # pdf.image((figures_dir / 'model_evaluation.png'), Align.C, w=pdf.epw-20)
         pdf.image((figures_dir / 'confusion_matrix.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
         pdf.add_page()
-
-        pdf.image((figures_dir / 'shap_barplot.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
-        pdf.image((output_dir /  'figures' / 'shap_heatmap.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
+        if shap:
+            pdf.image((figures_dir / 'shap_barplot.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
+            pdf.image((figures_dir / 'shap_heatmap.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
     elif problem_type == 'regression':
         pdf.image((figures_dir / 'residual_plot.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
-        pdf.image((output_dir /  'figures' / 'true_vs_predicted.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
+        pdf.image((figures_dir / 'true_vs_predicted.png'), Align.C, h=pdf.eph/2, w=pdf.epw-20)
 
     # Save PDF
     pdf.output((output_dir / 'explainer_report.pdf'))

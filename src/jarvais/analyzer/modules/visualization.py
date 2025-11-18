@@ -20,7 +20,7 @@ from jarvais.utils.plot import (
 from .base import AnalyzerModule
 
 
-class VisualizationModule(AnalyzerModule):
+class DataVisualizationModule(AnalyzerModule):
 
     plots: list[str] = Field(
         description="List of plots to generate.",
