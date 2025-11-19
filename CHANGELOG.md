@@ -1,6 +1,13 @@
 # CHANGELOG
 
 
+## [0.20.1](https://github.com/pmcdi/jarvais/compare/v0.20.0...v0.20.1) (2025-11-19)
+
+
+### Documentation
+
+* fix api documentation and update example notebooks ([#122](https://github.com/pmcdi/jarvais/issues/122)) ([c69c924](https://github.com/pmcdi/jarvais/commit/c69c9241542e455fa785431c087b2b53cdd0e328))
+
 ## [0.20.0](https://github.com/pmcdi/jarvais/compare/v0.19.1...v0.20.0) (2025-08-29)
 
 
