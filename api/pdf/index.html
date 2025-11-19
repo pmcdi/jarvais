@@ -1388,7 +1388,7 @@
 
 
 <h4 id="jarvais.utils.pdf.generate_explainer_report_pdf" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="n">problem_type</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">)</span></code>
+            <code class="highlight language-python"><span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="n">problem_type</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">,</span> <span class="n">shap</span><span class="p">)</span></code>
 
 </h4>
 
@@ -1441,6 +1441,22 @@ and 'survival'.</p>
               <div class="doc-md-description">
                 <p>The directory where the generated PDF 
 report will be saved.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td>
+                <code>shap</code>
+            </td>
+            <td>
+                  <code><span title="bool">bool</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Whether to include SHAP plots in the report.</p>
               </div>
             </td>
             <td>
@@ -1534,9 +1550,12 @@ report will be saved.</p>
 <span class="normal">146</span>
 <span class="normal">147</span>
 <span class="normal">148</span>
-<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_explainer_report_pdf</span><span class="p">(</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">generate_explainer_report_pdf</span><span class="p">(</span>
         <span class="n">problem_type</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-        <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span>
+        <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">shap</span><span class="p">:</span> <span class="nb">bool</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Generate a PDF report for the explainer with visualizations and metrics.</span>
@@ -1551,6 +1570,7 @@ report will be saved.</p>
 <span class="sd">            and 'survival'.</span>
 <span class="sd">        output_dir (str | Path): The directory where the generated PDF </span>
 <span class="sd">            report will be saved.</span>
+<span class="sd">        shap (bool): Whether to include SHAP plots in the report.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        None: The function saves the generated PDF to the specified output directory.</span>
@@ -1582,15 +1602,15 @@ report will be saved.</p>
     <span class="n">pdf</span><span class="o">.</span><span class="n">add_page</span><span class="p">()</span>
 
     <span class="k">if</span> <span class="n">problem_type</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'binary'</span><span class="p">,</span> <span class="s1">'multiclass'</span><span class="p">]:</span>
-        <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'model_evaluation.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+        <span class="c1"># pdf.image((figures_dir / 'model_evaluation.png'), Align.C, w=pdf.epw-20)</span>
         <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'confusion_matrix.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
         <span class="n">pdf</span><span class="o">.</span><span class="n">add_page</span><span class="p">()</span>
-
-        <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'shap_barplot.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
-        <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">output_dir</span> <span class="o">/</span>  <span class="s1">'figures'</span> <span class="o">/</span> <span class="s1">'shap_heatmap.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">shap</span><span class="p">:</span>
+            <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'shap_barplot.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+            <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'shap_heatmap.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
     <span class="k">elif</span> <span class="n">problem_type</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
         <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'residual_plot.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
-        <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">output_dir</span> <span class="o">/</span>  <span class="s1">'figures'</span> <span class="o">/</span> <span class="s1">'true_vs_predicted.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
+        <span class="n">pdf</span><span class="o">.</span><span class="n">image</span><span class="p">((</span><span class="n">figures_dir</span> <span class="o">/</span> <span class="s1">'true_vs_predicted.png'</span><span class="p">),</span> <span class="n">Align</span><span class="o">.</span><span class="n">C</span><span class="p">,</span> <span class="n">h</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">eph</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="n">pdf</span><span class="o">.</span><span class="n">epw</span><span class="o">-</span><span class="mi">20</span><span class="p">)</span>
 
     <span class="c1"># Save PDF</span>
     <span class="n">pdf</span><span class="o">.</span><span class="n">output</span><span class="p">((</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'explainer_report.pdf'</span><span class="p">))</span>

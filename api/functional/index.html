@@ -933,6 +933,15 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#jarvais.utils.functional.infer_sensitive_features" class="md-nav__link">
+    <span class="md-ellipsis">
+      infer_sensitive_features
+    </span>
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -1083,6 +1092,15 @@
   <a href="#jarvais.utils.functional.process_RADCURE_clinical" class="md-nav__link">
     <span class="md-ellipsis">
       process_RADCURE_clinical
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.utils.functional.infer_sensitive_features" class="md-nav__link">
+    <span class="md-ellipsis">
+      infer_sensitive_features
     </span>
   </a>
   
@@ -1790,6 +1808,60 @@ Defaults to "_".</p>
     <span class="p">})</span>
 
     <span class="k">return</span> <span class="n">df_converted</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="jarvais.utils.functional.infer_sensitive_features" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">infer_sensitive_features</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Infers potentially sensitive features from a DataFrame.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/jarvais/utils/functional.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span>
+<span class="normal">150</span>
+<span class="normal">151</span>
+<span class="normal">152</span>
+<span class="normal">153</span>
+<span class="normal">154</span>
+<span class="normal">155</span>
+<span class="normal">156</span>
+<span class="normal">157</span>
+<span class="normal">158</span>
+<span class="normal">159</span>
+<span class="normal">160</span>
+<span class="normal">161</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">infer_sensitive_features</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Infers potentially sensitive features from a DataFrame.</span>
+<span class="sd">    """</span>
+    <span class="n">sensitive_keywords</span> <span class="o">=</span> <span class="p">[</span>
+        <span class="s2">"gender"</span><span class="p">,</span> <span class="s2">"sex"</span><span class="p">,</span> <span class="s2">"age"</span><span class="p">,</span> <span class="s2">"race"</span><span class="p">,</span> <span class="s2">"ethnicity"</span><span class="p">,</span> <span class="s2">"income"</span><span class="p">,</span>
+        <span class="s2">"religion"</span><span class="p">,</span> <span class="s2">"disability"</span><span class="p">,</span> <span class="s2">"nationality"</span><span class="p">,</span> <span class="s2">"language"</span><span class="p">,</span>
+        <span class="s2">"marital"</span><span class="p">,</span> <span class="s2">"citizen"</span><span class="p">,</span> <span class="s2">"veteran"</span><span class="p">,</span> <span class="s2">"status"</span><span class="p">,</span> <span class="s2">"orientation"</span><span class="p">,</span>
+        <span class="s2">"disease"</span><span class="p">,</span> <span class="s2">"regimen"</span><span class="p">,</span> <span class="s2">"disease_site"</span>
+    <span class="p">]</span>
+
+    <span class="n">sensitive_features</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">data</span><span class="o">.</span><span class="n">columns</span> 
+        <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="n">re</span><span class="o">.</span><span class="n">search</span><span class="p">(</span><span class="sa">rf</span><span class="s2">"\b</span><span class="si">{</span><span class="n">keyword</span><span class="si">}</span><span class="s2">\b"</span><span class="p">,</span> <span class="n">col</span><span class="p">,</span> <span class="n">re</span><span class="o">.</span><span class="n">IGNORECASE</span><span class="p">)</span> <span class="k">for</span> <span class="n">keyword</span> <span class="ow">in</span> <span class="n">sensitive_keywords</span><span class="p">)</span>
+    <span class="p">}</span>
+
+    <span class="k">return</span> <span class="n">sensitive_features</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>

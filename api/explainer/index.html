@@ -800,18 +800,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#jarvais.explainer.Explainer.run" class="md-nav__link">
+  <a href="#jarvais.explainer.Explainer.from_settings" class="md-nav__link">
     <span class="md-ellipsis">
-      run
+      from_settings
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#jarvais.explainer.Explainer.from_trainer" class="md-nav__link">
+  <a href="#jarvais.explainer.Explainer.run" class="md-nav__link">
     <span class="md-ellipsis">
-      from_trainer
+      run
     </span>
   </a>
   
@@ -823,19 +823,61 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#jarvais.explainer.BiasExplainer" class="md-nav__link">
+  <a href="#explainer-modules" class="md-nav__link">
     <span class="md-ellipsis">
-      BiasExplainer
+      Explainer Modules
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="BiasExplainer">
+    <nav class="md-nav" aria-label="Explainer Modules">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#jarvais.explainer.BiasExplainer.run" class="md-nav__link">
+  <a href="#jarvais.explainer.modules.BiasAuditModule" class="md-nav__link">
     <span class="md-ellipsis">
-      run
+      BiasAuditModule
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.explainer.modules.ImportanceModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      ImportanceModule
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.explainer.modules.ModelInterpretationModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModelInterpretationModule
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explainer-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Explainer Settings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Explainer Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.explainer.settings.ExplainerSettings" class="md-nav__link">
+    <span class="md-ellipsis">
+      ExplainerSettings
     </span>
   </a>
   
@@ -1039,18 +1081,18 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#jarvais.explainer.Explainer.run" class="md-nav__link">
+  <a href="#jarvais.explainer.Explainer.from_settings" class="md-nav__link">
     <span class="md-ellipsis">
-      run
+      from_settings
     </span>
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#jarvais.explainer.Explainer.from_trainer" class="md-nav__link">
+  <a href="#jarvais.explainer.Explainer.run" class="md-nav__link">
     <span class="md-ellipsis">
-      from_trainer
+      run
     </span>
   </a>
   
@@ -1062,19 +1104,61 @@
 </li>
       
         <li class="md-nav__item">
-  <a href="#jarvais.explainer.BiasExplainer" class="md-nav__link">
+  <a href="#explainer-modules" class="md-nav__link">
     <span class="md-ellipsis">
-      BiasExplainer
+      Explainer Modules
     </span>
   </a>
   
-    <nav class="md-nav" aria-label="BiasExplainer">
+    <nav class="md-nav" aria-label="Explainer Modules">
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#jarvais.explainer.BiasExplainer.run" class="md-nav__link">
+  <a href="#jarvais.explainer.modules.BiasAuditModule" class="md-nav__link">
     <span class="md-ellipsis">
-      run
+      BiasAuditModule
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.explainer.modules.ImportanceModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      ImportanceModule
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.explainer.modules.ModelInterpretationModule" class="md-nav__link">
+    <span class="md-ellipsis">
+      ModelInterpretationModule
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explainer-settings" class="md-nav__link">
+    <span class="md-ellipsis">
+      Explainer Settings
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Explainer Settings">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#jarvais.explainer.settings.ExplainerSettings" class="md-nav__link">
+    <span class="md-ellipsis">
+      ExplainerSettings
     </span>
   </a>
   
@@ -1122,99 +1206,6 @@
     <div class="doc doc-contents first">
 
 
-        <p>A class to generate diagnostic plots and reports for models trained using TrainerSupervised.</p>
-
-
-<p><span class="doc-section-title">Attributes:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.Explainer.trainer">trainer</span></code></td>
-            <td>
-                  <code><a class="autorefs autorefs-internal" title="jarvais.trainer.TrainerSupervised" href="../trainer/#jarvais.trainer.TrainerSupervised">TrainerSupervised</a></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The TrainerSupervised object containing the trained model.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.Explainer.predictor">predictor</span></code></td>
-            <td>
-                  <code><span title="object">object</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The AutoGluon predictor object used for inference.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.Explainer.X_train">X_train</span></code></td>
-            <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The training dataset used to train the model.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.Explainer.X_test">X_test</span></code></td>
-            <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The test dataset for evaluating the model.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.Explainer.y_test">y_test</span></code></td>
-            <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The true target values for the test dataset.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.Explainer.output_dir">output_dir</span></code></td>
-            <td>
-                  <code><span title="pathlib.Path">Path</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The directory where plots, reports, and outputs are saved.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.Explainer.sensitive_features">sensitive_features</span></code></td>
-            <td>
-                  <code><span title="list">list</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>List of features considered sensitive for bias auditing.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
 
 
 
@@ -1222,255 +1213,169 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/jarvais/explainer/explainer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 19</span>
-<span class="normal"> 20</span>
-<span class="normal"> 21</span>
-<span class="normal"> 22</span>
-<span class="normal"> 23</span>
-<span class="normal"> 24</span>
-<span class="normal"> 25</span>
-<span class="normal"> 26</span>
-<span class="normal"> 27</span>
-<span class="normal"> 28</span>
-<span class="normal"> 29</span>
-<span class="normal"> 30</span>
-<span class="normal"> 31</span>
-<span class="normal"> 32</span>
-<span class="normal"> 33</span>
-<span class="normal"> 34</span>
-<span class="normal"> 35</span>
-<span class="normal"> 36</span>
-<span class="normal"> 37</span>
-<span class="normal"> 38</span>
-<span class="normal"> 39</span>
-<span class="normal"> 40</span>
-<span class="normal"> 41</span>
-<span class="normal"> 42</span>
-<span class="normal"> 43</span>
-<span class="normal"> 44</span>
-<span class="normal"> 45</span>
-<span class="normal"> 46</span>
-<span class="normal"> 47</span>
-<span class="normal"> 48</span>
-<span class="normal"> 49</span>
-<span class="normal"> 50</span>
-<span class="normal"> 51</span>
-<span class="normal"> 52</span>
-<span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span>
-<span class="normal">115</span>
-<span class="normal">116</span>
-<span class="normal">117</span>
-<span class="normal">118</span>
-<span class="normal">119</span>
-<span class="normal">120</span>
-<span class="normal">121</span>
-<span class="normal">122</span>
-<span class="normal">123</span>
-<span class="normal">124</span>
-<span class="normal">125</span>
-<span class="normal">126</span>
-<span class="normal">127</span>
-<span class="normal">128</span>
-<span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
-<span class="normal">133</span>
-<span class="normal">134</span>
-<span class="normal">135</span>
-<span class="normal">136</span>
-<span class="normal">137</span>
-<span class="normal">138</span>
-<span class="normal">139</span>
-<span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Explainer</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    A class to generate diagnostic plots and reports for models trained using TrainerSupervised.</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span>
+<span class="normal">69</span>
+<span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span>
+<span class="normal">92</span>
+<span class="normal">93</span>
+<span class="normal">94</span>
+<span class="normal">95</span>
+<span class="normal">96</span>
+<span class="normal">97</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Explainer</span><span class="p">():</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        trainer (TrainerSupervised): The TrainerSupervised object containing the trained model.</span>
-<span class="sd">        predictor (object): The AutoGluon predictor object used for inference.</span>
-<span class="sd">        X_train (pd.DataFrame): The training dataset used to train the model.</span>
-<span class="sd">        X_test (pd.DataFrame): The test dataset for evaluating the model.</span>
-<span class="sd">        y_test (pd.DataFrame): The true target values for the test dataset.</span>
-<span class="sd">        output_dir (Path): The directory where plots, reports, and outputs are saved.</span>
-<span class="sd">        sensitive_features (list, optional): List of features considered sensitive for bias auditing.</span>
-<span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span>
-            <span class="n">trainer</span><span class="p">,</span>
-            <span class="n">X_train</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-            <span class="n">X_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-            <span class="n">y_test</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span>
-            <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-            <span class="n">sensitive_features</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="p">,</span>
+        <span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">|</span> <span class="n">Path</span><span class="p">,</span>
+        <span class="n">sensitive_features</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span> <span class="o">=</span> <span class="n">trainer</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span> <span class="o">=</span> <span class="n">X_train</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span> <span class="o">=</span> <span class="n">X_test</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span> <span class="o">=</span> <span class="n">y_test</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">sensitive_features</span>
+        <span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
+        <span class="n">figures_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
+        <span class="n">bias_dir</span> <span class="o">=</span> <span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'bias'</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="o">.</span><span class="n">cwd</span><span class="p">()</span> <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="kc">None</span> <span class="k">else</span> <span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-        <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpretation_module</span> <span class="o">=</span> <span class="n">ModelInterpretationModule</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">importance_module</span> <span class="o">=</span> <span class="n">ImportanceModule</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">figures_dir</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_audit_module</span> <span class="o">=</span> <span class="n">BiasAuditModule</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="n">bias_dir</span><span class="p">,</span> <span class="n">sensitive_features</span><span class="o">=</span><span class="n">sensitive_features</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""Generate diagnostic plots and reports for the trained model."""</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">_run_bias_audit</span><span class="p">()</span>
-
-        <span class="n">plot_violin_of_bootstrapped_metrics</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_val</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="p">,</span>
-            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
-        <span class="p">)</span>            
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'binary'</span><span class="p">,</span> <span class="s1">'multiclass'</span><span class="p">]:</span>
-            <span class="n">plot_classification_diagnostics</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_val</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-                <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
-            <span class="p">)</span>
-            <span class="n">plot_shap_values</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
-                <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
-            <span class="p">)</span>
-
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
-            <span class="n">plot_regression_diagnostics</span><span class="p">(</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-                <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
-            <span class="p">)</span>
-
-        <span class="c1"># Plot feature importance</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># NEEDS TO BE UPDATED</span>
-            <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">'CoxPH'</span><span class="p">]</span>
-            <span class="n">result</span> <span class="o">=</span> <span class="n">permutation_importance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
-                                            <span class="n">Surv</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="s1">'event'</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">),</span>
-                                            <span class="n">n_repeats</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-
-            <span class="n">importance_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-                <span class="p">{</span>
-                    <span class="s2">"importance"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"importances_mean"</span><span class="p">],</span>
-                    <span class="s2">"stddev"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"importances_std"</span><span class="p">],</span>
-                <span class="p">},</span>
-                <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
-            <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"importance"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">model_name</span> <span class="o">=</span> <span class="s1">'CoxPH'</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">importance_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">(</span>
-                <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-            <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">model_best</span>
-
-        <span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">importance_df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
-        <span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_run_bias_audit</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">]:</span>
-
-        <span class="n">bias_output_dir</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'bias'</span>
-        <span class="n">bias_output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># Data needs to be not be one hot encoded</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">infer_sensitive_features</span><span class="p">(</span><span class="n">undummify</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">prefix_sep</span><span class="o">=</span><span class="s1">'|'</span><span class="p">))</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">infer_sensitive_features</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span>
-
-        <span class="n">y_pred</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span> <span class="p">)</span>
-        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span> <span class="k">else</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">,</span> <span class="s1">'false_positive_rate'</span><span class="p">]</span> 
-
-        <span class="n">bias</span> <span class="o">=</span> <span class="n">BiasExplainer</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> 
-            <span class="n">y_pred</span><span class="p">,</span> 
-            <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> 
-            <span class="n">bias_output_dir</span><span class="p">,</span>
-            <span class="n">metrics</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">ExplainerSettings</span><span class="p">(</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">interpretation</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">interpretation_module</span><span class="p">,</span>
+            <span class="n">importance</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">importance_module</span><span class="p">,</span>
+            <span class="n">bias_audit</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">bias_audit_module</span>
         <span class="p">)</span>
-        <span class="n">bias</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">relative</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="nd">@classmethod</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">from_trainer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">        </span><span class="sd">"""Create Explainer object from TrainerSupervised object."""</span>
-        <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">from_settings</span><span class="p">(</span>
+            <span class="bp">cls</span><span class="p">,</span> 
+            <span class="n">settings_dict</span><span class="p">:</span> <span class="nb">dict</span>
+        <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Explainer"</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""</span>
+<span class="sd">        Initialize an Explainer instance with a given settings dictionary. Settings are validated by pydantic.</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            settings_dict (dict): A dictionary containing the explainer settings.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            Explainer: An explainer instance with the given settings.</span>
+<span class="sd">        """</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">settings</span> <span class="o">=</span> <span class="n">ExplainerSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">settings_dict</span><span class="p">)</span>
+        <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid explainer settings"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+        <span class="n">explainer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">explainer</span><span class="o">.</span><span class="n">interpretation_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">interpretation</span>
+        <span class="n">explainer</span><span class="o">.</span><span class="n">importance_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">importance</span>
+        <span class="n">explainer</span><span class="o">.</span><span class="n">bias_audit_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">bias_audit</span>
+
+        <span class="n">explainer</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
+
+        <span class="k">return</span> <span class="n">explainer</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">"TrainerSupervised"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">        </span><span class="sd">"""Generate diagnostic plots and reports for the trained model."""</span>
+
+        <span class="c1"># Run Modules</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bias_audit_module</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">interpretation_module</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">importance_module</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+        <span class="c1"># Generate Report</span>
+        <span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">interpretation</span><span class="o">.</span><span class="n">shap</span><span class="p">)</span>
+
+        <span class="c1"># Save Settings</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_schema_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'explainer_settings.schema.json'</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_schema_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">(),</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'explainer_settings.json'</span>
+        <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span>
+                <span class="s2">"$schema"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_schema_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)),</span>
+                <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span> 
+            <span class="p">},</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">__rich_repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">rich</span><span class="o">.</span><span class="n">repr</span><span class="o">.</span><span class="n">Result</span><span class="p">:</span>
+        <span class="k">yield</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">"Explainer(settings=</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_dump_json</span><span class="p">(</span><span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span><span class="si">}</span><span class="s2">)"</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -1489,152 +1394,8 @@
 <div class="doc doc-object doc-function">
 
 
-<h4 id="jarvais.explainer.Explainer.run" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">run</span><span class="p">()</span></code>
-
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Generate diagnostic plots and reports for the trained model.</p>
-
-            <details class="quote">
-              <summary>Source code in <code>src/jarvais/explainer/explainer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 53</span>
-<span class="normal"> 54</span>
-<span class="normal"> 55</span>
-<span class="normal"> 56</span>
-<span class="normal"> 57</span>
-<span class="normal"> 58</span>
-<span class="normal"> 59</span>
-<span class="normal"> 60</span>
-<span class="normal"> 61</span>
-<span class="normal"> 62</span>
-<span class="normal"> 63</span>
-<span class="normal"> 64</span>
-<span class="normal"> 65</span>
-<span class="normal"> 66</span>
-<span class="normal"> 67</span>
-<span class="normal"> 68</span>
-<span class="normal"> 69</span>
-<span class="normal"> 70</span>
-<span class="normal"> 71</span>
-<span class="normal"> 72</span>
-<span class="normal"> 73</span>
-<span class="normal"> 74</span>
-<span class="normal"> 75</span>
-<span class="normal"> 76</span>
-<span class="normal"> 77</span>
-<span class="normal"> 78</span>
-<span class="normal"> 79</span>
-<span class="normal"> 80</span>
-<span class="normal"> 81</span>
-<span class="normal"> 82</span>
-<span class="normal"> 83</span>
-<span class="normal"> 84</span>
-<span class="normal"> 85</span>
-<span class="normal"> 86</span>
-<span class="normal"> 87</span>
-<span class="normal"> 88</span>
-<span class="normal"> 89</span>
-<span class="normal"> 90</span>
-<span class="normal"> 91</span>
-<span class="normal"> 92</span>
-<span class="normal"> 93</span>
-<span class="normal"> 94</span>
-<span class="normal"> 95</span>
-<span class="normal"> 96</span>
-<span class="normal"> 97</span>
-<span class="normal"> 98</span>
-<span class="normal"> 99</span>
-<span class="normal">100</span>
-<span class="normal">101</span>
-<span class="normal">102</span>
-<span class="normal">103</span>
-<span class="normal">104</span>
-<span class="normal">105</span>
-<span class="normal">106</span>
-<span class="normal">107</span>
-<span class="normal">108</span>
-<span class="normal">109</span>
-<span class="normal">110</span>
-<span class="normal">111</span>
-<span class="normal">112</span>
-<span class="normal">113</span>
-<span class="normal">114</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""Generate diagnostic plots and reports for the trained model."""</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">_run_bias_audit</span><span class="p">()</span>
-
-    <span class="n">plot_violin_of_bootstrapped_metrics</span><span class="p">(</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_val</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="p">,</span>
-        <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
-    <span class="p">)</span>            
-
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'binary'</span><span class="p">,</span> <span class="s1">'multiclass'</span><span class="p">]:</span>
-        <span class="n">plot_classification_diagnostics</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_val</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span>
-            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
-        <span class="p">)</span>
-        <span class="n">plot_shap_values</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
-            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
-        <span class="p">)</span>
-
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
-        <span class="n">plot_regression_diagnostics</span><span class="p">(</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
-            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span>
-        <span class="p">)</span>
-
-    <span class="c1"># Plot feature importance</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span> <span class="c1"># NEEDS TO BE UPDATED</span>
-        <span class="n">model</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">models</span><span class="p">[</span><span class="s1">'CoxPH'</span><span class="p">]</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">permutation_importance</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
-                                        <span class="n">Surv</span><span class="o">.</span><span class="n">from_dataframe</span><span class="p">(</span><span class="s1">'event'</span><span class="p">,</span> <span class="s1">'time'</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">),</span>
-                                        <span class="n">n_repeats</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
-
-        <span class="n">importance_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
-            <span class="p">{</span>
-                <span class="s2">"importance"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"importances_mean"</span><span class="p">],</span>
-                <span class="s2">"stddev"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"importances_std"</span><span class="p">],</span>
-            <span class="p">},</span>
-            <span class="n">index</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
-        <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"importance"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-        <span class="n">model_name</span> <span class="o">=</span> <span class="s1">'CoxPH'</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">importance_df</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">(</span>
-            <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="bp">self</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_test</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
-        <span class="n">model_name</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">model_best</span>
-
-    <span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">importance_df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'figures'</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
-    <span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
-    </div>
-
-</div>
-
-<div class="doc doc-object doc-function">
-
-
-<h4 id="jarvais.explainer.Explainer.from_trainer" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">from_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></code>
+<h4 id="jarvais.explainer.Explainer.from_settings" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">from_settings</span><span class="p">(</span><span class="n">settings_dict</span><span class="p">)</span></code>
 
   <span class="doc doc-labels">
       <small class="doc doc-label doc-label-classmethod"><code>classmethod</code></small>
@@ -1645,17 +1406,187 @@
 
     <div class="doc doc-contents ">
 
-        <p>Create Explainer object from TrainerSupervised object.</p>
+        <p>Initialize an Explainer instance with a given settings dictionary. Settings are validated by pydantic.</p>
+
+
+<p><span class="doc-section-title">Parameters:</span></p>
+    <table>
+      <thead>
+        <tr>
+          <th>Name</th>
+          <th>Type</th>
+          <th>Description</th>
+          <th>Default</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+            <td>
+                <code>settings_dict</code>
+            </td>
+            <td>
+                  <code><span title="dict">dict</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>A dictionary containing the explainer settings.</p>
+              </div>
+            </td>
+            <td>
+                <em>required</em>
+            </td>
+          </tr>
+      </tbody>
+    </table>
+
+
+    <p><span class="doc-section-title">Returns:</span></p>
+    <table>
+      <thead>
+        <tr>
+<th>Name</th>          <th>Type</th>
+          <th>Description</th>
+        </tr>
+      </thead>
+      <tbody>
+          <tr class="doc-section-item">
+<td><code>Explainer</code></td>            <td>
+                  <code>'Explainer'</code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>An explainer instance with the given settings.</p>
+              </div>
+            </td>
+          </tr>
+      </tbody>
+    </table>
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/explainer/explainer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">140</span>
-<span class="normal">141</span>
-<span class="normal">142</span>
-<span class="normal">143</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">from_trainer</span><span class="p">(</span><span class="bp">cls</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
-<span class="w">    </span><span class="sd">"""Create Explainer object from TrainerSupervised object."""</span>
-    <span class="k">return</span> <span class="bp">cls</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span>
+<span class="normal">48</span>
+<span class="normal">49</span>
+<span class="normal">50</span>
+<span class="normal">51</span>
+<span class="normal">52</span>
+<span class="normal">53</span>
+<span class="normal">54</span>
+<span class="normal">55</span>
+<span class="normal">56</span>
+<span class="normal">57</span>
+<span class="normal">58</span>
+<span class="normal">59</span>
+<span class="normal">60</span>
+<span class="normal">61</span>
+<span class="normal">62</span>
+<span class="normal">63</span>
+<span class="normal">64</span>
+<span class="normal">65</span>
+<span class="normal">66</span>
+<span class="normal">67</span>
+<span class="normal">68</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">from_settings</span><span class="p">(</span>
+        <span class="bp">cls</span><span class="p">,</span> 
+        <span class="n">settings_dict</span><span class="p">:</span> <span class="nb">dict</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="s2">"Explainer"</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""</span>
+<span class="sd">    Initialize an Explainer instance with a given settings dictionary. Settings are validated by pydantic.</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        settings_dict (dict): A dictionary containing the explainer settings.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Explainer: An explainer instance with the given settings.</span>
+<span class="sd">    """</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">settings</span> <span class="o">=</span> <span class="n">ExplainerSettings</span><span class="o">.</span><span class="n">model_validate</span><span class="p">(</span><span class="n">settings_dict</span><span class="p">)</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"Invalid explainer settings"</span><span class="p">)</span> <span class="kn">from</span><span class="w"> </span><span class="nn">e</span>
+
+    <span class="n">explainer</span> <span class="o">=</span> <span class="bp">cls</span><span class="p">(</span>
+        <span class="n">output_dir</span><span class="o">=</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">explainer</span><span class="o">.</span><span class="n">interpretation_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">interpretation</span>
+    <span class="n">explainer</span><span class="o">.</span><span class="n">importance_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">importance</span>
+    <span class="n">explainer</span><span class="o">.</span><span class="n">bias_audit_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">bias_audit</span>
+
+    <span class="n">explainer</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
+
+    <span class="k">return</span> <span class="n">explainer</span>
+</code></pre></div></td></tr></table></div>
+            </details>
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-function">
+
+
+<h4 id="jarvais.explainer.Explainer.run" class="doc doc-heading">
+            <code class="highlight language-python"><span class="n">run</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span></code>
+
+</h4>
+
+
+    <div class="doc doc-contents ">
+
+        <p>Generate diagnostic plots and reports for the trained model.</p>
+
+            <details class="quote">
+              <summary>Source code in <code>src/jarvais/explainer/explainer.py</code></summary>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">70</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span>
+<span class="normal">74</span>
+<span class="normal">75</span>
+<span class="normal">76</span>
+<span class="normal">77</span>
+<span class="normal">78</span>
+<span class="normal">79</span>
+<span class="normal">80</span>
+<span class="normal">81</span>
+<span class="normal">82</span>
+<span class="normal">83</span>
+<span class="normal">84</span>
+<span class="normal">85</span>
+<span class="normal">86</span>
+<span class="normal">87</span>
+<span class="normal">88</span>
+<span class="normal">89</span>
+<span class="normal">90</span>
+<span class="normal">91</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">"TrainerSupervised"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">"""Generate diagnostic plots and reports for the trained model."""</span>
+
+    <span class="c1"># Run Modules</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">bias_audit_module</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">interpretation_module</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">importance_module</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="c1"># Generate Report</span>
+    <span class="n">generate_explainer_report_pdf</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">interpretation</span><span class="o">.</span><span class="n">shap</span><span class="p">)</span>
+
+    <span class="c1"># Save Settings</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_schema_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'explainer_settings.schema.json'</span>
+    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_schema_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">"w"</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_json_schema</span><span class="p">(),</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_path</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="s1">'explainer_settings.json'</span>
+    <span class="k">with</span> <span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_path</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">json</span><span class="o">.</span><span class="n">dump</span><span class="p">({</span>
+            <span class="s2">"$schema"</span><span class="p">:</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">settings_schema_path</span><span class="o">.</span><span class="n">relative_to</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">output_dir</span><span class="p">)),</span>
+            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">model_dump</span><span class="p">(</span><span class="n">mode</span><span class="o">=</span><span class="s2">"json"</span><span class="p">)</span> 
+        <span class="p">},</span> <span class="n">f</span><span class="p">,</span> <span class="n">indent</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
             </details>
     </div>
@@ -1668,110 +1599,24 @@
 
     </div>
 
-</div><hr>
-<p>The <code>BiasExplainer</code> class is used by the <code>Explainer</code> class to run a bias audit.</p>
+</div><h2 id="explainer-modules">Explainer Modules</h2>
 
 
 <div class="doc doc-object doc-class">
 
 
 
-<h3 id="jarvais.explainer.BiasExplainer" class="doc doc-heading">
-            <code>jarvais.explainer.BiasExplainer</code>
+<h3 id="jarvais.explainer.modules.BiasAuditModule" class="doc doc-heading">
+            <code>jarvais.explainer.modules.BiasAuditModule</code>
 
 
 </h3>
 
 
     <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
 
-
-        <p>A class for explaining and analyzing bias in a predictive model's outcomes based on sensitive features.</p>
-<p>This class performs various fairness audits by evaluating predictive outcomes with respect to sensitive features such as
-gender, age, race, and more. It first runs statistical analyses using the OLS regression F-statistic p-value to assess any possibility 
-of bias in the model's predictions based on sensitive features. If the p-value is less than 0.05, indicating potential bias, 
-the class generates visualizations (such as violin plots) and calculates fairness metrics (e.g., demographic parity, equalized odds). 
-The results are presented for each sensitive feature, with optional relative fairness comparisons.</p>
-
-
-<p><span class="doc-section-title">Attributes:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.BiasExplainer.y_true">y_true</span></code></td>
-            <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The true target values for the model.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.BiasExplainer.y_pred">y_pred</span></code></td>
-            <td>
-                  <code><span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>The predicted values from the model.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.BiasExplainer.sensitive_features">sensitive_features</span></code></td>
-            <td>
-                  <code><span title="dict">dict</span> or <span title="pandas.DataFrame">DataFrame</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>A dictionary or DataFrame containing sensitive features used for fairness analysis.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.BiasExplainer.metrics">metrics</span></code></td>
-            <td>
-                  <code><span title="list">list</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>A list of metrics to calculate for fairness analysis. Defaults to ['mean_prediction', 'false_positive_rate', 'true_positive_rate'].</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.BiasExplainer.mapper">mapper</span></code></td>
-            <td>
-                  <code><span title="dict">dict</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>A dictionary mapping internal metric names to user-friendly descriptions.</p>
-              </div>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td><code><span title="jarvais.explainer.BiasExplainer.kwargs">kwargs</span></code></td>
-            <td>
-                  <code><span title="dict">dict</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>Additional parameters passed to various methods, such as metric calculation and plot generation.</p>
-              </div>
-            </td>
-          </tr>
-      </tbody>
-    </table>
 
 
 
@@ -1779,8 +1624,20 @@ The results are presented for each sensitive feature, with optional relative fai
 
 
               <details class="quote">
-                <summary>Source code in <code>src/jarvais/explainer/bias.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 42</span>
+                <summary>Source code in <code>src/jarvais/explainer/modules/bias_audit.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
 <span class="normal"> 43</span>
 <span class="normal"> 44</span>
 <span class="normal"> 45</span>
@@ -1971,125 +1828,102 @@ The results are presented for each sensitive feature, with optional relative fai
 <span class="normal">230</span>
 <span class="normal">231</span>
 <span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BiasExplainer</span><span class="p">():</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    A class for explaining and analyzing bias in a predictive model's outcomes based on sensitive features.</span>
+<span class="normal">233</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">BiasAuditModule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Output directory for bias audit."</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Output Directory"</span><span class="p">,</span>
+        <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">"output"</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">sensitive_features</span><span class="p">:</span> <span class="nb">list</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Sensitive features."</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Sensitive Features"</span><span class="p">,</span>
+        <span class="n">examples</span><span class="o">=</span><span class="p">[</span><span class="s2">"gender"</span><span class="p">,</span> <span class="s2">"race"</span><span class="p">,</span> <span class="s2">"ethnicity"</span><span class="p">]</span>
+    <span class="p">)</span>
+    <span class="n">fairness_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Fairness threshold."</span><span class="p">,</span> 
+        <span class="n">default</span><span class="o">=</span><span class="mf">1.2</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Fairness Threshold"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Relative."</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Relative"</span><span class="p">,</span>
+    <span class="p">)</span>
 
-<span class="sd">    This class performs various fairness audits by evaluating predictive outcomes with respect to sensitive features such as</span>
-<span class="sd">    gender, age, race, and more. It first runs statistical analyses using the OLS regression F-statistic p-value to assess any possibility </span>
-<span class="sd">    of bias in the model's predictions based on sensitive features. If the p-value is less than 0.05, indicating potential bias, </span>
-<span class="sd">    the class generates visualizations (such as violin plots) and calculates fairness metrics (e.g., demographic parity, equalized odds). </span>
-<span class="sd">    The results are presented for each sensitive feature, with optional relative fairness comparisons.</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># noqa: ANN001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-<span class="sd">    Attributes:</span>
-<span class="sd">        y_true (pd.DataFrame):</span>
-<span class="sd">            The true target values for the model.</span>
-<span class="sd">        y_pred (pd.DataFrame):</span>
-<span class="sd">            The predicted values from the model.</span>
-<span class="sd">        sensitive_features (dict or pd.DataFrame):</span>
-<span class="sd">            A dictionary or DataFrame containing sensitive features used for fairness analysis.</span>
-<span class="sd">        metrics (list):</span>
-<span class="sd">            A list of metrics to calculate for fairness analysis. Defaults to ['mean_prediction', 'false_positive_rate', 'true_positive_rate'].</span>
-<span class="sd">        mapper (dict):</span>
-<span class="sd">            A dictionary mapping internal metric names to user-friendly descriptions.</span>
-<span class="sd">        kwargs (dict):</span>
-<span class="sd">            Additional parameters passed to various methods, such as metric calculation and plot generation.</span>
-<span class="sd">    """</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> 
-            <span class="n">y_true</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> 
-            <span class="n">y_pred</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> 
-            <span class="n">sensitive_features</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span> 
-            <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
-            <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
-            <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">,</span> <span class="s1">'false_positive_rate'</span><span class="p">,</span> <span class="s1">'true_positive_rate'</span><span class="p">],</span> 
-            <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="nb">dict</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y_true</span> <span class="o">=</span> <span class="n">y_true</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span> <span class="o">=</span> <span class="n">y_pred</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">=</span> <span class="n">task</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">=</span> <span class="n">output_dir</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">mapper</span> <span class="o">=</span> <span class="p">{</span><span class="s2">"mean_prediction"</span><span class="p">:</span> <span class="s2">"Demographic Parity"</span><span class="p">,</span>
-                       <span class="s2">"false_positive_rate"</span><span class="p">:</span> <span class="s2">"(FPR) Equalized Odds"</span><span class="p">,</span>
-                       <span class="s2">"true_positive_rate"</span><span class="p">:</span> <span class="s2">"(TPR) Equalized Odds or Equal Opportunity"</span><span class="p">}</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="n">metrics</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span> <span class="o">=</span> <span class="n">kwargs</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">"TrainerSupervised"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 
-        <span class="c1"># Convert sensitive_features to DataFrame or leave as Series</span>
-        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sensitive_features</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">)</span> <span class="ow">or</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sensitive_features</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">sensitive_features</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sensitive_features</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="o">.</span><span class="n">from_dict</span><span class="p">(</span><span class="n">sensitive_features</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">sensitive_features</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
-            <span class="k">if</span> <span class="nb">any</span><span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">item</span><span class="p">,</span> <span class="nb">list</span><span class="p">)</span> <span class="k">for</span> <span class="n">item</span> <span class="ow">in</span> <span class="n">sensitive_features</span><span class="p">):</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">sensitive_features</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="sa">f</span><span class="s1">'sensitive_feature_</span><span class="si">{</span><span class="n">i</span><span class="si">}</span><span class="s1">'</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">sensitive_features</span><span class="p">))])</span>
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running Bias Audit Module..."</span><span class="p">)</span>
+
+        <span class="n">test_data</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="n">undummify</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">prefix_sep</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">encoding_module</span><span class="o">.</span><span class="n">prefix_sep</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">encoding_module</span><span class="o">.</span><span class="n">enabled</span>
+            <span class="k">else</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"No sensitive features provided, inferring from data..."</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">infer_sensitive_features</span><span class="p">(</span><span class="n">test_data</span><span class="p">)</span>
+
+        <span class="n">y_pred</span> <span class="o">=</span> <span class="kc">None</span> <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span> <span class="k">else</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">infer</span><span class="p">(</span><span class="n">test_data</span><span class="p">))</span>
+        <span class="n">metrics</span> <span class="o">=</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">]</span> <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span> <span class="k">else</span> <span class="p">[</span><span class="s1">'mean_prediction'</span><span class="p">,</span> <span class="s1">'false_positive_rate'</span><span class="p">]</span>
+
+        <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'binary'</span><span class="p">:</span>
+            <span class="n">y_true_array</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
+            <span class="n">bias_metric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
+                <span class="n">log_loss</span><span class="p">([</span><span class="n">y_true_array</span><span class="p">[</span><span class="n">idx</span><span class="p">]],</span> <span class="p">[</span><span class="n">y_pred</span><span class="p">[</span><span class="n">idx</span><span class="p">]],</span> <span class="n">labels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y_true_array</span><span class="p">))</span>
+                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_true_array</span><span class="p">))</span>
+            <span class="p">])</span>
+            <span class="n">y_pred</span> <span class="o">=</span> <span class="p">(</span><span class="n">y_pred</span> <span class="o">&gt;=</span> <span class="mf">.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
+            <span class="n">bias_metric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">-</span> <span class="n">y_pred</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">sensitive_feature_name</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">:</span>
+            <span class="n">_sensitive_column</span> <span class="o">=</span> <span class="n">test_data</span><span class="p">[</span><span class="n">sensitive_feature_name</span><span class="p">]</span>
+            <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span>
+                <span class="bp">self</span><span class="o">.</span><span class="n">_subgroup_analysis_coxph</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="n">_sensitive_column</span><span class="p">)</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">sensitive_features</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">'sensitive_feature'</span><span class="p">])</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">"sensitive_features must be a pandas DataFrame, Series, dictionary or list"</span><span class="p">)</span>
+                <span class="n">f_pvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subgroup_analysis_ols</span><span class="p">(</span><span class="n">_sensitive_column</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">f_pvalue</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
+                    <span class="bp">self</span><span class="o">.</span><span class="n">_generate_violin</span><span class="p">(</span><span class="n">_sensitive_column</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span><span class="p">)</span>
+                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_fair_metrics</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">,</span> <span class="n">_sensitive_column</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">fairness_threshold</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">relative</span><span class="p">,</span> <span class="n">metrics</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_violin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensitive_feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== Subgroup Analysis for '</span><span class="si">{</span><span class="n">sensitive_feature_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">' using FairLearn ===</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span> <span class="c1"># noqa: T201</span>
+                    <span class="n">table_output</span> <span class="o">=</span> <span class="n">tabulate</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">headers</span><span class="o">=</span><span class="s1">'keys'</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'grid'</span><span class="p">)</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'    '</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)]),</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span> <span class="c1"># noqa: T201</span>
+
+                    <span class="n">result</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_feature_name</span><span class="si">}</span><span class="s1">_fm_metrics.csv'</span><span class="p">)</span>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_generate_violin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensitive_column</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">task</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Generate a violin plot for the bias metric."""</span>
         <span class="n">plt</span><span class="o">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> 
         <span class="n">sns</span><span class="o">.</span><span class="n">set_theme</span><span class="p">(</span><span class="n">style</span><span class="o">=</span><span class="s2">"whitegrid"</span><span class="p">)</span>  
 
         <span class="n">sns</span><span class="o">.</span><span class="n">violinplot</span><span class="p">(</span>
-            <span class="n">x</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">[</span><span class="n">sensitive_feature</span><span class="p">],</span> 
+            <span class="n">x</span><span class="o">=</span><span class="n">sensitive_column</span><span class="p">,</span> 
             <span class="n">y</span><span class="o">=</span><span class="n">bias_metric</span><span class="p">,</span> 
             <span class="n">palette</span><span class="o">=</span><span class="s2">"muted"</span><span class="p">,</span>  
             <span class="n">inner</span><span class="o">=</span><span class="s2">"quart"</span><span class="p">,</span> 
             <span class="n">linewidth</span><span class="o">=</span><span class="mf">1.25</span> 
         <span class="p">)</span>
 
-        <span class="n">bias_metric_name</span> <span class="o">=</span> <span class="s1">'log_loss'</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'binary'</span> <span class="k">else</span> <span class="s1">'root_mean_squared_error'</span>
+        <span class="n">bias_metric_name</span> <span class="o">=</span> <span class="s1">'log_loss'</span> <span class="k">if</span> <span class="n">task</span> <span class="o">==</span> <span class="s1">'binary'</span> <span class="k">else</span> <span class="s1">'root_mean_squared_error'</span>
 
-        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">bias_metric_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> Distribution by </span><span class="si">{</span><span class="n">sensitive_feature</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span>  
-        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>  
+        <span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">bias_metric_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> Distribution by </span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">16</span><span class="p">,</span> <span class="n">weight</span><span class="o">=</span><span class="s1">'bold'</span><span class="p">)</span>  
+        <span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span>  
         <span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">bias_metric_name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s1"> per Patient'</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">14</span><span class="p">)</span> 
         <span class="n">plt</span><span class="o">.</span><span class="n">xticks</span><span class="p">(</span><span class="n">rotation</span><span class="o">=</span><span class="mi">45</span><span class="p">,</span> <span class="n">ha</span><span class="o">=</span><span class="s1">'right'</span><span class="p">)</span>
 
         <span class="n">plt</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>  
-        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">bias_metric_name</span><span class="si">}</span><span class="s1">.png'</span><span class="p">)</span> 
+        <span class="n">plt</span><span class="o">.</span><span class="n">savefig</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">bias_metric_name</span><span class="si">}</span><span class="s1">.png'</span><span class="p">)</span> 
         <span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_subgroup_analysis_OLS</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensitive_feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_subgroup_analysis_ols</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensitive_column</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">float</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Fit a statsmodels OLS model to the bias metric data, using the sensitive feature and print summary based on p_val."""</span>
-        <span class="n">one_hot_encoded</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">[</span><span class="n">sensitive_feature</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="n">sensitive_feature</span><span class="p">)</span>
+        <span class="n">one_hot_encoded</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">sensitive_column</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
         <span class="n">X_columns</span> <span class="o">=</span> <span class="n">one_hot_encoded</span><span class="o">.</span><span class="n">columns</span>
 
         <span class="n">X</span> <span class="o">=</span> <span class="n">one_hot_encoded</span><span class="o">.</span><span class="n">values</span>  
@@ -2101,8 +1935,8 @@ The results are presented for each sensitive feature, with optional relative fai
         <span class="k">if</span> <span class="n">model</span><span class="o">.</span><span class="n">f_pvalue</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"⚠️  **Possible Bias Detected in </span><span class="si">{</span><span class="n">sensitive_feature</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">** ⚠️</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== Subgroup Analysis for '</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">' Using OLS Regression ===</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"⚠️  **Possible Bias Detected in </span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">** ⚠️</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span> <span class="c1"># noqa: T201</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== Subgroup Analysis for '</span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">' Using OLS Regression ===</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Model Statistics:"</span><span class="p">)</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    R-squared:                  </span><span class="si">{</span><span class="n">model</span><span class="o">.</span><span class="n">rsquared</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -2121,17 +1955,17 @@ The results are presented for each sensitive feature, with optional relative fai
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'    '</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)]))</span>
 
             <span class="n">output_text</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">output_text</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">output_text</span><span class="p">)</span> <span class="c1"># noqa: T201</span>
 
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="si">}</span><span class="s1">_Cox_model_summary.txt'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_OLS_model_summary.txt'</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_text</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">model</span><span class="o">.</span><span class="n">f_pvalue</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_subgroup_analysis_CoxPH</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sensitive_feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">_subgroup_analysis_coxph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">y_true</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> <span class="n">sensitive_column</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Fit a CoxPH model using the sensitive feature and print summary based on p_val."""</span>
-        <span class="n">one_hot_encoded</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">[</span><span class="n">sensitive_feature</span><span class="p">],</span> <span class="n">prefix</span><span class="o">=</span><span class="n">sensitive_feature</span><span class="p">)</span>
-        <span class="n">df_encoded</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_true</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">one_hot_encoded</span><span class="p">)</span>
+        <span class="n">one_hot_encoded</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">get_dummies</span><span class="p">(</span><span class="n">sensitive_column</span><span class="p">,</span> <span class="n">prefix</span><span class="o">=</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="p">)</span>
+        <span class="n">df_encoded</span> <span class="o">=</span> <span class="n">y_true</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">one_hot_encoded</span><span class="p">)</span>
 
         <span class="n">cph</span> <span class="o">=</span> <span class="n">CoxPHFitter</span><span class="p">(</span><span class="n">penalizer</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">)</span>
         <span class="n">cph</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">df_encoded</span><span class="p">,</span> <span class="n">duration_col</span><span class="o">=</span><span class="s1">'time'</span><span class="p">,</span> <span class="n">event_col</span><span class="o">=</span><span class="s1">'event'</span><span class="p">)</span>            
@@ -2139,8 +1973,8 @@ The results are presented for each sensitive feature, with optional relative fai
         <span class="k">if</span> <span class="n">cph</span><span class="o">.</span><span class="n">log_likelihood_ratio_test</span><span class="p">()</span><span class="o">.</span><span class="n">p_value</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
             <span class="n">output</span> <span class="o">=</span> <span class="p">[]</span>
 
-            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"⚠️  **Possible Bias Detected in </span><span class="si">{</span><span class="n">sensitive_feature</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">** ⚠️"</span><span class="p">)</span>
-            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== Subgroup Analysis for '</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">' Using Cox Proportional Hazards Model ===</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"⚠️  **Possible Bias Detected in </span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">** ⚠️"</span><span class="p">)</span> <span class="c1"># noqa: T201</span>
+            <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"=== Subgroup Analysis for '</span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">' Using Cox Proportional Hazards Model ===</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
 
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s2">"Model Statistics:"</span><span class="p">)</span>
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s2">"    AIC (Partial):               </span><span class="si">{</span><span class="n">cph</span><span class="o">.</span><span class="n">AIC_partial_</span><span class="si">:</span><span class="s2">.2f</span><span class="si">}</span><span class="s2">"</span><span class="p">)</span>
@@ -2158,31 +1992,39 @@ The results are presented for each sensitive feature, with optional relative fai
             <span class="n">output</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'    '</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)]))</span>
 
             <span class="n">output_text</span> <span class="o">=</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-            <span class="nb">print</span><span class="p">(</span><span class="n">output_text</span><span class="p">)</span>
+            <span class="nb">print</span><span class="p">(</span><span class="n">output_text</span><span class="p">)</span> <span class="c1"># noqa: T201</span>
 
-            <span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="si">}</span><span class="s1">_OLS_model_summary.txt'</span><span class="p">,</span> <span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+            <span class="k">with</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_column</span><span class="o">.</span><span class="n">name</span><span class="si">}</span><span class="s1">_Cox_model_summary.txt'</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s1">'w'</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
                 <span class="n">f</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">output_text</span><span class="p">)</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">_calculate_fair_metrics</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span> 
-            <span class="n">sensitive_feature</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> 
+            <span class="n">y_true</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+            <span class="n">y_pred</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span>
+            <span class="n">sensitive_column</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">,</span> 
             <span class="n">fairness_threshold</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> 
-            <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span>
+            <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span><span class="p">,</span>
+            <span class="n">metrics</span><span class="p">:</span> <span class="nb">list</span>
         <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">"""Calculate the Fairlearn metrics and return the results in a DataFrame."""</span>
-        <span class="n">_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="n">metric</span><span class="p">:</span> <span class="n">get_metric</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">sensitive_features</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">[</span><span class="n">sensitive_feature</span><span class="p">])</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">}</span>
+        <span class="n">_metrics</span> <span class="o">=</span> <span class="p">{</span><span class="n">metric</span><span class="p">:</span> <span class="n">get_metric</span><span class="p">(</span><span class="n">metric</span><span class="p">,</span> <span class="n">sensitive_features</span><span class="o">=</span><span class="n">sensitive_column</span><span class="p">)</span> <span class="k">for</span> <span class="n">metric</span> <span class="ow">in</span> <span class="n">metrics</span><span class="p">}</span>
         <span class="n">metric_frame</span> <span class="o">=</span> <span class="n">fm</span><span class="o">.</span><span class="n">MetricFrame</span><span class="p">(</span>
             <span class="n">metrics</span><span class="o">=</span><span class="n">_metrics</span><span class="p">,</span> 
-            <span class="n">y_true</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">y_true</span><span class="p">,</span> 
-            <span class="n">y_pred</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span><span class="p">,</span> 
-            <span class="n">sensitive_features</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">[</span><span class="n">sensitive_feature</span><span class="p">],</span> 
-            <span class="o">**</span><span class="bp">self</span><span class="o">.</span><span class="n">kwargs</span>
+            <span class="n">y_true</span><span class="o">=</span><span class="n">y_true</span><span class="p">,</span> 
+            <span class="n">y_pred</span><span class="o">=</span><span class="n">y_pred</span><span class="p">,</span> 
+            <span class="n">sensitive_features</span><span class="o">=</span><span class="n">sensitive_column</span><span class="p">,</span> 
         <span class="p">)</span>
         <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">metric_frame</span><span class="o">.</span><span class="n">by_group</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="n">_metrics</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">mapper</span><span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+                <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+                    <span class="s2">"mean_prediction"</span><span class="p">:</span> <span class="s2">"Demographic Parity"</span><span class="p">,</span>
+                    <span class="s2">"false_positive_rate"</span><span class="p">:</span> <span class="s2">"(FPR) Equalized Odds"</span><span class="p">,</span>
+                    <span class="s2">"true_positive_rate"</span><span class="p">:</span> <span class="s2">"(TPR) Equalized Odds or Equal Opportunity"</span>
+                <span class="p">}</span>
+            <span class="p">)</span>
 
         <span class="k">if</span> <span class="n">relative</span><span class="p">:</span>
-            <span class="n">largest_feature</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="p">[</span><span class="n">sensitive_feature</span><span class="p">]</span><span class="o">.</span><span class="n">mode</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+            <span class="n">largest_feature</span> <span class="o">=</span> <span class="n">sensitive_column</span><span class="o">.</span><span class="n">mode</span><span class="p">()</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
             <span class="n">results_relative</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">T</span> <span class="o">/</span> <span class="n">result</span><span class="p">[</span><span class="n">largest_feature</span><span class="p">]</span>
             <span class="n">results_relative</span> <span class="o">=</span> <span class="n">results_relative</span><span class="o">.</span><span class="n">applymap</span><span class="p">(</span>
                 <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"</span><span class="si">{</span><span class="n">x</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2"> ✅"</span> <span class="k">if</span> <span class="n">x</span> <span class="o">&lt;=</span> <span class="n">fairness_threshold</span> <span class="ow">or</span> <span class="mi">1</span><span class="o">/</span><span class="n">x</span> <span class="o">&lt;=</span> <span class="n">fairness_threshold</span> 
@@ -2190,49 +2032,6 @@ The results are presented for each sensitive feature, with optional relative fai
             <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">result</span><span class="p">,</span> <span class="n">results_relative</span><span class="o">.</span><span class="n">T</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="sa">f</span><span class="s2">"Relative </span><span class="si">{</span><span class="n">x</span><span class="si">}</span><span class="s2">"</span><span class="p">)])</span>
 
         <span class="k">return</span> <span class="n">result</span>
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
-            <span class="bp">self</span><span class="p">,</span> 
-            <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-            <span class="n">fairness_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.2</span>
-        <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">        </span><span class="sd">"""</span>
-<span class="sd">        Runs the bias explainer analysis on the provided data. It first evaluates the potential bias in the model's predictions</span>
-<span class="sd">        using the OLS regression F-statistic p-value. If the p-value is below the threshold of 0.05, indicating </span>
-<span class="sd">        potential bias in the sensitive feature, the method proceeds to generate visualizations and calculate fairness metrics.</span>
-
-<span class="sd">        Args:</span>
-<span class="sd">            relative (bool): </span>
-<span class="sd">                If True, the metrics will be presented relative to the most frequent value of each sensitive feature.</span>
-<span class="sd">            fairness_threshold (float): </span>
-<span class="sd">                A threshold for determining fairness based on relative metrics. If the relative metric exceeds this threshold, </span>
-<span class="sd">                a warning flag will be applied.</span>
-<span class="sd">        """</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'binary'</span><span class="p">:</span>
-            <span class="n">y_true_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_true</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-            <span class="n">bias_metric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-                <span class="n">log_loss</span><span class="p">([</span><span class="n">y_true_array</span><span class="p">[</span><span class="n">idx</span><span class="p">]],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span><span class="p">[</span><span class="n">idx</span><span class="p">]],</span> <span class="n">labels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y_true_array</span><span class="p">))</span>
-                <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_true_array</span><span class="p">))</span>
-            <span class="p">])</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span> <span class="o">&gt;=</span> <span class="mf">.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-        <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
-            <span class="n">bias_metric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">y_true</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">sensitive_feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_subgroup_analysis_CoxPH</span><span class="p">(</span><span class="n">sensitive_feature</span><span class="p">)</span>
-            <span class="k">else</span><span class="p">:</span>
-                <span class="n">f_pvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subgroup_analysis_OLS</span><span class="p">(</span><span class="n">sensitive_feature</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">)</span>
-                <span class="k">if</span> <span class="n">f_pvalue</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
-                    <span class="bp">self</span><span class="o">.</span><span class="n">_generate_violin</span><span class="p">(</span><span class="n">sensitive_feature</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">)</span>
-                    <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_fair_metrics</span><span class="p">(</span><span class="n">sensitive_feature</span><span class="p">,</span> <span class="n">fairness_threshold</span><span class="p">,</span> <span class="n">relative</span><span class="p">)</span>
-
-                    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== Subgroup Analysis for '</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">' using FairLearn ===</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-                    <span class="n">table_output</span> <span class="o">=</span> <span class="n">tabulate</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">headers</span><span class="o">=</span><span class="s1">'keys'</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'grid'</span><span class="p">)</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'    '</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)]),</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
-
-                    <span class="n">result</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="si">}</span><span class="s1">_fm_metrics.csv'</span><span class="p">)</span>
 </code></pre></div></td></tr></table></div>
               </details>
 
@@ -2248,159 +2047,491 @@ The results are presented for each sensitive feature, with optional relative fai
 
 
 
-<div class="doc doc-object doc-function">
 
 
-<h4 id="jarvais.explainer.BiasExplainer.run" class="doc doc-heading">
-            <code class="highlight language-python"><span class="n">run</span><span class="p">(</span><span class="n">relative</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">fairness_threshold</span><span class="o">=</span><span class="mf">1.2</span><span class="p">)</span></code>
+  </div>
 
-</h4>
-
-
-    <div class="doc doc-contents ">
-
-        <p>Runs the bias explainer analysis on the provided data. It first evaluates the potential bias in the model's predictions
-using the OLS regression F-statistic p-value. If the p-value is below the threshold of 0.05, indicating 
-potential bias in the sensitive feature, the method proceeds to generate visualizations and calculate fairness metrics.</p>
-
-
-<p><span class="doc-section-title">Parameters:</span></p>
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Type</th>
-          <th>Description</th>
-          <th>Default</th>
-        </tr>
-      </thead>
-      <tbody>
-          <tr class="doc-section-item">
-            <td>
-                <code>relative</code>
-            </td>
-            <td>
-                  <code><span title="bool">bool</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>If True, the metrics will be presented relative to the most frequent value of each sensitive feature.</p>
-              </div>
-            </td>
-            <td>
-                  <code>False</code>
-            </td>
-          </tr>
-          <tr class="doc-section-item">
-            <td>
-                <code>fairness_threshold</code>
-            </td>
-            <td>
-                  <code><span title="float">float</span></code>
-            </td>
-            <td>
-              <div class="doc-md-description">
-                <p>A threshold for determining fairness based on relative metrics. If the relative metric exceeds this threshold, 
-a warning flag will be applied.</p>
-              </div>
-            </td>
-            <td>
-                  <code>1.2</code>
-            </td>
-          </tr>
-      </tbody>
-    </table>
-
-            <details class="quote">
-              <summary>Source code in <code>src/jarvais/explainer/bias.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">227</span>
-<span class="normal">228</span>
-<span class="normal">229</span>
-<span class="normal">230</span>
-<span class="normal">231</span>
-<span class="normal">232</span>
-<span class="normal">233</span>
-<span class="normal">234</span>
-<span class="normal">235</span>
-<span class="normal">236</span>
-<span class="normal">237</span>
-<span class="normal">238</span>
-<span class="normal">239</span>
-<span class="normal">240</span>
-<span class="normal">241</span>
-<span class="normal">242</span>
-<span class="normal">243</span>
-<span class="normal">244</span>
-<span class="normal">245</span>
-<span class="normal">246</span>
-<span class="normal">247</span>
-<span class="normal">248</span>
-<span class="normal">249</span>
-<span class="normal">250</span>
-<span class="normal">251</span>
-<span class="normal">252</span>
-<span class="normal">253</span>
-<span class="normal">254</span>
-<span class="normal">255</span>
-<span class="normal">256</span>
-<span class="normal">257</span>
-<span class="normal">258</span>
-<span class="normal">259</span>
-<span class="normal">260</span>
-<span class="normal">261</span>
-<span class="normal">262</span>
-<span class="normal">263</span>
-<span class="normal">264</span>
-<span class="normal">265</span>
-<span class="normal">266</span>
-<span class="normal">267</span>
-<span class="normal">268</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span>
-        <span class="bp">self</span><span class="p">,</span> 
-        <span class="n">relative</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
-        <span class="n">fairness_threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.2</span>
-    <span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
-<span class="w">    </span><span class="sd">"""</span>
-<span class="sd">    Runs the bias explainer analysis on the provided data. It first evaluates the potential bias in the model's predictions</span>
-<span class="sd">    using the OLS regression F-statistic p-value. If the p-value is below the threshold of 0.05, indicating </span>
-<span class="sd">    potential bias in the sensitive feature, the method proceeds to generate visualizations and calculate fairness metrics.</span>
-
-<span class="sd">    Args:</span>
-<span class="sd">        relative (bool): </span>
-<span class="sd">            If True, the metrics will be presented relative to the most frequent value of each sensitive feature.</span>
-<span class="sd">        fairness_threshold (float): </span>
-<span class="sd">            A threshold for determining fairness based on relative metrics. If the relative metric exceeds this threshold, </span>
-<span class="sd">            a warning flag will be applied.</span>
-<span class="sd">    """</span>
-    <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'binary'</span><span class="p">:</span>
-        <span class="n">y_true_array</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_true</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span>
-        <span class="n">bias_metric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span>
-            <span class="n">log_loss</span><span class="p">([</span><span class="n">y_true_array</span><span class="p">[</span><span class="n">idx</span><span class="p">]],</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span><span class="p">[</span><span class="n">idx</span><span class="p">]],</span> <span class="n">labels</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">y_true_array</span><span class="p">))</span>
-            <span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">y_true_array</span><span class="p">))</span>
-        <span class="p">])</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span> <span class="o">&gt;=</span> <span class="mf">.5</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
-    <span class="k">elif</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
-        <span class="n">bias_metric</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">((</span><span class="bp">self</span><span class="o">.</span><span class="n">y_true</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">()</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">y_pred</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-
-    <span class="bp">self</span><span class="o">.</span><span class="n">results</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="k">for</span> <span class="n">sensitive_feature</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">sensitive_features</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span>
-            <span class="bp">self</span><span class="o">.</span><span class="n">_subgroup_analysis_CoxPH</span><span class="p">(</span><span class="n">sensitive_feature</span><span class="p">)</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">f_pvalue</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_subgroup_analysis_OLS</span><span class="p">(</span><span class="n">sensitive_feature</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">)</span>
-            <span class="k">if</span> <span class="n">f_pvalue</span> <span class="o">&lt;</span> <span class="mf">0.05</span><span class="p">:</span>
-                <span class="bp">self</span><span class="o">.</span><span class="n">_generate_violin</span><span class="p">(</span><span class="n">sensitive_feature</span><span class="p">,</span> <span class="n">bias_metric</span><span class="p">)</span>
-                <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_calculate_fair_metrics</span><span class="p">(</span><span class="n">sensitive_feature</span><span class="p">,</span> <span class="n">fairness_threshold</span><span class="p">,</span> <span class="n">relative</span><span class="p">)</span>
-
-                <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">"</span><span class="se">\n</span><span class="s2">=== Subgroup Analysis for '</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="o">.</span><span class="n">title</span><span class="p">()</span><span class="si">}</span><span class="s2">' using FairLearn ===</span><span class="se">\n</span><span class="s2">"</span><span class="p">)</span>
-                <span class="n">table_output</span> <span class="o">=</span> <span class="n">tabulate</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="p">:</span><span class="mi">4</span><span class="p">],</span> <span class="n">headers</span><span class="o">=</span><span class="s1">'keys'</span><span class="p">,</span> <span class="n">tablefmt</span><span class="o">=</span><span class="s1">'grid'</span><span class="p">)</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="s1">'    '</span> <span class="o">+</span> <span class="n">line</span> <span class="k">for</span> <span class="n">line</span> <span class="ow">in</span> <span class="n">table_output</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)]),</span> <span class="s1">'</span><span class="se">\n</span><span class="s1">'</span><span class="p">)</span>
-
-                <span class="n">result</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span> <span class="o">/</span> <span class="sa">f</span><span class="s1">'</span><span class="si">{</span><span class="n">sensitive_feature</span><span class="si">}</span><span class="s1">_fm_metrics.csv'</span><span class="p">)</span>
-</code></pre></div></td></tr></table></div>
-            </details>
     </div>
 
 </div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="jarvais.explainer.modules.ImportanceModule" class="doc doc-heading">
+            <code>jarvais.explainer.modules.ImportanceModule</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/jarvais/explainer/modules/importance.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span>
+<span class="normal">31</span>
+<span class="normal">32</span>
+<span class="normal">33</span>
+<span class="normal">34</span>
+<span class="normal">35</span>
+<span class="normal">36</span>
+<span class="normal">37</span>
+<span class="normal">38</span>
+<span class="normal">39</span>
+<span class="normal">40</span>
+<span class="normal">41</span>
+<span class="normal">42</span>
+<span class="normal">43</span>
+<span class="normal">44</span>
+<span class="normal">45</span>
+<span class="normal">46</span>
+<span class="normal">47</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ImportanceModule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"Output directory."</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># noqa: ANN001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">"TrainerSupervised"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running Feature Importance Module..."</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'survival'</span><span class="p">:</span>
+            <span class="n">result</span> <span class="o">=</span> <span class="n">permutation_importance</span><span class="p">(</span>
+                <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="p">,</span> 
+                <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
+                <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
+            <span class="p">)</span>
+
+            <span class="n">importance_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+                <span class="p">{</span>
+                    <span class="s2">"importance"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"importances_mean"</span><span class="p">],</span>
+                    <span class="s2">"stddev"</span><span class="p">:</span> <span class="n">result</span><span class="p">[</span><span class="s2">"importances_std"</span><span class="p">],</span>
+                <span class="p">},</span>
+                <span class="n">index</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="o">.</span><span class="n">columns</span><span class="p">,</span>
+            <span class="p">)</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="s2">"importance"</span><span class="p">,</span> <span class="n">ascending</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">best_model</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">importance_df</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">feature_importance</span><span class="p">(</span>
+                <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">))</span>
+            <span class="n">model_name</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">model_best</span>
+
+        <span class="n">plot_feature_importance</span><span class="p">(</span><span class="n">importance_df</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">model_name</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div>
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="jarvais.explainer.modules.ModelInterpretationModule" class="doc doc-heading">
+            <code>jarvais.explainer.modules.ModelInterpretationModule</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/jarvais/explainer/modules/interpretation.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 26</span>
+<span class="normal"> 27</span>
+<span class="normal"> 28</span>
+<span class="normal"> 29</span>
+<span class="normal"> 30</span>
+<span class="normal"> 31</span>
+<span class="normal"> 32</span>
+<span class="normal"> 33</span>
+<span class="normal"> 34</span>
+<span class="normal"> 35</span>
+<span class="normal"> 36</span>
+<span class="normal"> 37</span>
+<span class="normal"> 38</span>
+<span class="normal"> 39</span>
+<span class="normal"> 40</span>
+<span class="normal"> 41</span>
+<span class="normal"> 42</span>
+<span class="normal"> 43</span>
+<span class="normal"> 44</span>
+<span class="normal"> 45</span>
+<span class="normal"> 46</span>
+<span class="normal"> 47</span>
+<span class="normal"> 48</span>
+<span class="normal"> 49</span>
+<span class="normal"> 50</span>
+<span class="normal"> 51</span>
+<span class="normal"> 52</span>
+<span class="normal"> 53</span>
+<span class="normal"> 54</span>
+<span class="normal"> 55</span>
+<span class="normal"> 56</span>
+<span class="normal"> 57</span>
+<span class="normal"> 58</span>
+<span class="normal"> 59</span>
+<span class="normal"> 60</span>
+<span class="normal"> 61</span>
+<span class="normal"> 62</span>
+<span class="normal"> 63</span>
+<span class="normal"> 64</span>
+<span class="normal"> 65</span>
+<span class="normal"> 66</span>
+<span class="normal"> 67</span>
+<span class="normal"> 68</span>
+<span class="normal"> 69</span>
+<span class="normal"> 70</span>
+<span class="normal"> 71</span>
+<span class="normal"> 72</span>
+<span class="normal"> 73</span>
+<span class="normal"> 74</span>
+<span class="normal"> 75</span>
+<span class="normal"> 76</span>
+<span class="normal"> 77</span>
+<span class="normal"> 78</span>
+<span class="normal"> 79</span>
+<span class="normal"> 80</span>
+<span class="normal"> 81</span>
+<span class="normal"> 82</span>
+<span class="normal"> 83</span>
+<span class="normal"> 84</span>
+<span class="normal"> 85</span>
+<span class="normal"> 86</span>
+<span class="normal"> 87</span>
+<span class="normal"> 88</span>
+<span class="normal"> 89</span>
+<span class="normal"> 90</span>
+<span class="normal"> 91</span>
+<span class="normal"> 92</span>
+<span class="normal"> 93</span>
+<span class="normal"> 94</span>
+<span class="normal"> 95</span>
+<span class="normal"> 96</span>
+<span class="normal"> 97</span>
+<span class="normal"> 98</span>
+<span class="normal"> 99</span>
+<span class="normal">100</span>
+<span class="normal">101</span>
+<span class="normal">102</span>
+<span class="normal">103</span>
+<span class="normal">104</span>
+<span class="normal">105</span>
+<span class="normal">106</span>
+<span class="normal">107</span>
+<span class="normal">108</span>
+<span class="normal">109</span>
+<span class="normal">110</span>
+<span class="normal">111</span>
+<span class="normal">112</span>
+<span class="normal">113</span>
+<span class="normal">114</span>
+<span class="normal">115</span>
+<span class="normal">116</span>
+<span class="normal">117</span>
+<span class="normal">118</span>
+<span class="normal">119</span>
+<span class="normal">120</span>
+<span class="normal">121</span>
+<span class="normal">122</span>
+<span class="normal">123</span>
+<span class="normal">124</span>
+<span class="normal">125</span>
+<span class="normal">126</span>
+<span class="normal">127</span>
+<span class="normal">128</span>
+<span class="normal">129</span>
+<span class="normal">130</span>
+<span class="normal">131</span>
+<span class="normal">132</span>
+<span class="normal">133</span>
+<span class="normal">134</span>
+<span class="normal">135</span>
+<span class="normal">136</span>
+<span class="normal">137</span>
+<span class="normal">138</span>
+<span class="normal">139</span>
+<span class="normal">140</span>
+<span class="normal">141</span>
+<span class="normal">142</span>
+<span class="normal">143</span>
+<span class="normal">144</span>
+<span class="normal">145</span>
+<span class="normal">146</span>
+<span class="normal">147</span>
+<span class="normal">148</span>
+<span class="normal">149</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ModelInterpretationModule</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span><span class="n">description</span><span class="o">=</span><span class="s2">"Output directory."</span><span class="p">)</span>
+    <span class="n">shap</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Whether to plot SHAP values. Only available for classification tasks. This flag exists because the SHAP values are computationally expensive to plot."</span><span class="p">,</span> 
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">__context</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span> <span class="c1"># noqa: ANN001</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__call__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">"TrainerSupervised"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">"Running Visualization Module..."</span><span class="p">)</span>
+
+        <span class="n">plot_violin_of_bootstrapped_metrics</span><span class="p">(</span>
+            <span class="n">trainer</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">X_val</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+        <span class="p">)</span> 
+
+        <span class="k">if</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'binary'</span><span class="p">,</span> <span class="s1">'multiclass'</span><span class="p">]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_classification_diagnostics</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">trainer</span><span class="o">.</span><span class="n">settings</span><span class="o">.</span><span class="n">task</span> <span class="o">==</span> <span class="s1">'regression'</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">_plot_regression_diagnostics</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_regression_diagnostics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">"TrainerSupervised"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">plot_regression_line</span><span class="p">(</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_residuals</span><span class="p">(</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_residual_histogram</span><span class="p">(</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span> <span class="n">as_pandas</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">_plot_classification_diagnostics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">trainer</span><span class="p">:</span> <span class="s2">"TrainerSupervised"</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+
+        <span class="n">y_test_pred</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">y_val_pred</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_val</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+        <span class="n">y_train_pred</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="o">.</span><span class="n">predict_proba</span><span class="p">(</span><span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">)</span><span class="o">.</span><span class="n">iloc</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">]</span>
+
+        <span class="n">plot_confusion_matrix</span><span class="p">(</span>
+            <span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="p">,</span>
+            <span class="n">y_test_pred</span><span class="p">,</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">tag</span><span class="o">=</span><span class="s2">"(Test)"</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_roc_curve</span><span class="p">(</span>
+            <span class="n">y_test</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_pred</span><span class="o">=</span><span class="n">y_test_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">y_val</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_val_pred</span><span class="o">=</span><span class="n">y_val_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_train</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_train_pred</span><span class="o">=</span><span class="n">y_train_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_precision_recall_curve</span><span class="p">(</span>
+            <span class="n">y_test</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_pred</span><span class="o">=</span><span class="n">y_test_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">y_val</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_val_pred</span><span class="o">=</span><span class="n">y_val_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_train</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_train_pred</span><span class="o">=</span><span class="n">y_train_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_calibration_curve</span><span class="p">(</span>
+            <span class="n">y_test</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_pred</span><span class="o">=</span><span class="n">y_test_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">y_val</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_val_pred</span><span class="o">=</span><span class="n">y_val_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_train</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_train_pred</span><span class="o">=</span><span class="n">y_train_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_sensitivity_flag_curve</span><span class="p">(</span>
+            <span class="n">y_test</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_pred</span><span class="o">=</span><span class="n">y_test_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">y_val</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_val</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_val_pred</span><span class="o">=</span><span class="n">y_val_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_train</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_train</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_train_pred</span><span class="o">=</span><span class="n">y_train_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_sensitivity_specificity_ppv_by_threshold</span><span class="p">(</span>
+            <span class="n">y_test</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_pred</span><span class="o">=</span><span class="n">y_test_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">tag</span><span class="o">=</span><span class="s2">"(Test)"</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="n">plot_histogram_of_predicted_probabilities</span><span class="p">(</span>
+            <span class="n">y_test</span><span class="o">=</span><span class="n">trainer</span><span class="o">.</span><span class="n">y_test</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">y_pred</span><span class="o">=</span><span class="n">y_test_pred</span><span class="o">.</span><span class="n">to_numpy</span><span class="p">(),</span>
+            <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span>
+            <span class="n">tag</span><span class="o">=</span><span class="s2">"(Test)"</span><span class="p">,</span>
+        <span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">shap</span><span class="p">:</span>
+            <span class="n">plot_shap_values</span><span class="p">(</span>
+                <span class="n">trainer</span><span class="o">.</span><span class="n">predictor</span><span class="p">,</span>
+                <span class="n">trainer</span><span class="o">.</span><span class="n">X_train</span><span class="p">,</span>
+                <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">,</span>
+                <span class="n">output_dir</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span>
+            <span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
+
+
+
+  </div>
+
+    </div>
+
+</div><h2 id="explainer-settings">Explainer Settings</h2>
+
+
+<div class="doc doc-object doc-class">
+
+
+
+<h3 id="jarvais.explainer.settings.ExplainerSettings" class="doc doc-heading">
+            <code>jarvais.explainer.settings.ExplainerSettings</code>
+
+
+</h3>
+
+
+    <div class="doc doc-contents first">
+            <p class="doc doc-class-bases">
+              Bases: <code><span title="pydantic.BaseModel">BaseModel</span></code></p>
+
+
+
+
+
+
+
+              <details class="quote">
+                <summary>Source code in <code>src/jarvais/explainer/settings.py</code></summary>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">11</span>
+<span class="normal">12</span>
+<span class="normal">13</span>
+<span class="normal">14</span>
+<span class="normal">15</span>
+<span class="normal">16</span>
+<span class="normal">17</span>
+<span class="normal">18</span>
+<span class="normal">19</span>
+<span class="normal">20</span>
+<span class="normal">21</span>
+<span class="normal">22</span>
+<span class="normal">23</span>
+<span class="normal">24</span>
+<span class="normal">25</span>
+<span class="normal">26</span>
+<span class="normal">27</span>
+<span class="normal">28</span>
+<span class="normal">29</span>
+<span class="normal">30</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">ExplainerSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Output directory."</span><span class="p">,</span>
+        <span class="n">title</span><span class="o">=</span><span class="s2">"Output Directory"</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">settings_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Path to settings file."</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="n">settings_schema_path</span><span class="p">:</span> <span class="n">Path</span> <span class="o">|</span> <span class="kc">None</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">description</span><span class="o">=</span><span class="s2">"Path to settings schema file."</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">interpretation</span><span class="p">:</span> <span class="n">ModelInterpretationModule</span>
+    <span class="n">importance</span><span class="p">:</span> <span class="n">ImportanceModule</span>
+    <span class="n">bias_audit</span><span class="p">:</span> <span class="n">BiasAuditModule</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</code></pre></div></td></tr></table></div>
+              </details>
+
+
+
+  <div class="doc doc-children">
+
+
+
+
+
+
+
+
 
 
 

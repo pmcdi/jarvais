@@ -1472,7 +1472,6 @@ df.drop(columns=["Study ID", "survival_time", "death"], inplace=True)</div>
     <span class="n">target_variable</span><span class="o">=</span><span class="s1">'Dose'</span><span class="p">,</span> 
     <span class="n">task</span><span class="o">=</span><span class="s1">'classification'</span>
 <span class="p">)</span>
-<span class="n">analyzer</span><span class="o">.</span><span class="n">encoding_module</span><span class="o">.</span><span class="n">enabled</span> <span class="o">=</span> <span class="kc">False</span> <span class="c1"># AutoGluon will handle encoding</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">analyzer</span><span class="p">)</span>
 
@@ -1501,7 +1500,6 @@ analyzer = Analyzer(
     target_variable='Dose', 
     task='classification'
 )
-analyzer.encoding_module.enabled = False # AutoGluon will handle encoding
 
 print(analyzer)
 
@@ -1519,7 +1517,7 @@ analyzer.run()</div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
 <pre>/home/joshua-siraj/Documents/CDI/jarvais/.pixi/envs/dev/lib/python3.12/site-packages/tqdm/auto.py:21: TqdmWarning: IProgress not found. Please update jupyter and ipywidgets. See https://ipywidgets.readthedocs.io/en/stable/user_install.html
   from .autonotebook import tqdm as notebook_tqdm
-13:06:25 [<span class="ansi-yellow-intense-fg ansi-bold">warning  </span>] <span class="ansi-bold">Date columns not specified. Inferring from remaining columns.</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">analyzer.__init__:76</span>
+16:21:23 [<span class="ansi-yellow-intense-fg ansi-bold">warning  </span>] <span class="ansi-bold">Date columns not specified. Inferring from remaining columns.</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">analyzer.__init__:85</span>
 </pre>
 </div>
 </div>
@@ -1547,6 +1545,7 @@ analyzer.run()</div>
         <span style="color: #808000; text-decoration-color: #808000">settings_path</span>=<span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>,
         <span style="color: #808000; text-decoration-color: #808000">settings_schema_path</span>=<span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>,
         <span style="color: #808000; text-decoration-color: #808000">missingness</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">MissingnessModule</span><span style="font-weight: bold">(</span>
+            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>,
             <span style="color: #808000; text-decoration-color: #808000">categorical_strategy</span>=<span style="font-weight: bold">{</span>
                 <span style="color: #008000; text-decoration-color: #008000">'Sex'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
                 <span style="color: #008000; text-decoration-color: #008000">'T Stage'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
@@ -1557,10 +1556,10 @@ analyzer.run()</div>
                 <span style="color: #008000; text-decoration-color: #008000">'HPV Combined'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>,
                 <span style="color: #008000; text-decoration-color: #008000">'Chemotherapy'</span>: <span style="color: #008000; text-decoration-color: #008000">'unknown'</span>
             <span style="font-weight: bold">}</span>,
-            <span style="color: #808000; text-decoration-color: #808000">continuous_strategy</span>=<span style="font-weight: bold">{</span><span style="color: #008000; text-decoration-color: #008000">'age at dx'</span>: <span style="color: #008000; text-decoration-color: #008000">'median'</span>, <span style="color: #008000; text-decoration-color: #008000">'Dose'</span>: <span style="color: #008000; text-decoration-color: #008000">'median'</span><span style="font-weight: bold">}</span>,
-            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+            <span style="color: #808000; text-decoration-color: #808000">continuous_strategy</span>=<span style="font-weight: bold">{</span><span style="color: #008000; text-decoration-color: #008000">'age at dx'</span>: <span style="color: #008000; text-decoration-color: #008000">'median'</span>, <span style="color: #008000; text-decoration-color: #008000">'Dose'</span>: <span style="color: #008000; text-decoration-color: #008000">'median'</span><span style="font-weight: bold">}</span>
         <span style="font-weight: bold">)</span>,
         <span style="color: #808000; text-decoration-color: #808000">outlier</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">OutlierModule</span><span style="font-weight: bold">(</span>
+            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>,
             <span style="color: #808000; text-decoration-color: #808000">categorical_strategy</span>=<span style="font-weight: bold">{</span>
                 <span style="color: #008000; text-decoration-color: #008000">'Sex'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
                 <span style="color: #008000; text-decoration-color: #008000">'T Stage'</span>: <span style="color: #008000; text-decoration-color: #008000">'frequency'</span>,
@@ -1573,28 +1572,16 @@ analyzer.run()</div>
             <span style="font-weight: bold">}</span>,
             <span style="color: #808000; text-decoration-color: #808000">continuous_strategy</span>=<span style="font-weight: bold">{</span><span style="color: #008000; text-decoration-color: #008000">'age at dx'</span>: <span style="color: #008000; text-decoration-color: #008000">'none'</span>, <span style="color: #008000; text-decoration-color: #008000">'Dose'</span>: <span style="color: #008000; text-decoration-color: #008000">'none'</span><span style="font-weight: bold">}</span>,
             <span style="color: #808000; text-decoration-color: #808000">threshold</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.01</span>,
+            <span style="color: #808000; text-decoration-color: #808000">categorical_mapping</span>=<span style="font-weight: bold">{}</span>,
+            <span style="color: #808000; text-decoration-color: #808000">group_outliers</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
+        <span style="font-weight: bold">)</span>,
+        <span style="color: #808000; text-decoration-color: #808000">visualization</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">DataVisualizationModule</span><span style="font-weight: bold">(</span>
             <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>,
-            <span style="color: #808000; text-decoration-color: #808000">categorical_mapping</span>=<span style="font-weight: bold">{}</span>
-        <span style="font-weight: bold">)</span>,
-        <span style="color: #808000; text-decoration-color: #808000">encoding</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">OneHotEncodingModule</span><span style="font-weight: bold">(</span>
-            <span style="color: #808000; text-decoration-color: #808000">columns</span>=<span style="font-weight: bold">[</span>
-                <span style="color: #008000; text-decoration-color: #008000">'Sex'</span>,
-                <span style="color: #008000; text-decoration-color: #008000">'T Stage'</span>,
-                <span style="color: #008000; text-decoration-color: #008000">'N Stage'</span>,
-                <span style="color: #008000; text-decoration-color: #008000">'Stage'</span>,
-                <span style="color: #008000; text-decoration-color: #008000">'Smoking Status'</span>,
-                <span style="color: #008000; text-decoration-color: #008000">'Disease Site'</span>,
-                <span style="color: #008000; text-decoration-color: #008000">'HPV Combined'</span>,
-                <span style="color: #008000; text-decoration-color: #008000">'Chemotherapy'</span>
-            <span style="font-weight: bold">]</span>,
-            <span style="color: #808000; text-decoration-color: #808000">target_variable</span>=<span style="color: #008000; text-decoration-color: #008000">'Dose'</span>,
-            <span style="color: #808000; text-decoration-color: #808000">prefix_sep</span>=<span style="color: #008000; text-decoration-color: #008000">'|'</span>,
-            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>
-        <span style="font-weight: bold">)</span>,
-        <span style="color: #808000; text-decoration-color: #808000">visualization</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">VisualizationModule</span><span style="font-weight: bold">(</span>
             <span style="color: #808000; text-decoration-color: #808000">plots</span>=<span style="font-weight: bold">[</span><span style="color: #008000; text-decoration-color: #008000">'corr'</span>, <span style="color: #008000; text-decoration-color: #008000">'pairplot'</span>, <span style="color: #008000; text-decoration-color: #008000">'umap'</span>, <span style="color: #008000; text-decoration-color: #008000">'frequency_table'</span>, <span style="color: #008000; text-decoration-color: #008000">'multiplot'</span><span style="font-weight: bold">]</span>,
-            <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>
-        <span style="font-weight: bold">)</span>
+            <span style="color: #808000; text-decoration-color: #808000">save_to_json</span>=<span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>
+        <span style="font-weight: bold">)</span>,
+        <span style="color: #808000; text-decoration-color: #808000">boolean</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">BooleanEncodingModule</span><span style="font-weight: bold">(</span><span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>, <span style="color: #808000; text-decoration-color: #808000">columns</span>=<span style="font-weight: bold">[])</span>,
+        <span style="color: #808000; text-decoration-color: #808000">dashboard</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">DashboardModule</span><span style="font-weight: bold">(</span><span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span>, <span style="color: #808000; text-decoration-color: #808000">n_top</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">10</span>, <span style="color: #808000; text-decoration-color: #808000">significance_threshold</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.05</span><span style="font-weight: bold">)</span>
     <span style="font-weight: bold">)</span>
 <span style="font-weight: bold">)</span>
 </pre>
@@ -1603,9 +1590,9 @@ analyzer.run()</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Performing missingness analysis...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">missingness.__call__:43</span>
-         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Performing outlier analysis...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">outlier.__call__:60</span>
-         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Correlation Matrix...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:115</span>
+<pre>         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Performing missingness analysis...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">missingness.__call__:40</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Performing outlier analysis...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">outlier.__call__:63</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Correlation Matrix...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:122</span>
 </pre>
 </div>
 </div>
@@ -1780,11 +1767,15 @@ Outlier Report:
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Pairplot...          </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:118</span>
-         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting UMAP...              </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:124</span>
-13:06:35 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Frequency Table...   </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:121</span>
-13:06:41 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Multiplot...         </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:136</span>
-13:06:45 [<span class="ansi-yellow-intense-fg ansi-bold">warning  </span>] <span class="ansi-bold">One-hot encoding is disabled. </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">encoding.__call__:40</span>
+<pre>         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Pairplot...          </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:125</span>
+16:21:24 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting UMAP...              </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:131</span>
+16:21:34 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Frequency Table...   </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:128</span>
+16:21:42 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Plotting Multiplot...         </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">visualization.__call__:146</span>
+16:21:58 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Computing statistical ranking for dashboard...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">dashboard.__call__:77</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Analyzing statistical significance for 8 categorical × 2 continuous variables</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">statistical_ranking.find_top_multiplots:73</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Found 16 total comparisons, 14 significant (p &lt; 0.05)</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">statistical_ranking.find_top_multiplots:126</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Most significant p-value: 0.00e+00</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">statistical_ranking.find_top_multiplots:131</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Generating dashboard plot of significant multiplots...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">dashboard.__call__:98</span>
 Font MPDFAA+Inter28ptBold is missing the following glyphs: '
 ' (\n)
 </pre>
@@ -1847,6 +1838,13 @@ trainer.run(analyzer.data)</div>
 <div class="jp-OutputArea jp-Cell-outputArea">
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>16:22:07 [<span class="ansi-yellow-intense-fg ansi-bold">warning  </span>] <span class="ansi-bold">One-hot encoding is disabled for binary and multiclass tasks due to autogluon's OneHotEncoder implementation. If you want to use one-hot encoding, edit the trainer settings manually.</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">trainer.__init__:54</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedHTMLCommon jp-RenderedHTML jp-OutputArea-output" data-mime-type="text/html" tabindex="0">
 <pre style="white-space:pre;overflow-x:auto;line-height:normal;font-family:Menlo,'DejaVu Sans Mono',consolas,'Courier New',monospace"><span style="color: #800080; text-decoration-color: #800080; font-weight: bold">TrainerSupervised</span><span style="font-weight: bold">(</span>
     <span style="color: #800080; text-decoration-color: #800080; font-weight: bold">TrainerSettings</span><span style="font-weight: bold">(</span>
@@ -1857,6 +1855,7 @@ trainer.run(analyzer.data)</div>
         <span style="color: #808000; text-decoration-color: #808000">test_size</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">0.2</span>,
         <span style="color: #808000; text-decoration-color: #808000">random_state</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">42</span>,
         <span style="color: #808000; text-decoration-color: #808000">explain</span>=<span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span>,
+        <span style="color: #808000; text-decoration-color: #808000">encoding_module</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">OneHotEncodingModule</span><span style="font-weight: bold">(</span><span style="color: #808000; text-decoration-color: #808000">columns</span>=<span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>, <span style="color: #808000; text-decoration-color: #808000">prefix_sep</span>=<span style="color: #008000; text-decoration-color: #008000">'|'</span>, <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #ff0000; text-decoration-color: #ff0000; font-style: italic">False</span><span style="font-weight: bold">)</span>,
         <span style="color: #808000; text-decoration-color: #808000">reduction_module</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">FeatureReductionModule</span><span style="font-weight: bold">(</span><span style="color: #808000; text-decoration-color: #808000">method</span>=<span style="color: #800080; text-decoration-color: #800080; font-style: italic">None</span>, <span style="color: #808000; text-decoration-color: #808000">task</span>=<span style="color: #008000; text-decoration-color: #008000">'regression'</span>, <span style="color: #808000; text-decoration-color: #808000">keep_k</span>=<span style="color: #008080; text-decoration-color: #008080; font-weight: bold">2</span>, <span style="color: #808000; text-decoration-color: #808000">enabled</span>=<span style="color: #00ff00; text-decoration-color: #00ff00; font-style: italic">True</span><span style="font-weight: bold">)</span>,
         <span style="color: #808000; text-decoration-color: #808000">trainer_module</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">AutogluonTabularWrapper</span><span style="font-weight: bold">(</span>
             <span style="color: #808000; text-decoration-color: #808000">output_dir</span>=<span style="color: #800080; text-decoration-color: #800080; font-weight: bold">PosixPath</span><span style="font-weight: bold">(</span><span style="color: #008000; text-decoration-color: #008000">'outputs/trainer'</span><span style="font-weight: bold">)</span>,
@@ -1875,11 +1874,12 @@ trainer.run(analyzer.data)</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
-<pre>13:06:50 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Skipping feature reduction.   </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">feature_reduction.__call__:39</span>
-         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Training fold 1/2...          </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">autogluon_trainer._train_autogluon_with_cv:192</span>
-13:07:37 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Fold 1/2 score: 0.5817623676725117 (r2)</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">autogluon_trainer._train_autogluon_with_cv:209</span>
-         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Training fold 2/2...          </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">autogluon_trainer._train_autogluon_with_cv:192</span>
-13:08:14 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Fold 2/2 score: 0.5929594381641264 (r2)</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">autogluon_trainer._train_autogluon_with_cv:209</span>
+<pre>         [<span class="ansi-yellow-intense-fg ansi-bold">warning  </span>] <span class="ansi-bold">One-hot encoding is disabled. </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">encoding.__call__:34</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Skipping feature reduction.   </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">feature_reduction.__call__:39</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Training fold 1/2...          </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">autogluon_trainer._train_autogluon_with_cv:194</span>
+16:23:11 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Fold 1/2 score: 0.5817623676725117 (r2)</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">autogluon_trainer._train_autogluon_with_cv:211</span>
+         [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Training fold 2/2...          </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">autogluon_trainer._train_autogluon_with_cv:194</span>
+16:23:47 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Fold 2/2 score: 0.5929594381641264 (r2)</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">autogluon_trainer._train_autogluon_with_cv:211</span>
 </pre>
 </div>
 </div>
@@ -1889,48 +1889,48 @@ trainer.run(analyzer.data)</div>
 <pre>
 Model Leaderboard
 ----------------
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| model                 | score_train                | score_val                  | score_test                 |
-+=======================+============================+============================+============================+
-| CatBoost              | R2: 0.62 [0.62, 0.62]      | R2: 0.63 [0.6, 0.67]       | R2: 0.6 [0.6, 0.6]         |
-|                       | RMSE: -3.54 [-3.54, -3.53] | RMSE: -3.55 [-3.72, -3.37] | RMSE: -3.66 [-3.66, -3.66] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| WeightedEnsemble_L2   | R2: 0.63 [0.63, 0.64]      | R2: 0.63 [0.59, 0.67]      | R2: 0.6 [0.59, 0.6]        |
-|                       | RMSE: -3.49 [-3.5, -3.47]  | RMSE: -3.54 [-3.73, -3.34] | RMSE: -3.66 [-3.68, -3.63] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| LightGBMXT            | R2: 0.62 [0.61, 0.62]      | R2: 0.63 [0.6, 0.67]       | R2: 0.59 [0.57, 0.6]       |
-|                       | RMSE: -3.56 [-3.58, -3.55] | RMSE: -3.54 [-3.71, -3.37] | RMSE: -3.71 [-3.77, -3.66] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| NeuralNetFastAI       | R2: 0.61 [0.6, 0.61]       | R2: 0.62 [0.58, 0.66]      | R2: 0.58 [0.58, 0.58]      |
-|                       | RMSE: -3.61 [-3.65, -3.57] | RMSE: -3.6 [-3.8, -3.39]   | RMSE: -3.74 [-3.75, -3.73] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| LightGBM              | R2: 0.64 [0.62, 0.66]      | R2: 0.62 [0.56, 0.68]      | R2: 0.57 [0.56, 0.57]      |
-|                       | RMSE: -3.45 [-3.55, -3.35] | RMSE: -3.59 [-3.89, -3.29] | RMSE: -3.79 [-3.81, -3.78] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| ExtraTreesMSE         | R2: 0.68 [0.68, 0.69]      | R2: 0.69 [0.53, 0.85]      | R2: 0.56 [0.55, 0.57]      |
-|                       | RMSE: -3.25 [-3.28, -3.23] | RMSE: -3.12 [-3.99, -2.25] | RMSE: -3.82 [-3.87, -3.78] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| RandomForestMSE       | R2: 0.68 [0.68, 0.68]      | R2: 0.69 [0.54, 0.85]      | R2: 0.55 [0.53, 0.57]      |
-|                       | RMSE: -3.26 [-3.27, -3.24] | RMSE: -3.13 [-3.99, -2.28] | RMSE: -3.87 [-3.96, -3.77] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| XGBoost               | R2: 0.64 [0.63, 0.65]      | R2: 0.63 [0.52, 0.74]      | R2: 0.54 [0.52, 0.55]      |
-|                       | RMSE: -3.43 [-3.48, -3.38] | RMSE: -3.5 [-4.04, -2.97]  | RMSE: -3.93 [-3.99, -3.87] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| NeuralNetTorch        | R2: 0.52 [0.49, 0.55]      | R2: 0.54 [0.52, 0.56]      | R2: 0.51 [0.49, 0.53]      |
-|                       | RMSE: -4.0 [-4.13, -3.87]  | RMSE: -3.96 [-4.03, -3.88] | RMSE: -4.04 [-4.14, -3.94] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| LightGBMLarge         | R2: 0.62 [0.61, 0.63]      | R2: 0.62 [0.47, 0.76]      | R2: 0.5 [0.5, 0.5]         |
-|                       | RMSE: -3.54 [-3.59, -3.48] | RMSE: -3.55 [-4.25, -2.85] | RMSE: -4.08 [-4.09, -4.08] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| SimpleRegressionModel | R2: 0.4 [0.4, 0.4]         | R2: 0.41 [0.4, 0.41]       | R2: 0.4 [0.4, 0.41]        |
-|                       | RMSE: -4.46 [-4.46, -4.46] | RMSE: -4.51 [-4.52, -4.5]  | RMSE: -4.46 [-4.47, -4.45] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| KNeighborsDist        | R2: -0.03 [-0.05, -0.02]   | R2: -0.04 [-0.31, 0.24]    | R2: -0.28 [-0.36, -0.21]   |
-|                       | RMSE: -5.84 [-5.89, -5.8]  | RMSE: -5.9 [-6.7, -5.11]   | RMSE: -6.53 [-6.72, -6.35] |
-+-----------------------+----------------------------+----------------------------+----------------------------+
-| KNeighborsUnif        | R2: 0.04 [0.03, 0.06]      | R2: 0.05 [-0.06, 0.16]     | R2: -0.08 [-0.09, -0.08]   |
-|                       | RMSE: -5.63 [-5.68, -5.58] | RMSE: -5.68 [-6.02, -5.35] | RMSE: -6.0 [-6.02, -5.99]  |
-+-----------------------+----------------------------+----------------------------+----------------------------+
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| model                 | score_train                                   | score_val                                     | score_test                                    |
++=======================+===============================================+===============================================+===============================================+
+| CatBoost              | R2: 0.62 [0.62, 0.62]                         | R2: 0.63 [0.6, 0.67]                          | R2: 0.6 [0.6, 0.6]                            |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.54 [-3.54, -3.53] | ROOT_MEAN_SQUARED_ERROR: -3.55 [-3.72, -3.37] | ROOT_MEAN_SQUARED_ERROR: -3.66 [-3.66, -3.66] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| WeightedEnsemble_L2   | R2: 0.63 [0.63, 0.64]                         | R2: 0.63 [0.59, 0.67]                         | R2: 0.6 [0.59, 0.6]                           |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.49 [-3.5, -3.47]  | ROOT_MEAN_SQUARED_ERROR: -3.54 [-3.73, -3.34] | ROOT_MEAN_SQUARED_ERROR: -3.66 [-3.68, -3.63] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| LightGBMXT            | R2: 0.62 [0.61, 0.62]                         | R2: 0.63 [0.6, 0.67]                          | R2: 0.59 [0.57, 0.6]                          |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.56 [-3.58, -3.55] | ROOT_MEAN_SQUARED_ERROR: -3.54 [-3.71, -3.37] | ROOT_MEAN_SQUARED_ERROR: -3.71 [-3.77, -3.66] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| NeuralNetFastAI       | R2: 0.61 [0.6, 0.61]                          | R2: 0.62 [0.58, 0.66]                         | R2: 0.58 [0.58, 0.58]                         |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.61 [-3.65, -3.57] | ROOT_MEAN_SQUARED_ERROR: -3.6 [-3.8, -3.39]   | ROOT_MEAN_SQUARED_ERROR: -3.74 [-3.75, -3.73] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| LightGBM              | R2: 0.64 [0.62, 0.66]                         | R2: 0.62 [0.56, 0.68]                         | R2: 0.57 [0.56, 0.57]                         |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.45 [-3.55, -3.35] | ROOT_MEAN_SQUARED_ERROR: -3.59 [-3.89, -3.29] | ROOT_MEAN_SQUARED_ERROR: -3.79 [-3.81, -3.78] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| ExtraTreesMSE         | R2: 0.68 [0.68, 0.69]                         | R2: 0.69 [0.53, 0.85]                         | R2: 0.56 [0.55, 0.57]                         |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.25 [-3.28, -3.23] | ROOT_MEAN_SQUARED_ERROR: -3.12 [-3.99, -2.25] | ROOT_MEAN_SQUARED_ERROR: -3.82 [-3.87, -3.78] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| RandomForestMSE       | R2: 0.68 [0.68, 0.68]                         | R2: 0.69 [0.54, 0.85]                         | R2: 0.55 [0.53, 0.57]                         |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.26 [-3.27, -3.24] | ROOT_MEAN_SQUARED_ERROR: -3.13 [-3.99, -2.28] | ROOT_MEAN_SQUARED_ERROR: -3.87 [-3.96, -3.77] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| XGBoost               | R2: 0.64 [0.63, 0.65]                         | R2: 0.63 [0.52, 0.74]                         | R2: 0.54 [0.52, 0.55]                         |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.43 [-3.48, -3.38] | ROOT_MEAN_SQUARED_ERROR: -3.5 [-4.04, -2.97]  | ROOT_MEAN_SQUARED_ERROR: -3.93 [-3.99, -3.87] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| NeuralNetTorch        | R2: 0.52 [0.49, 0.55]                         | R2: 0.54 [0.52, 0.56]                         | R2: 0.51 [0.49, 0.53]                         |
+|                       | ROOT_MEAN_SQUARED_ERROR: -4.0 [-4.13, -3.87]  | ROOT_MEAN_SQUARED_ERROR: -3.96 [-4.03, -3.88] | ROOT_MEAN_SQUARED_ERROR: -4.04 [-4.14, -3.94] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| LightGBMLarge         | R2: 0.62 [0.61, 0.63]                         | R2: 0.62 [0.47, 0.76]                         | R2: 0.5 [0.5, 0.5]                            |
+|                       | ROOT_MEAN_SQUARED_ERROR: -3.54 [-3.59, -3.48] | ROOT_MEAN_SQUARED_ERROR: -3.55 [-4.25, -2.85] | ROOT_MEAN_SQUARED_ERROR: -4.08 [-4.09, -4.08] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| SimpleRegressionModel | R2: 0.4 [0.4, 0.4]                            | R2: 0.41 [0.4, 0.41]                          | R2: 0.4 [0.4, 0.41]                           |
+|                       | ROOT_MEAN_SQUARED_ERROR: -4.46 [-4.46, -4.46] | ROOT_MEAN_SQUARED_ERROR: -4.51 [-4.52, -4.5]  | ROOT_MEAN_SQUARED_ERROR: -4.46 [-4.47, -4.45] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| KNeighborsDist        | R2: -0.03 [-0.05, -0.02]                      | R2: -0.04 [-0.31, 0.24]                       | R2: -0.28 [-0.36, -0.21]                      |
+|                       | ROOT_MEAN_SQUARED_ERROR: -5.84 [-5.89, -5.8]  | ROOT_MEAN_SQUARED_ERROR: -5.9 [-6.7, -5.11]   | ROOT_MEAN_SQUARED_ERROR: -6.53 [-6.72, -6.35] |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
+| KNeighborsUnif        | R2: 0.04 [0.03, 0.06]                         | R2: 0.05 [-0.06, 0.16]                        | R2: -0.08 [-0.09, -0.08]                      |
+|                       | ROOT_MEAN_SQUARED_ERROR: -5.63 [-5.68, -5.58] | ROOT_MEAN_SQUARED_ERROR: -5.68 [-6.02, -5.35] | ROOT_MEAN_SQUARED_ERROR: -6.0 [-6.02, -5.99]  |
++-----------------------+-----------------------------------------------+-----------------------------------------------+-----------------------------------------------+
 </pre>
 </div>
 </div>
@@ -1958,17 +1958,19 @@ Model Leaderboard
 </div>
 <div class="highlight-ipynb hl-python"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">jarvais.explainer</span><span class="w"> </span><span class="kn">import</span> <span class="n">Explainer</span>
 
-<span class="n">sensitive_features</span> <span class="o">=</span> <span class="p">{</span><span class="n">k</span><span class="p">:</span> <span class="n">trainer</span><span class="o">.</span><span class="n">X_test</span><span class="p">[</span><span class="n">k</span><span class="p">]</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="p">[</span><span class="s1">'N Stage'</span><span class="p">,</span> <span class="s1">'Disease Site'</span><span class="p">,</span> <span class="s1">'Sex'</span><span class="p">]}</span>
+<span class="n">sensitive_features</span> <span class="o">=</span>  <span class="p">[</span><span class="s1">'N Stage'</span><span class="p">,</span> <span class="s1">'Disease Site'</span><span class="p">,</span> <span class="s1">'Sex'</span><span class="p">]</span>
 
-<span class="n">exp</span> <span class="o">=</span> <span class="n">Explainer</span><span class="o">.</span><span class="n">from_trainer</span><span class="p">(</span><span class="n">trainer</span><span class="p">,</span> <span class="n">sensitive_features</span><span class="o">=</span><span class="n">sensitive_features</span><span class="p">)</span>
-<span class="n">exp</span><span class="o">.</span><span class="n">run</span><span class="p">()</span>
+<span class="n">explainer</span> <span class="o">=</span> <span class="n">Explainer</span><span class="p">(</span><span class="n">output_dir</span><span class="o">=</span><span class="s2">"./outputs/explainer"</span><span class="p">,</span> <span class="n">sensitive_features</span><span class="o">=</span><span class="n">sensitive_features</span><span class="p">)</span>
+
+<span class="n">explainer</span><span class="o">.</span><span class="n">run</span><span class="p">(</span><span class="n">trainer</span><span class="p">)</span>
 </pre></div>
 <div class="clipboard-copy-txt" id="cell-4">from jarvais.explainer import Explainer
 
-sensitive_features = {k: trainer.X_test[k] for k in ['N Stage', 'Disease Site', 'Sex']}
+sensitive_features =  ['N Stage', 'Disease Site', 'Sex']
 
-exp = Explainer.from_trainer(trainer, sensitive_features=sensitive_features)
-exp.run()</div>
+explainer = Explainer(output_dir="./outputs/explainer", sensitive_features=sensitive_features)
+
+explainer.run(trainer)</div>
 </div>
 </div>
 </div>
@@ -1977,6 +1979,13 @@ exp.run()</div>
 <div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
 </div>
 <div class="jp-OutputArea jp-Cell-outputArea">
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>16:23:49 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Running Bias Audit Module...  </span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">bias_audit.__call__:57</span>
+</pre>
+</div>
+</div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
@@ -2027,13 +2036,11 @@ Model Coefficients:
 <pre>
 === Subgroup Analysis for 'N Stage' using FairLearn ===
 
-    +--------------------------+--------------------+-------------------+-------------------+-------------------+
-    |                          | N0                 | N1                | N2                | N2a               |
-    +==========================+====================+===================+===================+===================+
-    | mean_prediction          | 63.368020066269885 | 67.93983979060732 | 69.96154375774104 | 68.39650208609444 |
-    +--------------------------+--------------------+-------------------+-------------------+-------------------+
-    | Relative mean_prediction | 1.000 ✅           | 1.072 ✅          | 1.104 ✅          | 1.079 ✅          |
-    +--------------------------+--------------------+-------------------+-------------------+-------------------+ 
+    +-----------------+--------+---------+---------+---------+
+    |                 |     N0 |      N1 |      N2 |     N2a |
+    +=================+========+=========+=========+=========+
+    | mean_prediction | 63.368 | 67.9398 | 69.9615 | 68.3965 |
+    +-----------------+--------+---------+---------+---------+ 
 
 ⚠️  **Possible Bias Detected in Disease Site** ⚠️
 
@@ -2084,13 +2091,11 @@ Model Coefficients:
 <pre>
 === Subgroup Analysis for 'Disease Site' using FairLearn ===
 
-    +--------------------------+-------------------+-------------------+-------------------+-------------------+
-    |                          | Other             | esophagus         | hypopharynx       | larynx            |
-    +==========================+===================+===================+===================+===================+
-    | mean_prediction          | 65.38273620605469 | 66.37863826751709 | 68.00474707285564 | 62.70861864664469 |
-    +--------------------------+-------------------+-------------------+-------------------+-------------------+
-    | Relative mean_prediction | 0.953 ✅          | 0.967 ✅          | 0.991 ✅          | 0.914 ✅          |
-    +--------------------------+-------------------+-------------------+-------------------+-------------------+ 
+    +-----------------+---------+-------------+---------------+----------+
+    |                 |   Other |   esophagus |   hypopharynx |   larynx |
+    +=================+=========+=============+===============+==========+
+    | mean_prediction | 65.3827 |     66.3786 |       68.0047 |  62.7086 |
+    +-----------------+---------+-------------+---------------+----------+ 
 
 ⚠️  **Possible Bias Detected in Sex** ⚠️
 
@@ -2123,18 +2128,30 @@ Model Coefficients:
 </div>
 <div class="jp-OutputArea-child">
 <div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>16:23:51 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Running Visualization Module...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">interpretation.__call__:38</span>
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
 <div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
 <pre>
 === Subgroup Analysis for 'Sex' using FairLearn ===
 
-    +--------------------------+-------------------+------------------+
-    |                          | Female            | Male             |
-    +==========================+===================+==================+
-    | mean_prediction          | 67.11062446876808 | 66.9930581921729 |
-    +--------------------------+-------------------+------------------+
-    | Relative mean_prediction | 1.002 ✅          | 1.000 ✅         |
-    +--------------------------+-------------------+------------------+ 
+    +-----------------+----------+---------+
+    |                 |   Female |    Male |
+    +=================+==========+=========+
+    | mean_prediction |  67.1106 | 66.9931 |
+    +-----------------+----------+---------+ 
 
+</pre>
+</div>
+</div>
+<div class="jp-OutputArea-child">
+<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
+<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="application/vnd.jupyter.stderr" tabindex="0">
+<pre>16:23:58 [<span class="ansi-green-intense-fg ansi-bold">info     </span>] <span class="ansi-bold">Running Feature Importance Module...</span> [<span class="ansi-blue-intense-fg ansi-bold">jarvais</span>] <span class="ansi-cyan-fg">call</span>=<span class="ansi-magenta-fg">importance.__call__:25</span>
 </pre>
 </div>
 </div>
