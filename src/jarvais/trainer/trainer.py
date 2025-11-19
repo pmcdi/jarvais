@@ -50,7 +50,7 @@ class TrainerSupervised:
 
         self.encoding_module = OneHotEncodingModule.build()
 
-        if task in {'binary', 'multiclass'}:
+        if task in {'binary', 'multiclass', 'regression'}:
             logger.warning(
                 "One-hot encoding is disabled for binary and multiclass tasks due to autogluon's OneHotEncoder implementation. If you want to use one-hot encoding, edit the trainer settings manually." 
             )
