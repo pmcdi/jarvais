@@ -170,15 +170,22 @@ class DataVisualizationModule(AnalyzerModule):
 
     def _plot_multiplot(self, data: pd.DataFrame) -> None:
         (self._figures_dir / 'multiplots').mkdir(parents=True, exist_ok=True)
+        def safe_plot_one_multiplot(var):
+            try:
+                return plot_one_multiplot(
+                    data,
+                    self._umap_data,
+                    var,
+                    self.continuous_columns,
+                    self._figures_dir,
+                    self.save_to_json
+                )
+            except Exception as e:
+                logger.info(f"Skipping multiplot for {var} due to error: {e}")
+                return None
+
         self._multiplots = Parallel(n_jobs=-1)(
-            delayed(plot_one_multiplot)(
-                data,
-                self._umap_data,
-                var,
-                self.continuous_columns,
-                self._figures_dir,
-                self.save_to_json
-            ) for var in self.categorical_columns
+            delayed(safe_plot_one_multiplot)(var) for var in self.categorical_columns
         )
 
     def _plot_kaplan_meier(self, data: pd.DataFrame) -> None:
