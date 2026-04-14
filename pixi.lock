@@ -6,6 +6,8 @@ environments:
     - url: https://conda.anaconda.org/pytorch/
     indexes:
     - https://pypi.org/simple
+    options:
+      pypi-prerelease-mode: if-necessary-or-explicit
     packages:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -638,6 +640,8 @@ environments:
     - url: https://conda.anaconda.org/pytorch/
     indexes:
     - https://pypi.org/simple
+    options:
+      pypi-prerelease-mode: if-necessary-or-explicit
     packages:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -1573,6 +1577,8 @@ environments:
     - url: https://conda.anaconda.org/pytorch/
     indexes:
     - https://pypi.org/simple
+    options:
+      pypi-prerelease-mode: if-necessary-or-explicit
     packages:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -2307,6 +2313,8 @@ environments:
     - url: https://conda.anaconda.org/pytorch/
     indexes:
     - https://pypi.org/simple
+    options:
+      pypi-prerelease-mode: if-necessary-or-explicit
     packages:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -2950,6 +2958,8 @@ environments:
     - url: https://conda.anaconda.org/pytorch/
     indexes:
     - https://pypi.org/simple
+    options:
+      pypi-prerelease-mode: if-necessary-or-explicit
     packages:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -3584,6 +3594,8 @@ environments:
     - url: https://conda.anaconda.org/pytorch/
     indexes:
     - https://pypi.org/simple
+    options:
+      pypi-prerelease-mode: if-necessary-or-explicit
     packages:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -4218,6 +4230,8 @@ environments:
     - url: https://conda.anaconda.org/pytorch/
     indexes:
     - https://pypi.org/simple
+    options:
+      pypi-prerelease-mode: if-necessary-or-explicit
     packages:
       linux-64:
       - conda: https://conda.anaconda.org/conda-forge/linux-64/_libgcc_mutex-0.1-conda_forge.tar.bz2
@@ -7992,8 +8006,8 @@ packages:
   requires_python: '>=3.8'
 - pypi: ./
   name: jarvais
-  version: 0.20.0
-  sha256: d94b5b3de08fcb1888d3cb4e2062fe5051417ddf7a57d458b70d16c7349fa456
+  version: 0.20.1
+  sha256: 567fdb4b7828e72e0123f6636bf9eedd2bfa766b7b4a4c24cb0375b2ae519405
   requires_dist:
   - structlog>=25.3.0,<26
   - rich>=13.9.4,<15
@@ -8022,7 +8036,6 @@ packages:
   - shap>=0.46.0,<0.47
   - statsmodels>=0.14.4,<0.15
   requires_python: '>=3.10,<3.13'
-  editable: true
 - pypi: https://files.pythonhosted.org/packages/c0/5a/9cac0c82afec3d09ccd97c8b6502d48f165f9124db81b4bcb90b4af974ee/jedi-0.19.2-py2.py3-none-any.whl
   name: jedi
   version: 0.19.2
