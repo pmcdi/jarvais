@@ -4,4 +4,4 @@ from .analyzer import Analyzer
 from .utils import *
 
 from importlib.metadata import version
-__version__ = "0.20.1"
+__version__ = "0.21.0"
