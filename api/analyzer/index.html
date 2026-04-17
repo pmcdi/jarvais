@@ -1445,11 +1445,11 @@
           <tr class="doc-section-item">
             <td><code><span title="jarvais.analyzer.Analyzer.encoding_module">encoding_module</span></code></td>
             <td>
-                  <code><span title="OneHotEncodingModule">OneHotEncodingModule</span></code>
+                  <code><span title="jarvais.analyzer.modules.BooleanEncodingModule">BooleanEncodingModule</span></code>
             </td>
             <td>
               <div class="doc-md-description">
-                <p>Module for encoding categorical variables.</p>
+                <p>Module for encoding boolean variables.</p>
               </div>
             </td>
           </tr>
@@ -1476,6 +1476,28 @@
             </td>
           </tr>
           <tr class="doc-section-item">
+            <td><code><span title="jarvais.analyzer.Analyzer.dashboard_module">dashboard_module</span></code></td>
+            <td>
+                  <code><span title="jarvais.analyzer.modules.DashboardModule">DashboardModule</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Module for generating dashboards.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
+            <td><code><span title="jarvais.analyzer.Analyzer.engineering_module">engineering_module</span></code></td>
+            <td>
+                  <code><span title="jarvais.analyzer.modules.FeatureEngineeringModule">FeatureEngineeringModule</span></code>
+            </td>
+            <td>
+              <div class="doc-md-description">
+                <p>Module for feature engineering.</p>
+              </div>
+            </td>
+          </tr>
+          <tr class="doc-section-item">
             <td><code><span title="jarvais.analyzer.Analyzer.settings">settings</span></code></td>
             <td>
                   <code><a class="autorefs autorefs-internal" title="jarvais.analyzer.settings.AnalyzerSettings" href="#jarvais.analyzer.settings.AnalyzerSettings">AnalyzerSettings</a></code>
@@ -1496,7 +1518,8 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 24</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal"> 23</span>
+<span class="normal"> 24</span>
 <span class="normal"> 25</span>
 <span class="normal"> 26</span>
 <span class="normal"> 27</span>
@@ -1708,7 +1731,11 @@
 <span class="normal">233</span>
 <span class="normal">234</span>
 <span class="normal">235</span>
-<span class="normal">236</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">():</span>
+<span class="normal">236</span>
+<span class="normal">237</span>
+<span class="normal">238</span>
+<span class="normal">239</span>
+<span class="normal">240</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">Analyzer</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Analyzer class for data visualization and exploration.</span>
 
@@ -1727,9 +1754,11 @@
 <span class="sd">        data (pd.DataFrame): The input data to be analyzed.</span>
 <span class="sd">        missingness_module (MissingnessModule): Module for handling missing data.</span>
 <span class="sd">        outlier_module (OutlierModule): Module for detecting outliers.</span>
-<span class="sd">        encoding_module (OneHotEncodingModule): Module for encoding categorical variables.</span>
+<span class="sd">        encoding_module (BooleanEncodingModule): Module for encoding boolean variables.</span>
 <span class="sd">        boolean_module (BooleanEncodingModule): Module for encoding boolean variables.</span>
 <span class="sd">        visualization_module (DataVisualizationModule): Module for generating visualizations.</span>
+<span class="sd">        dashboard_module (DashboardModule): Module for generating dashboards.</span>
+<span class="sd">        engineering_module (FeatureEngineeringModule): Module for feature engineering.</span>
 <span class="sd">        settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.</span>
 <span class="sd">    """</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span>
@@ -1785,6 +1814,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span> <span class="o">=</span> <span class="n">BooleanEncodingModule</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
             <span class="n">boolean_columns</span><span class="o">=</span><span class="n">boolean_columns</span>
         <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">engineering_module</span> <span class="o">=</span> <span class="n">FeatureEngineeringModule</span><span class="o">.</span><span class="n">build</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">dashboard_module</span> <span class="o">=</span> <span class="n">DashboardModule</span><span class="o">.</span><span class="n">build</span><span class="p">(</span>
             <span class="n">output_dir</span><span class="o">=</span><span class="n">Path</span><span class="p">(</span><span class="n">output_dir</span><span class="p">),</span>
             <span class="n">continuous_columns</span><span class="o">=</span><span class="n">continuous_columns</span><span class="p">,</span>
@@ -1810,7 +1840,8 @@
             <span class="n">outlier</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">outlier_module</span><span class="p">,</span>
             <span class="n">visualization</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">visualization_module</span><span class="p">,</span>
             <span class="n">boolean</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span><span class="p">,</span>
-            <span class="n">dashboard</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dashboard_module</span>
+            <span class="n">dashboard</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">dashboard_module</span><span class="p">,</span>
+            <span class="n">engineering</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">engineering_module</span>
         <span class="p">)</span>
 
     <span class="nd">@classmethod</span>
@@ -1847,7 +1878,7 @@
         <span class="n">analyzer</span><span class="o">.</span><span class="n">visualization_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">visualization</span>
         <span class="n">analyzer</span><span class="o">.</span><span class="n">boolean_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">boolean</span>
         <span class="n">analyzer</span><span class="o">.</span><span class="n">dashboard_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">dashboard</span>
-
+        <span class="n">analyzer</span><span class="o">.</span><span class="n">engineering_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">engineering</span>
         <span class="n">analyzer</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
 
         <span class="k">return</span> <span class="n">analyzer</span>
@@ -1887,6 +1918,7 @@
         <span class="c1"># Run modules that modify the input data (create new columns/features)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
             <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span><span class="p">)</span>
+            <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engineering_module</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="c1"># Save Data</span>
@@ -2048,10 +2080,7 @@
 
             <details class="quote">
               <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">129</span>
-<span class="normal">130</span>
-<span class="normal">131</span>
-<span class="normal">132</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">132</span>
 <span class="normal">133</span>
 <span class="normal">134</span>
 <span class="normal">135</span>
@@ -2085,7 +2114,10 @@
 <span class="normal">163</span>
 <span class="normal">164</span>
 <span class="normal">165</span>
-<span class="normal">166</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
+<span class="normal">166</span>
+<span class="normal">167</span>
+<span class="normal">168</span>
+<span class="normal">169</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="nd">@classmethod</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">from_settings</span><span class="p">(</span>
         <span class="bp">cls</span><span class="p">,</span> 
         <span class="n">data</span><span class="p">:</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">,</span> 
@@ -2119,7 +2151,7 @@
     <span class="n">analyzer</span><span class="o">.</span><span class="n">visualization_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">visualization</span>
     <span class="n">analyzer</span><span class="o">.</span><span class="n">boolean_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">boolean</span>
     <span class="n">analyzer</span><span class="o">.</span><span class="n">dashboard_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">dashboard</span>
-
+    <span class="n">analyzer</span><span class="o">.</span><span class="n">engineering_module</span> <span class="o">=</span> <span class="n">settings</span><span class="o">.</span><span class="n">engineering</span>
     <span class="n">analyzer</span><span class="o">.</span><span class="n">settings</span> <span class="o">=</span> <span class="n">settings</span>
 
     <span class="k">return</span> <span class="n">analyzer</span>
@@ -2157,10 +2189,7 @@
 </details>
             <details class="quote">
               <summary>Source code in <code>src/jarvais/analyzer/analyzer.py</code></summary>
-              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">168</span>
-<span class="normal">169</span>
-<span class="normal">170</span>
-<span class="normal">171</span>
+              <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">171</span>
 <span class="normal">172</span>
 <span class="normal">173</span>
 <span class="normal">174</span>
@@ -2219,7 +2248,11 @@
 <span class="normal">227</span>
 <span class="normal">228</span>
 <span class="normal">229</span>
-<span class="normal">230</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="normal">230</span>
+<span class="normal">231</span>
+<span class="normal">232</span>
+<span class="normal">233</span>
+<span class="normal">234</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">def</span><span class="w"> </span><span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">"""</span>
 <span class="sd">    Runs the analyzer pipeline.</span>
 
@@ -2254,6 +2287,7 @@
     <span class="c1"># Run modules that modify the input data (create new columns/features)</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">input_data</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
         <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">boolean_module</span><span class="p">)</span>
+        <span class="o">.</span><span class="n">pipe</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">engineering_module</span><span class="p">)</span>
     <span class="p">)</span>
 
     <span class="c1"># Save Data</span>
@@ -3190,8 +3224,7 @@
 
               <details class="quote">
                 <summary>Source code in <code>src/jarvais/analyzer/settings.py</code></summary>
-                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">14</span>
-<span class="normal">15</span>
+                <div class="highlight"><table class="highlighttable"><tr><td class="linenos"><div class="linenodiv"><pre><span></span><span class="normal">15</span>
 <span class="normal">16</span>
 <span class="normal">17</span>
 <span class="normal">18</span>
@@ -3247,7 +3280,9 @@
 <span class="normal">68</span>
 <span class="normal">69</span>
 <span class="normal">70</span>
-<span class="normal">71</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AnalyzerSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+<span class="normal">71</span>
+<span class="normal">72</span>
+<span class="normal">73</span></pre></div></td><td class="code"><div><pre><span></span><code><span class="k">class</span><span class="w"> </span><span class="nc">AnalyzerSettings</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
     <span class="n">output_dir</span><span class="p">:</span> <span class="n">Path</span> <span class="o">=</span> <span class="n">Field</span><span class="p">(</span>
         <span class="n">description</span><span class="o">=</span><span class="s2">"Output directory."</span><span class="p">,</span>
         <span class="n">title</span><span class="o">=</span><span class="s2">"Output Directory"</span><span class="p">,</span>
@@ -3296,6 +3331,7 @@
     <span class="n">visualization</span><span class="p">:</span> <span class="n">DataVisualizationModule</span>
     <span class="n">boolean</span><span class="p">:</span> <span class="n">BooleanEncodingModule</span>
     <span class="n">dashboard</span><span class="p">:</span> <span class="n">DashboardModule</span>
+    <span class="n">engineering</span><span class="p">:</span> <span class="n">FeatureEngineeringModule</span>
 
     <span class="k">def</span><span class="w"> </span><span class="nf">model_post_init</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">context</span><span class="p">:</span> <span class="n">Any</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">output_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
