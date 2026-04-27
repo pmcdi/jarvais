@@ -122,9 +122,41 @@ class TrainerSupervised:
 
     def run(
             self,
-            data: pd.DataFrame 
+            data: pd.DataFrame | None = None,
+            train_data: pd.DataFrame | None = None,
+            test_data: pd.DataFrame | None = None,
         ) -> None:
-        self.input_data = data
+        """
+        Train on either a single frame or an explicit train/test split.
+
+        Pass ``data`` for a random train/test split (per ``test_size`` / settings).
+
+        Or pass ``train_data`` and ``test_data`` with the same columns (including
+        target). Rows are combined as ``pd.concat([train_data, test_data],
+        ignore_index=True)``; after encoding and feature reduction, the first
+        ``len(train_data)`` rows are training and the remainder are test.
+        ``test_size`` and ``stratify_on`` do not apply in that case.
+        """
+        has_all = data is not None
+        has_pre_split = train_data is not None and test_data is not None
+
+        if has_all and (train_data is not None or test_data is not None):
+            raise ValueError(
+                "Pass either `data` or both `train_data` and `test_data`, not a combination."
+            )
+        if not has_all and not has_pre_split:
+            raise ValueError("Pass `data`, or both `train_data` and `test_data`.")
+        if (train_data is not None) ^ (test_data is not None):
+            raise ValueError("Pre-split training requires both `train_data` and `test_data`.")
+
+        if has_pre_split:
+            if list(train_data.columns) != list(test_data.columns):
+                raise ValueError("train_data and test_data must have the same columns in the same order.")
+            n_train = len(train_data)
+            self.input_data = pd.concat([train_data, test_data], axis=0, ignore_index=True)
+        else:
+            assert data is not None
+            self.input_data = data
 
         # Preprocess
         X = self.input_data.drop(self.settings.target_variable, axis=1)
@@ -133,22 +165,28 @@ class TrainerSupervised:
         X = self.encoding_module(X)
         X, y = self.reduction_module(X, y)     
 
-        if self.settings.task in {'binary', 'multiclass'}:
-            stratify_col = (
-                y.astype(str) + '_' + self.input_data[self.settings.stratify_on].astype(str)
-                if self.settings.stratify_on is not None
-                else y
-            )
+        if has_pre_split:
+            self.X_train = X.iloc[:n_train]
+            self.X_test = X.iloc[n_train:]
+            self.y_train = y.iloc[:n_train]
+            self.y_test = y.iloc[n_train:]
         else:
-            stratify_col = None
+            if self.settings.task in {'binary', 'multiclass'}:
+                stratify_col = (
+                    y.astype(str) + '_' + self.input_data[self.settings.stratify_on].astype(str)
+                    if self.settings.stratify_on is not None
+                    else y
+                )
+            else:
+                stratify_col = None
 
-        self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-            X, 
-            y, 
-            test_size=self.settings.test_size, 
-            stratify=stratify_col, 
-            random_state=self.settings.random_state
-        )
+            self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+                X, 
+                y, 
+                test_size=self.settings.test_size, 
+                stratify=stratify_col, 
+                random_state=self.settings.random_state
+            )
 
         # Train
         self.predictor, self.X_val, self.y_val = self.trainer_module.fit(
