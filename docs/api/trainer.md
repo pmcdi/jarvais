@@ -10,6 +10,11 @@ The `TrainerSupervised` class is part of the `jarvais.trainer` module.
 
 ## Trainer Modules
 
+::: jarvais.trainer.modules.FeatureEngineeringModule
+    options:
+        heading_level: 3
+        members_order: source
+        show_root_heading: true
 ::: jarvais.trainer.modules.FeatureReductionModule
     options:
         heading_level: 3

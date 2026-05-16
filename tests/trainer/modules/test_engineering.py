@@ -3,7 +3,7 @@ import pandas as pd
 import pytest
 from pydantic import ValidationError
 
-from jarvais.analyzer.modules.engineering import (
+from jarvais.trainer.modules.engineering import (
     BinningSpec,
     FeatureEngineeringModule,
     InteractionSpec,

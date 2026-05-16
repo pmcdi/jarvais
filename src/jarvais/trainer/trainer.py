@@ -9,9 +9,10 @@ from sklearn.model_selection import train_test_split
 from jarvais.explainer import Explainer
 from jarvais.trainer.modules import (
     AutogluonTabularWrapper,
+    FeatureEngineeringModule,
     FeatureReductionModule,
-    SurvivalTrainerModule,
     OneHotEncodingModule,
+    SurvivalTrainerModule,
 )
 from jarvais.trainer.settings import TrainerSettings
 from jarvais.loggers import logger
@@ -47,6 +48,8 @@ class TrainerSupervised:
         random_state: int = 42,
         explain: bool = False
     ) -> None:
+
+        self.engineering_module = FeatureEngineeringModule.build()
 
         self.encoding_module = OneHotEncodingModule.build()
 
@@ -85,6 +88,7 @@ class TrainerSupervised:
             test_size=test_size,
             random_state=random_state,
             explain=explain,
+            engineering_module=self.engineering_module,
             encoding_module=self.encoding_module,
             reduction_module=self.reduction_module,
             trainer_module=self.trainer_module,
@@ -112,6 +116,7 @@ class TrainerSupervised:
             task=settings.task,
         )
 
+        trainer.engineering_module = settings.engineering_module
         trainer.encoding_module = settings.encoding_module
         trainer.reduction_module = settings.reduction_module
         trainer.trainer_module = settings.trainer_module
@@ -162,6 +167,7 @@ class TrainerSupervised:
         X = self.input_data.drop(self.settings.target_variable, axis=1)
         y = self.input_data[self.settings.target_variable]
 
+        X = self.engineering_module(X)
         X = self.encoding_module(X)
         X, y = self.reduction_module(X, y)     
 

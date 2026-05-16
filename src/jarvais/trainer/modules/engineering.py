@@ -6,7 +6,6 @@ from pydantic import BaseModel, Field, PrivateAttr, field_validator, model_valid
 from sklearn.preprocessing import PolynomialFeatures  # type: ignore
 
 from jarvais.loggers import logger
-from jarvais.analyzer.modules.base import AnalyzerModule
 
 
 class InteractionSpec(BaseModel):
@@ -143,7 +142,7 @@ class OncologyFeatureSpec(BaseModel):
         return list(dict.fromkeys(biomarkers))
 
 
-class FeatureEngineeringModule(AnalyzerModule):
+class FeatureEngineeringModule(BaseModel):
     """
     Structured feature engineering module.
 
@@ -151,6 +150,10 @@ class FeatureEngineeringModule(AnalyzerModule):
     than arbitrary code to keep feature creation serializable and reproducible.
     """
 
+    enabled: bool = Field(
+        default=True,
+        description="Whether this module is enabled and should be executed.",
+    )
     feature_interactions: list[InteractionSpec] = Field(
         default_factory=list,
         description="Interaction feature specifications.",
