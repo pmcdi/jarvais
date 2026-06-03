@@ -114,6 +114,8 @@ class AutogluonTabularWrapper(BaseModel):
             y_test: pd.Series
         ) -> tuple[TabularPredictor, pd.DataFrame, pd.Series]:
 
+        has_test = len(X_test) > 0
+
         if self.k_folds > 1:
             self._predictor, X_val, y_val = self._train_autogluon_with_cv(
                 X_train, 
@@ -125,11 +127,15 @@ class AutogluonTabularWrapper(BaseModel):
             for predictor in self._predictors:
                 train_leaderboards.append(predictor.leaderboard(pd.concat([X_train, y_train], axis=1), extra_metrics=self._extra_metrics))
                 val_leaderboards.append(predictor.leaderboard(pd.concat([X_val, y_val], axis=1), extra_metrics=self._extra_metrics))
-                test_leaderboards.append(predictor.leaderboard(pd.concat([X_test, y_test], axis=1), extra_metrics=self._extra_metrics))
+                if has_test:
+                    test_leaderboards.append(predictor.leaderboard(pd.concat([X_test, y_test], axis=1), extra_metrics=self._extra_metrics))
         
             train_leaderboard = aggregate_folds(pd.concat(train_leaderboards, ignore_index=True), self._extra_metrics)
             val_leaderboard = aggregate_folds(pd.concat(val_leaderboards, ignore_index=True), self._extra_metrics)
-            test_leaderboard = aggregate_folds(pd.concat(test_leaderboards, ignore_index=True), self._extra_metrics)
+            test_leaderboard = (
+                aggregate_folds(pd.concat(test_leaderboards, ignore_index=True), self._extra_metrics)
+                if has_test else None
+            )
         else:
             self._predictor = TabularPredictor(
                 label=self.target_variable, 
@@ -150,25 +156,33 @@ class AutogluonTabularWrapper(BaseModel):
             val_leaderboard = self._predictor.leaderboard(
                 pd.concat([X_val, y_val], axis=1),
                 extra_metrics=self._extra_metrics).round(2)
-            test_leaderboard = self._predictor.leaderboard(
-                pd.concat([X_test, y_test], axis=1),
-                extra_metrics=self._extra_metrics).round(2)
+            test_leaderboard = (
+                self._predictor.leaderboard(
+                    pd.concat([X_test, y_test], axis=1),
+                    extra_metrics=self._extra_metrics).round(2)
+                if has_test else None
+            )
 
         final_leaderboard = pd.merge(
-            pd.merge(
-                format_leaderboard(train_leaderboard, self.eval_metric, self._extra_metrics, 'score_train'),
-                format_leaderboard(val_leaderboard, self.eval_metric, self._extra_metrics, 'score_val'),
-                on='model'
-            ),
-            format_leaderboard(test_leaderboard, self.eval_metric, self._extra_metrics, 'score_test'),
-            on='model'
+            format_leaderboard(train_leaderboard, self.eval_metric, self._extra_metrics, 'score_train'),
+            format_leaderboard(val_leaderboard, self.eval_metric, self._extra_metrics, 'score_val'),
+            on='model',
         )
+        if has_test:
+            final_leaderboard = pd.merge(
+                final_leaderboard,
+                format_leaderboard(test_leaderboard, self.eval_metric, self._extra_metrics, 'score_test'), # type: ignore[arg-type]
+                on='model',
+            )
+        else:
+            final_leaderboard['score_test'] = 'N/A'
 
         final_leaderboard.to_csv(self.output_dir / 'leaderboard.csv', index=False)
 
+        sort_col = 'score_test' if has_test else 'score_val'
         print('\nModel Leaderboard\n----------------') # noqa: T201
         print(tabulate( # noqa: T201
-            final_leaderboard.sort_values(by='score_test', ascending=False),
+            final_leaderboard.sort_values(by=sort_col, ascending=False),
             tablefmt = "grid",
             headers="keys",
             showindex=False))

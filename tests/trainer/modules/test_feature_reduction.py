@@ -73,3 +73,44 @@ def test_mrmr_regression(regression_data):
     X_out, _ = module(X, y)
     assert X_out.shape[1] == 3
 
+
+@pytest.fixture
+def survival_data(classification_data):
+    X, y_cls = classification_data
+    rng = np.random.default_rng(42)
+    time = np.abs(rng.standard_normal(len(y_cls))) * 10 + 1.0
+    y = pd.DataFrame({"time": time, "event": y_cls.values}, index=y_cls.index)
+    return X, y
+
+
+def test_corr_kbest_survival_event_column(survival_data):
+    X, y = survival_data
+    module = FeatureReductionModule(method="corr", task="survival", keep_k=5)
+    X_out, y_out = module(X, y)
+    assert X_out.shape[1] == 5
+    pd.testing.assert_frame_equal(y_out, y)
+
+
+def test_mrmr_survival_event_column(survival_data):
+    X, y = survival_data
+    module = FeatureReductionModule(method="mrmr", task="survival", keep_k=4)
+    X_out, y_out = module(X, y)
+    assert X_out.shape[1] == 4
+    pd.testing.assert_frame_equal(y_out, y)
+
+
+def test_variance_threshold_ignores_survival_y_shape(survival_data):
+    X, y = survival_data
+    X["constant"] = 1.0
+    module = FeatureReductionModule(method="variance_threshold", task="survival")
+    X_out, y_out = module(X, y)
+    assert "constant" not in X_out.columns
+    pd.testing.assert_frame_equal(y_out, y)
+
+
+def test_chi2_rejects_survival_task(survival_data):
+    X, y = survival_data
+    module = FeatureReductionModule(method="chi2", task="survival", keep_k=5)
+    with pytest.raises(ValueError, match="Chi2 only supports classification tasks."):
+        module(X, y)
+

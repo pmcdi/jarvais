@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 from jarvais.trainer.modules import (
     AutogluonTabularWrapper,
+    FeatureEngineeringModule,
     FeatureReductionModule,
     OneHotEncodingModule,
     SurvivalTrainerModule,
@@ -34,7 +35,7 @@ class TrainerSettings(BaseModel):
     )
     test_size: float = Field(
         default=0.2,
-        description="Test size.",
+        description="Proportion of data for testing. Use 0 for no held-out test set.",
         title="Test Size"
     )
     random_state: int = Field(
@@ -48,6 +49,10 @@ class TrainerSettings(BaseModel):
         title="Generate Explainability Model"
     )
 
+    engineering_module: FeatureEngineeringModule = Field(
+        default_factory=FeatureEngineeringModule.build,
+        description="Declarative feature engineering applied to X before encoding.",
+    )
     encoding_module: OneHotEncodingModule
     reduction_module: FeatureReductionModule
     trainer_module: SurvivalTrainerModule | AutogluonTabularWrapper

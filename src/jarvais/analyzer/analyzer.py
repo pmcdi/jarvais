@@ -13,7 +13,6 @@ from jarvais.analyzer.modules import (
     DataVisualizationModule,
     BooleanEncodingModule,
     DashboardModule,
-    FeatureEngineeringModule
 )
 from jarvais.analyzer.settings import AnalyzerSettings
 from jarvais.loggers import logger
@@ -40,10 +39,10 @@ class Analyzer():
         missingness_module (MissingnessModule): Module for handling missing data.
         outlier_module (OutlierModule): Module for detecting outliers.
         encoding_module (BooleanEncodingModule): Module for encoding boolean variables.
+        encoding_module (BooleanEncodingModule): Module for encoding boolean variables.
         boolean_module (BooleanEncodingModule): Module for encoding boolean variables.
         visualization_module (DataVisualizationModule): Module for generating visualizations.
         dashboard_module (DashboardModule): Module for generating dashboards.
-        engineering_module (FeatureEngineeringModule): Module for feature engineering.
         settings (AnalyzerSettings): Settings for the analyzer, including output directory and column specifications.
     """
     def __init__(
@@ -99,7 +98,6 @@ class Analyzer():
         self.boolean_module = BooleanEncodingModule.build(
             boolean_columns=boolean_columns
         )
-        self.engineering_module = FeatureEngineeringModule.build()
         self.dashboard_module = DashboardModule.build(
             output_dir=Path(output_dir),
             continuous_columns=continuous_columns,
@@ -126,7 +124,6 @@ class Analyzer():
             visualization=self.visualization_module,
             boolean=self.boolean_module,
             dashboard=self.dashboard_module,
-            engineering=self.engineering_module
         )
 
     @classmethod
@@ -163,7 +160,6 @@ class Analyzer():
         analyzer.visualization_module = settings.visualization
         analyzer.boolean_module = settings.boolean
         analyzer.dashboard_module = settings.dashboard
-        analyzer.engineering_module = settings.engineering
         analyzer.settings = settings
 
         return analyzer
@@ -201,10 +197,7 @@ class Analyzer():
         )
         
         # Run modules that modify the input data (create new columns/features)
-        self.data = (self.input_data.copy()
-            .pipe(self.boolean_module)
-            .pipe(self.engineering_module)
-        )
+        self.data = self.input_data.copy().pipe(self.boolean_module)
         
         # Save Data
         self.data.to_csv(self.settings.output_dir / 'updated_data.csv', index=False)

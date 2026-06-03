@@ -39,10 +39,6 @@ class FeatureReductionModule(BaseModel):
             logger.info("Skipping feature reduction.")
             return X, y
 
-        if self.task == 'survival':
-            logger.warning("Survival analysis is not supported for feature reduction. Skipping feature reduction.")
-            return X, y
-
         logger.info(f"Applying feature reduction: {self.method}")
 
         X = X.copy()
@@ -59,7 +55,7 @@ class FeatureReductionModule(BaseModel):
 
         # Step 2: Perform reduction
         if self.method == "variance_threshold":
-            X_reduced = self._variance_threshold(X, y)
+            X_reduced = self._variance_threshold(X)
         elif self.method == "chi2":
             if self.task not in ['binary', 'multiclass']:
                 raise ValueError("Chi2 only supports classification tasks.")
@@ -82,9 +78,9 @@ class FeatureReductionModule(BaseModel):
 
         return X_reduced, y
 
-    def _variance_threshold(self, X: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
+    def _variance_threshold(self, X: pd.DataFrame) -> pd.DataFrame:
         selector = VarianceThreshold()
-        _ = selector.fit_transform(X, y)
+        _ = selector.fit_transform(X)
         return X[X.columns[selector.get_support(indices=True)]]
 
     def _chi2(self, X: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
@@ -93,15 +89,21 @@ class FeatureReductionModule(BaseModel):
         return X[X.columns[selector.get_support(indices=True)]]
 
     def _kbest(self, X: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
-        score_func = f_classif if self.task in ['binary', 'multiclass'] else f_regression
+        score_func = f_classif if self.task in ['binary', 'multiclass', 'survival'] else f_regression
+
+        if self.task == "survival":
+            y = y["event"]
+
         selector = SelectKBest(score_func=score_func, k=self.keep_k)
         _ = selector.fit_transform(X, y)
         return X[X.columns[selector.get_support(indices=True)]]
 
     def _mrmr(self, X: pd.DataFrame, y: pd.Series) -> pd.DataFrame:
-        mrmr_fn = mrmr_classif if self.task in ['binary', 'multiclass'] else mrmr_regression
+        mrmr_fn = mrmr_classif if self.task in ['binary', 'multiclass', 'survival'] else mrmr_regression
+
+        if self.task == "survival":
+            y = y["event"]
+
         selected_features = mrmr_fn(X=X, y=y, K=self.keep_k, n_jobs=1)
         return X[selected_features]
 
-
-   
