@@ -28,7 +28,7 @@ class TrainerSupervised:
         target_variable (str | list[str]): The column name of the target variable, or a list of two column names for survival analysis.
         task (str): The type of task to perform, e.g. 'binary', 'multiclass', 'regression', or 'survival'.
         stratify_on (str | None): The column name of a variable to stratify the train-test split over. If None, no stratification will be performed.
-        test_size (float): The proportion of data to use for testing. Default is 0.2.
+        test_size (float): The proportion of data to use for testing. Use 0 to train on all data with no held-out test set. Default is 0.2.
         k_folds (int): The number of folds to use for cross-validation. Default is 5.
         reduction_method (str | None): The method to use for feature reduction. If None, no feature reduction will be performed.
         keep_k (int): The number of features to keep after reduction. Default is 2.
@@ -135,6 +135,7 @@ class TrainerSupervised:
         Train on either a single frame or an explicit train/test split.
 
         Pass ``data`` for a random train/test split (per ``test_size`` / settings).
+        ``test_size=0`` assigns all rows to training and leaves the test set empty.
 
         Or pass ``train_data`` and ``test_data`` with the same columns (including
         target). Rows are combined as ``pd.concat([train_data, test_data],
@@ -186,13 +187,19 @@ class TrainerSupervised:
             else:
                 stratify_col = None
 
-            self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
-                X, 
-                y, 
-                test_size=self.settings.test_size, 
-                stratify=stratify_col, 
-                random_state=self.settings.random_state
-            )
+            if self.settings.test_size == 0:
+                logger.warning("Test size is 0, WARNING: The Trainer will work BUT the Explainer will fail.")
+                self.X_train, self.y_train = X, y
+                self.X_test = X.iloc[:0].copy()
+                self.y_test = y.iloc[:0].copy()
+            else:
+                self.X_train, self.X_test, self.y_train, self.y_test = train_test_split(
+                    X, 
+                    y, 
+                    test_size=self.settings.test_size, 
+                    stratify=stratify_col, 
+                    random_state=self.settings.random_state
+                )
 
         # Train
         self.predictor, self.X_val, self.y_val = self.trainer_module.fit(
@@ -216,6 +223,10 @@ class TrainerSupervised:
         self.y_val.to_csv((data_dir / 'y_val.csv'), index=False)
 
         if self.settings.explain:
+            if self.settings.test_size == 0 and len(self.X_test) == 0:
+                raise ValueError(
+                    "explain=True requires a non-empty test set; use test_size > 0 or provide test_data."
+                )
             explainer = Explainer(self.settings.output_dir)
             explainer.run(self)
 
@@ -342,12 +353,13 @@ if __name__ == "__main__":
 
     analyzer.run()
 
-    # analyzer.data["event"] = analyzer.data['event'].astype(bool)
+    analyzer.data["event"] = analyzer.data['event'].astype(bool)
     trainer = TrainerSupervised(
-        output_dir="temp_output/trainer_test_rad", 
-        target_variable="Dose", 
-        task="regression",
-        k_folds=2
+        output_dir="survival_outputs/trainer_test_rad", 
+        target_variable=["time", "event"], 
+        task="survival",
+        k_folds=2,
+        test_size=0
     )
         
     print(trainer)

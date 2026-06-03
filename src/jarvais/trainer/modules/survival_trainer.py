@@ -250,8 +250,9 @@ class SurvivalTrainerModule(BaseModel):
             y_test: pd.DataFrame
         ) -> SurvivalPredictor:
 
+        has_test = len(X_test) > 0
         leaderboard = []
-        test_scores = {}
+        model_scores: dict[str, float] = {}
         for model in self.classical_models:  
             trained_model = trained_models.get(model)
             if not trained_model:
@@ -262,19 +263,26 @@ class SurvivalTrainerModule(BaseModel):
                 pd.concat([y_train['time'], y_val['time']], axis=0),
                 trained_models[model].predict(pd.concat([X_train, X_val], axis=0))
             )[0]
-            test_score = concordance_index_censored(
-                y_test['event'].astype(bool),
-                y_test['time'], 
-                trained_models[model].predict(X_test)
-            )[0]
+            if has_test:
+                test_score = concordance_index_censored(
+                    y_test['event'].astype(bool),
+                    y_test['time'], 
+                    trained_models[model].predict(X_test)
+                )[0]
+                model_scores[model] = test_score
+                test_score_str = f"{self.eval_metric.upper()}: {round(test_score, 3)}"
+                sort_score = test_score
+            else:
+                model_scores[model] = train_score
+                test_score_str = 'N/A'
+                sort_score = train_score
             leaderboard.append({
                 'model': model,
-                'test_score': f"{self.eval_metric.upper()}: {round(test_score, 3)}",
+                'test_score': test_score_str,
                 'val_score': 'N/A', # no validation for classical models
                 'train_score': f"{self.eval_metric.upper()}: {round(train_score, 3)}",
+                '_sort_score': sort_score,
             })
-
-            test_scores[model] = test_score
 
         for model in self.deep_models:
             trained_model = trained_models.get(model)
@@ -291,21 +299,29 @@ class SurvivalTrainerModule(BaseModel):
                 y_val['time'], 
                 trained_model.predict(X_val)
             )[0]
-            test_score = concordance_index_censored(
-                y_test['event'].astype(bool), 
-                y_test['time'], 
-                trained_model.predict(X_test)
-            )[0]
+            if has_test:
+                test_score = concordance_index_censored(
+                    y_test['event'].astype(bool), 
+                    y_test['time'], 
+                    trained_model.predict(X_test)
+                )[0]
+                model_scores[model] = test_score
+                test_score_str = f"{self.eval_metric.upper()}: {round(test_score, 3)}"
+                sort_score = test_score
+            else:
+                model_scores[model] = val_score
+                test_score_str = 'N/A'
+                sort_score = val_score
             leaderboard.append({
                 'model': model,
-                'test_score': f"{self.eval_metric.upper()}: {round(test_score, 3)}",
+                'test_score': test_score_str,
                 'val_score': f"{self.eval_metric.upper()}: {round(val_score, 3)}",
                 'train_score': f"{self.eval_metric.upper()}: {round(train_score, 3)}",
+                '_sort_score': sort_score,
             })
 
-            test_scores[model] = test_score
-
-        leaderboard_df = pd.DataFrame(leaderboard).sort_values(by='test_score', ascending=False)
+        leaderboard_df = pd.DataFrame(leaderboard).sort_values(by='_sort_score', ascending=False)
+        leaderboard_df = leaderboard_df.drop(columns=['_sort_score'])
         leaderboard_df.to_csv(self.output_dir / 'leaderboard.csv', index=False)
 
         print('\nModel Leaderboard\n----------------') # noqa: T201
@@ -317,6 +333,6 @@ class SurvivalTrainerModule(BaseModel):
         
         return SurvivalPredictor(
                 models=trained_models, 
-                model_scores=test_scores,
-                best_model=max(test_scores, key=test_scores.get) # type: ignore
+                model_scores=model_scores,
+                best_model=max(model_scores, key=model_scores.get) # type: ignore
             )

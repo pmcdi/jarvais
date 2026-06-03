@@ -35,7 +35,7 @@ class TrainerSettings(BaseModel):
     )
     test_size: float = Field(
         default=0.2,
-        description="Test size.",
+        description="Proportion of data for testing. Use 0 for no held-out test set.",
         title="Test Size"
     )
     random_state: int = Field(
