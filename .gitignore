@@ -31,3 +31,5 @@ AutogluonModel
 *.egg-info
 */.DS_Store
 dist
+
+output/

@@ -60,7 +60,7 @@ class AnalyzerSettings(BaseModel):
     visualization: DataVisualizationModule
     boolean: BooleanEncodingModule
     dashboard: DashboardModule
-
+    
     def model_post_init(self, context: Any) -> None:
         self.output_dir.mkdir(parents=True, exist_ok=True)
     

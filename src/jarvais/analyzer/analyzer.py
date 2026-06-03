@@ -39,6 +39,7 @@ class Analyzer():
         missingness_module (MissingnessModule): Module for handling missing data.
         outlier_module (OutlierModule): Module for detecting outliers.
         encoding_module (BooleanEncodingModule): Module for encoding boolean variables.
+        encoding_module (BooleanEncodingModule): Module for encoding boolean variables.
         boolean_module (BooleanEncodingModule): Module for encoding boolean variables.
         visualization_module (DataVisualizationModule): Module for generating visualizations.
         dashboard_module (DashboardModule): Module for generating dashboards.
