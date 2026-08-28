@@ -9,7 +9,7 @@ from autogluon.tabular.configs.hyperparameter_configs import (
     get_hyperparameter_config,
 )
 from pydantic import BaseModel, Field, PrivateAttr
-from sklearn.model_selection import KFold
+from sklearn.model_selection import KFold, GroupKFold
 from tabulate import tabulate
 
 from jarvais.loggers import logger
@@ -111,7 +111,8 @@ class AutogluonTabularWrapper(BaseModel):
             X_train: pd.DataFrame,
             y_train: pd.Series,
             X_test: pd.DataFrame,
-            y_test: pd.Series
+            y_test: pd.Series,
+            groups: pd.Series | None = None 
         ) -> tuple[TabularPredictor, pd.DataFrame, pd.Series]:
 
         has_test = len(X_test) > 0
@@ -120,6 +121,7 @@ class AutogluonTabularWrapper(BaseModel):
             self._predictor, X_val, y_val = self._train_autogluon_with_cv(
                 X_train, 
                 y_train,
+                groups
             )
 
             train_leaderboards, val_leaderboards, test_leaderboards = [], [], []
@@ -193,13 +195,14 @@ class AutogluonTabularWrapper(BaseModel):
             self,
             X_train: pd.DataFrame,
             y_train: pd.Series,
+            groups: pd.Series | None = None
         ) -> tuple[TabularPredictor, pd.DataFrame, pd.Series]:
 
-        kf = KFold(n_splits=self.k_folds, shuffle=True, random_state=42)
+        kf = GroupKFold(n_splits=self.k_folds)
 
         val_indices = []    
 
-        for fold, (train_index, val_index) in enumerate(kf.split(X_train)):
+        for fold, (train_index, val_index) in enumerate(kf.split(X_train, y_train, groups)):
             X_train_cv, X_val_cv = X_train.iloc[train_index], X_train.iloc[val_index]
             y_train_cv, y_val_cv = y_train.iloc[train_index], y_train.iloc[val_index]
 

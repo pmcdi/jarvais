@@ -40,7 +40,7 @@ class TrainerSupervised:
         output_dir: str | Path,
         target_variable: str | list[str],
         task: str,
-        stratify_on: str | None = None,
+        stratify_on: str | list[str] | None = None,
         test_size: float = 0.2,
         k_folds: int = 5,
         reduction_method: str | None = None,
@@ -165,7 +165,7 @@ class TrainerSupervised:
             self.input_data = data
 
         # Preprocess
-        X = self.input_data.drop(self.settings.target_variable, axis=1)
+        X = self.input_data.drop([self.settings.target_variable, self.settings.stratify_on], axis=1)
         y = self.input_data[self.settings.target_variable]
 
         X = self.engineering_module(X)
@@ -206,7 +206,8 @@ class TrainerSupervised:
             X_train=self.X_train, 
             y_train=self.y_train, 
             X_test=self.X_test, 
-            y_test=self.y_test
+            y_test=self.y_test,
+            groups=stratify_col
         )
 
         self.X_train = self.X_train.drop(self.X_val.index)
