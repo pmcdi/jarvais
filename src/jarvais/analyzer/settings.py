@@ -4,6 +4,7 @@ from jarvais.analyzer.modules import (
     MissingnessModule,
     BooleanEncodingModule,
     DashboardModule,
+    FeatureEngineeringModule
 )
 
 from pydantic import BaseModel, Field
@@ -60,7 +61,8 @@ class AnalyzerSettings(BaseModel):
     visualization: DataVisualizationModule
     boolean: BooleanEncodingModule
     dashboard: DashboardModule
-
+    engineering: FeatureEngineeringModule
+    
     def model_post_init(self, context: Any) -> None:
         self.output_dir.mkdir(parents=True, exist_ok=True)
     

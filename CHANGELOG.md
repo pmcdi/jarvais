@@ -1,6 +1,18 @@
 # CHANGELOG
 
 
+## [0.21.0](https://github.com/pmcdi/jarvais/compare/v0.20.1...v0.21.0) (2026-04-17)
+
+
+### Features
+
+* add feature engineering module with interaction, transformation, polynomial, and binning specifications ([#130](https://github.com/pmcdi/jarvais/issues/130)) ([247ef7a](https://github.com/pmcdi/jarvais/commit/247ef7ab5bb048e2dbd716e33f9b68952e5c6972))
+
+
+### Bug Fixes
+
+* **visualization:** add error handling for multiplot generation ([#128](https://github.com/pmcdi/jarvais/issues/128)) ([4fb77ff](https://github.com/pmcdi/jarvais/commit/4fb77ffc114a70c1ed0ea9d9b4fc4be7faec90de))
+
 ## [0.20.1](https://github.com/pmcdi/jarvais/compare/v0.20.0...v0.20.1) (2025-11-19)
 
 
